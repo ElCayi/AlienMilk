@@ -15,7 +15,7 @@ import { RouterLink } from '@angular/router';
         loop
         playsinline
       >
-        <source src="alienmilk-header-smoke-reverse.mp4" type="video/mp4" />
+        <source src="alienmilk-header-smoke-pingpong.mp4" type="video/mp4" />
       </video>
       <div class="hero-overlay" aria-hidden="true"></div>
 
@@ -23,14 +23,26 @@ import { RouterLink } from '@angular/router';
         <div class="hero-lockup">
           <img class="hero-lockup-logo" src="alienmilk-ufo.svg" alt="Logo AlienMilk Sessions" />
         </div>
-        <h1>AlienMilk</h1>
-        <p class="lead">Comprometidos con el sabor de la leche.</p>
+        <div class="hero-title">
+          <h1>AlienMilk</h1>
+          <span class="hero-subtitle" aria-label="Sessions">
+            <span aria-hidden="true">S</span>
+            <span aria-hidden="true">e</span>
+            <span aria-hidden="true">s</span>
+            <span aria-hidden="true">s</span>
+            <span aria-hidden="true">i</span>
+            <span aria-hidden="true">o</span>
+            <span aria-hidden="true">n</span>
+            <span aria-hidden="true">s</span>
+          </span>
+        </div>
         <div class="hero-actions">
           <a class="dark-btn hero-button" routerLink="/registro">REGISTRATE</a>
           <a class="ghost-btn hero-button" routerLink="/" fragment="nosotros">CONOCENOS</a>
         </div>
       </div>
     </section>
+    <div class="hero-divider" aria-hidden="true"></div>
 
     <section class="section-block sessions-block" id="sesiones">
       <div class="section-header">
@@ -138,6 +150,10 @@ import { RouterLink } from '@angular/router';
       margin-bottom: 9.4rem;
     }
 
+    .hero-divider {
+      display: none;
+    }
+
     .hero {
       display: grid;
       grid-template-columns: 1fr;
@@ -199,6 +215,14 @@ import { RouterLink } from '@angular/router';
       flex: 0 0 auto;
     }
 
+    .hero-title {
+      display: grid;
+      justify-items: center;
+      justify-self: center;
+      width: fit-content;
+      gap: 0.35rem;
+    }
+
     h1 {
       font-family: 'Nunito', sans-serif;
       font-size: clamp(3rem, 7vw, 5.6rem);
@@ -206,23 +230,28 @@ import { RouterLink } from '@angular/router';
       margin: 0;
       font-weight: 900;
       letter-spacing: 0.02em;
-      color: #20242b;
+      color: #1f2430;
     }
 
-    .lead {
-      color: #1f2937;
-      font-size: clamp(1.55rem, 2.5vw, 2.05rem);
-      line-height: 1.72;
+    .hero-subtitle {
       width: 100%;
-      max-width: 100%;
-      margin: 0 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      font-size: clamp(2.1rem, 4.75vw, 3.8rem);
+      font-weight: 300;
+      line-height: 0.85;
+      color: #1f2430;
+      transform: scaleY(0.78);
+      transform-origin: center;
     }
 
     .hero-actions {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 2.4rem;
+      gap: 1rem;
+      margin-top: 0.9rem;
       flex-wrap: wrap;
     }
 
@@ -481,6 +510,20 @@ import { RouterLink } from '@angular/router';
 
     .section-card:hover a span {
       transform: translateX(4px);
+    }
+
+    @media (min-width: 901px) {
+      .hero {
+        min-height: calc(100vh - (2 * var(--topbar-height)));
+        min-height: calc(100dvh - (2 * var(--topbar-height)));
+        margin-bottom: 0;
+      }
+
+      .hero-divider {
+        display: block;
+        height: var(--topbar-height);
+        margin-bottom: calc(7.8rem - var(--topbar-height));
+      }
     }
 
     @media (max-width: 900px) {

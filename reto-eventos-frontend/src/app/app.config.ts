@@ -9,8 +9,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withInMemoryScrolling({
-      anchorScrolling: 'enabled',
-      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'disabled',
+      scrollPositionRestoration: 'top',
     })),
     provideHttpClient(withInterceptors([authInterceptor])),
   ]

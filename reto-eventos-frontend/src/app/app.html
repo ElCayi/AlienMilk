@@ -1,6 +1,6 @@
 <div class="app-shell">
-  <header class="topbar">
-    <a class="brand" routerLink="/">
+  <header class="topbar" [class.menu-open]="menuOpen()">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
       <img class="brand-logo" src="alienmilk-ufo.svg" alt="Logo AlienMilk Sessions" />
       <span class="brand-text">
         <span class="brand-name">AlienMilk</span>
@@ -8,7 +8,20 @@
       </span>
     </a>
 
-    <nav class="nav-links">
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-label="Abrir o cerrar el menú de navegación"
+      aria-controls="main-navigation"
+      [attr.aria-expanded]="menuOpen()"
+      (click)="toggleMenu()"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-links" id="main-navigation">
       <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
       <a href="/#sesiones" (click)="goToSection($event, 'sesiones')">Sesiones</a>
       <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros</a>
@@ -19,15 +32,15 @@
       <span class="user-pill">
         {{ authService.currentUser()?.nombre }} · {{ authService.currentUser()?.perfil === 'ROLE_ADMON' ? 'Admin' : 'Cliente' }}
       </span>
-      <a class="ghost-btn auth-action" *ngIf="!authService.isAdmin()" routerLink="/reservas">Mi panel</a>
-      <a class="ghost-btn auth-action" *ngIf="authService.isAdmin()" routerLink="/admin">Admin</a>
+      <a class="ghost-btn auth-action" *ngIf="!authService.isAdmin()" routerLink="/reservas" (click)="closeMenu()">Mi panel</a>
+      <a class="ghost-btn auth-action" *ngIf="authService.isAdmin()" routerLink="/admin" (click)="closeMenu()">Admin</a>
       <button type="button" class="secondary-btn auth-action" (click)="logout()">Salir</button>
     </div>
 
     <ng-template #guestBlock>
       <div class="guest-actions">
-        <a class="ghost-btn" routerLink="/login">Entrar</a>
-        <a class="dark-btn" routerLink="/registro">Registrarse</a>
+        <a class="ghost-btn" routerLink="/login" (click)="closeMenu()">Entrar</a>
+        <a class="dark-btn" routerLink="/registro" (click)="closeMenu()">Registrarse</a>
       </div>
     </ng-template>
   </header>

@@ -5,6 +5,7 @@
 }
 
 .app-shell {
+  --topbar-height: 3.75rem;
   min-height: 100vh;
   background:
     radial-gradient(circle at top left, rgba(247, 180, 100, 0.16), transparent 26%),
@@ -17,7 +18,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 1rem;
-  padding: 1.1rem 3.75rem;
+  padding: 0.65rem 3.75rem;
   border-bottom: 1px solid rgba(23, 32, 51, 0.08);
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(16px);
@@ -31,7 +32,7 @@
   align-items: center;
   gap: 0.7rem;
   text-decoration: none;
-  color: #172033;
+  color: #1f2430;
   font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -45,7 +46,7 @@
 
 .brand-name {
   font-family: 'Nunito', sans-serif;
-  color: #172033;
+  color: #1f2430;
 }
 
 .brand-subtitle {
@@ -53,7 +54,7 @@
   font-size: 0.72em;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: #172033;
+  color: #1f2430;
 }
 
 .brand-logo {
@@ -61,23 +62,27 @@
   height: 2rem;
   display: block;
   flex: 0 0 auto;
-  transition: filter 0.2s ease;
+}
+
+.menu-toggle {
+  display: none;
 }
 
 .nav-links {
   display: flex;
   justify-content: center;
   justify-self: center;
-  gap: 1.85rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #4a5568;
+  color: #374151;
   font-family: 'Arial', Times, serif;
-  font-size: 1.08rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .nav-links a.active,
@@ -113,6 +118,12 @@
   align-items: center;
   justify-self: end;
   gap: 0.75rem;
+}
+
+.topbar .ghost-btn,
+.topbar .dark-btn,
+.topbar .secondary-btn {
+  padding: 0.6rem 0.9rem;
 }
 
   .user-pill {
@@ -341,21 +352,87 @@
   font-weight: 800;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .topbar {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 0.75rem clamp(1rem, 6vw, 3.75rem);
   }
 
-  .auth-box {
-      justify-content: space-between;
-    }
+  .menu-toggle {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    justify-self: end;
+    gap: 0.3rem;
+    padding: 0;
+    border: 1px solid rgba(23, 32, 51, 0.14);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.72);
+    color: #172033;
+    cursor: pointer;
+  }
 
-    .auth-action {
-      flex: 0 0 auto;
-    }
+  .menu-toggle span {
+    width: 1.15rem;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .menu-open .menu-toggle span:nth-child(1) {
+    transform: translateY(0.4rem) rotate(45deg);
+  }
+
+  .menu-open .menu-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-open .menu-toggle span:nth-child(3) {
+    transform: translateY(-0.4rem) rotate(-45deg);
+  }
+
+  .topbar .nav-links,
+  .topbar .auth-box,
+  .topbar .guest-actions {
+    display: none;
+  }
+
+  .topbar.menu-open .nav-links,
+  .topbar.menu-open .auth-box,
+  .topbar.menu-open .guest-actions {
+    grid-column: 1 / -1;
+    display: flex;
+  }
+
+  .topbar.menu-open .nav-links {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-top: 0.5rem;
+  }
+
+  .topbar.menu-open .nav-links a {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(23, 32, 51, 0.08);
+  }
+
+  .topbar.menu-open .auth-box,
+  .topbar.menu-open .guest-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding-top: 0.25rem;
+  }
+
+  .auth-action {
+    flex: 0 0 auto;
+  }
 
   .site-footer {
     padding: 2rem 1rem 1.6rem;

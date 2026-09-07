@@ -27,6 +27,10 @@ export class App {
       }
 
       const updateTopbarHeight = () => {
+        if (topbar.classList.contains('menu-open')) {
+          return;
+        }
+
         appShell.style.setProperty('--topbar-height', `${topbar.offsetHeight}px`);
       };
       const resizeObserver = new ResizeObserver(updateTopbarHeight);

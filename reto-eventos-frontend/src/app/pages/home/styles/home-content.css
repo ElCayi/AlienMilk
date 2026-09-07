@@ -31,11 +31,13 @@
       margin: 0;
       color: #1f2430;
       font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-      font-size: clamp(2.35rem, 3.4vw, 3.65rem);
+      font-size: clamp(2.8rem, 4.4vw, 4.8rem);
       font-weight: 300;
-      line-height: 1;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: 0.025em;
+      text-transform: none;
+      transform: scaleY(0.78);
+      transform-origin: left center;
     }
 
     .sessions-editorial-main {

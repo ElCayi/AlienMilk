@@ -1,0 +1,37 @@
+<section class="admin-grid">
+        <form class="panel small-panel" (ngSubmit)="save.emit()">
+          <div class="block-header compact">
+            <div>
+              <h2>{{ editingId === null ? 'Alta perfil' : 'Editar perfil' }}</h2>
+              <p class="block-helper">Roles disponibles para usuarios.</p>
+            </div>
+            <button
+              *ngIf="editingId !== null"
+              type="button"
+              class="ghost"
+              (click)="cancelRequested.emit()"
+            >
+              Nuevo
+            </button>
+          </div>
+
+          <input [(ngModel)]="form.nombre" name="perfilNombre" placeholder="Nombre" required />
+          <button type="submit">{{ editingId === null ? 'Crear perfil' : 'Guardar perfil' }}</button>
+        </form>
+
+        <div class="panel small-panel">
+          <div>
+            <h2>Perfiles</h2>
+            <p class="block-helper">Editar o eliminar perfiles.</p>
+          </div>
+          <div class="mini-list">
+            <article *ngFor="let perfil of perfiles">
+              <strong>{{ perfil.nombre }}</strong>
+              <div class="actions">
+                <button type="button" class="ghost" (click)="edit.emit(perfil)">Editar</button>
+                <button type="button" class="danger" (click)="removeRequested.emit(perfil.idPerfil)">Borrar</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>

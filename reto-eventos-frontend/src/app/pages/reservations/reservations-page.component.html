@@ -1,0 +1,67 @@
+    <section class="page-card panel-card">
+      <div class="header">
+        <div>
+          <p class="eyebrow">
+            <img src="alienmilk-ufo.svg" alt="" aria-hidden="true" />
+            <span>Zona cliente</span>
+          </p>
+          <h1>Panel de usuario</h1>
+          <p class="helper">Consulta sesiones disponibles, entra al detalle y gestiona tus reservas.</p>
+        </div>
+      </div>
+
+      <section class="panel-block available-block">
+        <div class="block-header">
+          <div>
+            <h2>Sesiones disponibles</h2>
+            <p class="block-helper">Accede al detalle para consultar la sesión y reservar tu plaza.</p>
+          </div>
+          <span class="count subtle">{{ eventos().length }} sesiones</span>
+        </div>
+
+        <p class="empty" *ngIf="!eventos().length">Ahora mismo no hay sesiones activas disponibles.</p>
+
+        <div class="event-list" *ngIf="eventos().length">
+          <article class="event-card" *ngFor="let evento of eventos()">
+            <div>
+              <p class="event-type">{{ evento.tipoEvento }}</p>
+              <h3>{{ evento.nombre }}</h3>
+              <p class="event-meta">
+                {{ evento.fechaInicio | date: 'dd/MM/yyyy' }} · {{ evento.precio | currency: 'EUR' }}
+              </p>
+            </div>
+            <a class="event-link" [routerLink]="['/eventos', evento.idEvento]">Consultar y reservar</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel-block reserved-block">
+        <div class="block-header">
+          <div>
+            <h2>Mis reservas</h2>
+            <p class="block-helper">Consulta tus sesiones reservadas y cancela si lo necesitas.</p>
+          </div>
+        </div>
+
+        <p class="empty" *ngIf="!reservas().length">Todavia no has reservado ninguna sesion activa.</p>
+
+        <div class="reservation-list" *ngIf="reservas().length">
+          <article class="reservation-card" *ngFor="let reserva of reservas()">
+            <div class="reservation-info">
+              <h3>{{ reserva.nombreEvento }}</h3>
+              <p>{{ reserva.fechaInicioEvento | date: 'dd/MM/yyyy' }} · {{ reserva.estadoEvento }}</p>
+              <p class="reservation-note" *ngIf="reserva.observaciones">
+                <span>Observaciones:</span> {{ reserva.observaciones }}
+              </p>
+            </div>
+            <div class="summary">
+              <span>{{ reserva.cantidad }} plazas</span>
+              <strong>{{ reserva.precioVenta | currency: 'EUR' }}</strong>
+            </div>
+            <button type="button" (click)="cancelar(reserva.idReserva)">Cancelar reserva</button>
+          </article>
+        </div>
+      </section>
+
+      <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    </section>

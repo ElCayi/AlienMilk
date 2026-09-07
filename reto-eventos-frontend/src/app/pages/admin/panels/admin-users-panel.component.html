@@ -1,0 +1,72 @@
+<section class="admin-grid">
+        <form class="panel form-panel" (ngSubmit)="save.emit()">
+          <div class="block-header compact">
+            <div>
+              <h2>{{ editingUsername === null ? 'Alta usuario' : 'Editar usuario' }}</h2>
+              <p class="block-helper">
+                {{
+                  editingUsername === null
+                    ? 'Define el usuario y su perfil.'
+                    : 'Edita los datos del usuario sin cambiar username ni password.'
+                }}
+              </p>
+            </div>
+            <button
+              *ngIf="editingUsername !== null"
+              type="button"
+              class="ghost"
+              (click)="cancelRequested.emit()"
+            >
+              Nuevo
+            </button>
+          </div>
+
+          <input
+            [(ngModel)]="form.username"
+            name="usuarioUsername"
+            placeholder="Username"
+            [disabled]="editingUsername !== null"
+            required
+          />
+          <input [(ngModel)]="form.email" name="usuarioEmail" type="email" placeholder="Email" required />
+          <input [(ngModel)]="form.nombre" name="usuarioNombre" placeholder="Nombre" required />
+          <input [(ngModel)]="form.apellidos" name="usuarioApellidos" placeholder="Apellidos" />
+          <input [(ngModel)]="form.direccion" name="usuarioDireccion" placeholder="Direccion" />
+          <input [(ngModel)]="form.fechaRegistro" name="usuarioFechaRegistro" type="date" required />
+
+          <select [(ngModel)]="form.enabled" name="usuarioEnabled">
+            <option [ngValue]="1">Activo</option>
+            <option [ngValue]="0">Desactivado</option>
+          </select>
+
+          <select [(ngModel)]="form.idPerfil" name="usuarioIdPerfil" required>
+            <option [ngValue]="0">Selecciona perfil</option>
+            <option *ngFor="let perfil of perfiles" [ngValue]="perfil.idPerfil">{{ perfil.nombre }}</option>
+          </select>
+
+          <button type="submit">
+            {{ editingUsername === null ? 'Crear usuario' : 'Guardar usuario' }}
+          </button>
+        </form>
+
+        <div class="panel wide list-panel">
+          <div>
+            <h2>Usuarios</h2>
+            <p class="block-helper">
+              Tripulacion de AlienMilk: catadores, exploradores y operadores con acceso a la cabina.
+            </p>
+          </div>
+          <div class="table-list">
+            <article *ngFor="let usuario of usuarios">
+              <div>
+                <strong>{{ usuario.username }}</strong>
+                <p>{{ usuario.email }} · {{ usuario.perfil }} · {{ usuario.enabled ? 'activo' : 'inactivo' }}</p>
+              </div>
+              <div class="actions">
+                <button type="button" class="ghost" (click)="edit.emit(usuario)">Editar</button>
+                <button type="button" class="danger" (click)="removeRequested.emit(usuario.username)">Borrar</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>

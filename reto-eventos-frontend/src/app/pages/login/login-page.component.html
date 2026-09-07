@@ -1,0 +1,53 @@
+    <section class="login-wrapper">
+      <div class="login-shell">
+        <div class="login-copy">
+          <div class="eyebrow-brand">
+            <img src="alienmilk-ufo.svg" alt="Logo AlienMilk Sessions" />
+            <span class="eyebrow-brand-name">AlienMilk</span>
+            <span class="eyebrow-brand-subtitle">Sessions</span>
+          </div>
+          <h1>Bienvenido a AlienMilk.</h1>
+          <p class="lead">
+            Accede para reservar sesiones, explorar el laboratorio y moverte por el universo
+            AlienMilk con tu perfil.
+          </p>
+          <p class="signup-copy">
+            ¿No tienes cuenta?
+            <a routerLink="/registro">Regístrate gratis</a>
+          </p>
+
+          <div class="demo-box">
+            <p class="demo-title">Usuarios de prueba</p>
+            <p><strong>admin</strong>, <strong>ana</strong> y <strong>luis</strong></p>
+            <p>Contraseña: <strong>1234</strong></p>
+          </div>
+        </div>
+
+        <div class="login-card">
+          <p class="card-kicker">Iniciar sesion</p>
+          <form (ngSubmit)="submit()">
+            <label>
+              <span class="sr-only">Usuario</span>
+              <input [(ngModel)]="username" name="username" placeholder="Usuario" required />
+            </label>
+
+            <label>
+              <span class="sr-only">Contraseña</span>
+              <input
+                [(ngModel)]="password"
+                name="password"
+                type="password"
+                placeholder="Contraseña"
+                required
+              />
+            </label>
+
+            <button type="submit" class="dark-btn submit-btn" [disabled]="loading()">
+              {{ loading() ? 'Entrando...' : 'Entrar' }}
+            </button>
+          </form>
+
+          <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+        </div>
+      </div>
+    </section>

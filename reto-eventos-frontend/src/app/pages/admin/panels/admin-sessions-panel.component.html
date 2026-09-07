@@ -1,0 +1,115 @@
+<section class="admin-grid">
+        <form class="panel form-panel" (ngSubmit)="save.emit()">
+          <div class="block-header compact">
+            <div>
+              <h2>{{ editingId === null ? 'Alta de sesion' : 'Editar sesion' }}</h2>
+              <p class="block-helper">Crea y administra nuevas sesiones de Alien Milk.</p>
+            </div>
+            <button
+              *ngIf="editingId !== null"
+              type="button"
+              class="ghost"
+              (click)="cancelRequested.emit()"
+            >
+              Nueva
+            </button>
+          </div>
+
+          <label class="field">
+            <span>Nombre</span>
+            <input [(ngModel)]="form.nombre" name="eventoNombre" placeholder="Nombre de la sesion" required />
+          </label>
+          <label class="field">
+            <span>Descripcion</span>
+            <textarea
+              [(ngModel)]="form.descripcion"
+              name="eventoDescripcion"
+              rows="3"
+              placeholder="Describe brevemente la sesion"
+            ></textarea>
+          </label>
+          <label class="field">
+            <span>Fecha de inicio</span>
+            <input [(ngModel)]="form.fechaInicio" name="eventoFechaInicio" type="date" required />
+          </label>
+          <label class="field">
+            <span>Direccion</span>
+            <input [(ngModel)]="form.direccion" name="eventoDireccion" placeholder="Lugar donde se celebra" required />
+          </label>
+          <label class="field">
+            <span>Duracion (minutos)</span>
+            <input
+              [(ngModel)]="form.duracion"
+              name="eventoDuracion"
+              type="number"
+              placeholder="ej. 90"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Aforo maximo (personas)</span>
+            <input
+              [(ngModel)]="form.aforoMaximo"
+              name="eventoAforoMaximo"
+              type="number"
+              placeholder="ej. 50"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Minimo de asistencia (personas)</span>
+            <input
+              [(ngModel)]="form.minimoAsistencia"
+              name="eventoMinimoAsistencia"
+              type="number"
+              placeholder="ej. 10"
+              required
+            />
+          </label>
+          <label class="field">
+            <span>Precio (€)</span>
+            <input
+              [(ngModel)]="form.precio"
+              name="eventoPrecio"
+              type="number"
+              step="0.01"
+              placeholder="ej. 20.00"
+              required
+            />
+          </label>
+
+          <label class="field">
+            <span>Tipo de sesion</span>
+            <select [(ngModel)]="form.idTipo" name="eventoIdTipo" required>
+              <option [ngValue]="0">Selecciona tipo</option>
+              <option *ngFor="let tipo of tipos" [ngValue]="tipo.idTipo">{{ tipo.nombre }}</option>
+            </select>
+          </label>
+
+          <button type="submit">
+            {{ editingId === null ? 'Crear sesion' : 'Guardar sesion' }}
+          </button>
+        </form>
+
+        <div class="panel wide list-panel">
+          <div class="block-header">
+            <div>
+              <h2>Sesiones</h2>
+              <p class="block-helper">Edita o elimina eventos. Las sesiones se guardan siempre activas.</p>
+            </div>
+          </div>
+          <div class="table-list">
+            <article *ngFor="let evento of eventos">
+              <div>
+                <strong>{{ evento.nombre }}</strong>
+                <p>{{ evento.tipoEvento }} · {{ evento.fechaInicio | date: 'dd/MM/yyyy' }}</p>
+              </div>
+              <div class="actions">
+                <span>{{ evento.precio | currency: 'EUR' }}</span>
+                <button type="button" class="ghost" (click)="edit.emit(evento.idEvento)">Editar</button>
+                <button type="button" class="danger" (click)="removeRequested.emit(evento.idEvento)">Borrar</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>

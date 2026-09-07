@@ -1,0 +1,117 @@
+    <section class="page-card panel-card">
+      <div class="header">
+        <div>
+          <p class="eyebrow">
+            <img src="alienmilk-ufo.svg" alt="" aria-hidden="true" />
+            <span>Zona admin · Reservas</span>
+          </p>
+          <h1>Gestion de reservas por usuario</h1>
+          <p class="helper">
+            Busca un usuario, revisa sus reservas y crea o cancela manualmente desde el panel admin.
+          </p>
+        </div>
+      </div>
+
+      <section class="admin-shell">
+        <aside class="sidebar">
+          <h3>Panel admin</h3>
+          <nav>
+            <a routerLink="/admin">Sesiones</a>
+            <a routerLink="/admin">Usuarios</a>
+            <a routerLink="/admin">Tipos</a>
+            <a routerLink="/admin">Perfiles</a>
+            <a class="active">Reservas</a>
+          </nav>
+        </aside>
+
+        <div class="admin-content">
+
+      <section class="panel-block">
+        <label class="field">
+          <span>Buscar usuario por nombre o username</span>
+          <input
+            [(ngModel)]="filtro"
+            (ngModelChange)="onFiltroChange()"
+            name="filtroUsuario"
+            placeholder="ej. ana o lopez"
+          />
+        </label>
+
+        <div class="usuario-list" *ngIf="filtro.trim().length > 0">
+          <ng-container *ngIf="usuariosFiltrados().length > 0; else sinResultados">
+            <article *ngFor="let u of usuariosFiltrados()" [class.activo]="usuarioSeleccionado()?.username === u.username">
+              <div>
+                <strong>{{ u.nombre }} {{ u.apellidos }}</strong>
+                <p>{{ u.username }} · {{ u.email }} · {{ u.perfil }}</p>
+              </div>
+              <button type="button" class="ghost" (click)="seleccionarUsuario(u)">Seleccionar</button>
+            </article>
+          </ng-container>
+          <ng-template #sinResultados>
+            <p class="vacio">No hay usuarios que coincidan con "{{ filtro }}".</p>
+          </ng-template>
+        </div>
+      </section>
+
+      <ng-container *ngIf="usuarioSeleccionado() as user">
+        <section class="panel-block">
+          <h2>Reservas de {{ user.nombre }} ({{ user.username }})</h2>
+          <div class="reserva-list" *ngIf="reservas().length > 0; else sinReservas">
+            <article *ngFor="let r of reservas()">
+              <div>
+                <strong>{{ r.nombreEvento }}</strong>
+                <p>
+                  {{ r.fechaInicioEvento | date: 'dd/MM/yyyy' }} ·
+                  {{ r.cantidad }} {{ r.cantidad === 1 ? 'entrada' : 'entradas' }} ·
+                  {{ r.precioVenta | currency: 'EUR' }} · {{ r.estadoEvento }}
+                </p>
+                <p class="obs" *ngIf="r.observaciones">"{{ r.observaciones }}"</p>
+              </div>
+              <button type="button" class="danger" (click)="cancelarReserva(r.idReserva)">Cancelar</button>
+            </article>
+          </div>
+          <ng-template #sinReservas>
+            <p class="vacio">Este usuario no tiene reservas.</p>
+          </ng-template>
+        </section>
+
+        <section class="panel-block">
+          <h2>Crear reserva manual</h2>
+          <form (ngSubmit)="crearReserva()" class="form-grid">
+            <label class="field">
+              <span>Sesion (solo activas)</span>
+              <select [(ngModel)]="nuevaReserva.idEvento" name="reservaIdEvento" required>
+                <option [ngValue]="0">Selecciona sesion</option>
+                <option *ngFor="let e of eventosActivos()" [ngValue]="e.idEvento">
+                  {{ e.nombre }} · {{ e.fechaInicio | date: 'dd/MM/yyyy' }} · {{ e.precio | currency: 'EUR' }}
+                </option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Cantidad (1 a 10)</span>
+              <input
+                [(ngModel)]="nuevaReserva.cantidad"
+                name="reservaCantidad"
+                type="number"
+                min="1"
+                max="10"
+                required
+              />
+            </label>
+            <label class="field">
+              <span>Observaciones (opcional)</span>
+              <input
+                [(ngModel)]="nuevaReserva.observaciones"
+                name="reservaObservaciones"
+                placeholder="ej. mesa cerca del lacteobar"
+              />
+            </label>
+            <button type="submit">Crear reserva</button>
+          </form>
+        </section>
+      </ng-container>
+
+          <p class="feedback" *ngIf="feedback()" [class.error]="esError()">{{ feedback() }}</p>
+        </div>
+      </section>
+    </section>

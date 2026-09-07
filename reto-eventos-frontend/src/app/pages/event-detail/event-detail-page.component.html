@@ -1,0 +1,70 @@
+    <a class="back-link" routerLink="/reservas">← Volver a sesiones</a>
+
+    <section class="status-card" *ngIf="loadingDetalle()">
+      <h1>Cargando sesion</h1>
+      <p class="helper">Estamos recuperando el detalle del evento.</p>
+    </section>
+
+    <section class="status-card" *ngIf="!loadingDetalle() && errorMessage()">
+      <h1>No se ha podido cargar la sesion</h1>
+      <p class="helper">{{ errorMessage() }}</p>
+      <a class="login-link" routerLink="/reservas">Volver a sesiones</a>
+    </section>
+
+    <section class="status-card" *ngIf="!loadingDetalle() && !errorMessage() && !evento()">
+      <h1>Sesion no disponible</h1>
+      <p class="helper">No hemos encontrado el evento solicitado.</p>
+      <a class="login-link" routerLink="/reservas">Volver a sesiones</a>
+    </section>
+
+    <section class="detail-card" *ngIf="!loadingDetalle() && !errorMessage() && evento() as data">
+      <div class="detail-main">
+        <p class="eyebrow">
+          <img src="alienmilk-ufo.svg" alt="" aria-hidden="true" />
+          <span>{{ data.tipoEvento }}</span>
+        </p>
+        <h1>{{ data.nombre }}</h1>
+        <p class="description">{{ data.descripcion }}</p>
+
+        <div class="detail-grid">
+          <div><span>Fecha</span><strong>{{ data.fechaInicio | date: 'dd/MM/yyyy' }}</strong></div>
+          <div><span>Precio por plaza</span><strong>{{ data.precio | currency: 'EUR' }}</strong></div>
+          <div><span>Duración</span><strong>{{ data.duracion }} minutos</strong></div>
+          <div><span>Aforo</span><strong>{{ data.aforoMaximo }}</strong></div>
+          <div><span>Estado</span><strong>{{ data.estado }}</strong></div>
+          <div><span>Dirección</span><strong>{{ data.direccion }}</strong></div>
+        </div>
+      </div>
+
+      <aside class="reserve-box">
+        <h2>Reservar tu plaza</h2>
+
+        <ng-container *ngIf="authService.isAuthenticated(); else loginPrompt">
+          <label>
+            Plazas
+            <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
+          </label>
+
+          <div class="total-box">
+            <span>Total</span>
+            <strong>{{ totalReserva() | currency: 'EUR' }}</strong>
+          </div>
+
+          <label>
+            Observaciones
+            <textarea [(ngModel)]="observaciones" rows="4"></textarea>
+          </label>
+
+          <button type="button" (click)="reservar()" [disabled]="loading()">
+            {{ loading() ? 'Reservando...' : 'Confirmar acceso' }}
+          </button>
+        </ng-container>
+
+        <ng-template #loginPrompt>
+          <p class="helper">Necesitas iniciar sesion para apartar plaza en esta sesion.</p>
+          <a class="login-link" [routerLink]="['/login']" [queryParams]="{ redirectTo: currentUrl }">Ir a login</a>
+        </ng-template>
+
+        <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+      </aside>
+    </section>

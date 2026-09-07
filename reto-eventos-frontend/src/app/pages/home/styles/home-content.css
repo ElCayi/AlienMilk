@@ -1,0 +1,458 @@
+    .sessions-editorial {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 0.55fr);
+      align-items: end;
+      gap: clamp(2rem, 7vw, 7rem);
+      margin-bottom: 3.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(31, 36, 48, 0.35);
+    }
+
+    .sessions-eyebrow {
+      margin: 0 0 0.75rem;
+      color: #d97706;
+      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .sessions-editorial h2 {
+      margin: 0;
+      color: #1f2430;
+      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      font-size: clamp(2.35rem, 3.4vw, 3.65rem);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .sessions-editorial-main {
+      display: grid;
+      justify-items: start;
+    }
+
+    .sessions-editorial-main > p:not(.sessions-eyebrow) {
+      max-width: 78ch;
+      margin: 1rem 0 0;
+      color: #475569;
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    .sessions-editorial-main > strong {
+      display: block;
+      margin-top: 0.55rem;
+      color: #1f2430;
+      font-family: Arial, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .sessions-tools {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 0.8rem;
+    }
+
+    .sessions-count {
+      align-self: flex-end;
+      color: rgba(31, 36, 48, 0.5);
+      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+    }
+
+    .sessions-search {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid rgba(31, 36, 48, 0.2);
+      border-radius: 0.45rem;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .sessions-search:focus-within {
+      border-color: #d97706;
+      box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.12);
+    }
+
+    .sessions-search svg {
+      width: 1rem;
+      flex: 0 0 auto;
+      fill: none;
+      stroke: #475569;
+      stroke-width: 1.7;
+    }
+
+    .sessions-search input {
+      min-width: 0;
+      width: 100%;
+      border: 0;
+      outline: 0;
+      color: #1f2430;
+      background: transparent;
+      font: 0.78rem Arial, sans-serif;
+    }
+
+    .sessions-search input::placeholder {
+      color: #7b8492;
+    }
+
+    .sessions-tools a,
+    .sessions-explore {
+      color: #1f2430;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .sessions-status {
+      margin: 0;
+      padding: 2rem;
+      border: 1px solid rgba(31, 36, 48, 0.12);
+      border-radius: 18px;
+      color: #475569;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    .sessions-status-error {
+      display: grid;
+      justify-items: center;
+      gap: 1rem;
+    }
+
+    .sessions-status-error p {
+      margin: 0;
+    }
+
+    .sessions-status-error button {
+      border: 1px solid #1f2430;
+      border-radius: 999px;
+      padding: 0.7rem 1.15rem;
+      color: #1f2430;
+      background: transparent;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .contact-card {
+      padding: 1.9rem;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(23, 32, 51, 0.08);
+      box-shadow: 0 16px 28px rgba(23, 32, 51, 0.06);
+    }
+
+    .about-card {
+      padding: clamp(2rem, 5vw, 3.4rem);
+      border-radius: 0;
+      background: #d9dee5;
+      border: 0;
+      box-shadow: none;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+    }
+
+    .about-layout {
+      width: min(1240px, calc(100% - 3rem));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      align-items: center;
+      gap: clamp(2.2rem, 5vw, 5rem);
+    }
+
+    .about-content {
+      display: grid;
+      gap: 1rem;
+      max-width: 44rem;
+    }
+
+    .about-content h2 {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+      line-height: 1.02;
+      font-weight: 700;
+      color: #23272f;
+    }
+
+    .about-kicker {
+      margin: 0;
+      color: #2f3743;
+      font-size: 1.08rem;
+      line-height: 1.62;
+    }
+
+    .about-copy {
+      margin: -0.15rem 0 0;
+      color: #2f3743;
+      font-size: 1.08rem;
+      line-height: 1.62;
+      max-width: 42rem;
+    }
+
+    .about-cta {
+      justify-self: start;
+      min-width: 11rem;
+    }
+
+    .about-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    .about-image {
+      width: 100%;
+      height: 28rem;
+      display: block;
+      border-radius: 28px;
+      background-image: url('/alienmilk-about-milk.png');
+      background-repeat: no-repeat;
+      background-size: 205% 100%;
+      box-shadow: 0 20px 34px rgba(15, 23, 42, 0.14);
+    }
+
+    .about-image-main {
+      margin-top: -1.2rem;
+      background-position: left center;
+    }
+
+    .about-image-offset {
+      margin-top: 1.8rem;
+      background-position: right center;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .contact-grid div {
+      display: grid;
+      gap: 0.55rem;
+      padding: 1.2rem;
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .contact-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      font-weight: 800;
+    }
+
+    .sessions-program {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.8fr);
+      gap: 1.25rem;
+    }
+
+    .session-featured,
+    .session-secondary {
+      overflow: hidden;
+      background: #1f2430;
+    }
+
+    .session-featured {
+      display: grid;
+      grid-template-rows: minmax(24rem, 1fr) auto;
+    }
+
+    .session-image-link,
+    .session-secondary-image {
+      position: relative;
+      display: block;
+      overflow: hidden;
+    }
+
+    .session-image-link img,
+    .session-secondary-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.72) contrast(1.06);
+      transition: transform 400ms ease, filter 400ms ease;
+    }
+
+    .session-featured:hover img,
+    .session-secondary:hover img {
+      transform: scale(1.025);
+      filter: saturate(0.95) contrast(1.06);
+    }
+
+    .session-image-link > span,
+    .session-secondary-image > span {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      padding: 0.38rem 0.55rem;
+      color: #faf9f7;
+      background: rgba(31, 36, 48, 0.82);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .session-featured-info {
+      display: grid;
+      gap: 1.3rem;
+      padding: clamp(1.4rem, 3vw, 2.25rem);
+      color: #faf9f7;
+    }
+
+    .session-file-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #d97706;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .session-featured h3,
+    .session-secondary h3 {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .session-featured h3 {
+      max-width: 18ch;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 0.98;
+    }
+
+    .session-file-data {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem 2rem;
+      margin: 0;
+    }
+
+    .session-file-data div {
+      display: grid;
+      grid-template-columns: 7rem 1fr;
+      gap: 0.6rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid rgba(250, 249, 247, 0.2);
+    }
+
+    .session-file-data dt,
+    .session-file-data dd {
+      margin: 0;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .session-file-data dt {
+      color: rgba(250, 249, 247, 0.55);
+    }
+
+    .session-featured-footer,
+    .session-secondary footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .session-featured-footer > span {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .session-featured-footer a,
+    .session-secondary a {
+      color: #d97706;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .session-secondary-list {
+      display: grid;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .session-secondary {
+      display: grid;
+      grid-template-rows: minmax(10rem, 1.15fr) auto;
+    }
+
+    .session-secondary > div {
+      display: grid;
+      gap: 0.65rem;
+      padding: 1rem 1.15rem 1.1rem;
+      color: #faf9f7;
+    }
+
+    .session-secondary p,
+    .session-anomaly {
+      margin: 0;
+      color: #d97706;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .session-secondary h3 {
+      font-size: 1.25rem;
+      line-height: 1.08;
+    }
+
+    .session-anomaly {
+      color: rgba(250, 249, 247, 0.52);
+    }
+
+    .session-secondary footer > span {
+      color: rgba(250, 249, 247, 0.72);
+      font-size: 0.72rem;
+    }
+
+    .sessions-explore {
+      width: fit-content;
+      display: flex;
+      gap: 0.8rem;
+      margin: 2.75rem auto 0;
+      padding-bottom: 0.45rem;
+      border-bottom: 1px solid #1f2430;
+    }

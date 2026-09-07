@@ -1,0 +1,81 @@
+    <section class="page-card panel-card">
+      <div class="header">
+        <div>
+          <p class="eyebrow">
+            <img src="alienmilk-ufo.svg" alt="" aria-hidden="true" />
+            <span>Zona admin</span>
+          </p>
+          <h1>Control de AlienMilk Sessions</h1>
+          <p class="helper">
+            Revisa y gestiona sesiones, usuarios, tipos, perfiles y reservas desde la cabina central.
+          </p>
+        </div>
+      </div>
+
+      <section class="admin-shell">
+        <aside class="sidebar">
+          <h3>Panel admin</h3>
+          <nav>
+            <button
+              type="button"
+              [class.active]="activeTab() === 'sesiones'"
+              (click)="setTab('sesiones')"
+            >
+              Sesiones
+            </button>
+            <button
+              type="button"
+              [class.active]="activeTab() === 'usuarios'"
+              (click)="setTab('usuarios')"
+            >
+              Usuarios
+            </button>
+            <button
+              type="button"
+              [class.active]="activeTab() === 'tipos'"
+              (click)="setTab('tipos')"
+            >
+              Tipos
+            </button>
+            <button
+              type="button"
+              [class.active]="activeTab() === 'perfiles'"
+              (click)="setTab('perfiles')"
+            >
+              Perfiles
+            </button>
+            <a routerLink="/admin/reservas">Gestionar reservas por usuario</a>
+          </nav>
+        </aside>
+
+        <div class="admin-content">
+
+      <section class="panel-block summary-block">
+        <div class="stats">
+          <div><span>Eventos</span><strong>{{ eventos().length }}</strong></div>
+          <div><span>Usuarios</span><strong>{{ usuarios().length }}</strong></div>
+          <div><span>Tipos</span><strong>{{ tipos().length }}</strong></div>
+          <div><span>Perfiles</span><strong>{{ perfiles().length }}</strong></div>
+        </div>
+      </section>
+
+      <app-admin-sessions-panel *ngIf="activeTab() === 'sesiones'" [eventos]="eventos()" [tipos]="tipos()" [form]="eventoForm" [editingId]="eventoEditandoId" (save)="guardarEvento()" (edit)="editarEvento($event)" (removeRequested)="borrarEvento($event)" (cancelRequested)="cancelarEdicionEvento()" />
+
+      
+
+      <app-admin-users-panel *ngIf="activeTab() === 'usuarios'" [usuarios]="usuarios()" [perfiles]="perfiles()" [form]="usuarioForm" [editingUsername]="usuarioEditandoUsername" (save)="guardarUsuario()" (edit)="editarUsuario($event)" (removeRequested)="borrarUsuario($event)" (cancelRequested)="cancelarEdicionUsuario()" />
+
+      
+
+      <app-admin-types-panel *ngIf="activeTab() === 'tipos'" [tipos]="tipos()" [form]="tipoForm" [editingId]="tipoEditandoId" (save)="guardarTipo()" (edit)="editarTipo($event)" (removeRequested)="borrarTipo($event)" (cancelRequested)="cancelarEdicionTipo()" />
+
+      
+
+      <app-admin-profiles-panel *ngIf="activeTab() === 'perfiles'" [perfiles]="perfiles()" [form]="perfilForm" [editingId]="perfilEditandoId" (save)="guardarPerfil()" (edit)="editarPerfil($event)" (removeRequested)="borrarPerfil($event)" (cancelRequested)="cancelarEdicionPerfil()" />
+
+      
+
+          <p class="feedback" *ngIf="feedback()">{{ feedback() }}</p>
+        </div>
+      </section>
+    </section>

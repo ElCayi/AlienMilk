@@ -1,0 +1,41 @@
+<section class="admin-grid">
+        <form class="panel small-panel" (ngSubmit)="save.emit()">
+          <div class="block-header compact">
+            <div>
+              <h2>{{ editingId === null ? 'Alta tipo' : 'Editar tipo' }}</h2>
+              <p class="block-helper">Clasificacion de sesiones.</p>
+            </div>
+            <button *ngIf="editingId !== null" type="button" class="ghost" (click)="cancelRequested.emit()">
+              Nuevo
+            </button>
+          </div>
+
+          <input [(ngModel)]="form.nombre" name="tipoNombre" placeholder="Nombre" required />
+          <textarea
+            [(ngModel)]="form.descripcion"
+            name="tipoDescripcion"
+            rows="3"
+            placeholder="Descripcion"
+          ></textarea>
+          <button type="submit">{{ editingId === null ? 'Crear tipo' : 'Guardar tipo' }}</button>
+        </form>
+
+        <div class="panel small-panel">
+          <div>
+            <h2>Tipos</h2>
+            <p class="block-helper">Editar o eliminar tipos de evento.</p>
+          </div>
+          <div class="mini-list">
+            <article *ngFor="let tipo of tipos">
+              <div>
+                <strong>{{ tipo.nombre }}</strong>
+                <p>{{ tipo.descripcion }}</p>
+              </div>
+              <div class="actions">
+                <button type="button" class="ghost" (click)="edit.emit(tipo)">Editar</button>
+                <button type="button" class="danger" (click)="removeRequested.emit(tipo.idTipo)">Borrar</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>

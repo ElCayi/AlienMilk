@@ -1,12 +1,15 @@
 {
   "name": "reto-eventos-frontend",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "eslint src",
+    "check": "pnpm lint && pnpm exec ng test --watch=false && pnpm build"
   },
   "prettier": {
     "printWidth": 100,
@@ -33,11 +36,16 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-eslint/eslint-plugin": "^21.4.0",
+    "@angular-eslint/eslint-plugin-template": "^21.4.0",
+    "@angular-eslint/template-parser": "^21.4.0",
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "eslint": "^9.39.5",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
+    "typescript-eslint": "^8.69.0",
     "vitest": "^4.0.8"
   }
 }

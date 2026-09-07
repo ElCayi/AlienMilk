@@ -1,0 +1,149 @@
+    <section class="hero" id="inicio">
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+      >
+        <source src="alienmilk-header-smoke-pingpong.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <p class="hero-intro hero-intro-desktop">
+        AlienMilk Sessions es el programa de experiencias sensoriales de AlienMilk, dedicado a la
+        cata de leches extraordinarias obtenidas en algunos de los lugares más remotos del universo.
+      </p>
+
+      <div class="hero-mobile-actions hero-icon-actions">
+        <button type="button" aria-label="Compartir AlienMilk Sessions" title="Compartir" (click)="sharePage()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="18" cy="5" r="2.4"></circle>
+            <circle cx="6" cy="12" r="2.4"></circle>
+            <circle cx="18" cy="19" r="2.4"></circle>
+            <path d="m8.2 10.9 7.6-4.6M8.2 13.1l7.6 4.6"></path>
+          </svg>
+        </button>
+        <button
+          type="button"
+          aria-label="Guardar como favorito"
+          title="Favorito"
+          [attr.aria-pressed]="isFavorite()"
+          [class.is-favorite]="isFavorite()"
+          (click)="toggleFavorite()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
+          </svg>
+        </button>
+        <span class="hero-action-feedback" *ngIf="actionFeedback()" aria-live="polite">
+          {{ actionFeedback() }}
+        </span>
+      </div>
+
+      <div class="hero-copy">
+        <div class="hero-lockup">
+          <img class="hero-lockup-logo" src="alienmilk-ufo.svg" alt="Logo AlienMilk Sessions" />
+        </div>
+        <div class="hero-brand-cta">
+          <div class="hero-title">
+            <h1>AlienMilk</h1>
+            <span class="hero-subtitle" aria-label="Sessions">
+              <span aria-hidden="true">S</span>
+              <span aria-hidden="true">e</span>
+              <span aria-hidden="true">s</span>
+              <span aria-hidden="true">s</span>
+              <span aria-hidden="true">i</span>
+              <span aria-hidden="true">o</span>
+              <span aria-hidden="true">n</span>
+              <span aria-hidden="true">s</span>
+            </span>
+          </div>
+          <p class="hero-intro hero-intro-mobile">
+            AlienMilk Sessions es el programa de experiencias sensoriales de AlienMilk, dedicado a
+            la cata de leches extraordinarias obtenidas en algunos de los lugares más remotos del universo.
+          </p>
+          <div class="hero-actions">
+            <a class="dark-btn hero-button" routerLink="/registro">REGISTRATE</a>
+            <a class="ghost-btn hero-button" routerLink="/" fragment="nosotros">CONOCENOS</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="hero-divider">
+      <div class="hero-divider-actions hero-icon-actions">
+        <button type="button" aria-label="Compartir AlienMilk Sessions" title="Compartir" (click)="sharePage()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="18" cy="5" r="2.4"></circle>
+            <circle cx="6" cy="12" r="2.4"></circle>
+            <circle cx="18" cy="19" r="2.4"></circle>
+            <path d="m8.2 10.9 7.6-4.6M8.2 13.1l7.6 4.6"></path>
+          </svg>
+        </button>
+        <button
+          type="button"
+          aria-label="Guardar como favorito"
+          title="Favorito"
+          [attr.aria-pressed]="isFavorite()"
+          [class.is-favorite]="isFavorite()"
+          (click)="toggleFavorite()"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.8 4.7a5.5 5.5 0 0 0-7.8 0L12 5.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.4 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path>
+          </svg>
+        </button>
+        <span class="hero-action-feedback" *ngIf="actionFeedback()" aria-live="polite">
+          {{ actionFeedback() }}
+        </span>
+      </div>
+    </div>
+
+    <app-sessions-program
+      [sessions]="sessions()"
+      [loading]="loadingSessions()"
+      [error]="sessionsError()"
+      (retry)="loadSessions()"
+    />
+
+    <section class="section-block about-card" id="nosotros">
+      <div class="about-layout">
+        <div class="about-content">
+          <h2>¡Disfruta de la leche!</h2>
+          <p class="about-kicker">Fria, densa y luminosa.</p>
+          <p class="about-copy">
+            Una calma extraña que recorre el pecho, como si el tiempo se doblara un segundo antes
+            de tragar. No sabe a leche. Sabe a purita.
+          </p>
+          <a class="dark-btn about-cta" routerLink="/login">Descubre mas</a>
+        </div>
+
+        <div class="about-gallery" aria-hidden="true">
+          <div class="about-image about-image-main"></div>
+          <div class="about-image about-image-offset"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block contact-card" id="contacto">
+      <div class="section-header">
+        <div>
+          <h2>Contacto</h2>
+          <span class="helper">Puedes encontrarnos en la base central de AlienMilk Sessions.</span>
+        </div>
+      </div>
+
+      <div class="contact-grid">
+        <div>
+          <span class="contact-label">Direccion</span>
+          <strong>Hangar 7, Cupula Central, Madrid</strong>
+        </div>
+        <div>
+          <span class="contact-label">Horario</span>
+          <strong>Jueves a domingo · 18:00 a 23:30</strong>
+        </div>
+        <div>
+          <span class="contact-label">Canal</span>
+          <strong>contacto@alienmilksessions.com</strong>
+        </div>
+      </div>
+    </section>

@@ -1,0 +1,96 @@
+<section class="section-block sessions-block" id="sesiones">
+  <header class="sessions-editorial">
+    <div class="sessions-editorial-main">
+      <p class="sessions-eyebrow">Programación / Ciclo 2026</p>
+      <h2>Próximas sesiones</h2>
+      <p>
+        Cada sesión combina degustación, instalación y performance para explorar sabores, texturas y
+        procedencias difícilmente accesibles por medios convencionales. Por respeto a nuestros
+        proveedores y a los acuerdos que hacen posible cada extracción, AlienMilk no revela el origen
+        biológico ni el método de obtención de sus muestras.
+      </p>
+      <strong>Algunas preguntas forman parte de la experiencia.</strong>
+    </div>
+
+    <div class="sessions-tools">
+      <span class="sessions-count">+{{ sessions.length }} sesiones</span>
+      <label class="sessions-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5"></circle>
+          <path d="m16 16 4 4"></path>
+        </svg>
+        <span class="visually-hidden">Buscar en la programación</span>
+        <input
+          type="search"
+          [value]="query()"
+          (input)="updateQuery($event)"
+          placeholder="¿Qué experiencia buscas?"
+        />
+      </label>
+      <a routerLink="/reservas">Ver programación completa <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <p class="sessions-status" *ngIf="loading" role="status">Cargando sesiones disponibles...</p>
+
+  <div class="sessions-status sessions-status-error" *ngIf="error" role="alert">
+    <p>{{ error }}</p>
+    <button type="button" (click)="retry.emit()">Volver a intentarlo</button>
+  </div>
+
+  <p class="sessions-status" *ngIf="!loading && !error && !sessions.length">
+    Ahora mismo no hay sesiones disponibles. Vuelve pronto para descubrir las siguientes.
+  </p>
+
+  <p class="sessions-status" *ngIf="!loading && !error && sessions.length && !filteredSessions.length">
+    Ninguna sesión coincide con esa búsqueda.
+  </p>
+
+  <div class="sessions-program" *ngIf="!loading && !error && featuredSession as featured">
+    <article class="session-featured">
+      <a class="session-image-link" [routerLink]="['/eventos', featured.idEvento]">
+        <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
+        <span>{{ featured.tipoEvento }}</span>
+      </a>
+      <div class="session-featured-info">
+        <div class="session-file-heading">
+          <span>{{ archiveCode(featured) }}</span>
+          <span>{{ featured.tipoEvento }}</span>
+        </div>
+        <h3>{{ featured.nombre }}</h3>
+        <dl class="session-file-data">
+          <div><dt>Muestra</dt><dd>{{ sampleCode(featured) }}</dd></div>
+          <div><dt>Procedencia</dt><dd>No declarada</dd></div>
+          <div><dt>Fecha</dt><dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }}</dd></div>
+          <div><dt>Compatibilidad</dt><dd>{{ compatibility(featured) }}</dd></div>
+        </dl>
+        <div class="session-featured-footer">
+          <span>{{ featured.precio | currency: 'EUR' }}</span>
+          <a [routerLink]="['/eventos', featured.idEvento]">Examinar sesión <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </article>
+
+    <div class="session-secondary-list">
+      <article class="session-secondary" *ngFor="let session of secondarySessions; trackBy: trackSession">
+        <a class="session-secondary-image" [routerLink]="['/eventos', session.idEvento]">
+          <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
+          <span>{{ archiveCode(session) }}</span>
+        </a>
+        <div>
+          <p>{{ session.tipoEvento }}</p>
+          <h3>{{ session.nombre }}</h3>
+          <span class="session-anomaly">{{ anomaly(session) }}</span>
+          <footer>
+            <span>{{ session.fechaInicio | date: 'dd.MM.yy' }} · {{ session.precio | currency: 'EUR' }}</span>
+            <a [routerLink]="['/eventos', session.idEvento]" [attr.aria-label]="'Examinar ' + session.nombre">→</a>
+          </footer>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <a class="sessions-explore" routerLink="/reservas">
+    Explorar todas las sesiones <span aria-hidden="true">→</span>
+  </a>
+</section>

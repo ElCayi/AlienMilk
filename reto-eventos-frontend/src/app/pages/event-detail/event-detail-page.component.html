@@ -1,4 +1,4 @@
-    <a class="back-link" routerLink="/reservas">← Volver a sesiones</a>
+    <a class="back-link" routerLink="/sesiones">← Volver a sesiones</a>
 
     <section class="status-card" *ngIf="loadingDetalle()">
       <h1>Cargando sesion</h1>
@@ -8,13 +8,13 @@
     <section class="status-card" *ngIf="!loadingDetalle() && errorMessage()">
       <h1>No se ha podido cargar la sesion</h1>
       <p class="helper">{{ errorMessage() }}</p>
-      <a class="login-link" routerLink="/reservas">Volver a sesiones</a>
+      <a class="login-link" routerLink="/sesiones">Volver a sesiones</a>
     </section>
 
     <section class="status-card" *ngIf="!loadingDetalle() && !errorMessage() && !evento()">
       <h1>Sesion no disponible</h1>
       <p class="helper">No hemos encontrado el evento solicitado.</p>
-      <a class="login-link" routerLink="/reservas">Volver a sesiones</a>
+      <a class="login-link" routerLink="/sesiones">Volver a sesiones</a>
     </section>
 
     <section class="detail-card" *ngIf="!loadingDetalle() && !errorMessage() && evento() as data">

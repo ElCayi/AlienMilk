@@ -7,6 +7,13 @@ import { HomePageComponent } from './pages/home/home-page.component';
 export const routes: Routes = [
   { path: '', component: HomePageComponent },
   {
+    path: 'sesiones',
+    loadComponent: () =>
+      import('./pages/sessions/sessions-page.component').then(
+        ({ SessionsPageComponent }) => SessionsPageComponent,
+      ),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./pages/login/login-page.component').then(({ LoginPageComponent }) => LoginPageComponent),

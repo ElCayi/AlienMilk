@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
 import { EventoListado } from '../../models/api.models';
 import {
@@ -19,6 +19,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionsProgramComponent {
+  private readonly router = inject(Router);
   @Input({ required: true }) sessions: EventoListado[] = [];
   @Input() loading = false;
   @Input() error = '';
@@ -32,37 +33,25 @@ export class SessionsProgramComponent {
   readonly anomaly = anomaly;
 
   get featuredSession(): EventoListado | null {
-    return this.filteredSessions[0] ?? null;
+    return this.sessions[0] ?? null;
   }
 
   get secondarySessions(): EventoListado[] {
-    return this.filteredSessions.slice(1, 3);
-  }
-
-  get filteredSessions(): EventoListado[] {
-    const query = this.normalize(this.query());
-    if (!query) {
-      return this.sessions;
-    }
-
-    return this.sessions.filter((session) =>
-      this.normalize(`${session.nombre} ${session.tipoEvento} ${session.fechaInicio}`).includes(query),
-    );
+    return this.sessions.slice(1, 3);
   }
 
   updateQuery(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);
   }
 
+  openProgram(): void {
+    this.router.navigate(['/sesiones'], {
+      queryParams: { q: this.query().trim() || null },
+    });
+  }
+
   trackSession(_index: number, session: EventoListado): number {
     return session.idEvento;
   }
 
-  private normalize(value: string): string {
-    return value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim();
-  }
 }

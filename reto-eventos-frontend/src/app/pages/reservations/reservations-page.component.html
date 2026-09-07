@@ -6,34 +6,10 @@
             <span>Zona cliente</span>
           </p>
           <h1>Panel de usuario</h1>
-          <p class="helper">Consulta sesiones disponibles, entra al detalle y gestiona tus reservas.</p>
+          <p class="helper">Consulta y gestiona tus accesos confirmados.</p>
+          <a class="event-link" routerLink="/sesiones">Explorar programación pública →</a>
         </div>
       </div>
-
-      <section class="panel-block available-block">
-        <div class="block-header">
-          <div>
-            <h2>Sesiones disponibles</h2>
-            <p class="block-helper">Accede al detalle para consultar la sesión y reservar tu plaza.</p>
-          </div>
-          <span class="count subtle">{{ eventos().length }} sesiones</span>
-        </div>
-
-        <p class="empty" *ngIf="!eventos().length">Ahora mismo no hay sesiones activas disponibles.</p>
-
-        <div class="event-list" *ngIf="eventos().length">
-          <article class="event-card" *ngFor="let evento of eventos()">
-            <div>
-              <p class="event-type">{{ evento.tipoEvento }}</p>
-              <h3>{{ evento.nombre }}</h3>
-              <p class="event-meta">
-                {{ evento.fechaInicio | date: 'dd/MM/yyyy' }} · {{ evento.precio | currency: 'EUR' }}
-              </p>
-            </div>
-            <a class="event-link" [routerLink]="['/eventos', evento.idEvento]">Consultar y reservar</a>
-          </article>
-        </div>
-      </section>
 
       <section class="panel-block reserved-block">
         <div class="block-header">

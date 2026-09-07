@@ -1,0 +1,133 @@
+<section class="sessions-room">
+  <header class="room-header">
+    <div>
+      <p class="room-eyebrow">Archivo público / Ciclo 2026</p>
+      <h1>Programación de experiencias</h1>
+      <p class="room-intro">
+        Consulta las muestras autorizadas, examina cada expediente y selecciona la experiencia
+        adecuada para tu umbral de curiosidad.
+      </p>
+    </div>
+    <p class="room-clearance">Consulta pública autorizada</p>
+  </header>
+
+  <div class="room-toolbar">
+    <label class="room-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+      <span class="visually-hidden">Buscar sesiones</span>
+      <input
+        type="search"
+        [value]="query()"
+        (input)="updateQuery($event)"
+        placeholder="Buscar por nombre, protocolo, fecha o precio"
+      />
+    </label>
+
+    <label class="room-filter">
+      <span>Clasificación</span>
+      <select [value]="category()" (change)="updateCategory($event)">
+        <option value="todas">Todas las sesiones</option>
+        <option *ngFor="let item of categories()" [value]="item">{{ item }}</option>
+      </select>
+    </label>
+
+    <span class="room-count">{{ filteredSessions().length }} expedientes</span>
+  </div>
+
+  <div class="room-status" *ngIf="loadingSessions()">Descifrando programación...</div>
+  <div class="room-status room-status-error" *ngIf="listError()">
+    <span>{{ listError() }}</span>
+    <button type="button" (click)="loadSessions()">Reintentar</button>
+  </div>
+
+  <div class="room-layout" *ngIf="!loadingSessions() && !listError()">
+    <section class="session-index" aria-label="Sesiones disponibles">
+      <p class="room-status" *ngIf="!filteredSessions().length">
+        No existen expedientes que coincidan con estos parámetros.
+      </p>
+
+      <button
+        class="index-card"
+        type="button"
+        *ngFor="let session of filteredSessions(); trackBy: trackSession"
+        [class.is-selected]="selectedId() === session.idEvento"
+        [attr.aria-pressed]="selectedId() === session.idEvento"
+        (click)="selectSession(session)"
+      >
+        <img [src]="sessionImage(session)" [alt]="''" />
+        <span class="index-card-copy">
+          <span class="index-code">{{ archiveCode(session) }} / {{ session.tipoEvento }}</span>
+          <strong>{{ session.nombre }}</strong>
+          <span>{{ session.fechaInicio | date: 'dd.MM.yy' }} · {{ session.precio | currency: 'EUR' }}</span>
+          <small>{{ anomaly(session) }}</small>
+        </span>
+        <span class="index-arrow" aria-hidden="true">→</span>
+      </button>
+    </section>
+
+    <section class="session-file" aria-live="polite">
+      <div class="file-loading" *ngIf="loadingDetail()">Abriendo expediente...</div>
+      <div class="file-loading" *ngIf="detailError()">{{ detailError() }}</div>
+
+      <article *ngIf="!loadingDetail() && !detailError() && detail() as data">
+        <div class="file-image">
+          <img [src]="sessionImage(data)" [alt]="'Imagen de ' + data.nombre" />
+          <span>{{ archiveCode(data) }}</span>
+        </div>
+
+        <div class="file-content">
+          <div class="file-classification">
+            <span>{{ data.tipoEvento }}</span>
+            <span>Compatibilidad humana {{ compatibility(data) }}</span>
+          </div>
+          <h2>{{ data.nombre }}</h2>
+          <p class="file-description">{{ data.descripcion }}</p>
+
+          <dl class="file-data">
+            <div><dt>Muestra</dt><dd>{{ sampleCode(data) }}</dd></div>
+            <div><dt>Fecha</dt><dd>{{ data.fechaInicio | date: 'dd.MM.yyyy' }}</dd></div>
+            <div><dt>Duración</dt><dd>{{ data.duracion }} minutos</dd></div>
+            <div><dt>Localización</dt><dd>{{ data.direccion }}</dd></div>
+            <div><dt>Aforo autorizado</dt><dd>{{ data.aforoMaximo }} sujetos</dd></div>
+            <div><dt>Procedencia</dt><dd>No declarada</dd></div>
+          </dl>
+
+          <div class="file-reservation">
+            <div class="file-price">
+              <span>Acceso individual</span>
+              <strong>{{ data.precio | currency: 'EUR' }}</strong>
+            </div>
+
+            <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
+              <div class="reservation-fields">
+                <label>
+                  <span>Plazas</span>
+                  <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
+                </label>
+                <label>
+                  <span>Observaciones</span>
+                  <input [(ngModel)]="observaciones" placeholder="Opcional" />
+                </label>
+              </div>
+              <button type="button" class="reserve-button" (click)="reservar()" [disabled]="loadingReservation()">
+                {{ loadingReservation() ? 'Procesando acceso...' : 'Reservar plaza · ' + (totalReserva() | currency: 'EUR') }}
+              </button>
+            </ng-container>
+
+            <ng-template #accessPrompt>
+              <div class="access-prompt">
+                <p><strong>Acceso de participante requerido.</strong> La consulta pública está autorizada; las reservas requieren identificación humana.</p>
+                <a routerLink="/login" [queryParams]="{ redirectTo: currentUrl() }">Identificarse para reservar →</a>
+              </div>
+            </ng-template>
+
+            <p class="reservation-error" *ngIf="reservationFeedback()">{{ reservationFeedback() }}</p>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>

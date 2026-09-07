@@ -23,7 +23,7 @@
 
     <nav class="nav-links" id="main-navigation">
       <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
-      <a href="/#sesiones" (click)="goToSection($event, 'sesiones')">Sesiones</a>
+      <a routerLink="/sesiones" (click)="closeMenu()">Sesiones</a>
       <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros</a>
       <a href="/#contacto" (click)="goToSection($event, 'contacto')">Contacto</a>
     </nav>
@@ -72,7 +72,7 @@
         <h3>Explora AlienMilk</h3>
         <nav class="footer-menu" aria-label="Explora AlienMilk">
           <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio <span>+</span></a>
-          <a href="/#sesiones" (click)="goToSection($event, 'sesiones')">Sesiones <span>+</span></a>
+          <a routerLink="/sesiones" (click)="closeMenu()">Sesiones <span>+</span></a>
           <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros <span>+</span></a>
           <a href="/#contacto" (click)="goToSection($event, 'contacto')">Contacto <span>+</span></a>
         </nav>

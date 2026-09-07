@@ -1,0 +1,504 @@
+:host {
+  display: block;
+  width: min(1480px, calc(100vw - 4rem));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.sessions-room {
+  padding: clamp(2rem, 4vw, 4.5rem) 0 5rem;
+  color: #1f2430;
+}
+
+.room-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) auto;
+  gap: 3rem;
+  align-items: start;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(31, 36, 48, 0.35);
+}
+
+.room-eyebrow,
+.room-clearance,
+.index-code,
+.file-classification,
+.file-data dt,
+.file-price span,
+.room-filter > span {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.room-eyebrow {
+  margin: 0 0 0.8rem;
+  color: #d97706;
+  font-size: 0.78rem;
+}
+
+.room-header h1 {
+  margin: 0;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(2.8rem, 5vw, 5.6rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.room-intro {
+  max-width: 68ch;
+  margin: 1.2rem 0 0;
+  color: #5b6471;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.room-clearance {
+  margin: 0;
+  color: rgba(31, 36, 48, 0.48);
+  font-size: 0.75rem;
+}
+
+.room-toolbar {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1fr) minmax(12rem, 0.35fr) auto;
+  gap: 1rem;
+  align-items: end;
+  margin: clamp(2rem, 4vw, 3.5rem) 0 1.4rem;
+}
+
+.room-search {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(31, 36, 48, 0.2);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.room-search:focus-within {
+  border-color: #d97706;
+}
+
+.room-search svg {
+  width: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
+.room-search input,
+.room-filter select {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #1f2430;
+  background: transparent;
+  font: 0.82rem Arial, sans-serif;
+}
+
+.room-filter {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem 0.75rem;
+  border-bottom: 1px solid rgba(31, 36, 48, 0.35);
+}
+
+.room-filter > span {
+  color: #6b7280;
+  font-size: 0.63rem;
+}
+
+.room-count {
+  padding-bottom: 0.75rem;
+  color: #6b7280;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+}
+
+.room-layout {
+  display: grid;
+  grid-template-columns: minmax(20rem, 0.72fr) minmax(0, 1.55fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: start;
+}
+
+.session-index {
+  display: grid;
+  gap: 0.65rem;
+  max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  padding-right: 0.45rem;
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af transparent;
+}
+
+.index-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 6.4rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0;
+  border: 1px solid rgba(31, 36, 48, 0.14);
+  color: inherit;
+  background: rgba(255, 255, 255, 0.42);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.index-card:hover,
+.index-card.is-selected {
+  border-color: #d97706;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.index-card img {
+  width: 6.4rem;
+  height: 7rem;
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.05);
+}
+
+.index-card-copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.index-code {
+  overflow: hidden;
+  color: #d97706;
+  font-size: 0.62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.index-card-copy strong {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.index-card-copy > span:not(.index-code),
+.index-card-copy small {
+  color: #687180;
+  font-size: 0.7rem;
+}
+
+.index-card-copy small {
+  text-transform: uppercase;
+}
+
+.index-arrow {
+  padding-right: 1rem;
+  font-size: 1.25rem;
+}
+
+.session-file {
+  min-height: 34rem;
+  color: #faf9f7;
+  background: #1f2430;
+}
+
+.session-file article {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.15fr);
+  min-height: 34rem;
+}
+
+.file-image {
+  position: relative;
+  min-height: 100%;
+}
+
+.file-image img {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.08);
+}
+
+.file-image > span {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.4rem 0.55rem;
+  background: rgba(31, 36, 48, 0.82);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+}
+
+.file-content {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.5rem, 2.7vw, 2.6rem);
+}
+
+.file-classification {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #d97706;
+  font-size: 0.65rem;
+}
+
+.file-content h2 {
+  max-width: 18ch;
+  margin: 1rem 0 0;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(2.3rem, 3.6vw, 4.2rem);
+  font-weight: 300;
+  line-height: 0.98;
+  letter-spacing: 0.035em;
+}
+
+.file-description {
+  margin: 1.1rem 0 0;
+  color: rgba(250, 249, 247, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.file-data {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.file-data div {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 0.8fr) 1fr;
+  gap: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(250, 249, 247, 0.18);
+}
+
+.file-data dt,
+.file-data dd {
+  margin: 0;
+  font-size: 0.64rem;
+}
+
+.file-data dt {
+  color: rgba(250, 249, 247, 0.45);
+}
+
+.file-reservation {
+  margin-top: auto;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(250, 249, 247, 0.2);
+}
+
+.file-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.file-price span {
+  color: rgba(250, 249, 247, 0.55);
+  font-size: 0.65rem;
+}
+
+.file-price strong {
+  font-size: 1.3rem;
+}
+
+.reservation-fields {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.reservation-fields label {
+  display: grid;
+  gap: 0.35rem;
+  color: rgba(250, 249, 247, 0.62);
+  font-size: 0.68rem;
+}
+
+.reservation-fields input {
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid rgba(250, 249, 247, 0.22);
+  color: #faf9f7;
+  background: transparent;
+}
+
+.reserve-button,
+.access-prompt a,
+.room-status button {
+  display: inline-flex;
+  justify-content: center;
+  border: 0;
+  color: #1f2430;
+  background: #faf9f7;
+  font: 700 0.76rem 'Nunito', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reserve-button {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+}
+
+.reserve-button:hover,
+.access-prompt a:hover {
+  background: #d97706;
+}
+
+.reserve-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.access-prompt p {
+  margin: 0.85rem 0;
+  color: rgba(250, 249, 247, 0.7);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.access-prompt strong {
+  color: #faf9f7;
+  text-transform: uppercase;
+}
+
+.access-prompt a {
+  padding: 0.75rem 1rem;
+}
+
+.reservation-error {
+  margin: 0.75rem 0 0;
+  color: #fca5a5;
+  font-size: 0.75rem;
+}
+
+.file-loading,
+.room-status {
+  padding: 2rem;
+  color: #687180;
+  text-align: center;
+}
+
+.file-loading {
+  color: rgba(250, 249, 247, 0.7);
+}
+
+.room-status-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.room-status button {
+  padding: 0.65rem 1rem;
+  color: #faf9f7;
+  background: #1f2430;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 1000px) {
+  :host {
+    width: min(100%, calc(100vw - 2rem));
+  }
+
+  .room-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .session-index {
+    max-height: 28rem;
+  }
+
+  .session-file article {
+    grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+  }
+}
+
+@media (max-width: 700px) {
+  :host {
+    width: 100%;
+  }
+
+  .sessions-room {
+    padding: 1.5rem 0 3rem;
+  }
+
+  .room-header,
+  .room-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .room-header {
+    gap: 1rem;
+  }
+
+  .room-clearance {
+    justify-self: start;
+  }
+
+  .room-toolbar {
+    margin-top: 2rem;
+  }
+
+  .room-count {
+    padding: 0;
+  }
+
+  .session-index {
+    max-height: none;
+  }
+
+  .index-card {
+    grid-template-columns: 5.2rem minmax(0, 1fr) auto;
+  }
+
+  .index-card img {
+    width: 5.2rem;
+    height: 6rem;
+  }
+
+  .session-file article {
+    grid-template-columns: 1fr;
+  }
+
+  .file-image {
+    min-height: 22rem;
+  }
+
+  .file-classification,
+  .file-data {
+    grid-template-columns: 1fr;
+  }
+
+  .file-classification {
+    display: grid;
+  }
+
+  .reservation-fields {
+    grid-template-columns: 1fr;
+  }
+}

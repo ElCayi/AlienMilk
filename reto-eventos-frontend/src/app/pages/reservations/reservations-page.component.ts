@@ -2,9 +2,8 @@ import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { EventService } from '../../core/services/event.service';
 import { ReservationService } from '../../core/services/reservation.service';
-import { EventoListado, Reserva } from '../../models/api.models';
+import { Reserva } from '../../models/api.models';
 
 @Component({
   selector: 'app-reservations-page',
@@ -15,14 +14,11 @@ import { EventoListado, Reserva } from '../../models/api.models';
 })
 export class ReservationsPageComponent implements OnInit {
   private readonly reservationService = inject(ReservationService);
-  private readonly eventService = inject(EventService);
 
   readonly reservas = signal<Reserva[]>([]);
-  readonly eventos = signal<EventoListado[]>([]);
   readonly errorMessage = signal('');
 
   ngOnInit(): void {
-    this.loadEventos();
     this.loadReservas();
   }
 
@@ -42,14 +38,6 @@ export class ReservationsPageComponent implements OnInit {
       },
       error: (err) =>
         this.errorMessage.set(err?.error?.message ?? 'No se han podido cargar tus sesiones reservadas.'),
-    });
-  }
-
-  private loadEventos(): void {
-    this.eventService.getActivos().subscribe({
-      next: (data) => this.eventos.set(data),
-      error: (err) =>
-        this.errorMessage.set(err?.error?.message ?? 'No se han podido cargar las sesiones disponibles.'),
     });
   }
 }

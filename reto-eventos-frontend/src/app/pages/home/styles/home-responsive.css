@@ -23,7 +23,7 @@
       .sessions-editorial::before {
         content: '';
         position: absolute;
-        top: -1.0rem;
+        top: -0.15rem;
         right: 0;
         left: 0;
         border-top: 1px solid rgba(31, 36, 48, 0.35);
@@ -34,7 +34,7 @@
       }
 
       .sessions-eyebrow {
-        margin-bottom: clamp(1rem, 2.1vh, 1.45rem);
+        margin-bottom: clamp(2.5rem, 6vh, 4rem);
         transform: translateY(0);
       }
 
@@ -125,9 +125,9 @@
       }
     }
 
-    @media (min-width: 1280px) {
+    @media (min-width: 1360px) {
       .sessions-block {
-        width: min(1480px, calc(100vw - 4rem));
+        width: min(1480px, calc(100vw - 7.5rem));
         margin-left: 50%;
         transform: translateX(-50%);
       }

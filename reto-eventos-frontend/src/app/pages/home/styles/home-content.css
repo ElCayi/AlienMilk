@@ -4,16 +4,25 @@
       align-items: end;
       gap: clamp(2rem, 7vw, 7rem);
       margin-bottom: 3.5rem;
-      padding-top: 1.25rem;
+      padding-top: 3rem;
+      position: relative;
+    }
+
+    .sessions-editorial::before {
+      content: '';
+      position: absolute;
+      top: -1.0rem;
+      right: 0;
+      left: 0;
       border-top: 1px solid rgba(31, 36, 48, 0.35);
     }
 
     .sessions-eyebrow {
       margin: 0 0 0.75rem;
       color: #d97706;
-      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 300;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 800;
       letter-spacing: 0.2em;
       text-transform: uppercase;
     }

@@ -19,7 +19,7 @@
       align-items: center;
       gap: 1.15rem;
       padding: 0 3.98rem;
-      transform: translateY(-0.64rem);
+      transform: translateY(-0.40rem);
     }
 
     .hero-mobile-actions {
@@ -222,4 +222,3 @@
       color: #64748b;
       font-weight: 500;
     }
-

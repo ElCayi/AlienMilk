@@ -53,7 +53,7 @@ if port_in_use "$FRONTEND_PORT"; then
 fi
 
 echo "[dev] Worktree:  ${WORKTREE_SLUG:-(sin .env.worktree — valores por defecto)}"
-echo "[dev] Frontend:  http://127.0.0.1:$FRONTEND_PORT"
+echo "[dev] Frontend:  http://127.0.0.1:$FRONTEND_PORT  (arrancando)"
 echo "[dev] Backend:   $BACKEND_URL  (destino del proxy de /api)"
 (
   cd "$FRONTEND_DIR"
@@ -61,5 +61,22 @@ echo "[dev] Backend:   $BACKEND_URL  (destino del proxy de /api)"
 ) &
 frontend_pid=$!
 
-echo "[dev] Angular listo. Ctrl+C para todo. El backend compartido se gestiona aparte."
+# Readiness is MEASURED, not announced. Angular has only been spawned at this
+# point; it still has to compile, and saying "listo" here would be a claim about
+# a state nobody has checked. So we poll until the port actually answers and only
+# then say so — and if it never answers we say THAT, instead of having printed a
+# reassuring line that silently turned out to be false.
+(
+  for _ in $(seq 1 120); do
+    if port_in_use "$FRONTEND_PORT"; then
+      echo "[dev] Frontend:  respondiendo en http://127.0.0.1:$FRONTEND_PORT"
+      exit 0
+    fi
+    sleep 0.5
+  done
+  echo "[dev] AVISO: 60 s después, el puerto $FRONTEND_PORT sigue sin responder." >&2
+  echo "[dev]        Mira arriba: probablemente la compilacion fallo." >&2
+) &
+
+echo "[dev] Ctrl+C para todo. El backend compartido se gestiona aparte."
 wait "$frontend_pid"

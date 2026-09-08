@@ -10,7 +10,7 @@
         margin-bottom: 0;
         margin-left: 50%;
         padding-top: calc(var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem));
-        padding-bottom: clamp(2rem, 4.5vh, 3.25rem);
+        padding-bottom: calc(clamp(4rem, 7.5vh, 6rem) + 4rem);
         transform: translateX(-50%);
       }
 
@@ -18,6 +18,7 @@
         position: relative;
         align-items: end;
         gap: clamp(2rem, 5vw, 5rem);
+        margin-top: -0.9rem;
         margin-bottom: 0;
         padding-top: 0.35rem;
         border-top: 0;
@@ -29,7 +30,7 @@
         top: -0.15rem;
         right: 0;
         left: 0;
-        border-top: 1px solid rgba(31, 36, 48, 0.35);
+        border-top: 1px solid rgba(192, 90, 135, 0.38);
       }
 
       .sessions-editorial h2 {
@@ -37,8 +38,8 @@
       }
 
       .sessions-eyebrow {
-        margin-bottom: clamp(2rem, 3.8vh, 3rem);
-        transform: translateY(0);
+        margin-bottom: clamp(2.75rem, 5vh, 4rem);
+        transform: none;
       }
 
       .sessions-tools {
@@ -197,7 +198,7 @@
       }
 
       .hero-actions .ghost-btn:hover {
-        background: #d97706;
+        background: #c05a87;
       }
     }
 

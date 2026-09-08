@@ -89,11 +89,11 @@
 
     .sidebar nav a:hover {
       background: #fef3c7;
-      color: #d97706;
+      color: #c05a87;
     }
 
     .sidebar nav a.active {
-      background: linear-gradient(135deg, #d97706, #f59e0b);
+      background: linear-gradient(135deg, #c05a87, #d77aa2);
       color: white;
       cursor: default;
     }
@@ -129,7 +129,7 @@
       letter-spacing: 0.08em;
       font-size: 0.9rem;
       font-weight: 800;
-      color: #d97706;
+      color: #c05a87;
     }
 
     .eyebrow img {
@@ -198,13 +198,13 @@
       font-family: 'Nunito', sans-serif;
       font-weight: 700;
       cursor: pointer;
-      background: linear-gradient(135deg, #d97706, #f59e0b);
+      background: linear-gradient(135deg, #c05a87, #d77aa2);
       color: white;
     }
 
     .ghost {
       background: #fef3c7;
-      color: #d97706;
+      color: #c05a87;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -236,7 +236,7 @@
     }
 
     .usuario-list article.activo {
-      outline: 2px solid #d97706;
+      outline: 2px solid #c05a87;
       background: #fef3c7;
     }
 

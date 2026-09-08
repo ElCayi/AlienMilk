@@ -33,11 +33,5 @@ echo "[stop] Worktree: ${WORKTREE_SLUG:-(sin .env.worktree — valores por defec
 rc=0
 kill_port "$FRONTEND_PORT" "Frontend" || rc=1
 
-# The backend belongs to us only when this worktree runs its own. The shared 8081
-# is somebody else's and must never be killed from here.
-if [[ -n "${BACKEND_PORT:-}" && "$BACKEND_URL" == *":$BACKEND_PORT" ]]; then
-  kill_port "$BACKEND_PORT" "Backend" || rc=1
-else
-  echo "[stop] Backend: compartido ($BACKEND_URL), no se toca."
-fi
+kill_port "$BACKEND_PORT" "Backend" || rc=1
 exit $rc

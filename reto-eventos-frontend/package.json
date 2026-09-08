@@ -42,8 +42,11 @@
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "@angular/language-server": "^21.2.22",
+    "@angular/language-service": "^21.2.22",
     "eslint": "^9.39.5",
     "jsdom": "^27.1.0",
+    "prettier": "^3.9.6",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.69.0",
     "vitest": "^4.0.8"

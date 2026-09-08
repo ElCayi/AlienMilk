@@ -38,8 +38,9 @@ proyecto no depende de Nix para funcionar.
 bash scripts/dev.sh
 ```
 
-Arranca Angular en <http://127.0.0.1:4300/> y **se queda en primer plano**. Ctrl+C
-—o cerrar la terminal— para todo lo que haya arrancado.
+Arranca Spring Boot en <http://127.0.0.1:8081> y Angular en
+<http://127.0.0.1:4300/>, y **se queda en primer plano**. Ctrl+C —o cerrar la
+terminal— detiene ambos.
 
 Las dependencias se instalan solas la primera vez, y también cuando el
 `pnpm-lock.yaml` va por delante del `node_modules` (por ejemplo tras cambiar de rama).
@@ -56,19 +57,9 @@ bash scripts/stop.sh
 Es la misma parada que hace `dev.sh` al cerrarse, disponible a mano. Se puede ejecutar
 en cualquier momento, aunque no haya nada corriendo.
 
-### Backend
-
-El frontend reenvía `/api` a Spring Boot. Por defecto espera encontrarlo en
-<http://127.0.0.1:8081>, compartido.
-
-```bash
-cd reto-eventos-backend
-export DB_USER=... DB_PASS=...        # ver .env.local.example
-./mvnw spring-boot:run
-```
-
-Las credenciales van en un `.env.local` que **no está en git**. Copia
-`.env.local.example` y rellénalo.
+El frontend reenvía `/api` al Spring Boot del mismo worktree. Si se usan las
+credenciales del perfil `prod`, `DB_USER` y `DB_PASS` deben estar ya disponibles
+en el entorno antes de ejecutar el script (ver `.env.local.example`).
 
 ## Varias copias a la vez (worktrees)
 
@@ -92,12 +83,8 @@ Un clon recién hecho arranca sin saber que esto existe.
 En nuestras máquinas ese fichero lo escribe una herramienta al crear el worktree; en
 cualquier otra se escribe a mano leyendo `worktree.toml`.
 
-Para que un worktree use **su propio** backend en vez del compartido, arranca Spring
-Boot en `$BACKEND_PORT` y exporta:
-
-```bash
-export BACKEND_URL=http://127.0.0.1:$BACKEND_PORT
-```
+Cada worktree arranca su propio backend en `$BACKEND_PORT`; comparten únicamente
+la base de datos local.
 
 ## Comprobar antes de subir
 

@@ -1,10 +1,11 @@
 # Shared by dev.sh and stop.sh: where this worktree's services live.
 #
-# Sourced, never executed. Sets ROOT_DIR, FRONTEND_DIR, FRONTEND_PORT and
-# BACKEND_URL, and defines port_in_use().
+# Sourced, never executed. Sets the directories and ports for both services,
+# and defines port_in_use().
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FRONTEND_DIR="$ROOT_DIR/reto-eventos-frontend"
+BACKEND_DIR="$ROOT_DIR/reto-eventos-backend"
 
 # Per-worktree port assignment, generated when the worktree is created.
 # See worktree.toml for the contract. Absent on a plain clone, and that is fine:
@@ -18,9 +19,9 @@ if [[ -f "$ROOT_DIR/.env.worktree" ]]; then
 fi
 
 FRONTEND_PORT="${FRONTEND_PORT:-4300}"
-# Shared backend unless this worktree was told otherwise. Exported because
-# proxy.conf.mjs reads it from the environment.
-BACKEND_URL="${BACKEND_URL:-http://127.0.0.1:8081}"
+BACKEND_PORT="${BACKEND_PORT:-8081}"
+# Each worktree owns its backend. Exported because proxy.conf.mjs reads it.
+BACKEND_URL="${BACKEND_URL:-http://127.0.0.1:$BACKEND_PORT}"
 export BACKEND_URL
 
 port_in_use() {

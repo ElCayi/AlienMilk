@@ -7,7 +7,7 @@ set -Eeuo pipefail
 case "${1:-}" in
   --help|-h)
     echo "Modo de empleo: dev.sh"
-    echo "  Arranca el frontend y se queda en primer plano. Ctrl+C —o cerrar"
+    echo "  Arranca backend y frontend y se queda en primer plano. Ctrl+C —o cerrar"
     echo "  la terminal— para todo lo que haya arrancado, llamando a stop.sh."
     echo "  Si un cierre a lo bruto dejó algo suelto: bash scripts/stop.sh"
     exit 0 ;;
@@ -16,13 +16,14 @@ case "${1:-}" in
 esac
 
 frontend_pid=""
+backend_pid=""
 
 cleanup() {
   trap - TERM INT EXIT
 
   # Nothing of ours is running: we aborted before starting, because the port was
   # already taken by someone else. That port is not ours to stop.
-  [[ -z "$frontend_pid" ]] && return
+  [[ -z "$frontend_pid" && -z "$backend_pid" ]] && return
 
   # Delegate to stop.sh rather than duplicate the teardown here. One
   # implementation, two ways in — so what Ctrl+C does and what the manual lever
@@ -45,38 +46,58 @@ ensure_deps() {
 
 ensure_deps
 
-if port_in_use "$FRONTEND_PORT"; then
-  echo "[dev] ERROR: el puerto $FRONTEND_PORT ya está ocupado." >&2
-  echo "[dev]        Si quedó algo suelto de este worktree:" >&2
-  echo "[dev]            bash scripts/stop.sh" >&2
-  exit 1
-fi
+for service in "Frontend:$FRONTEND_PORT" "Backend:$BACKEND_PORT"; do
+  label="${service%%:*}"
+  port="${service##*:}"
+  if port_in_use "$port"; then
+    echo "[dev] ERROR: el puerto de $label ($port) ya está ocupado." >&2
+    echo "[dev]        Si quedó algo suelto de este worktree:" >&2
+    echo "[dev]            bash scripts/stop.sh" >&2
+    exit 1
+  fi
+done
 
 echo "[dev] Worktree:  ${WORKTREE_SLUG:-(sin .env.worktree — valores por defecto)}"
 echo "[dev] Frontend:  http://127.0.0.1:$FRONTEND_PORT  (arrancando)"
-echo "[dev] Backend:   $BACKEND_URL  (destino del proxy de /api)"
+echo "[dev] Backend:   $BACKEND_URL  (arrancando)"
+(
+  cd "$BACKEND_DIR"
+  export SERVER_PORT="$BACKEND_PORT"
+  export SPRING_DATASOURCE_URL="${DB_URL:-jdbc:mysql://127.0.0.1:3306/reserva_eventos_bbdd?serverTimezone=UTC}"
+  export SPRING_DATASOURCE_USERNAME="${DB_USER:-root}"
+  export SPRING_DATASOURCE_PASSWORD="${DB_PASS:-}"
+  export SPRING_JPA_DATABASE_PLATFORM="org.hibernate.dialect.MySQLDialect"
+  export SPRING_JPA_HIBERNATE_DDL_AUTO="none"
+  ./mvnw spring-boot:run
+) &
+backend_pid=$!
+
 (
   cd "$FRONTEND_DIR"
   ./node_modules/.bin/ng serve --host 127.0.0.1 --port "$FRONTEND_PORT"
 ) &
 frontend_pid=$!
 
-# Readiness is MEASURED, not announced. Angular has only been spawned at this
-# point; it still has to compile, and saying "listo" here would be a claim about
-# a state nobody has checked. So we poll until the port actually answers and only
-# then say so — and if it never answers we say THAT, instead of having printed a
-# reassuring line that silently turned out to be false.
-(
+# Readiness is measured for both services; spawning a process is not the same as
+# having a server ready to answer.
+watch_readiness() {
+  local label="$1" port="$2" url="$3"
   for _ in $(seq 1 120); do
-    if port_in_use "$FRONTEND_PORT"; then
-      echo "[dev] Frontend:  respondiendo en http://127.0.0.1:$FRONTEND_PORT"
-      exit 0
+    if port_in_use "$port"; then
+      echo "[dev] $label:  respondiendo en $url"
+      return 0
     fi
     sleep 0.5
   done
-  echo "[dev] AVISO: 60 s después, el puerto $FRONTEND_PORT sigue sin responder." >&2
-  echo "[dev]        Mira arriba: probablemente la compilacion fallo." >&2
+  echo "[dev] AVISO: 60 s después, $label ($port) sigue sin responder." >&2
+  echo "[dev]        Mira arriba: probablemente el arranque falló." >&2
+  return 1
+}
+
+(
+  watch_readiness "Backend" "$BACKEND_PORT" "$BACKEND_URL"
+  watch_readiness "Frontend" "$FRONTEND_PORT" "http://127.0.0.1:$FRONTEND_PORT"
 ) &
 
-echo "[dev] Ctrl+C para todo. El backend compartido se gestiona aparte."
-wait "$frontend_pid"
+echo "[dev] Ctrl+C para detener ambos servicios de este worktree."
+wait -n "$backend_pid" "$frontend_pid"

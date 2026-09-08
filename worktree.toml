@@ -23,14 +23,6 @@ BACKEND_PORT = 1
 FRONTEND_PORT = 4300
 BACKEND_PORT = 8081
 
-# BACKEND_URL is deliberately NOT assigned per worktree.
-#
-# Every frontend proxies /api to the single shared Spring Boot instance, which is
-# how this repo has always worked. BACKEND_PORT above is only RESERVED, so that
-# the day a worktree wants its own backend the port is already free and nobody
-# else has taken it. Assigning BACKEND_URL by default would instead point every
-# frontend at a port with nothing listening on it.
-#
-# To give a worktree its own backend: start Spring Boot on $BACKEND_PORT and
-#   export BACKEND_URL=http://127.0.0.1:$BACKEND_PORT
-# before running scripts/dev.sh. See reto-eventos-frontend/proxy.conf.mjs.
+# scripts/dev.sh starts Spring Boot on BACKEND_PORT and exports its URL to the
+# Angular proxy. The database remains shared infrastructure, but application
+# processes are isolated so backend edits in one worktree do not affect another.

@@ -24,3 +24,7 @@ Thumbs.db
 
 # Puertos asignados por worktree (ver worktree.toml)
 .env.worktree
+.dev-state/
+
+# Material visual de trabajo; no son assets definitivos de la aplicación.
+assets/raw/

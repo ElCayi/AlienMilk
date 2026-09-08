@@ -100,4 +100,6 @@ watch_readiness() {
 ) &
 
 echo "[dev] Ctrl+C para detener ambos servicios de este worktree."
+# If either service dies, leave the supervisor too; the EXIT trap then cleans
+# up its sibling instead of leaving half an environment alive.
 wait -n "$backend_pid" "$frontend_pid"

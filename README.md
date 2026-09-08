@@ -67,6 +67,16 @@ Se pueden tener varias copias del proyecto corriendo en paralelo, una por worktr
 para compararlas en pantalla. Cada worktree usa sus propios puertos, así que no
 chocan entre sí.
 
+En nuestro entorno local, el lanzador de la raíz descubre los worktrees registrados,
+inicia una única MariaDB y arranca el frontend y backend de cada uno:
+
+```bash
+./run-alienmilk-dev.sh
+```
+
+La base local se conserva en `.dev-state/` y no entra en Git. Ctrl+C en la ventana
+del lanzador detiene todo lo que haya iniciado.
+
 `worktree.toml` declara qué variables cambian de un worktree a otro. Los valores
 concretos van en un `.env.worktree` que **no está en git** y que `dev.sh` lee solo si
 existe:

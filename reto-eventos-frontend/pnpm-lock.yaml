@@ -51,12 +51,21 @@ importers:
       '@angular/compiler-cli':
         specifier: ^21.0.0
         version: 21.2.6(@angular/compiler@21.2.6)(supports-color@7.2.0)(typescript@5.9.3)
+      '@angular/language-server':
+        specifier: ^21.2.22
+        version: 21.2.22
+      '@angular/language-service':
+        specifier: ^21.2.22
+        version: 21.2.22
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(supports-color@7.2.0)
       jsdom:
         specifier: ^27.1.0
         version: 27.4.0(supports-color@7.2.0)
+      prettier:
+        specifier: ^3.9.6
+        version: 3.9.6
       typescript:
         specifier: ~5.9.2
         version: 5.9.3
@@ -276,6 +285,15 @@ packages:
       '@angular/core': 21.2.6
       '@angular/platform-browser': 21.2.6
       rxjs: ^6.5.3 || ^7.4.0
+
+  '@angular/language-server@21.2.22':
+    resolution: {integrity: sha512-YaCkQ4EYOt+wMyLBfylkbr3wxj1emNHeKf4t4a2GYW1pn+rd6NcPYb9h6LHUfnxG+iorYlPil+695IH1EKLEkg==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    hasBin: true
+
+  '@angular/language-service@21.2.22':
+    resolution: {integrity: sha512-R0JcMnjDdk3fbDXSCeRHHjtHgUhWDjNVHvkKSSxMdPZIvmza2x3L3O3TuuUGtB2dR1a1g468yaltjxmxbGqa+Q==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@angular/platform-browser@21.2.6':
     resolution: {integrity: sha512-LW1vPXVHvy71LBahn+fSzPlWQl25kJIdcXq+ptG7HsMVgbPQ3/vvkKXAHYaRdppLGCFL+v+3dQGHYLNLiYL9qg==}
@@ -2566,6 +2584,11 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
+  prettier@3.9.6:
+    resolution: {integrity: sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   proc-log@6.1.0:
     resolution: {integrity: sha512-iG+GYldRf2BQ0UDUAd6JQ/RwzaQy6mXmsk/IzlYyal4A4SNFw54MeH4/tLkF4I5WoWG9SQwuqWzS99jaFQHBuQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -3369,6 +3392,13 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       rxjs: 7.8.2
       tslib: 2.8.1
+
+  '@angular/language-server@21.2.22':
+    dependencies:
+      '@angular/language-service': 21.2.22
+      typescript: 5.9.3
+
+  '@angular/language-service@21.2.22': {}
 
   '@angular/platform-browser@21.2.6(@angular/common@21.2.6(@angular/core@21.2.6(@angular/compiler@21.2.6)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.6(@angular/compiler@21.2.6)(rxjs@7.8.2))':
     dependencies:
@@ -5555,6 +5585,8 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.9.6: {}
 
   proc-log@6.1.0: {}
 

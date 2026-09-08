@@ -1,0 +1,36 @@
+# Per-worktree environment contract.
+#
+# Declares which variables change from one worktree to the next, so that several
+# copies of this project can run side by side. On our machines a helper reads
+# this file when a worktree is created and materialises the values into
+# .env.worktree (gitignored); scripts/dev.sh then simply sources that file.
+#
+# NOTHING HERE IS REQUIRED TO RUN THE PROJECT. Without .env.worktree the
+# defaults below apply and you get the original single-copy behaviour, so a
+# plain clone with no extra tooling works unchanged. To provision a worktree by
+# hand, read this file and write .env.worktree yourself.
+
+[ports]
+# Offsets from a base port allocated once per worktree. The base is derived from
+# the worktree name and recorded in .env.worktree, so a worktree keeps the same
+# URL for its whole life and it can be bookmarked.
+FRONTEND_PORT = 0
+BACKEND_PORT = 1
+
+[defaults]
+# Applied when .env.worktree is absent. These are the values this repo used
+# before per-worktree ports existed.
+FRONTEND_PORT = 4300
+BACKEND_PORT = 8081
+
+# BACKEND_URL is deliberately NOT assigned per worktree.
+#
+# Every frontend proxies /api to the single shared Spring Boot instance, which is
+# how this repo has always worked. BACKEND_PORT above is only RESERVED, so that
+# the day a worktree wants its own backend the port is already free and nobody
+# else has taken it. Assigning BACKEND_URL by default would instead point every
+# frontend at a port with nothing listening on it.
+#
+# To give a worktree its own backend: start Spring Boot on $BACKEND_PORT and
+#   export BACKEND_URL=http://127.0.0.1:$BACKEND_PORT
+# before running scripts/dev.sh. See reto-eventos-frontend/proxy.conf.mjs.

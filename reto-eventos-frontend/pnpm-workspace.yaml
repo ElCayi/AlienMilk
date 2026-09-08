@@ -1,0 +1,20 @@
+# Install-time code execution allowlist (pnpm >= 11).
+#
+# pnpm does not run a dependency's build scripts unless it is listed here as
+# true. Postinstall is the most abused execution path in npm supply-chain
+# attacks, so the default is deny and this file records the decisions rather
+# than leaving pnpm to ask again on every install.
+#
+# All four are false because they were VERIFIED unnecessary: with the scripts
+# blocked, `pnpm build`, `ng serve` and watch mode all work. Each of these
+# packages falls back to a pure-JS implementation when its native build is
+# absent — slower in theory, unnoticeable here.
+#
+# Do not flip one to true to make an error go away. A failed install caused by a
+# blocked script is the protection doing its job; work out what the script
+# actually does first.
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false

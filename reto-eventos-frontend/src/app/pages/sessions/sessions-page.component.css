@@ -34,7 +34,7 @@
 
 .room-eyebrow {
   margin: 0 0 0.8rem;
-  color: #d97706;
+  color: #c05a87;
   font-size: 0.78rem;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .room-search:focus-within {
-  border-color: #d97706;
+  border-color: #c05a87;
 }
 
 .room-search svg {
@@ -154,7 +154,7 @@
 
 .index-card:hover,
 .index-card.is-selected {
-  border-color: #d97706;
+  border-color: #c05a87;
   background: rgba(255, 255, 255, 0.82);
 }
 
@@ -173,7 +173,7 @@
 
 .index-code {
   overflow: hidden;
-  color: #d97706;
+  color: #c05a87;
   font-size: 0.62rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -246,7 +246,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  color: #d97706;
+  color: #c05a87;
   font-size: 0.65rem;
 }
 
@@ -357,7 +357,7 @@
 
 .reserve-button:hover,
 .access-prompt a:hover {
-  background: #d97706;
+  background: #c05a87;
 }
 
 .reserve-button:disabled {

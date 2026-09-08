@@ -1,0 +1,47 @@
+<section class="locations-atlas" aria-labelledby="locations-title">
+  <div class="locations-copy">
+    <p class="locations-kicker">Cartografía / Estaciones activas</p>
+    <h2 id="locations-title">Próximas localizaciones</h2>
+    <p>
+      Las sesiones se activan en espacios seleccionados por sus condiciones de acceso,
+      aislamiento y compatibilidad ambiental.
+    </p>
+    <span>Las coordenadas definitivas pueden sufrir alteraciones.</span>
+  </div>
+
+  <div class="locations-chart" [class.is-loading]="loading">
+    <article
+      class="location-node"
+      *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
+      [class.location-node-secondary]="index === 1"
+      [class.location-node-tertiary]="index === 2"
+    >
+      <div class="location-orbit" aria-hidden="true">
+        <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
+          <source src="alienmilk-planet-loop.webm" type="video/webm" />
+          <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
+        </video>
+        <span class="location-planet" *ngIf="index !== 0"></span>
+        <span class="location-marker"></span>
+      </div>
+      <div class="location-data">
+        <span>{{ archiveCode(location) }} / ESTACIÓN {{ index + 1 | number: '2.0' }}</span>
+        <strong>{{ location.direccion }}</strong>
+        <small>{{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · ACCESO PROGRAMADO</small>
+      </div>
+    </article>
+
+    <article class="location-node location-node-pending" *ngIf="!loading && locations.length < 3">
+      <div class="location-orbit" aria-hidden="true">
+        <span class="location-planet"></span>
+      </div>
+      <div class="location-data">
+        <span>AM-X/000 / ESTACIÓN EN ESTUDIO</span>
+        <strong>Nueva sede en evaluación</strong>
+        <small>COMPATIBILIDAD AMBIENTAL PENDIENTE</small>
+      </div>
+    </article>
+
+    <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
+  </div>
+</section>

@@ -105,6 +105,11 @@
       (retry)="loadSessions()"
     />
 
+    <app-locations-atlas
+      [locations]="sessionLocations()"
+      [loading]="loadingLocations()"
+    />
+
     <section class="section-block about-card" id="nosotros">
       <div class="about-layout">
         <div class="about-content">

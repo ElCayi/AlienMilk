@@ -40,7 +40,7 @@
     }
 
     .eyebrow-brand-subtitle {
-      font-family: 'Arial', Times, serif;
+      font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
       font-size: 0.82rem;
       font-weight: 600;
       color: #20242b;
@@ -69,7 +69,7 @@
     }
 
     .login-copy a {
-      color: #d97706;
+      color: #c05a87;
       font-weight: 700;
       text-decoration: none;
     }
@@ -99,7 +99,7 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 800;
-      color: #d97706 !important;
+      color: #c05a87 !important;
     }
 
     .register-card {
@@ -118,7 +118,7 @@
       letter-spacing: 0.08em;
       font-size: 0.75rem;
       font-weight: 800;
-      color: #d97706;
+      color: #c05a87;
     }
 
     form {
@@ -160,7 +160,7 @@
     }
 
     input:focus-visible {
-      outline: 2px solid rgba(217, 119, 6, 0.24);
+      outline: 2px solid rgba(192, 90, 135, 0.24);
       outline-offset: 2px;
     }
 

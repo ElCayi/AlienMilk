@@ -47,19 +47,19 @@ body {
 }
 
 .ghost-btn:hover {
-  background: #d97706;
-  border-color: #d97706;
+  background: #c05a87;
+  border-color: #c05a87;
   color: white;
 }
 
 .dark-btn:hover {
-  background: #d97706;
-  border-color: #d97706;
-  box-shadow: 0 10px 20px rgba(217, 119, 6, 0.22);
+  background: #c05a87;
+  border-color: #c05a87;
+  box-shadow: 0 10px 20px rgba(192, 90, 135, 0.22);
 }
 
 .ghost-btn:focus-visible,
 .dark-btn:focus-visible {
-  outline: 2px solid rgba(217, 119, 6, 0.35);
+  outline: 2px solid rgba(192, 90, 135, 0.35);
   outline-offset: 2px;
 }

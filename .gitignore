@@ -21,3 +21,6 @@ reto-eventos-frontend/public/alienmilk-header-smoke.mov
 **/.vscode/
 Thumbs.db
 .DS_Store
+
+# Puertos asignados por worktree (ver worktree.toml)
+.env.worktree

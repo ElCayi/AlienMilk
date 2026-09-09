@@ -169,6 +169,13 @@
     }
 
     @media (min-width: 901px) {
+      .hero-intro-desktop {
+        top: clamp(2rem, 3vh, 3rem);
+        width: min(31vw, 32rem);
+        color: rgba(250, 249, 247, 0.88);
+        font-size: clamp(0.72rem, 0.75vw, 0.86rem);
+      }
+
       .hero {
         min-height: calc(100vh - (2 * var(--topbar-height)));
         min-height: calc(100dvh - (2 * var(--topbar-height)));
@@ -212,6 +219,10 @@
     }
 
     @media (max-width: 900px) {
+      .sessions-block {
+        padding-top: clamp(2rem, 6vh, 4rem);
+      }
+
       .sessions-editorial,
       .sessions-program {
         grid-template-columns: 1fr;
@@ -221,6 +232,7 @@
         align-items: start;
         gap: 2rem;
         margin-bottom: 2.5rem;
+        padding-top: 0.5rem;
       }
 
       .sessions-editorial h2 {

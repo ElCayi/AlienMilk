@@ -187,7 +187,7 @@
     }
 
     .hero-title-milk {
-      color: #f1ecef;
+      color: #151217;
     }
 
     .hero-subtitle {
@@ -198,7 +198,7 @@
       font-size: clamp(2.1rem, 4.75vw, 3.8rem);
       font-weight: 300;
       line-height: 0.85;
-      color: #77005c;
+      color: #151217;
       transform: scaleY(0.78);
       transform-origin: center;
     }
@@ -215,6 +215,11 @@
       min-width: 10rem;
       font-size: 0.95rem;
       letter-spacing: 0.02em;
+    }
+
+    .hero-actions .ghost-btn.hero-button {
+      color: #1f2430;
+      border-color: #1f2430;
     }
 
     .section-header {

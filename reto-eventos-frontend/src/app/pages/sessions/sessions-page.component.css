@@ -8,7 +8,7 @@
 .sessions-room {
   box-sizing: border-box;
   padding: clamp(2rem, 4vw, 4.5rem) 3.75rem 5rem;
-  color: #1f2430;
+  color: #f1ecef;
 }
 
 .room-header {
@@ -17,7 +17,7 @@
   gap: 3rem;
   align-items: start;
   padding-top: 1rem;
-  border-top: 1px solid rgba(31, 36, 48, 0.35);
+  border-top: 1px solid rgba(241, 236, 239, 0.22);
 }
 
 .room-eyebrow,
@@ -58,7 +58,7 @@
 
 .room-clearance {
   margin: 0;
-  color: rgba(31, 36, 48, 0.48);
+  color: rgba(241, 236, 239, 0.45);
   font-size: 0.75rem;
 }
 
@@ -75,8 +75,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(31, 36, 48, 0.2);
-  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid rgba(241, 236, 239, 0.18);
+  background: rgba(33, 30, 36, 0.82);
 }
 
 .room-search:focus-within {
@@ -95,7 +95,7 @@
   width: 100%;
   border: 0;
   outline: 0;
-  color: #1f2430;
+  color: #f1ecef;
   background: transparent;
   font: 0.82rem Arial, sans-serif;
 }
@@ -104,17 +104,17 @@
   display: grid;
   gap: 0.35rem;
   padding: 0.45rem 0.85rem 0.75rem;
-  border-bottom: 1px solid rgba(31, 36, 48, 0.35);
+  border-bottom: 1px solid rgba(241, 236, 239, 0.22);
 }
 
 .room-filter > span {
-  color: #6b7280;
+  color: #91878e;
   font-size: 0.63rem;
 }
 
 .room-count {
   padding-bottom: 0.75rem;
-  color: #6b7280;
+  color: #91878e;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: 0.9rem;
   letter-spacing: 0.08em;
@@ -144,9 +144,9 @@
   gap: 1rem;
   align-items: center;
   padding: 0;
-  border: 1px solid rgba(31, 36, 48, 0.14);
+  border: 1px solid rgba(241, 236, 239, 0.14);
   color: inherit;
-  background: rgba(255, 255, 255, 0.42);
+  background: rgba(33, 30, 36, 0.82);
   text-align: left;
   cursor: pointer;
   transition: border-color 180ms ease, background 180ms ease;
@@ -155,7 +155,7 @@
 .index-card:hover,
 .index-card.is-selected {
   border-color: #c65aaa;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(33, 30, 36, 0.92);
 }
 
 .index-card img {
@@ -187,7 +187,7 @@
 
 .index-card-copy > span:not(.index-code),
 .index-card-copy small {
-  color: #687180;
+  color: #91878e;
   font-size: 0.7rem;
 }
 
@@ -342,8 +342,8 @@
   display: inline-flex;
   justify-content: center;
   border: 0;
-  color: #1f2430;
-  background: #faf9f7;
+  color: #f1ecef;
+  background: #77005c;
   font: 700 0.76rem 'Nunito', sans-serif;
   text-decoration: none;
   cursor: pointer;
@@ -390,7 +390,7 @@
 .file-loading,
 .room-status {
   padding: 2rem;
-  color: #687180;
+  color: #91878e;
   text-align: center;
 }
 

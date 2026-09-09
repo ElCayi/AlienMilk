@@ -42,7 +42,7 @@
 
     .sessions-editorial h2 {
       margin: 0;
-      color: #1f2430;
+      color: #f1ecef;
       font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
       font-size: clamp(2.8rem, 4.4vw, 4.8rem);
       font-weight: 300;
@@ -63,7 +63,7 @@
     .sessions-editorial-main > p:not(.sessions-eyebrow):not(.sessions-subtitle) {
       max-width: 140ch;
       margin: 1rem 0 0;
-      color: #475569;
+      color: #b9afb6;
       font-family: Arial, sans-serif;
       font-size: 0.94rem;
       line-height: 1.55;
@@ -72,7 +72,7 @@
     .sessions-subtitle {
       display: block;
       margin: 0.9rem 0 0;
-      color: #64748b;
+      color: #91878e;
       font-family: 'Nunito', sans-serif;
       font-size: clamp(1.05rem, 1.55vw, 1.3rem);
       font-weight: 300;
@@ -102,7 +102,7 @@
       align-items: center;
       gap: 0.6rem;
       padding: 0.65rem 0.85rem;
-      border: 1px solid rgba(31, 36, 48, 0.2);
+      border: 1px solid rgba(241, 236, 239, 0.18);
       border-radius: 0.45rem;
       background: rgba(255, 255, 255, 0.72);
     }
@@ -125,7 +125,7 @@
       width: 100%;
       border: 0;
       outline: 0;
-      color: #1f2430;
+      color: #f1ecef;
       background: transparent;
       font: 0.78rem Arial, sans-serif;
     }
@@ -137,7 +137,7 @@
     .sessions-search button {
       padding: 0;
       border: 0;
-      color: #1f2430;
+      color: #f1ecef;
       background: transparent;
       font-size: 1rem;
       cursor: pointer;
@@ -145,7 +145,7 @@
 
     .sessions-tools a,
     .sessions-explore {
-      color: #1f2430;
+      color: #f1ecef;
       font-size: 0.78rem;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -170,7 +170,7 @@
       padding: 2rem;
       border: 1px solid rgba(31, 36, 48, 0.12);
       border-radius: 18px;
-      color: #475569;
+      color: #b9afb6;
       text-align: center;
       background: rgba(255, 255, 255, 0.45);
     }
@@ -189,7 +189,7 @@
       border: 1px solid #1f2430;
       border-radius: 999px;
       padding: 0.7rem 1.15rem;
-      color: #1f2430;
+      color: #f1ecef;
       background: transparent;
       font: inherit;
       font-weight: 700;
@@ -200,7 +200,7 @@
       padding: 1.9rem;
       border-radius: 24px;
       background: rgba(255, 255, 255, 0.88);
-      border: 1px solid rgba(23, 32, 51, 0.08);
+      border: 1px solid rgba(241, 236, 239, 0.1);
       box-shadow: 0 16px 28px rgba(23, 32, 51, 0.06);
     }
 
@@ -298,14 +298,14 @@
       gap: 0.55rem;
       padding: 1.2rem;
       border-radius: 18px;
-      background: #f8fafc;
+      background: #211e24;
     }
 
     .contact-label {
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #64748b;
+      color: #91878e;
       font-weight: 800;
     }
 
@@ -496,4 +496,79 @@
       border-bottom: 1px solid #1f2430;
       font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
       font-size: 1rem;
+    }
+
+    /* Night reading palette: preserve hierarchy without using pure black or white. */
+    .sessions-editorial h2,
+    .sessions-tools a,
+    .sessions-explore,
+    .sessions-search input,
+    .sessions-search button {
+      color: #f1ecef;
+    }
+
+    .sessions-editorial-main > p:not(.sessions-eyebrow):not(.sessions-subtitle),
+    .sessions-subtitle,
+    .sessions-count,
+    .sessions-status,
+    .contact-label {
+      color: #b9afb6;
+    }
+
+    .sessions-editorial::before {
+      border-top-color: rgba(198, 90, 170, 0.48);
+    }
+
+    .sessions-search {
+      border-color: rgba(241, 236, 239, 0.18);
+      background: rgba(33, 30, 36, 0.82);
+    }
+
+    .sessions-search svg {
+      stroke: #b9afb6;
+    }
+
+    .sessions-search input::placeholder {
+      color: #8f858c;
+    }
+
+    .sessions-status,
+    .contact-card {
+      border-color: rgba(241, 236, 239, 0.1);
+      background: #18161b;
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
+    }
+
+    .sessions-status-error button {
+      color: #f1ecef;
+      border-color: rgba(241, 236, 239, 0.55);
+    }
+
+    .about-card {
+      background: #19171d;
+    }
+
+    .about-content h2,
+    .about-kicker,
+    .about-copy,
+    .contact-card h2,
+    .contact-grid strong {
+      color: #f1ecef;
+    }
+
+    .about-kicker,
+    .about-copy {
+      color: #c8bec5;
+    }
+
+    .contact-grid div {
+      background: #211e24;
+    }
+
+    .sessions-explore {
+      border-bottom-color: rgba(241, 236, 239, 0.62);
+    }
+
+    .hero-divider .hero-icon-actions button {
+      color: #f1ecef;
     }

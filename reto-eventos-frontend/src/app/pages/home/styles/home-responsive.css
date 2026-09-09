@@ -293,7 +293,7 @@
         position: static;
         width: var(--mobile-brand-width);
         margin: -0.95rem auto 0;
-        color: #1f2430;
+        color: #f1ecef;
         font-size: clamp(0.72rem, 3vw, 0.84rem);
         line-height: 1.55;
         text-align: left;

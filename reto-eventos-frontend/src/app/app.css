@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  color: #172033;
+  color: #f1ecef;
 }
 
 .app-shell {
@@ -9,8 +9,8 @@
   min-height: 100vh;
   background:
     radial-gradient(circle at top left, rgba(198, 90, 170, 0.14), transparent 26%),
-    radial-gradient(circle at top right, rgba(32, 114, 255, 0.14), transparent 24%),
-    linear-gradient(180deg, #fffaf4 0%, #f5f8fc 56%, #eef2f8 100%);
+    radial-gradient(circle at top right, rgba(119, 0, 92, 0.16), transparent 24%),
+    linear-gradient(180deg, #151217 0%, #111014 56%, #141217 100%);
 }
 
 .topbar {
@@ -19,8 +19,8 @@
   align-items: center;
   gap: 1rem;
   padding: 0.65rem 3.75rem;
-  border-bottom: 1px solid rgba(23, 32, 51, 0.08);
-  background: rgba(255, 255, 255, 0.82);
+  border-bottom: 1px solid rgba(241, 236, 239, 0.1);
+  background: rgba(17, 16, 20, 0.86);
   backdrop-filter: blur(16px);
   position: sticky;
   top: 0;
@@ -32,7 +32,7 @@
   align-items: center;
   gap: 0.7rem;
   text-decoration: none;
-  color: #77005c;
+  color: #f1ecef;
   font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -46,7 +46,7 @@
 
 .brand-name {
   font-family: 'Nunito', sans-serif;
-  color: #77005c;
+  color: #f1ecef;
 }
 
 .brand-subtitle {
@@ -54,7 +54,7 @@
   font-size: 0.72em;
   font-weight: 600;
   letter-spacing: 0.06em;
-  color: #77005c;
+  color: #d9d0d6;
 }
 
 .brand-logo {
@@ -81,7 +81,7 @@
 
 .nav-links a {
   text-decoration: none;
-  color: #374151;
+  color: #c8bec5;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
@@ -127,7 +127,7 @@
   .user-pill {
     padding: 0.55rem 0.9rem;
     border-radius: 999px;
-    background: #fef3c7;
+    background: rgba(198, 90, 170, 0.14);
   color: #c65aaa;
   font-weight: 700;
 }
@@ -171,8 +171,8 @@
 
 .ghost-btn {
   background: transparent;
-  color: #77005c;
-  border: 1px solid #77005c;
+  color: #f1ecef;
+  border: 1px solid rgba(241, 236, 239, 0.72);
 }
 
 .dark-btn {
@@ -188,9 +188,9 @@
 }
 
 .secondary-btn {
-  background: white;
-  color: #172033;
-  border: 1px solid rgba(23, 32, 51, 0.12);
+  background: #211e24;
+  color: #f1ecef;
+  border: 1px solid rgba(241, 236, 239, 0.16);
 }
 
 .ghost-btn:hover,
@@ -441,4 +441,24 @@
     grid-template-columns: 1fr;
     display: grid;
   }
+}
+
+/* Low-glare night palette. */
+.menu-toggle {
+  color: #f1ecef;
+  border-color: rgba(241, 236, 239, 0.16);
+  background: rgba(33, 30, 36, 0.82);
+}
+
+.topbar.menu-open .nav-links a {
+  border-bottom-color: rgba(241, 236, 239, 0.1);
+}
+
+.site-footer {
+  background: #18161b;
+}
+
+.footer-badge {
+  color: #f1ecef !important;
+  background: #29252d;
 }

@@ -2,7 +2,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #f5f8fc;
+  background: #111014;
+  color: #f1ecef;
 }
 
 * {
@@ -31,8 +32,8 @@ body {
 
 .ghost-btn {
   background: transparent;
-  color: #77005c;
-  border: 1px solid #77005c;
+  color: #f1ecef;
+  border: 1px solid rgba(241, 236, 239, 0.72);
 }
 
 .dark-btn {

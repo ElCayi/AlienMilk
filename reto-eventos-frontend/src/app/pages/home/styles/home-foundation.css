@@ -48,7 +48,7 @@
       place-items: center;
       padding: 0;
       border: 0;
-      color: #1f2430;
+      color: #f1ecef;
       background: transparent;
       cursor: pointer;
     }
@@ -187,7 +187,7 @@
     }
 
     .hero-title-milk {
-      color: #1f2430;
+      color: #f1ecef;
     }
 
     .hero-subtitle {
@@ -226,6 +226,6 @@
     }
 
     .helper {
-      color: #64748b;
+      color: #91878e;
       font-weight: 500;
     }

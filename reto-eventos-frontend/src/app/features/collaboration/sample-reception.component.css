@@ -8,7 +8,7 @@
   margin: 0 0 clamp(6rem, 10vh, 9rem) 50%;
   padding: clamp(2.5rem, 5vw, 4.75rem);
   color: #faf9f7;
-  background: #1f2430;
+  background: #211e24;
   border-radius: 1.25rem;
   transform: translateX(-50%);
 }

@@ -30,7 +30,7 @@
         top: -0.15rem;
         right: 0;
         left: 0;
-        border-top: 1px solid rgba(198, 90, 170, 0.38);
+        border-top: 2px solid #c05a87;
       }
 
       .sessions-editorial h2 {
@@ -171,9 +171,12 @@
     @media (min-width: 901px) {
       .hero-intro-desktop {
         top: clamp(2rem, 3vh, 3rem);
+        right: 4.4rem;
+        left: auto;
         width: min(31vw, 32rem);
-        color: rgba(250, 249, 247, 0.88);
+        color: #1f2430;
         font-size: clamp(0.72rem, 0.75vw, 0.86rem);
+        text-align: right;
       }
 
       .hero {
@@ -235,6 +238,10 @@
         padding-top: 0.5rem;
       }
 
+      .sessions-editorial::before {
+        border-top: 2px solid #c05a87;
+      }
+
       .sessions-editorial h2 {
         font-size: clamp(2.6rem, 11vw, 3.8rem);
       }
@@ -275,6 +282,7 @@
       }
 
       .hero-mobile-actions button {
+        color: #151217;
         border-radius: 50%;
       }
 
@@ -291,10 +299,10 @@
       .hero-intro-mobile {
         display: block;
         position: static;
-        width: var(--mobile-brand-width);
+        width: min(78%, 32rem);
         margin: -0.95rem auto 0;
-        color: #f1ecef;
-        font-size: clamp(0.72rem, 3vw, 0.84rem);
+        color: #151217;
+        font-size: 1.05rem;
         line-height: 1.55;
         text-align: left;
         transform: translateY(-5rem);
@@ -363,6 +371,12 @@
         gap: 1rem;
         flex-wrap: nowrap;
         transform: translateX(-50%);
+      }
+
+      .hero-actions .ghost-btn.hero-button {
+        color: #1f2430;
+        background: rgba(255, 255, 255, 0.55);
+        border: 0;
       }
 
       .hero-button {

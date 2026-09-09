@@ -65,14 +65,14 @@
       margin: 1rem 0 0;
       color: #b9afb6;
       font-family: Arial, sans-serif;
-      font-size: 0.94rem;
+      font-size: 1rem;
       line-height: 1.55;
     }
 
     .sessions-subtitle {
       display: block;
       margin: 0.9rem 0 0;
-      color: #91878e;
+      color: #c65aaa;
       font-family: 'Nunito', sans-serif;
       font-size: clamp(1.05rem, 1.55vw, 1.3rem);
       font-weight: 300;
@@ -127,7 +127,7 @@
       outline: 0;
       color: #f1ecef;
       background: transparent;
-      font: 0.78rem Arial, sans-serif;
+      font: 1rem Arial, sans-serif;
     }
 
     .sessions-search input::placeholder {
@@ -135,12 +135,22 @@
     }
 
     .sessions-search button {
+      width: 1.5rem;
+      height: 1.5rem;
+      display: grid;
+      place-items: center;
       padding: 0;
       border: 0;
-      color: #f1ecef;
+      color: rgba(241, 236, 239, 0.68);
       background: transparent;
-      font-size: 1rem;
+      font-size: 1.35rem;
+      line-height: 1;
       cursor: pointer;
+    }
+
+    .sessions-search button span {
+      display: block;
+      transform: translateY(-0.22em);
     }
 
     .sessions-tools a,
@@ -499,16 +509,13 @@
     }
 
     /* Night reading palette: preserve hierarchy without using pure black or white. */
-    .sessions-editorial h2,
     .sessions-tools a,
     .sessions-explore,
-    .sessions-search input,
-    .sessions-search button {
+    .sessions-search input {
       color: #f1ecef;
     }
 
     .sessions-editorial-main > p:not(.sessions-eyebrow):not(.sessions-subtitle),
-    .sessions-subtitle,
     .sessions-count,
     .sessions-status,
     .contact-label {
@@ -521,7 +528,7 @@
 
     .sessions-search {
       border-color: rgba(241, 236, 239, 0.18);
-      background: rgba(33, 30, 36, 0.82);
+      background: rgba(33, 30, 36, 0.68);
     }
 
     .sessions-search svg {

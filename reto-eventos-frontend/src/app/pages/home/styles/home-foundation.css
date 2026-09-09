@@ -198,7 +198,7 @@
       font-size: clamp(2.1rem, 4.75vw, 3.8rem);
       font-weight: 300;
       line-height: 0.85;
-      color: #c65aaa;
+      color: #151217;
       transform: scaleY(0.78);
       transform-origin: center;
     }
@@ -220,6 +220,14 @@
     .hero-actions .ghost-btn.hero-button {
       color: #1f2430;
       border-color: #1f2430;
+    }
+
+    .hero-actions .ghost-btn.hero-button:hover,
+    .hero-actions .ghost-btn.hero-button:focus,
+    .hero-actions .ghost-btn.hero-button:active {
+      color: #fff;
+      background: #c65aaa;
+      border: 1px solid transparent !important;
     }
 
     .section-header {

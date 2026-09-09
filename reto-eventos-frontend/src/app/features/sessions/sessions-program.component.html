@@ -46,7 +46,12 @@
 
   <div class="sessions-program" *ngIf="!loading && !error && featuredSession as featured">
     <article class="session-featured">
-      <a class="session-image-link" routerLink="/sesiones" [queryParams]="{ sesion: featured.idEvento }">
+      <a
+        class="session-image-link"
+        routerLink="/sesiones"
+        [queryParams]="{ sesion: featured.idEvento }"
+        [style.view-transition-name]="'session-sample-' + featured.idEvento"
+      >
         <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
         <span>{{ featured.tipoEvento }}</span>
       </a>
@@ -71,10 +76,16 @@
 
     <div class="session-secondary-list">
       <article class="session-secondary" *ngFor="let session of secondarySessions; trackBy: trackSession">
-        <a class="session-secondary-image" routerLink="/sesiones" [queryParams]="{ sesion: session.idEvento }">
+        <button
+          class="session-secondary-image"
+          type="button"
+          [attr.aria-label]="'Mostrar ' + session.nombre + ' como sesión destacada'"
+          [style.view-transition-name]="'session-sample-' + session.idEvento"
+          (click)="promoteSession(session)"
+        >
           <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
           <span>{{ archiveCode(session) }}</span>
-        </a>
+        </button>
         <div>
           <p>{{ session.tipoEvento }}</p>
           <h3>{{ session.nombre }}</h3>

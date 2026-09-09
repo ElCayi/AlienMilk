@@ -219,6 +219,10 @@
     }
 
     @media (max-width: 900px) {
+      .sessions-block {
+        padding-top: clamp(2rem, 6vh, 4rem);
+      }
+
       .sessions-editorial,
       .sessions-program {
         grid-template-columns: 1fr;
@@ -228,6 +232,7 @@
         align-items: start;
         gap: 2rem;
         margin-bottom: 2.5rem;
+        padding-top: 0.5rem;
       }
 
       .sessions-editorial h2 {

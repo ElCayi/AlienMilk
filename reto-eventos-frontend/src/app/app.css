@@ -124,6 +124,16 @@
   padding: 0.6rem 0.9rem;
 }
 
+@media (min-width: 1001px) {
+  .topbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  .brand {
+    justify-self: start;
+  }
+}
+
   .user-pill {
     padding: 0.55rem 0.9rem;
     border-radius: 999px;

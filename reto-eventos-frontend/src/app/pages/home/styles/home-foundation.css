@@ -66,6 +66,7 @@
 
     .hero-icon-actions button:hover,
     .hero-icon-actions button:focus-visible,
+    .hero-icon-actions button:active,
     .hero-icon-actions .is-favorite {
       color: #c65aaa;
     }

@@ -223,6 +223,7 @@
 
     @media (max-width: 900px) {
       .sessions-block {
+        margin-bottom: 4rem;
         padding-top: clamp(2rem, 6vh, 4rem);
       }
 

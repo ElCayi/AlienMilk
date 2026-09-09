@@ -30,7 +30,7 @@
         top: -0.15rem;
         right: 0;
         left: 0;
-        border-top: 1px solid rgba(192, 90, 135, 0.38);
+        border-top: 1px solid rgba(198, 90, 170, 0.38);
       }
 
       .sessions-editorial h2 {
@@ -198,7 +198,7 @@
       }
 
       .hero-actions .ghost-btn:hover {
-        background: #c05a87;
+        background: #c65aaa;
       }
     }
 

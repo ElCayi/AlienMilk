@@ -31,14 +31,14 @@ body {
 
 .ghost-btn {
   background: transparent;
-  color: #1f2430;
-  border: 1px solid #1f2430;
+  color: #77005c;
+  border: 1px solid #77005c;
 }
 
 .dark-btn {
-  background: #1f2430;
+  background: #77005c;
   color: white;
-  border: 1px solid #1f2430;
+  border: 1px solid #77005c;
 }
 
 .ghost-btn:hover,
@@ -47,19 +47,19 @@ body {
 }
 
 .ghost-btn:hover {
-  background: #c05a87;
-  border-color: #c05a87;
+  background: #c65aaa;
+  border-color: #c65aaa;
   color: white;
 }
 
 .dark-btn:hover {
-  background: #c05a87;
-  border-color: #c05a87;
-  box-shadow: 0 10px 20px rgba(192, 90, 135, 0.22);
+  background: #c65aaa;
+  border-color: #c65aaa;
+  box-shadow: 0 10px 20px rgba(198, 90, 170, 0.22);
 }
 
 .ghost-btn:focus-visible,
 .dark-btn:focus-visible {
-  outline: 2px solid rgba(192, 90, 135, 0.35);
+  outline: 2px solid rgba(198, 90, 170, 0.35);
   outline-offset: 2px;
 }

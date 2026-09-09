@@ -33,7 +33,7 @@
     }
 
     .signup-copy a {
-      color: #c05a87;
+      color: #c65aaa;
       font-weight: 700;
       text-decoration: none;
     }
@@ -63,7 +63,7 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 800;
-      color: #c05a87 !important;
+      color: #c65aaa !important;
     }
     .login-card {
       width: min(480px, 100%);
@@ -118,7 +118,7 @@
       letter-spacing: 0.08em;
       font-size: 0.75rem;
       font-weight: 800;
-      color: #c05a87;
+      color: #c65aaa;
     }
 
     form {
@@ -154,7 +154,7 @@
     }
 
     input:focus-visible {
-      outline: 2px solid rgba(192, 90, 135, 0.24);
+      outline: 2px solid rgba(198, 90, 170, 0.24);
       outline-offset: 2px;
     }
 

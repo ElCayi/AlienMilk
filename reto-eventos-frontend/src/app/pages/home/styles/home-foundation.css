@@ -67,7 +67,7 @@
     .hero-icon-actions button:hover,
     .hero-icon-actions button:focus-visible,
     .hero-icon-actions .is-favorite {
-      color: #c05a87;
+      color: #c65aaa;
     }
 
     .hero-icon-actions button:focus-visible {
@@ -156,6 +156,9 @@
       height: 8.4rem;
       display: block;
       flex: 0 0 auto;
+      background: #77005c;
+      -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+      mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
     }
 
     .hero-title {
@@ -180,6 +183,10 @@
       margin: 0;
       font-weight: 900;
       letter-spacing: 0.02em;
+      color: #77005c;
+    }
+
+    .hero-title-milk {
       color: #1f2430;
     }
 
@@ -191,7 +198,7 @@
       font-size: clamp(2.1rem, 4.75vw, 3.8rem);
       font-weight: 300;
       line-height: 0.85;
-      color: #1f2430;
+      color: #77005c;
       transform: scaleY(0.78);
       transform-origin: center;
     }

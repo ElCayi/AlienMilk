@@ -3,15 +3,26 @@
 }
 
 .locations-atlas {
+  position: relative;
+  isolation: isolate;
   width: min(1480px, calc(100vw - 7.5rem));
   min-height: min(74vh, 46rem);
   display: grid;
   grid-template-columns: minmax(18rem, 0.72fr) minmax(30rem, 1.28fr);
   align-items: center;
   gap: clamp(4rem, 9vw, 10rem);
-  margin: 0 auto 8rem;
-  padding: clamp(4rem, 8vh, 7rem) 0;
-  border-top: 1px solid rgba(192, 90, 135, 0.38);
+  margin: 0 0 8rem 50%;
+  padding: 0.85rem 0 clamp(4rem, 8vh, 7rem);
+  border-top: 1px solid rgba(198, 90, 170, 0.38);
+  transform: translateX(-50%);
+}
+
+.locations-background {
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: -1;
+  background: #f6f1f3;
+  pointer-events: none;
 }
 
 .locations-copy {
@@ -21,21 +32,46 @@
 .locations-kicker,
 .location-data span,
 .location-data small {
-  color: #c05a87;
+  color: #c65aaa;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
+.locations-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 2.75rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.locations-kicker-icon {
+  width: 1.2em;
+  height: 1.2em;
+  display: block;
+  flex: 0 0 auto;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
 .locations-copy h2 {
-  max-width: 9ch;
-  margin: 2rem 0 1.5rem;
+  max-width: none;
+  margin: 0 0 1.5rem;
   color: #1f2430;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(3rem, 5.5vw, 6rem);
+  font-size: clamp(2.8rem, 4.4vw, 4.8rem);
   font-weight: 300;
-  line-height: 0.82;
+  line-height: 0.85;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  transform: scaleY(0.78);
+  transform-origin: left center;
 }
 
 .locations-copy > p:not(.locations-kicker) {
@@ -46,6 +82,7 @@
   line-height: 1.7;
 }
 
+.locations-copy > strong,
 .locations-copy > span {
   display: block;
   max-width: 38ch;
@@ -53,6 +90,49 @@
   color: #64748b;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: 0.9rem;
+}
+
+.locations-copy > strong {
+  color: #1f2430;
+  font-weight: 500;
+}
+
+.locations-protocol {
+  max-width: 38ch;
+  margin-top: 1.5rem;
+  color: #475569;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+.locations-protocol summary {
+  width: fit-content;
+  color: #1f2430;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style: none;
+  border-bottom: 1px solid rgba(198, 90, 170, 0.55);
+}
+
+.locations-protocol summary::-webkit-details-marker {
+  display: none;
+}
+
+.locations-protocol summary::after {
+  content: ' ↗';
+  color: #c65aaa;
+}
+
+.locations-protocol[open] summary::after {
+  content: ' ↙';
+}
+
+.locations-protocol p {
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 .locations-chart {
@@ -93,8 +173,16 @@
   content: '';
   position: absolute;
   width: 118%;
-  border-top: 1px solid rgba(192, 90, 135, 0.34);
+  border-top: 1px solid rgba(198, 90, 170, 0.34);
   transform: rotate(-18deg);
+}
+
+.location-node-secondary .location-orbit::before {
+  transform: rotate(12deg);
+}
+
+.location-node-tertiary .location-orbit::before {
+  transform: rotate(-32deg);
 }
 
 .location-planet {
@@ -118,12 +206,41 @@
   background: radial-gradient(circle at 65% 35%, #faf9f7 0 7%, #d9a8bd 8% 18%, #596171 72%);
 }
 
-.location-node-tertiary .location-planet,
-.location-node-pending .location-planet {
+.location-node-tertiary .location-planet {
   width: 32%;
   background: transparent;
-  border: 1px dashed #c05a87;
+  border: 1px dashed #c65aaa;
   box-shadow: none;
+}
+
+.location-identifier {
+  position: absolute;
+  top: 52%;
+  left: 104%;
+  z-index: 1;
+  display: grid;
+  width: max-content;
+  max-width: 8rem;
+  gap: 0.1rem;
+  color: #1f2430;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transform: translateY(-50%);
+}
+
+.location-identifier b {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-identifier small {
+  color: #c65aaa;
+  font-size: inherit;
 }
 
 .location-marker {
@@ -134,8 +251,8 @@
   height: 0.55rem;
   border: 2px solid #faf9f7;
   border-radius: 50%;
-  background: #c05a87;
-  box-shadow: 0 0 0 1px #c05a87;
+  background: #c65aaa;
+  box-shadow: 0 0 0 1px #c65aaa;
 }
 
 .location-data {
@@ -164,19 +281,25 @@
   font-size: 0.8rem;
 }
 
+@media (min-width: 1001px) {
+  .locations-copy h2 {
+    font-size: clamp(2.8rem, min(4.4vw, 7vh), 4.8rem);
+  }
+}
+
 @media (max-width: 900px) {
   .locations-atlas {
     width: min(88vw, 42rem);
     min-height: auto;
     grid-template-columns: 1fr;
     gap: 3.5rem;
-    margin-bottom: 5rem;
-    padding: 4rem 0;
+    margin: 0 0 5rem 50%;
+    padding: 0.85rem 0 4rem;
   }
 
   .locations-copy h2 {
     max-width: none;
-    font-size: clamp(3rem, 14vw, 5rem);
+    font-size: clamp(2.6rem, 11vw, 3.8rem);
   }
 
   .location-node {

@@ -14,7 +14,7 @@
       top: -1.0rem;
       right: 0;
       left: 0;
-      border-top: 1px solid rgba(192, 90, 135, 0.38);
+      border-top: 1px solid rgba(198, 90, 170, 0.38);
     }
 
     .sessions-eyebrow {
@@ -22,7 +22,7 @@
       align-items: center;
       gap: 0.5em;
       margin: 0 0 0.75rem;
-      color: #c05a87;
+      color: #c65aaa;
       font-family: 'Nunito', sans-serif;
       font-size: 0.66rem;
       font-weight: 800;
@@ -108,8 +108,8 @@
     }
 
     .sessions-search:focus-within {
-      border-color: #c05a87;
-      box-shadow: 0 0 0 2px rgba(192, 90, 135, 0.12);
+      border-color: #c65aaa;
+      box-shadow: 0 0 0 2px rgba(198, 90, 170, 0.12);
     }
 
     .sessions-search svg {
@@ -376,7 +376,7 @@
       display: flex;
       justify-content: space-between;
       gap: 1rem;
-      color: #c05a87;
+      color: #c65aaa;
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.12em;
@@ -437,7 +437,7 @@
 
     .session-featured-footer a,
     .session-secondary a {
-      color: #c05a87;
+      color: #c65aaa;
       font-size: 0.75rem;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -466,7 +466,7 @@
     .session-secondary p,
     .session-anomaly {
       margin: 0;
-      color: #c05a87;
+      color: #c65aaa;
       font-size: 0.62rem;
       font-weight: 800;
       letter-spacing: 0.1em;

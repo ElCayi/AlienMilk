@@ -5,13 +5,20 @@ import { catchError, forkJoin, of } from 'rxjs';
 
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { EventService } from '../../core/services/event.service';
+import { SampleReceptionComponent } from '../../features/collaboration/sample-reception.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
 import { SessionsProgramComponent } from '../../features/sessions/sessions-program.component';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, SessionsProgramComponent, LocationsAtlasComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    SessionsProgramComponent,
+    LocationsAtlasComponent,
+    SampleReceptionComponent,
+  ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
   encapsulation: ViewEncapsulation.None,

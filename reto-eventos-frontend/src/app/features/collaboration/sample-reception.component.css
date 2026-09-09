@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.sample-reception {
+  box-sizing: border-box;
+  width: min(1480px, calc(100vw - 7.5rem));
+  margin: 0 0 clamp(6rem, 10vh, 9rem) 50%;
+  padding: clamp(2.5rem, 5vw, 4.75rem);
+  color: #faf9f7;
+  background: #1f2430;
+  border-radius: 1.25rem;
+  transform: translateX(-50%);
+}
+
+.sample-reception-kicker {
+  margin: 0 0 clamp(3rem, 6vw, 5.5rem);
+  color: #c65aaa;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sample-reception-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.65fr);
+  align-items: end;
+  gap: clamp(3rem, 9vw, 9rem);
+}
+
+.sample-reception h2 {
+  max-width: 13ch;
+  margin: 0;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(3rem, 5.6vw, 6rem);
+  font-weight: 300;
+  line-height: 0.92;
+  letter-spacing: 0.015em;
+}
+
+.sample-reception-copy {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.sample-reception-copy p,
+.sample-reception-copy strong {
+  margin: 0;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.sample-reception-copy p {
+  color: rgba(250, 249, 247, 0.72);
+}
+
+.sample-reception-copy strong {
+  color: #faf9f7;
+  font-weight: 500;
+}
+
+.sample-reception-copy a {
+  width: fit-content;
+  display: inline-flex;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+  padding-bottom: 0.35rem;
+  color: #faf9f7;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-bottom: 1px solid #c65aaa;
+}
+
+.sample-reception-copy a span {
+  color: #c65aaa;
+  transition: transform 160ms ease;
+}
+
+.sample-reception-copy a:hover span,
+.sample-reception-copy a:focus-visible span {
+  transform: translateX(0.3rem);
+}
+
+.sample-reception-copy a:focus-visible {
+  outline: 2px solid #c65aaa;
+  outline-offset: 0.45rem;
+}
+
+@media (max-width: 900px) {
+  .sample-reception {
+    width: min(88vw, 42rem);
+    margin: 0 0 5rem 50%;
+    padding: 2.5rem 1.5rem 3rem;
+    border-radius: 1rem;
+  }
+
+  .sample-reception-kicker {
+    margin-bottom: 2.75rem;
+  }
+
+  .sample-reception-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .sample-reception h2 {
+    font-size: clamp(2.8rem, 13vw, 4.25rem);
+  }
+}

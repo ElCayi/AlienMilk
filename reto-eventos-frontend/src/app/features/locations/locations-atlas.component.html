@@ -1,12 +1,24 @@
 <section class="locations-atlas" aria-labelledby="locations-title">
+  <div class="locations-background" aria-hidden="true"></div>
   <div class="locations-copy">
-    <p class="locations-kicker">Cartografía / Estaciones activas</p>
-    <h2 id="locations-title">Próximas localizaciones</h2>
-    <p>
-      Las sesiones se activan en espacios seleccionados por sus condiciones de acceso,
-      aislamiento y compatibilidad ambiental.
+    <p class="locations-kicker">
+      <span class="locations-kicker-icon" aria-hidden="true"></span>
+      <span>Cartografía / Red operativa</span>
     </p>
-    <span>Las coordenadas definitivas pueden sufrir alteraciones.</span>
+    <h2 id="locations-title">Localizaciones activas</h2>
+    <p>
+      Las sesiones se programan de acuerdo con la disponibilidad de cada estación y las
+      condiciones locales de tránsito, presión, aislamiento y acceso.
+    </p>
+    <strong>Los horarios indicados corresponden al huso operativo de cada instalación.</strong>
+    <span>Las coordenadas pueden actualizarse hasta 72 h antes de la sesión.</span>
+    <details class="locations-protocol">
+      <summary>Consultar protocolo de convivencia</summary>
+      <p>
+        Se solicita respetar las indicaciones de cada estación, preservar el silencio durante
+        las fases de cata y no interferir con muestras o participantes ajenos.
+      </p>
+    </details>
   </div>
 
   <div class="locations-chart" [class.is-loading]="loading">
@@ -23,22 +35,18 @@
         </video>
         <span class="location-planet" *ngIf="index !== 0"></span>
         <span class="location-marker"></span>
+        <span class="location-identifier">
+          <b>{{ location.tipoEvento }}</b>
+          <small>REGISTRO {{ location.idEvento | number: '2.0' }}</small>
+        </span>
       </div>
       <div class="location-data">
-        <span>{{ archiveCode(location) }} / ESTACIÓN {{ index + 1 | number: '2.0' }}</span>
+        <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
         <strong>{{ location.direccion }}</strong>
-        <small>{{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · ACCESO PROGRAMADO</small>
-      </div>
-    </article>
-
-    <article class="location-node location-node-pending" *ngIf="!loading && locations.length < 3">
-      <div class="location-orbit" aria-hidden="true">
-        <span class="location-planet"></span>
-      </div>
-      <div class="location-data">
-        <span>AM-X/000 / ESTACIÓN EN ESTUDIO</span>
-        <strong>Nueva sede en evaluación</strong>
-        <small>COMPATIBILIDAD AMBIENTAL PENDIENTE</small>
+        <small>
+          {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
+          {{ location.aforoMaximo }}
+        </small>
       </div>
     </article>
 

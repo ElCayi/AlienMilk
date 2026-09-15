@@ -37,9 +37,9 @@ body {
 }
 
 .dark-btn {
-  background: #77005c;
-  color: white;
-  border: 1px solid #77005c;
+  background: #faf9f7;
+  color: #151217;
+  border: 1px solid #faf9f7;
 }
 
 .ghost-btn:hover,
@@ -56,6 +56,7 @@ body {
 .dark-btn:hover {
   background: #c65aaa;
   border-color: #c65aaa;
+  color: white;
   box-shadow: 0 10px 20px rgba(198, 90, 170, 0.22);
 }
 

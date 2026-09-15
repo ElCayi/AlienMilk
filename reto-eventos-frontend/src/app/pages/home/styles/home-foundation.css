@@ -150,6 +150,9 @@
       display: flex;
       justify-content: center;
       margin-bottom: 0.2rem;
+      filter:
+        drop-shadow(0 0.12rem 0.45rem rgba(119, 0, 92, 0.76))
+        drop-shadow(0 0 1.15rem rgba(119, 0, 92, 0.48));
     }
 
     .hero-lockup-logo {
@@ -157,7 +160,7 @@
       height: 8.4rem;
       display: block;
       flex: 0 0 auto;
-      background: #77005c;
+      background: #faf9f7;
       -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
       mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
     }
@@ -184,22 +187,47 @@
       margin: 0;
       font-weight: 900;
       letter-spacing: 0.02em;
-      color: #77005c;
+      color: #151217;
+      text-shadow:
+        0 0.1em 0.32em rgba(119, 0, 92, 0.76),
+        0 0 0.78em rgba(119, 0, 92, 0.48);
     }
 
     .hero-title-milk {
-      color: #151217;
+      color: #faf9f7;
     }
 
     .hero-subtitle {
+      box-sizing: border-box;
       width: 100%;
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.65rem, 1.45vw, 1.2rem);
+      padding: 0.2rem 0.7rem 0.32rem;
       font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-      font-size: clamp(2.1rem, 4.75vw, 3.8rem);
-      font-weight: 300;
+      font-size: clamp(1.1rem, 2.4vw, 1.9rem);
+      font-weight: 400;
       line-height: 0.85;
       color: #151217;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(250, 249, 247, 0.28) 12%,
+        rgba(250, 249, 247, 0.68) 28% 72%,
+        rgba(250, 249, 247, 0.28) 88%,
+        transparent 100%
+      );
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      text-shadow: none;
+    }
+
+    .hero-subtitle > span {
+      display: inline-block;
       transform: scaleY(0.78);
       transform-origin: center;
     }

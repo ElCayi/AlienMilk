@@ -186,15 +186,15 @@
 }
 
 .dark-btn {
-  background: #77005c;
-  color: white;
-  border: 1px solid #77005c;
+  background: #faf9f7;
+  color: #151217;
+  border: 1px solid #faf9f7;
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #c65aaa, #c65aaa);
-  color: white;
-  box-shadow: 0 14px 26px rgba(198, 90, 170, 0.22);
+  background: #faf9f7;
+  color: #151217;
+  box-shadow: 0 14px 26px rgba(250, 249, 247, 0.12);
 }
 
 .secondary-btn {
@@ -219,10 +219,13 @@
 .dark-btn:hover {
   background: #c65aaa;
   border-color: #c65aaa;
+  color: white;
   box-shadow: 0 10px 20px rgba(198, 90, 170, 0.22);
 }
 
 .primary-btn:hover {
+  color: white;
+  background: #c65aaa;
   box-shadow: 0 16px 28px rgba(198, 90, 170, 0.24);
 }
 

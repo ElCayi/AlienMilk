@@ -470,12 +470,32 @@
     .sessions-explore {
       width: fit-content;
       display: flex;
+      align-items: center;
       gap: 0.8rem;
       margin: 2.75rem auto 0;
       padding-bottom: 0.45rem;
       border-bottom: 1px solid #1f2430;
       font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
       font-size: 1rem;
+    }
+
+    .sessions-explore > span {
+      width: 1.35rem;
+      height: 1.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sessions-explore > span > svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     /* Night reading palette: preserve hierarchy without using pure black or white. */

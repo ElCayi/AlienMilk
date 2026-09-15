@@ -189,6 +189,7 @@
   background: #faf9f7;
   color: #151217;
   border: 1px solid #faf9f7;
+  box-shadow: none;
 }
 
 .primary-btn {
@@ -220,7 +221,6 @@
   background: #ff7f7f;
   border-color: #ff7f7f;
   color: white;
-  box-shadow: 0 10px 20px rgba(255, 127, 127, 0.22);
 }
 
 .primary-btn:hover {

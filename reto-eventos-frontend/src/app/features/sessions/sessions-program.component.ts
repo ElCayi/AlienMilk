@@ -12,13 +12,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 
 import { EventoListado } from '../../models/api.models';
-import {
-  anomaly,
-  archiveCode,
-  compatibility,
-  sampleCode,
-  sessionImage,
-} from './session.presenter';
+import { anomaly, archiveCode, compatibility, sampleCode, sessionImage } from './session.presenter';
 
 interface ViewTransitionDocument {
   startViewTransition?: (update: () => void) => ViewTransition;
@@ -40,7 +34,7 @@ export class SessionsProgramComponent {
   @Input() error = '';
   @Output() readonly retry = new EventEmitter<void>();
   readonly query = signal('');
-  readonly featuredSessionId = signal<number | null>(null);
+  readonly featuredSessionIndex = signal(0);
 
   readonly sessionImage = sessionImage;
   readonly archiveCode = archiveCode;
@@ -49,38 +43,55 @@ export class SessionsProgramComponent {
   readonly anomaly = anomaly;
 
   get featuredSession(): EventoListado | null {
-    return this.displaySessions[0] ?? null;
+    if (!this.sessions.length) {
+      return null;
+    }
+
+    return this.sessions[this.featuredSessionIndex() % this.sessions.length] ?? null;
   }
 
   get secondarySessions(): EventoListado[] {
-    return this.displaySessions.slice(1);
+    const featuredId = this.featuredSession?.idEvento;
+    return this.sessions.filter((session) => session.idEvento !== featuredId).slice(0, 2);
   }
 
-  private get displaySessions(): EventoListado[] {
-    const visibleSessions = this.sessions.slice(0, 3);
-    const selectedIndex = visibleSessions.findIndex(
-      (session) => session.idEvento === this.featuredSessionId(),
-    );
-
-    if (selectedIndex > 0) {
-      [visibleSessions[0], visibleSessions[selectedIndex]] = [
-        visibleSessions[selectedIndex],
-        visibleSessions[0],
-      ];
-    }
-
-    return visibleSessions;
+  get hasMultipleSessions(): boolean {
+    return this.sessions.length > 1;
   }
 
-  promoteSession(session: EventoListado): void {
-    if (session.idEvento === this.featuredSession?.idEvento) {
+  previousSession(): void {
+    this.changeFeaturedSession(-1);
+  }
+
+  nextSession(): void {
+    this.changeFeaturedSession(1);
+  }
+
+  goToSession(session: EventoListado): void {
+    const sessionIndex = this.sessions.findIndex((item) => item.idEvento === session.idEvento);
+    if (sessionIndex < 0 || sessionIndex === this.featuredSessionIndex()) {
       return;
     }
 
+    this.setFeaturedSession(sessionIndex);
+  }
+
+  private changeFeaturedSession(offset: number): void {
+    if (!this.sessions.length) {
+      return;
+    }
+
+    const nextIndex =
+      (this.featuredSessionIndex() + offset + this.sessions.length) % this.sessions.length;
+    this.setFeaturedSession(nextIndex);
+  }
+
+  private setFeaturedSession(index: number): void {
     const updateFeaturedSession = () => {
-      this.featuredSessionId.set(session.idEvento);
+      this.featuredSessionIndex.set(index);
       this.changeDetector.detectChanges();
     };
+
     const transitionDocument = document as unknown as ViewTransitionDocument;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -90,7 +101,10 @@ export class SessionsProgramComponent {
 
     if (transitionDocument.startViewTransition) {
       this.activeTransition?.skipTransition();
-      const transition = transitionDocument.startViewTransition.call(document, updateFeaturedSession);
+      const transition = transitionDocument.startViewTransition.call(
+        document,
+        updateFeaturedSession,
+      );
       this.activeTransition = transition;
       void transition.finished.finally(() => {
         if (this.activeTransition === transition) {
@@ -115,5 +129,4 @@ export class SessionsProgramComponent {
   trackSession(_index: number, session: EventoListado): number {
     return session.idEvento;
   }
-
 }

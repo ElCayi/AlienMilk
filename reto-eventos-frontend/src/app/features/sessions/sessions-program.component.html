@@ -10,8 +10,8 @@
       <p>
         Cada sesión combina degustación, instalación y performance para explorar sabores, texturas y
         procedencias difícilmente accesibles por medios convencionales. Por respeto a nuestros
-        proveedores y a los acuerdos que hacen posible cada extracción, AlienMilk no revela el origen
-        biológico ni el método de obtención de sus muestras.
+        proveedores y a los acuerdos que hacen posible cada extracción, AlienMilk no revela el
+        origen biológico ni el método de obtención de sus muestras.
       </p>
     </div>
 
@@ -28,7 +28,9 @@
           (input)="updateQuery($event)"
           placeholder="¿Buscas algo?"
         />
-        <button type="submit" aria-label="Buscar en toda la programación"><span aria-hidden="true">→</span></button>
+        <button type="submit" aria-label="Buscar en toda la programación">
+          <span aria-hidden="true">→</span>
+        </button>
       </form>
     </div>
   </header>
@@ -44,59 +46,110 @@
     Ahora mismo no hay sesiones disponibles. Vuelve pronto para descubrir las siguientes.
   </p>
 
-  <div class="sessions-program" *ngIf="!loading && !error && featuredSession as featured">
-    <article class="session-featured">
-      <a
-        class="session-image-link"
-        routerLink="/sesiones"
-        [queryParams]="{ sesion: featured.idEvento }"
-        [style.view-transition-name]="'session-sample-' + featured.idEvento"
-      >
-        <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
-        <span>{{ featured.tipoEvento }}</span>
-      </a>
-      <div class="session-featured-info">
-        <div class="session-file-heading">
-          <span>{{ archiveCode(featured) }}</span>
-          <span>{{ featured.tipoEvento }}</span>
-        </div>
-        <h3>{{ featured.nombre }}</h3>
-        <dl class="session-file-data">
-          <div><dt>Muestra</dt><dd>{{ sampleCode(featured) }}</dd></div>
-          <div><dt>Procedencia</dt><dd>No declarada</dd></div>
-          <div><dt>Fecha</dt><dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }}</dd></div>
-          <div><dt>Compatibilidad</dt><dd>{{ compatibility(featured) }}</dd></div>
-        </dl>
-        <div class="session-featured-footer">
-          <span>{{ featured.precio | currency: 'EUR' }}</span>
-          <a routerLink="/sesiones" [queryParams]="{ sesion: featured.idEvento }">Examinar sesión <span aria-hidden="true">→</span></a>
-        </div>
-      </div>
-    </article>
+  <div class="sessions-carousel" *ngIf="!loading && !error && featuredSession as featured">
+    <button
+      class="sessions-carousel-arrow sessions-carousel-arrow-prev"
+      type="button"
+      aria-label="Sesión anterior"
+      [disabled]="!hasMultipleSessions"
+      (click)="previousSession()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m14 6-6 6 6 6"></path>
+      </svg>
+    </button>
 
-    <div class="session-secondary-list">
-      <article class="session-secondary" *ngFor="let session of secondarySessions; trackBy: trackSession">
-        <button
-          class="session-secondary-image"
-          type="button"
-          [attr.aria-label]="'Mostrar ' + session.nombre + ' como sesión destacada'"
-          [style.view-transition-name]="'session-sample-' + session.idEvento"
-          (click)="promoteSession(session)"
+    <div class="sessions-program">
+      <article class="session-featured">
+        <a
+          class="session-image-link"
+          routerLink="/sesiones"
+          [queryParams]="{ sesion: featured.idEvento }"
+          [style.view-transition-name]="'session-sample-' + featured.idEvento"
         >
-          <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
-          <span>{{ archiveCode(session) }}</span>
-        </button>
-        <div>
-          <p>{{ session.tipoEvento }}</p>
-          <h3>{{ session.nombre }}</h3>
-          <span class="session-anomaly">{{ anomaly(session) }}</span>
-          <footer>
-            <span>{{ session.fechaInicio | date: 'dd.MM.yy' }} · {{ session.precio | currency: 'EUR' }}</span>
-            <a routerLink="/sesiones" [queryParams]="{ sesion: session.idEvento }" [attr.aria-label]="'Examinar ' + session.nombre">→</a>
-          </footer>
+          <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
+          <span>{{ featured.tipoEvento }}</span>
+        </a>
+        <div class="session-featured-info">
+          <div class="session-file-heading">
+            <span>{{ archiveCode(featured) }}</span>
+            <span>{{ featured.tipoEvento }}</span>
+          </div>
+          <h3>{{ featured.nombre }}</h3>
+          <dl class="session-file-data">
+            <div>
+              <dt>Muestra</dt>
+              <dd>{{ sampleCode(featured) }}</dd>
+            </div>
+            <div>
+              <dt>Procedencia</dt>
+              <dd>No declarada</dd>
+            </div>
+            <div>
+              <dt>Fecha</dt>
+              <dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }}</dd>
+            </div>
+            <div>
+              <dt>Compatibilidad</dt>
+              <dd>{{ compatibility(featured) }}</dd>
+            </div>
+          </dl>
+          <div class="session-featured-footer">
+            <span>{{ featured.precio | currency: 'EUR' }}</span>
+            <a routerLink="/sesiones" [queryParams]="{ sesion: featured.idEvento }"
+              >Examinar sesión <span aria-hidden="true">→</span></a
+            >
+          </div>
         </div>
       </article>
+
+      <div class="session-secondary-list">
+        <article
+          class="session-secondary"
+          *ngFor="let session of secondarySessions; trackBy: trackSession"
+        >
+          <button
+            class="session-secondary-image"
+            type="button"
+            [attr.aria-label]="'Mostrar ' + session.nombre + ' como sesión destacada'"
+            [style.view-transition-name]="'session-sample-' + session.idEvento"
+            (click)="goToSession(session)"
+          >
+            <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
+            <span>{{ archiveCode(session) }}</span>
+          </button>
+          <div>
+            <p>{{ session.tipoEvento }}</p>
+            <h3>{{ session.nombre }}</h3>
+            <span class="session-anomaly">{{ anomaly(session) }}</span>
+            <footer>
+              <span
+                >{{ session.fechaInicio | date: 'dd.MM.yy' }} ·
+                {{ session.precio | currency: 'EUR' }}</span
+              >
+              <a
+                routerLink="/sesiones"
+                [queryParams]="{ sesion: session.idEvento }"
+                [attr.aria-label]="'Examinar ' + session.nombre"
+                >→</a
+              >
+            </footer>
+          </div>
+        </article>
+      </div>
     </div>
+
+    <button
+      class="sessions-carousel-arrow sessions-carousel-arrow-next"
+      type="button"
+      aria-label="Siguiente sesión"
+      [disabled]="!hasMultipleSessions"
+      (click)="nextSession()"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m10 6 6 6-6 6"></path>
+      </svg>
+    </button>
   </div>
 
   <a class="sessions-explore" routerLink="/sesiones">

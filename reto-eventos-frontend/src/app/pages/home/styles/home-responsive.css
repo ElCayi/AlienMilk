@@ -2,15 +2,14 @@
       .sessions-block {
         box-sizing: border-box;
         width: min(1180px, calc(100vw - 7.5rem));
-        height: calc(100vh - var(--topbar-height));
-        height: calc(100dvh - var(--topbar-height));
+        height: auto;
         display: grid;
         grid-template-rows: auto minmax(0, 1fr) auto;
         gap: clamp(1.75rem, 3.6vh, 2.6rem);
         margin-bottom: 0;
         margin-left: 50%;
         padding-top: calc(var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem));
-        padding-bottom: calc(clamp(4rem, 7.5vh, 6rem) + 4rem);
+        padding-bottom: clamp(4.75rem, 7vh, 5.75rem);
         transform: translateX(-50%);
       }
 
@@ -140,8 +139,7 @@
       .sessions-block {
         width: min(1240px, 82vw);
         height: auto;
-        min-height: calc(100vh - var(--topbar-height) + 7rem);
-        min-height: calc(100dvh - var(--topbar-height) + 7rem);
+        min-height: 0;
         transform: translate(-50%, -1.4rem);
       }
 
@@ -211,8 +209,13 @@
     }
 
     @media (max-width: 900px) {
+      .about-card {
+        width: calc(100% - 2rem);
+        padding: 2rem 1.25rem;
+        border-radius: 1.5rem;
+      }
+
       .sessions-block {
-        margin-bottom: 4rem;
         padding-top: clamp(2rem, 6vh, 4rem);
       }
 

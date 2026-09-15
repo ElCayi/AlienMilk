@@ -4,7 +4,7 @@
     }
 
     .sessions-block {
-      margin-bottom: 9.4rem;
+      margin-bottom: 0;
     }
 
     .hero-divider {
@@ -117,7 +117,7 @@
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: transparent;
+      background: rgba(62, 181, 211, 0.2);
       pointer-events: none;
     }
 

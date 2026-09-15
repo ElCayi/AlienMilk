@@ -11,7 +11,7 @@
   grid-template-columns: minmax(18rem, 0.72fr) minmax(30rem, 1.28fr);
   align-items: center;
   gap: clamp(4rem, 9vw, 10rem);
-  margin: 0 0 8rem 50%;
+  margin: 0 0 6.25rem 50%;
   padding: 0.85rem 0 clamp(4rem, 8vh, 7rem);
   border-top: 1px solid rgba(255, 127, 127, 0.38);
   transform: translateX(-50%);
@@ -147,7 +147,7 @@
   position: absolute;
   top: 10%;
   bottom: 10%;
-  left: clamp(3.5rem, 6vw, 6rem);
+  left: clamp(3rem, 5vw, 4.5rem);
   border-left: 1px solid rgba(241, 236, 239, 0.16);
 }
 
@@ -166,24 +166,37 @@
   aspect-ratio: 1;
   display: grid;
   place-items: center;
+}
+
+.location-orbit-ring {
+  position: absolute;
+  inset: 0;
   border: 1px solid rgba(241, 236, 239, 0.22);
   border-radius: 50%;
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.location-orbit::before {
+.location-orbit-ring::before {
   content: '';
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 118%;
   border-top: 1px solid rgba(255, 127, 127, 0.34);
-  transform: rotate(-18deg);
+  transform: translate(-50%, -50%) rotate(-18deg);
 }
 
-.location-node-secondary .location-orbit::before {
-  transform: rotate(12deg);
+.location-node-secondary .location-orbit-ring::before {
+  transform: translate(-50%, -50%) rotate(12deg);
 }
 
-.location-node-tertiary .location-orbit::before {
-  transform: rotate(-32deg);
+.location-node-tertiary .location-orbit-ring::before {
+  transform: translate(-50%, -50%) rotate(-32deg);
+}
+
+.location-node:hover .location-orbit-ring,
+.location-node:focus-within .location-orbit-ring {
+  transform: rotate(20deg);
 }
 
 .location-planet {
@@ -246,14 +259,54 @@
 
 .location-marker {
   position: absolute;
-  top: 2%;
-  right: 17%;
-  width: 0.55rem;
-  height: 0.55rem;
-  border: 2px solid #faf9f7;
+  top: -5%;
+  right: 9%;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 248, 249, 0.19) 0 12%,
+    rgba(255, 127, 127, 0.17) 28%,
+    rgba(255, 127, 127, 0.075) 48%,
+    transparent 72%
+  );
+}
+
+.location-marker > span {
+  width: 1.05rem;
+  height: 1.05rem;
+  display: block;
   background: #ff7f7f;
-  box-shadow: 0 0 0 1px #ff7f7f;
+  filter: drop-shadow(0 0 2px rgba(255, 248, 249, 0.9));
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.location-node-secondary .location-marker {
+  top: auto;
+  right: auto;
+  bottom: 3%;
+  left: 10%;
+}
+
+.location-node-tertiary .location-marker {
+  top: auto;
+  right: -1%;
+  bottom: 19%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-orbit-ring {
+    transition: none;
+  }
+
+  .location-node:hover .location-orbit-ring,
+  .location-node:focus-within .location-orbit-ring {
+    transform: none;
+  }
 }
 
 .location-data {
@@ -316,7 +369,7 @@
     min-height: auto;
     grid-template-columns: 1fr;
     gap: 3.5rem;
-    margin: 0 0 5rem 50%;
+    margin: 0 0 4rem 50%;
     padding: 0.85rem 0 4rem;
   }
 
@@ -341,7 +394,7 @@
     width: 6.75rem;
   }
 
-  .location-orbit::before {
+  .location-orbit-ring::before {
     width: 110%;
   }
 

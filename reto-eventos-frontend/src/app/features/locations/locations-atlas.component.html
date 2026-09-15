@@ -12,7 +12,7 @@
     </p>
     <strong>Los horarios indicados corresponden al huso operativo de cada instalación.</strong>
     <span>Las coordenadas pueden actualizarse hasta 72 h antes de la sesión.</span>
-    <details class="locations-protocol">
+    <details class="locations-protocol" id="protocolo-convivencia">
       <summary>Consultar protocolo de convivencia</summary>
       <p>
         Se solicita respetar las indicaciones de cada estación, preservar el silencio durante
@@ -29,12 +29,14 @@
       [class.location-node-tertiary]="index === 2"
     >
       <div class="location-orbit" aria-hidden="true">
+        <span class="location-orbit-ring">
+          <span class="location-marker"><span></span></span>
+        </span>
         <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
           <source src="alienmilk-planet-loop.webm" type="video/webm" />
           <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
         </video>
         <span class="location-planet" *ngIf="index !== 0"></span>
-        <span class="location-marker"></span>
         <span class="location-identifier">
           <b>{{ location.tipoEvento }}</b>
           <small>REGISTRO {{ location.idEvento | number: '2.0' }}</small>

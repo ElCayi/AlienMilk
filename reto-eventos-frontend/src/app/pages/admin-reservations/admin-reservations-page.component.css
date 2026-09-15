@@ -88,12 +88,12 @@
     }
 
     .sidebar nav a:hover {
-      background: rgba(198, 90, 170, 0.14);
-      color: #c65aaa;
+      background: rgba(255, 127, 127, 0.14);
+      color: #ff7f7f;
     }
 
     .sidebar nav a.active {
-      background: linear-gradient(135deg, #c65aaa, #c65aaa);
+      background: linear-gradient(135deg, #ff7f7f, #ff7f7f);
       color: white;
       cursor: default;
     }
@@ -129,7 +129,7 @@
       letter-spacing: 0.08em;
       font-size: 0.9rem;
       font-weight: 800;
-      color: #c65aaa;
+      color: #ff7f7f;
     }
 
     .eyebrow img {
@@ -198,13 +198,13 @@
       font-family: 'Nunito', sans-serif;
       font-weight: 700;
       cursor: pointer;
-      background: linear-gradient(135deg, #c65aaa, #c65aaa);
+      background: linear-gradient(135deg, #ff7f7f, #ff7f7f);
       color: white;
     }
 
     .ghost {
-      background: rgba(198, 90, 170, 0.14);
-      color: #c65aaa;
+      background: rgba(255, 127, 127, 0.14);
+      color: #ff7f7f;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -236,8 +236,8 @@
     }
 
     .usuario-list article.activo {
-      outline: 2px solid #c65aaa;
-      background: rgba(198, 90, 170, 0.14);
+      outline: 2px solid #ff7f7f;
+      background: rgba(255, 127, 127, 0.14);
     }
 
     .reserva-list .obs {

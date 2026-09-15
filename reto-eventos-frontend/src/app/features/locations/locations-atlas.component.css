@@ -5,7 +5,7 @@
 .locations-atlas {
   position: relative;
   isolation: isolate;
-  width: min(1480px, calc(100vw - 7.5rem));
+  width: min(1180px, calc(100vw - 7.5rem));
   min-height: min(74vh, 46rem);
   display: grid;
   grid-template-columns: minmax(18rem, 0.72fr) minmax(30rem, 1.28fr);
@@ -13,7 +13,7 @@
   gap: clamp(4rem, 9vw, 10rem);
   margin: 0 0 8rem 50%;
   padding: 0.85rem 0 clamp(4rem, 8vh, 7rem);
-  border-top: 1px solid rgba(198, 90, 170, 0.38);
+  border-top: 1px solid rgba(255, 127, 127, 0.38);
   transform: translateX(-50%);
 }
 
@@ -32,7 +32,7 @@
 .locations-kicker,
 .location-data span,
 .location-data small {
-  color: #c65aaa;
+  color: #ff7f7f;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -113,7 +113,7 @@
   text-transform: uppercase;
   cursor: pointer;
   list-style: none;
-  border-bottom: 1px solid rgba(198, 90, 170, 0.55);
+  border-bottom: 1px solid rgba(255, 127, 127, 0.55);
 }
 
 .locations-protocol summary::-webkit-details-marker {
@@ -122,7 +122,7 @@
 
 .locations-protocol summary::after {
   content: ' ↗';
-  color: #c65aaa;
+  color: #ff7f7f;
 }
 
 .locations-protocol[open] summary::after {
@@ -137,6 +137,7 @@
 
 .locations-chart {
   position: relative;
+  align-self: start;
   display: grid;
   gap: clamp(1rem, 2vh, 1.6rem);
 }
@@ -173,7 +174,7 @@
   content: '';
   position: absolute;
   width: 118%;
-  border-top: 1px solid rgba(198, 90, 170, 0.34);
+  border-top: 1px solid rgba(255, 127, 127, 0.34);
   transform: rotate(-18deg);
 }
 
@@ -209,7 +210,7 @@
 .location-node-tertiary .location-planet {
   width: 32%;
   background: transparent;
-  border: 1px dashed #c65aaa;
+  border: 1px dashed #ff7f7f;
   box-shadow: none;
 }
 
@@ -239,7 +240,7 @@
 }
 
 .location-identifier small {
-  color: #c65aaa;
+  color: #ff7f7f;
   font-size: inherit;
 }
 
@@ -251,8 +252,8 @@
   height: 0.55rem;
   border: 2px solid #faf9f7;
   border-radius: 50%;
-  background: #c65aaa;
-  box-shadow: 0 0 0 1px #c65aaa;
+  background: #ff7f7f;
+  box-shadow: 0 0 0 1px #ff7f7f;
 }
 
 .location-data {
@@ -287,6 +288,28 @@
   }
 }
 
+@media (min-width: 1360px) {
+  .locations-atlas {
+    width: min(1480px, calc(100vw - 7.5rem));
+  }
+
+  .locations-chart {
+    gap: clamp(1.6rem, 2.8vh, 2.5rem);
+  }
+}
+
+@media (min-width: 1001px) and (max-width: 1920px) and (max-height: 1080px) {
+  .locations-atlas {
+    width: min(1240px, 82vw);
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1000px) {
+  .locations-atlas {
+    width: 82vw;
+  }
+}
+
 @media (max-width: 900px) {
   .locations-atlas {
     width: min(88vw, 42rem);
@@ -303,7 +326,42 @@
   }
 
   .location-node {
-    grid-template-columns: 6.5rem 1fr;
-    gap: 1.25rem;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 10rem;
+    padding-block: 0.5rem;
+  }
+
+  .locations-chart::before {
+    left: 3.375rem;
+  }
+
+  .location-orbit {
+    width: 6.75rem;
+  }
+
+  .location-orbit::before {
+    width: 110%;
+  }
+
+  .location-identifier {
+    top: auto;
+    bottom: -1.75rem;
+    left: 50%;
+    width: 7.5rem;
+    max-width: 7.5rem;
+    text-align: center;
+    transform: translateX(-50%);
+  }
+
+  .location-data {
+    min-width: 0;
+  }
+
+  .location-data strong,
+  .location-data small,
+  .location-data > span {
+    overflow-wrap: anywhere;
   }
 }

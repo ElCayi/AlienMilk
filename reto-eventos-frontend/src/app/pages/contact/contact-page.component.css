@@ -1,0 +1,104 @@
+:host {
+  display: block;
+  min-height: calc(100dvh - var(--topbar-height));
+  color: #f1ecef;
+  background: #100e12;
+}
+
+.contact-page {
+  box-sizing: border-box;
+  width: min(1240px, calc(100% - 8rem));
+  min-height: calc(100dvh - var(--topbar-height));
+  margin: 0 auto;
+  padding: clamp(5rem, 11vh, 8rem) 0;
+}
+
+.contact-intro {
+  display: grid;
+  gap: 1rem;
+  max-width: 48rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 127, 127, 0.48);
+}
+
+.contact-eyebrow {
+  margin: 0;
+  color: #ff7f7f;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.contact-intro h1 {
+  margin: 1.4rem 0 0;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(4rem, 9vw, 8rem);
+  font-weight: 300;
+  line-height: 0.88;
+}
+
+.contact-intro > p:last-child {
+  max-width: 36rem;
+  margin: 0.5rem 0 0;
+  color: #b9afb6;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(4rem, 10vh, 7rem);
+  border-top: 1px solid rgba(241, 236, 239, 0.18);
+  border-bottom: 1px solid rgba(241, 236, 239, 0.18);
+  background: rgba(241, 236, 239, 0.18);
+}
+
+.contact-grid article {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  min-height: 9rem;
+  padding: 1.6rem;
+  background: #100e12;
+}
+
+.contact-label {
+  color: #91878e;
+  font: 400 0.8rem 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.contact-grid strong,
+.contact-grid a {
+  color: #f1ecef;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.contact-grid a:hover,
+.contact-grid a:focus-visible {
+  color: #ff7f7f;
+}
+
+@media (max-width: 1000px) {
+  .contact-page {
+    width: min(100% - 3rem, 48rem);
+    padding-block: 3.5rem;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+    margin-top: 3.5rem;
+  }
+
+  .contact-grid article {
+    min-height: auto;
+  }
+}

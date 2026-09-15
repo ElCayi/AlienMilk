@@ -34,7 +34,7 @@
 
 .room-eyebrow {
   margin: 0 0 0.8rem;
-  color: #c65aaa;
+  color: #ff7f7f;
   font-size: 0.78rem;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .room-search:focus-within {
-  border-color: #c65aaa;
+  border-color: #ff7f7f;
 }
 
 .room-search svg {
@@ -154,7 +154,7 @@
 
 .index-card:hover,
 .index-card.is-selected {
-  border-color: #c65aaa;
+  border-color: #ff7f7f;
   background: rgba(33, 30, 36, 0.92);
 }
 
@@ -173,7 +173,7 @@
 
 .index-code {
   overflow: hidden;
-  color: #c65aaa;
+  color: #ff7f7f;
   font-size: 0.62rem;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -246,7 +246,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  color: #c65aaa;
+  color: #ff7f7f;
   font-size: 0.65rem;
 }
 
@@ -359,7 +359,7 @@
 .access-prompt a:hover,
 .room-status button:hover {
   color: white;
-  background: #c65aaa;
+  background: #ff7f7f;
 }
 
 .reserve-button:disabled {

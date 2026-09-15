@@ -28,7 +28,7 @@
       width: min(1180px, calc(100% - 2rem));
       margin: 0 auto 1rem;
       text-decoration: none;
-      color: #c65aaa;
+      color: #ff7f7f;
       font-weight: 700;
     }
 
@@ -67,7 +67,7 @@
       letter-spacing: 0.08em;
       font-size: 0.75rem;
       font-weight: 800;
-      color: #c65aaa;
+      color: #ff7f7f;
     }
 
     .eyebrow img {
@@ -128,7 +128,7 @@
       justify-content: space-between;
       padding: 0.95rem 1rem;
       border-radius: 14px;
-      background: rgba(198, 90, 170, 0.08);
+      background: rgba(255, 127, 127, 0.08);
       color: #f1ecef;
     }
 
@@ -162,7 +162,7 @@
       border-radius: 16px;
       padding: 0.95rem 1rem;
       font-family: 'Nunito', sans-serif;
-      background: linear-gradient(135deg, #c65aaa, #c65aaa);
+      background: linear-gradient(135deg, #ff7f7f, #ff7f7f);
       color: white;
       font-weight: 700;
       text-decoration: none;

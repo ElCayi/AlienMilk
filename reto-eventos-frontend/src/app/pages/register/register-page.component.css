@@ -69,7 +69,7 @@
     }
 
     .login-copy a {
-      color: #c65aaa;
+      color: #ff7f7f;
       font-weight: 700;
       text-decoration: none;
     }
@@ -99,7 +99,7 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 800;
-      color: #c65aaa !important;
+      color: #ff7f7f !important;
     }
 
     .register-card {
@@ -118,7 +118,7 @@
       letter-spacing: 0.08em;
       font-size: 0.75rem;
       font-weight: 800;
-      color: #c65aaa;
+      color: #ff7f7f;
     }
 
     form {
@@ -160,7 +160,7 @@
     }
 
     input:focus-visible {
-      outline: 2px solid rgba(198, 90, 170, 0.24);
+      outline: 2px solid rgba(255, 127, 127, 0.24);
       outline-offset: 2px;
     }
 

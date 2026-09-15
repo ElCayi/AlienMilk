@@ -14,7 +14,7 @@
       top: -1.0rem;
       right: 0;
       left: 0;
-      border-top: 1px solid rgba(198, 90, 170, 0.38);
+      border-top: 1px solid rgba(255, 127, 127, 0.38);
     }
 
     .sessions-eyebrow {
@@ -22,7 +22,7 @@
       align-items: center;
       gap: 0.5em;
       margin: 0 0 0.75rem;
-      color: #c65aaa;
+      color: #ff7f7f;
       font-family: 'Nunito', sans-serif;
       font-size: 0.66rem;
       font-weight: 800;
@@ -72,7 +72,7 @@
     .sessions-subtitle {
       display: block;
       margin: 0.9rem 0 0;
-      color: #c65aaa;
+      color: #ff7f7f;
       font-family: 'Nunito', sans-serif;
       font-size: clamp(1.05rem, 1.55vw, 1.3rem);
       font-weight: 300;
@@ -108,8 +108,8 @@
     }
 
     .sessions-search:focus-within {
-      border-color: #c65aaa;
-      box-shadow: 0 0 0 2px rgba(198, 90, 170, 0.12);
+      border-color: #ff7f7f;
+      box-shadow: 0 0 0 2px rgba(255, 127, 127, 0.12);
     }
 
     .sessions-search svg {
@@ -206,14 +206,6 @@
       cursor: pointer;
     }
 
-    .contact-card {
-      padding: 1.9rem;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.88);
-      border: 1px solid rgba(241, 236, 239, 0.1);
-      box-shadow: 0 16px 28px rgba(23, 32, 51, 0.06);
-    }
-
     .about-card {
       padding: clamp(2rem, 5vw, 3.4rem);
       border-radius: 0;
@@ -297,28 +289,6 @@
       background-position: right center;
     }
 
-    .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .contact-grid div {
-      display: grid;
-      gap: 0.55rem;
-      padding: 1.2rem;
-      border-radius: 18px;
-      background: #211e24;
-    }
-
-    .contact-label {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #91878e;
-      font-weight: 800;
-    }
-
     .sessions-program {
       display: grid;
       grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.8fr);
@@ -386,7 +356,7 @@
       display: flex;
       justify-content: space-between;
       gap: 1rem;
-      color: #c65aaa;
+      color: #ff7f7f;
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.12em;
@@ -447,7 +417,7 @@
 
     .session-featured-footer a,
     .session-secondary a {
-      color: #c65aaa;
+      color: #ff7f7f;
       font-size: 0.75rem;
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -476,7 +446,7 @@
     .session-secondary p,
     .session-anomaly {
       margin: 0;
-      color: #c65aaa;
+      color: #ff7f7f;
       font-size: 0.62rem;
       font-weight: 800;
       letter-spacing: 0.1em;
@@ -517,13 +487,12 @@
 
     .sessions-editorial-main > p:not(.sessions-eyebrow):not(.sessions-subtitle),
     .sessions-count,
-    .sessions-status,
-    .contact-label {
+    .sessions-status {
       color: #b9afb6;
     }
 
     .sessions-editorial::before {
-      border-top-color: rgba(198, 90, 170, 0.48);
+      border-top-color: rgba(255, 127, 127, 0.48);
     }
 
     .sessions-search {
@@ -539,8 +508,7 @@
       color: #8f858c;
     }
 
-    .sessions-status,
-    .contact-card {
+    .sessions-status {
       border-color: rgba(241, 236, 239, 0.1);
       background: #18161b;
       box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
@@ -557,19 +525,13 @@
 
     .about-content h2,
     .about-kicker,
-    .about-copy,
-    .contact-card h2,
-    .contact-grid strong {
+    .about-copy {
       color: #f1ecef;
     }
 
     .about-kicker,
     .about-copy {
       color: #c8bec5;
-    }
-
-    .contact-grid div {
-      background: #211e24;
     }
 
     .sessions-explore {

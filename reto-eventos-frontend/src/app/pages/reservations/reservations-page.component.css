@@ -57,7 +57,7 @@
       letter-spacing: 0.08em;
       font-size: 0.9rem;
       font-weight: 800;
-      color: #c65aaa;
+      color: #ff7f7f;
     }
 
     .eyebrow img {
@@ -97,8 +97,8 @@
     .count {
       padding: 0.55rem 0.9rem;
       border-radius: 999px;
-      background: rgba(198, 90, 170, 0.14);
-      color: #c65aaa;
+      background: rgba(255, 127, 127, 0.14);
+      color: #ff7f7f;
       font-weight: 700;
     }
 
@@ -170,7 +170,7 @@
       letter-spacing: 0.08em;
       font-size: 0.75rem;
       font-weight: 800;
-      color: #c65aaa;
+      color: #ff7f7f;
     }
 
     .event-meta,
@@ -198,7 +198,7 @@
 
     .event-link {
       text-decoration: none;
-      color: #c65aaa;
+      color: #ff7f7f;
       font-weight: 700;
       white-space: nowrap;
     }

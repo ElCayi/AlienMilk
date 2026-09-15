@@ -68,7 +68,7 @@
     .hero-icon-actions button:focus-visible,
     .hero-icon-actions button:active,
     .hero-icon-actions .is-favorite {
-      color: #c65aaa;
+      color: #ff7f7f;
     }
 
     .hero-icon-actions button:focus-visible {
@@ -151,8 +151,8 @@
       justify-content: center;
       margin-bottom: 0.2rem;
       filter:
-        drop-shadow(0 0.12rem 0.45rem rgba(119, 0, 92, 0.76))
-        drop-shadow(0 0 1.15rem rgba(119, 0, 92, 0.48));
+        drop-shadow(0 0.12rem 0.45rem rgba(255, 127, 127, 0.76))
+        drop-shadow(0 0 1.15rem rgba(255, 127, 127, 0.48));
     }
 
     .hero-lockup-logo {
@@ -189,8 +189,8 @@
       letter-spacing: 0.02em;
       color: #151217;
       text-shadow:
-        0 0.1em 0.32em rgba(119, 0, 92, 0.76),
-        0 0 0.78em rgba(119, 0, 92, 0.48);
+        0 0.1em 0.32em rgba(255, 127, 127, 0.76),
+        0 0 0.78em rgba(255, 127, 127, 0.48);
     }
 
     .hero-title-milk {
@@ -255,7 +255,7 @@
     .hero-actions .ghost-btn.hero-button:focus,
     .hero-actions .ghost-btn.hero-button:active {
       color: #fff;
-      background: #c65aaa;
+      background: #ff7f7f;
       border: 1px solid transparent !important;
     }
 

@@ -14,6 +14,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'contacto',
+    loadComponent: () =>
+      import('./pages/contact/contact-page.component').then(
+        ({ ContactPageComponent }) => ContactPageComponent,
+      ),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./pages/login/login-page.component').then(({ LoginPageComponent }) => LoginPageComponent),

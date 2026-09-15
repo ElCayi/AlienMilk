@@ -30,7 +30,7 @@
         top: -0.15rem;
         right: 0;
         left: 0;
-        border-top: 2px solid #c65aaa;
+        border-top: 2px solid #ff7f7f;
       }
 
       .sessions-editorial h2 {
@@ -230,7 +230,7 @@
 
       .sessions-editorial::before {
         top: -0.15rem;
-        border-top: 2px solid #c65aaa;
+        border-top: 2px solid #ff7f7f;
       }
 
       .sessions-eyebrow {

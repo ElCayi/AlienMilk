@@ -86,7 +86,7 @@
 .sample-reception-kicker {
   justify-self: center;
   margin: 0 0 clamp(2.5rem, 5vh, 4rem);
-  color: #c65aaa;
+  color: #ff7f7f;
   font-family: 'Nunito', sans-serif;
   font-size: 0.68rem;
   font-weight: 800;
@@ -123,7 +123,7 @@
   font-weight: 200;
   font-style: italic;
   letter-spacing: -0.025em;
-  color: #c65aaa;
+  color: #ff7f7f;
 }
 
 .sample-reception-brand {
@@ -145,7 +145,7 @@
   width: 4.5rem;
   height: 4.5rem;
   flex: 0 0 4.5rem;
-  background: #c65aaa;
+  background: #ff7f7f;
   -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
@@ -202,11 +202,11 @@
   letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
-  border-bottom: 1px solid #c65aaa;
+  border-bottom: 1px solid #ff7f7f;
 }
 
 .sample-reception-copy a span {
-  color: #c65aaa;
+  color: #ff7f7f;
   transition: transform 160ms ease;
 }
 
@@ -216,8 +216,26 @@
 }
 
 .sample-reception-copy a:focus-visible {
-  outline: 2px solid #c65aaa;
+  outline: 2px solid #ff7f7f;
   outline-offset: 0.45rem;
+}
+
+@media (min-width: 1360px) {
+  .sample-reception {
+    width: min(1480px, calc(100vw - 7.5rem));
+  }
+}
+
+@media (min-width: 1001px) and (max-width: 1920px) and (max-height: 1080px) {
+  .sample-reception {
+    width: min(1240px, 82vw);
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1000px) {
+  .sample-reception {
+    width: 82vw;
+  }
 }
 
 @media (max-width: 900px) {

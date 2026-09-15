@@ -25,7 +25,7 @@
       <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
       <a routerLink="/sesiones" (click)="closeMenu()">Sesiones</a>
       <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros</a>
-      <a href="/#contacto" (click)="goToSection($event, 'contacto')">Contacto</a>
+      <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
     </nav>
 
     <div class="auth-box" *ngIf="authService.currentUser(); else guestBlock">
@@ -74,7 +74,7 @@
           <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio <span>+</span></a>
           <a routerLink="/sesiones" (click)="closeMenu()">Sesiones <span>+</span></a>
           <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros <span>+</span></a>
-          <a href="/#contacto" (click)="goToSection($event, 'contacto')">Contacto <span>+</span></a>
+          <a routerLink="/contacto" (click)="closeMenu()">Contacto <span>+</span></a>
         </nav>
       </section>
 

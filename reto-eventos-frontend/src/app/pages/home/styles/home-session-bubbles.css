@@ -371,7 +371,7 @@
   .session-featured {
     grid-template-rows: none;
     gap: 1.75rem;
-    margin-top: 4rem;
+    margin-top: 2.5rem;
   }
 
   .session-featured-info {

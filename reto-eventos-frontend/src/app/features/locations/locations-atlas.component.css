@@ -12,7 +12,8 @@
   grid-template-columns: minmax(18rem, 0.72fr) minmax(30rem, 1.28fr);
   align-items: center;
   gap: clamp(4rem, 9vw, 10rem);
-  margin: 0 0 6.25rem 50%;
+  /* Preserve the visible section gap after sample-reception's 5.25rem visual lift. */
+  margin: 0 0 11.5rem 50%;
   padding: 0.85rem 0 clamp(4rem, 8vh, 7rem);
   border-top: 2px solid #ff7f7f;
   transform: translateX(-50%);
@@ -364,6 +365,7 @@
 @media (min-width: 901px) and (max-width: 1000px) {
   .locations-atlas {
     width: 82vw;
+    margin-bottom: 4rem;
   }
 }
 

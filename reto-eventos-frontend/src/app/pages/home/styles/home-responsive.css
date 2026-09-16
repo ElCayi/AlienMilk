@@ -216,6 +216,7 @@
       }
 
       .sessions-block {
+        margin-bottom: clamp(2rem, 6vh, 4rem);
         padding-top: clamp(2rem, 6vh, 4rem);
       }
 

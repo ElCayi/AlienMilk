@@ -211,8 +211,10 @@
       border-radius: 2rem;
       background: #d9dee5;
       border: 1px solid rgba(255, 127, 127, 0.22);
+      border-top-width: 2px;
+      border-top-color: #ff7f7f;
       box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
-      width: min(1480px, calc(100vw - 7.5rem));
+      width: min(1260px, calc(100vw - 10rem));
       margin-right: 0;
       margin-left: 50%;
       transform: translateX(-50%);

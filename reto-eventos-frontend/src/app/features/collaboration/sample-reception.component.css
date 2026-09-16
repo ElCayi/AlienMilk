@@ -4,22 +4,24 @@
 
 .sample-reception {
   --sample-inline-padding: clamp(2.5rem, 5vw, 4.75rem);
+  --sample-visual-lift: 5.25rem;
   position: relative;
   isolation: isolate;
   overflow: hidden;
   overflow: clip;
   contain: paint;
-  clip-path: inset(0);
   box-sizing: border-box;
   width: min(1180px, calc(100vw - 7.5rem));
   height: min(calc(88vh - var(--topbar-height)), 54rem);
   height: min(calc(88dvh - var(--topbar-height)), 54rem);
   display: grid;
-  grid-template-rows: auto 1fr;
-  margin: 0 0 clamp(6rem, 10vh, 9rem) 50%;
+  grid-template-rows: auto minmax(0, 1fr);
+  row-gap: 3.25rem;
+  margin: calc(0px - var(--sample-visual-lift)) 0 clamp(6rem, 10vh, 9rem) 50%;
   padding: 0.85rem var(--sample-inline-padding) clamp(2.5rem, 5vw, 4.75rem);
   color: #faf9f7;
   background: #111014;
+  border: 0;
   border-top: 1px solid rgba(255, 127, 127, 0.38);
   border-radius: 0;
   transform: translateX(-50%);
@@ -48,10 +50,10 @@
   z-index: -1;
   background: linear-gradient(
     180deg,
-    #111014 0 12%,
-    transparent 43%,
-    transparent 64%,
-    #111014 100%
+    #111014 0 5%,
+    transparent 25%,
+    transparent 75%,
+    #111014 95% 100%
   );
   pointer-events: none;
 }
@@ -89,8 +91,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  margin: 0 0 clamp(3.75rem, 7vh, 5.5rem)
-    calc(0px - var(--sample-inline-padding));
+  margin: 0 0 0 calc(0px - var(--sample-inline-padding));
   color: #ff7f7f;
   font-family: 'Nunito', sans-serif;
   font-size: 0.66rem;
@@ -110,8 +111,10 @@
 }
 
 .sample-reception-layout {
+  align-self: center;
+  justify-self: stretch;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(22rem, 32rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 0.75fr) minmax(26rem, 34rem) minmax(0, 0.75fr);
   grid-template-rows: auto auto 1fr;
   align-items: start;
   gap: clamp(1.25rem, 2.5vh, 2rem) clamp(1.5rem, 4vw, 4rem);
@@ -189,23 +192,47 @@
 .sample-reception-copy p,
 .sample-reception-copy strong {
   margin: 0;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-family: Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.55;
 }
 
 .sample-reception-copy p {
   color: rgba(250, 249, 247, 0.72);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
 }
 
-.sample-reception-copy h3 {
-  margin: 0.35rem 0 -0.35rem;
+.sample-reception-copy .sample-reception-lead {
+  color: rgba(250, 249, 247, 0.9);
+  font-size: 1rem;
+}
+
+.sample-reception-collaborators {
   color: #ff7f7f;
+  font-weight: 800;
+}
+
+.sample-reception-copy .sample-reception-emphasis {
+  color: #ff7f7f;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.15em;
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: -0.025em;
+}
+
+.sample-reception-copy .sample-reception-brand {
+  font-family: 'Nunito', sans-serif;
+}
+
+.sample-reception-collaborators-label {
+  margin-left: 0.35em;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(1.35rem, 1.8vw, 1.7rem);
+  font-size: 0.96em;
   font-weight: 400;
-  line-height: 1.08;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
 }
 
 .sample-reception-copy .sample-reception-reward {
@@ -213,47 +240,128 @@
 }
 
 .sample-reception-actions {
-  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(max-content, 1fr));
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.8rem 1.75rem;
-  margin-top: 0.6rem;
+  gap: clamp(1.5rem, 4vw, 2.75rem);
+  margin: 1rem auto 0;
 }
 
 .sample-reception-copy a {
-  width: fit-content;
+  position: relative;
+  width: auto;
   display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1.25rem;
   margin-top: 0;
   padding-bottom: 0.35rem;
   color: #faf9f7;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.78rem;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
-  border-bottom: 1px solid #ff7f7f;
+  transition: color 160ms ease;
+}
+
+.sample-reception-copy a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.62;
+  transform: scaleX(1);
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.sample-reception-action-label,
+.sample-reception-action-arrow {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+
+.sample-reception-action-arrow {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #faf9f7;
+  transition:
+    color 160ms ease,
+    transform 180ms ease;
+}
+
+.sample-reception-action-arrow svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sample-reception-copy a:hover,
+.sample-reception-copy a:focus-visible {
+  color: #ff7f7f;
+}
+
+.sample-reception-copy a:hover .sample-reception-action-arrow,
+.sample-reception-copy a:focus-visible .sample-reception-action-arrow {
+  color: #ff7f7f;
+}
+
+.sample-reception-copy a:hover::after,
+.sample-reception-copy a:focus-visible::after {
+  transform: scaleX(1.08);
+}
+
+.sample-reception-copy .sample-reception-secondary:hover .sample-reception-action-label,
+.sample-reception-copy .sample-reception-secondary:focus-visible .sample-reception-action-label {
+  transform: translateX(-0.18rem);
+}
+
+.sample-reception-copy .sample-reception-secondary:hover .sample-reception-action-arrow,
+.sample-reception-copy .sample-reception-secondary:focus-visible .sample-reception-action-arrow {
+  transform: translateX(0.3rem);
+}
+
+.sample-reception-copy .sample-reception-primary:hover .sample-reception-action-label,
+.sample-reception-copy .sample-reception-primary:focus-visible .sample-reception-action-label {
+  transform: translateX(0.18rem);
+}
+
+.sample-reception-copy .sample-reception-primary:hover .sample-reception-action-arrow,
+.sample-reception-copy .sample-reception-primary:focus-visible .sample-reception-action-arrow {
+  transform: translateX(-0.3rem);
 }
 
 .sample-reception-copy .sample-reception-secondary {
   color: rgba(250, 249, 247, 0.68);
-  border-bottom-color: rgba(250, 249, 247, 0.3);
-}
-
-.sample-reception-copy a span {
-  color: #ff7f7f;
-  transition: transform 160ms ease;
-}
-
-.sample-reception-copy a:hover span,
-.sample-reception-copy a:focus-visible span {
-  transform: translateX(0.3rem);
 }
 
 .sample-reception-copy a:focus-visible {
   outline: 2px solid #ff7f7f;
   outline-offset: 0.45rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sample-reception-copy a,
+  .sample-reception-copy a::after,
+  .sample-reception-action-label,
+  .sample-reception-action-arrow {
+    transition: none;
+  }
 }
 
 @media (min-width: 1360px) {
@@ -285,14 +393,14 @@
   .sample-reception {
     --sample-inline-padding: clamp(1rem, 4vw, 2rem);
     width: min(calc(100% - 2rem), 52rem);
-    margin: 0 0 5rem 50%;
+    margin: calc(0px - var(--sample-visual-lift)) 0 5rem 50%;
     height: auto;
     padding: 0.85rem var(--sample-inline-padding) 0;
     border-radius: 0;
   }
 
   .sample-reception-kicker {
-    margin-bottom: 3.75rem;
+    margin-bottom: 0;
   }
 
   .sample-reception-layout {

@@ -1,30 +1,27 @@
 :host {
   display: block;
+  height: 100%;
 }
 
 .sample-reception {
   --sample-inline-padding: clamp(2.5rem, 5vw, 4.75rem);
   --sample-visual-lift: 5.25rem;
   position: relative;
-  isolation: isolate;
   overflow: hidden;
   overflow: clip;
-  contain: paint;
   box-sizing: border-box;
-  width: min(1180px, calc(100vw - 7.5rem));
-  height: min(calc(88vh - var(--topbar-height)), 54rem);
-  height: min(calc(88dvh - var(--topbar-height)), 54rem);
+  width: var(--home-section-width, min(1180px, calc(100vw - 7.5rem)));
+  height: 100%;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   row-gap: 3.25rem;
-  margin: calc(0px - var(--sample-visual-lift)) 0 clamp(6rem, 10vh, 9rem) 50%;
+  margin: 0 auto;
   padding: 0.85rem var(--sample-inline-padding) clamp(2.5rem, 5vw, 4.75rem);
   color: #faf9f7;
-  background: #111014;
+  background: transparent;
   border: 0;
   border-top: 2px solid #ff7f7f;
   border-radius: 0;
-  transform: translateX(-50%);
 }
 
 .sample-reception::before {
@@ -50,9 +47,10 @@
   z-index: -1;
   background: linear-gradient(
     180deg,
-    #111014 0 5%,
-    transparent 25%,
-    transparent 75%,
+    #111014 0 10%,
+    rgba(17, 16, 20, 0.55) 15%,
+    transparent 32%,
+    transparent 88%,
     #111014 95% 100%
   );
   pointer-events: none;
@@ -86,6 +84,12 @@
   pointer-events: none;
 }
 
+.sample-reception-kicker,
+.sample-reception-layout {
+  position: relative;
+  z-index: 1;
+}
+
 .sample-reception-kicker {
   justify-self: start;
   display: inline-flex;
@@ -114,10 +118,11 @@
   align-self: center;
   justify-self: stretch;
   display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(26rem, 34rem) minmax(0, 0.75fr);
+  grid-template-columns: minmax(0, 0.75fr) minmax(25rem, 32rem) minmax(0, 0.75fr);
   grid-template-rows: auto auto 1fr;
   align-items: start;
   gap: clamp(1.25rem, 2.5vh, 2rem) clamp(1.5rem, 4vw, 4rem);
+  transform: translateY(1.25rem);
 }
 
 .sample-reception h2 {
@@ -206,11 +211,12 @@
 
 .sample-reception-copy .sample-reception-lead {
   color: rgba(250, 249, 247, 0.9);
-  font-size: 1rem;
+  font-size: clamp(1.05rem, 0.93rem + 0.2vw, 1.125rem);
 }
 
 .sample-reception-collaborators {
   color: #ff7f7f;
+  font-size: 1.08em;
   font-weight: 800;
 }
 
@@ -236,20 +242,87 @@
 }
 
 .sample-reception-copy .sample-reception-reward {
+  color: rgba(250, 249, 247, 0.84);
+}
+
+.sample-reception-placeholder {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #ff7f7f;
+  background: #ff7f7f;
+  color: #111014;
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.sample-reception-copy .sample-reception-placeholder p {
+  padding-right: 1.35rem;
+  color: rgba(17, 16, 20, 0.88);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.sample-reception-notice-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.35rem;
+  display: block;
+}
+
+.sample-reception-notice-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sample-reception-copy .sample-reception-placeholder .sample-reception-notice-strong {
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+}
+
+.sample-reception-highlight {
   color: #f1ecef;
+  font-weight: 700;
+}
+
+.sample-reception-copy .sample-reception-continuation {
+  color: rgba(250, 249, 247, 0.84);
+}
+
+.sample-reception-copy .sample-reception-inline-strong {
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
 }
 
 .sample-reception-actions {
+  grid-column: 2;
+  justify-self: center;
   width: fit-content;
   max-width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(max-content, 1fr));
   align-items: center;
-  gap: clamp(1.5rem, 4vw, 2.75rem);
-  margin: 1rem auto 0;
+  gap: clamp(3rem, 6.5vw, 5.25rem);
+  margin: 0.25rem auto 0;
 }
 
-.sample-reception-copy a {
+.sample-reception-actions a {
   position: relative;
   width: auto;
   display: inline-flex;
@@ -268,7 +341,7 @@
   transition: color 160ms ease;
 }
 
-.sample-reception-copy a::after {
+.sample-reception-actions a::after {
   content: '';
   position: absolute;
   right: 0;
@@ -311,53 +384,53 @@
   stroke-linejoin: round;
 }
 
-.sample-reception-copy a:hover,
-.sample-reception-copy a:focus-visible {
+.sample-reception-actions a:hover,
+.sample-reception-actions a:focus-visible {
   color: #ff7f7f;
 }
 
-.sample-reception-copy a:hover .sample-reception-action-arrow,
-.sample-reception-copy a:focus-visible .sample-reception-action-arrow {
+.sample-reception-actions a:hover .sample-reception-action-arrow,
+.sample-reception-actions a:focus-visible .sample-reception-action-arrow {
   color: #ff7f7f;
 }
 
-.sample-reception-copy a:hover::after,
-.sample-reception-copy a:focus-visible::after {
+.sample-reception-actions a:hover::after,
+.sample-reception-actions a:focus-visible::after {
   transform: scaleX(1.08);
 }
 
-.sample-reception-copy .sample-reception-secondary:hover .sample-reception-action-label,
-.sample-reception-copy .sample-reception-secondary:focus-visible .sample-reception-action-label {
+.sample-reception-actions .sample-reception-secondary:hover .sample-reception-action-label,
+.sample-reception-actions .sample-reception-secondary:focus-visible .sample-reception-action-label {
   transform: translateX(-0.18rem);
 }
 
-.sample-reception-copy .sample-reception-secondary:hover .sample-reception-action-arrow,
-.sample-reception-copy .sample-reception-secondary:focus-visible .sample-reception-action-arrow {
+.sample-reception-actions .sample-reception-secondary:hover .sample-reception-action-arrow,
+.sample-reception-actions .sample-reception-secondary:focus-visible .sample-reception-action-arrow {
   transform: translateX(0.3rem);
 }
 
-.sample-reception-copy .sample-reception-primary:hover .sample-reception-action-label,
-.sample-reception-copy .sample-reception-primary:focus-visible .sample-reception-action-label {
+.sample-reception-actions .sample-reception-primary:hover .sample-reception-action-label,
+.sample-reception-actions .sample-reception-primary:focus-visible .sample-reception-action-label {
   transform: translateX(0.18rem);
 }
 
-.sample-reception-copy .sample-reception-primary:hover .sample-reception-action-arrow,
-.sample-reception-copy .sample-reception-primary:focus-visible .sample-reception-action-arrow {
+.sample-reception-actions .sample-reception-primary:hover .sample-reception-action-arrow,
+.sample-reception-actions .sample-reception-primary:focus-visible .sample-reception-action-arrow {
   transform: translateX(-0.3rem);
 }
 
-.sample-reception-copy .sample-reception-secondary {
-  color: rgba(250, 249, 247, 0.68);
+.sample-reception-actions .sample-reception-secondary {
+  color: #faf9f7;
 }
 
-.sample-reception-copy a:focus-visible {
+.sample-reception-actions a:focus-visible {
   outline: 2px solid #ff7f7f;
   outline-offset: 0.45rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sample-reception-copy a,
-  .sample-reception-copy a::after,
+  .sample-reception-actions a,
+  .sample-reception-actions a::after,
   .sample-reception-action-label,
   .sample-reception-action-arrow {
     transition: none;
@@ -366,26 +439,25 @@
 
 @media (min-width: 1360px) {
   .sample-reception {
-    width: min(1480px, calc(100vw - 7.5rem));
+    width: var(--home-section-width, min(1480px, calc(100vw - 7.5rem)));
   }
 }
 
 @media (min-width: 1001px) and (max-width: 1920px) and (max-height: 1080px) {
   .sample-reception {
-    width: min(1240px, 82vw);
+    width: var(--home-section-width, min(1240px, 82vw));
   }
 }
 
 @media (min-width: 1001px) and (max-height: 800px) {
   .sample-reception {
-    height: auto;
     min-height: 36rem;
   }
 }
 
 @media (min-width: 901px) and (max-width: 1000px) {
   .sample-reception {
-    width: 82vw;
+    width: var(--home-section-width, 82vw);
   }
 }
 
@@ -393,8 +465,9 @@
   .sample-reception {
     --sample-inline-padding: clamp(1rem, 4vw, 2rem);
     width: min(calc(100% - 2rem), 52rem);
-    margin: 0 0 5rem 50%;
+    margin: 0 auto;
     height: auto;
+    min-height: 0;
     padding: 0.85rem var(--sample-inline-padding) 0;
     border-radius: 0;
   }
@@ -407,6 +480,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
     gap: 2.5rem;
+    transform: none;
   }
 
   .sample-reception-marks {
@@ -465,8 +539,14 @@
   }
 
   .sample-reception h2,
-  .sample-reception-copy {
+  .sample-reception-copy,
+  .sample-reception-actions {
     grid-column: 1;
+  }
+
+  .sample-reception-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
   }
 
   .sample-reception h2 {

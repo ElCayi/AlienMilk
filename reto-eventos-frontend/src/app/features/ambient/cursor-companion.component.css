@@ -1,0 +1,92 @@
+:host {
+  display: contents;
+}
+
+.cursor-companion {
+  --companion-rgb: 255 127 127;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 1.35rem;
+  height: 1.35rem;
+  opacity: 0;
+  background: rgb(var(--companion-rgb));
+  filter:
+    drop-shadow(0 0 0.18rem rgb(var(--companion-rgb) / 0.72))
+    drop-shadow(0 0 0.55rem rgb(var(--companion-rgb) / 0.34));
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: opacity 180ms ease;
+  animation: companion-glimmer 3.2s ease-in-out infinite;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.cursor-companion.is-visible {
+  opacity: 1;
+}
+
+.cursor-companion:nth-child(2) {
+  --companion-rgb: 205 199 203;
+  width: 1.15rem;
+  height: 1.15rem;
+  opacity: 0;
+  animation-delay: -0.8s;
+}
+
+.cursor-companion:nth-child(3) {
+  --companion-rgb: 157 151 156;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0;
+  animation-delay: -1.7s;
+}
+
+.cursor-companion:nth-child(4) {
+  --companion-rgb: 112 107 111;
+  width: 0.9rem;
+  height: 0.9rem;
+  opacity: 0;
+  animation-delay: -2.4s;
+}
+
+.cursor-companion:nth-child(2).is-visible {
+  opacity: 1;
+}
+
+.cursor-companion:nth-child(3).is-visible {
+  opacity: 1;
+}
+
+.cursor-companion:nth-child(4).is-visible {
+  opacity: 1;
+}
+
+@keyframes companion-glimmer {
+  0%,
+  100% {
+    filter:
+      drop-shadow(0 0 0.16rem rgb(var(--companion-rgb) / 0.62))
+      drop-shadow(0 0 0.48rem rgb(var(--companion-rgb) / 0.26));
+  }
+
+  48% {
+    filter:
+      drop-shadow(0 0 0.24rem rgb(var(--companion-rgb) / 0.82))
+      drop-shadow(0 0 0.72rem rgb(var(--companion-rgb) / 0.42));
+  }
+
+  56% {
+    filter:
+      drop-shadow(0 0 0.18rem rgb(var(--companion-rgb) / 0.66))
+      drop-shadow(0 0 0.52rem rgb(var(--companion-rgb) / 0.3));
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor-companion {
+    display: none;
+    animation: none;
+  }
+}

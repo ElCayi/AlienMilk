@@ -1,3 +1,5 @@
+    <app-cursor-companion />
+
     <section class="hero" id="inicio">
       <video
         class="hero-video"
@@ -103,35 +105,39 @@
       </div>
     </div>
 
-    <app-sessions-program
-      [sessions]="sessions()"
-      [loading]="loadingSessions()"
-      [error]="sessionsError()"
-      (retry)="loadSessions()"
-    />
+    <div class="home-editorial-sections">
+      <app-sessions-program
+        [sessions]="sessions()"
+        [loading]="loadingSessions()"
+        [error]="sessionsError()"
+        (retry)="loadSessions()"
+      />
 
-    <app-locations-atlas
-      [locations]="sessionLocations()"
-      [loading]="loadingLocations()"
-    />
+      <app-locations-atlas
+        [locations]="sessionLocations()"
+        [loading]="loadingLocations()"
+      />
 
-    <app-sample-reception />
+      <app-sample-reception />
 
-    <section class="section-block about-card" id="nosotros">
-      <div class="about-layout">
-        <div class="about-content">
-          <h2>¡Disfruta de la leche!</h2>
-          <p class="about-kicker">Fria, densa y luminosa.</p>
-          <p class="about-copy">
-            Una calma extraña que recorre el pecho, como si el tiempo se doblara un segundo antes
-            de tragar. No sabe a leche. Sabe a purita.
-          </p>
-          <a class="dark-btn about-cta" routerLink="/login">Descubre mas</a>
+      <section class="section-block final-cta-section" id="nosotros">
+        <div class="about-card">
+          <div class="about-layout">
+            <div class="about-content">
+              <h2>¡Disfruta de la leche!</h2>
+              <p class="about-kicker">Fria, densa y luminosa.</p>
+              <p class="about-copy">
+                Una calma extraña que recorre el pecho, como si el tiempo se doblara un segundo
+                antes de tragar. No sabe a leche. Sabe a purita.
+              </p>
+              <a class="dark-btn about-cta" routerLink="/login">Descubre mas</a>
+            </div>
+
+            <div class="about-gallery" aria-hidden="true">
+              <div class="about-image about-image-main"></div>
+              <div class="about-image about-image-offset"></div>
+            </div>
+          </div>
         </div>
-
-        <div class="about-gallery" aria-hidden="true">
-          <div class="about-image about-image-main"></div>
-          <div class="about-image about-image-offset"></div>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>

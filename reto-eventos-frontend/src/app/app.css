@@ -8,8 +8,8 @@
   --topbar-height: 3.75rem;
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(255, 127, 127, 0.14), transparent 26%),
-    radial-gradient(circle at top right, rgba(255, 127, 127, 0.16), transparent 24%),
+    radial-gradient(circle at top left, rgba(62, 181, 211, 0.28), transparent 26%),
+    radial-gradient(circle at top right, rgba(62, 181, 211, 0.32), transparent 24%),
     linear-gradient(180deg, #151217 0%, #111014 56%, #141217 100%);
 }
 

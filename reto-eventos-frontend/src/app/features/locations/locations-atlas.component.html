@@ -1,57 +1,77 @@
 <section class="locations-atlas" aria-labelledby="locations-title">
   <div class="locations-background" aria-hidden="true"></div>
-  <div class="locations-copy">
+  <header class="locations-editorial">
     <p class="locations-kicker">
       <span class="locations-kicker-icon" aria-hidden="true"></span>
       <span>Cartografía / Red operativa · 2026</span>
     </p>
     <h2 id="locations-title">Localizaciones</h2>
-    <p>
+    <p class="locations-subtitle">Cada estación responde a un entorno distinto.</p>
+    <p class="locations-intro">
       Las sesiones se programan de acuerdo con la disponibilidad de cada estación y las
-      condiciones locales de tránsito, presión, aislamiento y acceso.
+      condiciones locales de tránsito, presión, aislamiento y acceso. Antes de confirmar una
+      apertura, AlienMilk verifica que el espacio pueda conservar las muestras y sostener el
+      protocolo completo de la experiencia.
     </p>
-    <strong>Los horarios indicados corresponden al huso operativo de cada instalación.</strong>
-    <span>Las coordenadas pueden actualizarse hasta 72 h antes de la sesión.</span>
-    <details class="locations-protocol" id="protocolo-convivencia">
-      <summary>Consultar protocolo de convivencia</summary>
+  </header>
+
+  <div class="locations-layout">
+    <aside class="locations-brief" aria-label="Criterios de estación">
+      <span class="locations-brief-code">AM / IMPLANTACIÓN 04</span>
+      <h3>Criterios de estación</h3>
       <p>
-        Se solicita respetar las indicaciones de cada estación, preservar el silencio durante
-        las fases de cata y no interferir con muestras o participantes ajenos.
+        Cada sede se incorpora temporalmente a la red después de una evaluación técnica y de
+        convivencia.
       </p>
-    </details>
+      <dl>
+        <div><dt>Acceso</dt><dd>Civil o asistido</dd></div>
+        <div><dt>Ambiente</dt><dd>Estable durante la cata</dd></div>
+        <div><dt>Custodia</dt><dd>Cadena documentada</dd></div>
+      </dl>
+      <strong>Los horarios corresponden al huso operativo de cada instalación.</strong>
+      <span>Las coordenadas pueden actualizarse hasta 72 h antes de la sesión.</span>
+      <details class="locations-protocol" id="protocolo-convivencia">
+        <summary>Consultar protocolo de convivencia</summary>
+        <p>
+          Se solicita respetar las indicaciones de cada estación, preservar el silencio durante
+          las fases de cata y no interferir con muestras o participantes ajenos.
+        </p>
+      </details>
+    </aside>
+
+    <div class="locations-chart" [class.is-loading]="loading">
+      <article
+        class="location-node"
+        *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
+        [class.location-node-secondary]="index === 1"
+        [class.location-node-tertiary]="index === 2"
+      >
+        <div class="location-orbit" aria-hidden="true">
+          <span class="location-orbit-ring">
+            <span class="location-marker"><span></span></span>
+          </span>
+          <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
+            <source src="alienmilk-planet-loop.webm" type="video/webm" />
+            <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
+          </video>
+          <span class="location-planet" *ngIf="index !== 0"></span>
+          <span class="location-identifier">
+            <b>{{ location.tipoEvento }}</b>
+            <small>REGISTRO {{ location.idEvento | number: '2.0' }}</small>
+          </span>
+        </div>
+        <div class="location-data">
+          <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
+          <strong>{{ location.direccion }}</strong>
+          <small>
+            {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
+            {{ location.aforoMaximo }}
+          </small>
+        </div>
+      </article>
+
+      <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
+    </div>
   </div>
 
-  <div class="locations-chart" [class.is-loading]="loading">
-    <article
-      class="location-node"
-      *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
-      [class.location-node-secondary]="index === 1"
-      [class.location-node-tertiary]="index === 2"
-    >
-      <div class="location-orbit" aria-hidden="true">
-        <span class="location-orbit-ring">
-          <span class="location-marker"><span></span></span>
-        </span>
-        <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
-          <source src="alienmilk-planet-loop.webm" type="video/webm" />
-          <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
-        </video>
-        <span class="location-planet" *ngIf="index !== 0"></span>
-        <span class="location-identifier">
-          <b>{{ location.tipoEvento }}</b>
-          <small>REGISTRO {{ location.idEvento | number: '2.0' }}</small>
-        </span>
-      </div>
-      <div class="location-data">
-        <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
-        <strong>{{ location.direccion }}</strong>
-        <small>
-          {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
-          {{ location.aforoMaximo }}
-        </small>
-      </div>
-    </article>
-
-    <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
-  </div>
 </section>

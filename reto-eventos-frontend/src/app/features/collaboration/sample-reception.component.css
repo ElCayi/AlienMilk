@@ -20,7 +20,7 @@
   padding: 0.85rem var(--sample-inline-padding) clamp(2.5rem, 5vw, 4.75rem);
   color: #faf9f7;
   background: #111014;
-  border-top: 1px solid rgba(255, 127, 127, 0.38);
+  border-top: 2px solid #ff7f7f;
   border-radius: 0;
   transform: translateX(-50%);
 }

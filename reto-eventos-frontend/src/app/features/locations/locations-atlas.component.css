@@ -12,7 +12,7 @@
   left: 50%;
   width: 100vw;
   z-index: -1;
-  background: #151318;
+  background: var(--gallery-canvas, #faf9f7);
   pointer-events: none;
   transform: translateX(-50%);
 }
@@ -29,7 +29,7 @@
   gap: clamp(5rem, 10vh, 8rem);
   margin: 0 auto;
   padding: 0.85rem 0 clamp(4rem, 8vh, 7rem);
-  border-top: 2px solid #ff7f7f;
+  border-top: 2px solid #6f686d;
 }
 
 .locations-background {
@@ -46,7 +46,7 @@
 .locations-brief-code,
 .location-data span,
 .location-data small {
-  color: #ff7f7f;
+  color: #6f686d;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -57,11 +57,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  margin: 0 0 3.25rem;
+  margin: 0 0 var(--home-eyebrow-gap, 3.25rem);
   font-family: 'Nunito', sans-serif;
   font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.2em;
+  color: #ff7f7f;
 }
 
 .locations-kicker-icon {
@@ -77,7 +78,7 @@
 .locations-editorial h2 {
   max-width: none;
   margin: 0;
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: clamp(2.8rem, 4.4vw, 4.8rem);
   font-weight: 300;
@@ -101,9 +102,9 @@
 .locations-intro {
   max-width: 88ch;
   margin: 1rem 0 0;
-  color: #b9afb6;
-  font-size: 1rem;
-  line-height: 1.55;
+  color: var(--gallery-muted, #6f686d);
+  font-size: var(--home-editorial-copy-size, 1.1rem);
+  line-height: var(--home-editorial-copy-leading, 1.6);
 }
 
 .locations-layout {
@@ -119,9 +120,9 @@
   display: grid;
   gap: 1rem;
   padding: clamp(1.5rem, 3vw, 2.5rem);
-  border: 1px solid rgba(241, 236, 239, 0.16);
+  border: 1px solid var(--gallery-line, rgba(33, 30, 36, 0.16));
   border-top-color: rgba(255, 127, 127, 0.72);
-  background: rgba(17, 16, 20, 0.5);
+  background: rgba(255, 255, 255, 0.78);
 }
 
 .locations-brief-code {
@@ -130,7 +131,7 @@
 
 .locations-brief h3 {
   margin: 0;
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: clamp(1.8rem, 2.8vw, 2.6rem);
   font-weight: 400;
@@ -141,18 +142,18 @@
 .locations-brief > strong,
 .locations-brief > span {
   margin: 0;
-  color: #b9afb6;
+  color: var(--gallery-muted, #6f686d);
   font-size: 0.92rem;
   line-height: 1.55;
 }
 
 .locations-brief > strong {
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
   font-weight: 500;
 }
 
 .locations-brief > span {
-  color: #91878e;
+  color: var(--gallery-muted, #6f686d);
 }
 
 .locations-brief dl {
@@ -179,23 +180,23 @@
 }
 
 .locations-brief dt {
-  color: #91878e;
+  color: var(--gallery-muted, #6f686d);
 }
 
 .locations-brief dd {
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
 }
 
 .locations-protocol {
   max-width: none;
   margin-top: 0.25rem;
-  color: #b9afb6;
+  color: var(--gallery-muted, #6f686d);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
 }
 
 .locations-protocol summary {
   width: fit-content;
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
   font-size: 0.92rem;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -261,7 +262,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  border: 1px solid rgba(241, 236, 239, 0.22);
+  border: 1px solid rgba(33, 30, 36, 0.22);
   border-radius: 50%;
   transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -328,7 +329,7 @@
   width: max-content;
   max-width: 8rem;
   gap: 0.1rem;
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: 0.56rem;
   letter-spacing: 0.1em;
@@ -409,7 +410,7 @@
 }
 
 .location-data strong {
-  color: #f1ecef;
+  color: var(--gallery-ink, #211e24);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: clamp(1.5rem, 2.6vw, 2.4rem);
   font-weight: 400;
@@ -417,13 +418,13 @@
 }
 
 .location-data small {
-  color: #91878e;
+  color: var(--gallery-muted, #6f686d);
   letter-spacing: 0.1em;
 }
 
 .locations-loading {
   margin: 0;
-  color: #91878e;
+  color: var(--gallery-muted, #6f686d);
   font-size: 0.8rem;
 }
 

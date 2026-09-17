@@ -1,9 +1,19 @@
     app-home-page {
-      --home-section-width: min(1180px, calc(100vw - 7.5rem));
+      --home-section-width: 100%;
       --home-section-gap: 6rem;
+      --home-eyebrow-gap: clamp(2.75rem, 4vw, 3.75rem);
+      --home-editorial-copy-size: clamp(1.05rem, 1vw, 1.1rem);
+      --home-editorial-copy-leading: 1.6;
+      --gallery-canvas: var(--page-canvas);
+      --gallery-surface: #ffffff;
+      --gallery-ink: #211e24;
+      --gallery-muted: #6f686d;
+      --gallery-line: rgba(33, 30, 36, 0.16);
       position: relative;
       isolation: isolate;
       display: block;
+      color: var(--gallery-ink);
+      background: var(--gallery-canvas);
     }
 
     .home-editorial-sections {
@@ -20,6 +30,20 @@
 
     .sessions-block {
       margin-bottom: 0;
+      background: transparent;
+      position: relative;
+    }
+
+    .sessions-block::before {
+      content: '';
+      position: absolute;
+      top: var(--sessions-section-start, 0);
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+      background: #eeebed;
+      pointer-events: none;
     }
 
     .sessions-editorial,
@@ -28,6 +52,18 @@
     .final-cta-section .about-layout {
       position: relative;
       z-index: 1;
+    }
+
+    @media (min-width: 901px) {
+      .sessions-tools {
+        transform: translateY(-1.8rem);
+      }
+
+      .sessions-carousel {
+        margin-bottom: clamp(1.25rem, 2vw, 2rem);
+        transform: scale(1.045);
+        transform-origin: center top;
+      }
     }
 
     .hero-divider {
@@ -76,6 +112,10 @@
       cursor: pointer;
     }
 
+    .hero-divider .hero-icon-actions button {
+      color: var(--gallery-ink);
+    }
+
     .hero-icon-actions svg {
       width: 1.65rem;
       height: 1.65rem;
@@ -115,6 +155,9 @@
       margin-right: calc(50% - 50vw);
       padding: 4.25rem clamp(2rem, 6vw, 5rem);
       background: transparent;
+      box-shadow:
+        0 2.5rem 4.5rem rgba(205, 235, 241, 0.16),
+        0 5.5rem 9rem rgba(186, 226, 235, 0.12);
       position: relative;
       overflow: hidden;
       margin-bottom: 7.8rem;

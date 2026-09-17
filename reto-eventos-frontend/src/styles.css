@@ -1,9 +1,14 @@
+:root {
+  --page-canvas: #fbf6f5;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  background: #111014;
-  color: #f1ecef;
+  overflow-x: clip;
+  background: var(--page-canvas);
+  color: #211e24;
 }
 
 * {

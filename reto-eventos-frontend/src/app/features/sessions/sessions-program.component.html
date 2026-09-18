@@ -31,7 +31,9 @@
           placeholder="¿Buscas algo?"
         />
         <button type="submit" aria-label="Buscar en toda la programación">
-          <span aria-hidden="true">→</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
         </button>
       </form>
     </div>
@@ -98,9 +100,18 @@
           </dl>
           <div class="session-featured-footer">
             <span>{{ featured.precio | currency: 'EUR' }}</span>
-            <a routerLink="/sesiones" [queryParams]="{ sesion: featured.idEvento }"
-              >Examinar sesión <span aria-hidden="true">→</span></a
+            <a
+              class="session-action"
+              routerLink="/sesiones"
+              [queryParams]="{ sesion: featured.idEvento }"
             >
+              <span class="session-action-label">Explorar</span>
+              <span class="session-action-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
           </div>
         </div>
       </article>
@@ -130,11 +141,17 @@
                 {{ session.precio | currency: 'EUR' }}</span
               >
               <a
+                class="session-action session-action-icon-only"
                 routerLink="/sesiones"
                 [queryParams]="{ sesion: session.idEvento }"
                 [attr.aria-label]="'Examinar ' + session.nombre"
-                >→</a
               >
+                <span class="session-action-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
             </footer>
           </div>
         </article>
@@ -154,12 +171,13 @@
     </button>
   </div>
 
-  <a class="sessions-explore" routerLink="/sesiones">
+</section>
+
+<a class="sessions-explore" routerLink="/sesiones">
     <span class="sessions-explore-label">Explorar todas las sesiones</span>
     <span class="sessions-explore-arrow" aria-hidden="true">
       <svg viewBox="0 0 24 24" focusable="false">
         <path d="M5 12h14M13 6l6 6-6 6" />
       </svg>
     </span>
-  </a>
-</section>
+</a>

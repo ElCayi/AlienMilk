@@ -33,7 +33,7 @@
         top: -0.15rem;
         right: 0;
         left: 0;
-        border-top: 2px solid #6f686d;
+        border-top: 2px solid var(--gallery-muted);
       }
 
       .sessions-editorial h2 {
@@ -111,7 +111,7 @@
 
       .sessions-explore {
         justify-self: end;
-        margin: -0.65rem 0 0;
+        margin: -2rem 0 0 auto;
       }
 
       .hero-copy {
@@ -262,7 +262,7 @@
 
       .sessions-editorial::before {
         top: -0.15rem;
-        border-top: 2px solid #6f686d;
+        border-top: 2px solid var(--gallery-muted);
       }
 
       .sessions-eyebrow {

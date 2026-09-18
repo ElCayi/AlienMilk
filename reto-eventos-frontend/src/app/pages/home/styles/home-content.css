@@ -8,8 +8,8 @@
       position: relative;
       background: var(--page-canvas);
       box-shadow:
-        0 -1rem 0 var(--page-canvas),
-        0 1.75rem 0 var(--page-canvas);
+        0 -1rem 0 rgba(251, 246, 245, 0),
+        0 1.75rem 0 rgba(251, 246, 245, 0);
     }
 
     .sessions-editorial::before {
@@ -18,7 +18,7 @@
       top: -1.0rem;
       right: 0;
       left: 0;
-      border-top: 1px solid #6f686d;
+      border-top: 1px solid var(--gallery-muted);
     }
 
     .sessions-eyebrow {
@@ -26,7 +26,7 @@
       align-items: center;
       gap: 0.5em;
       margin: 0 0 var(--home-eyebrow-gap);
-      color: #6f686d;
+      color: var(--gallery-muted);
       font-family: 'Nunito', sans-serif;
       font-size: 0.66rem;
       font-weight: 800;
@@ -70,7 +70,7 @@
       box-sizing: border-box;
       width: calc(100% + var(--sessions-copy-gutter));
       margin-left: calc(-1 * var(--sessions-copy-gutter));
-      padding: 1.65rem var(--sessions-copy-gutter) 1.8rem;
+      padding: 2.35rem var(--sessions-copy-gutter) 2.55rem;
       border: 0;
       background: var(--page-canvas);
       box-shadow: none;
@@ -85,6 +85,17 @@
       bottom: 0;
       left: auto;
       width: var(--sessions-copy-extension);
+      background: var(--page-canvas);
+      pointer-events: none;
+    }
+
+    .sessions-copy::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 100%;
+      width: 100vw;
       background: var(--page-canvas);
       pointer-events: none;
     }
@@ -180,9 +191,14 @@
       cursor: pointer;
     }
 
-    .sessions-search button span {
+    .sessions-search button svg {
+      width: 1.15rem;
+      height: 1.15rem;
       display: block;
-      transform: translateY(-0.22em);
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .sessions-tools a,
@@ -255,7 +271,7 @@
       background: transparent;
       border: 1px solid rgba(255, 127, 127, 0.22);
       border-top-width: 2px;
-      border-top-color: #6f686d;
+      border-top-color: var(--gallery-muted);
       box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
       width: min(1260px, calc(100% - 2rem));
       margin: 0 auto;
@@ -478,6 +494,75 @@
       text-transform: uppercase;
     }
 
+    .session-action {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding-bottom: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .session-action::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.55;
+      transform: scaleX(1);
+      transform-origin: center;
+      transition: transform 180ms ease;
+    }
+
+    .session-action-label,
+    .session-action-arrow {
+      display: inline-block;
+      transition: transform 180ms ease;
+    }
+
+    .session-action-arrow {
+      width: 1.05rem;
+      height: 1.05rem;
+    }
+
+    .session-action-arrow svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .session-action-icon-only {
+      gap: 0;
+      padding-inline: 0.12rem;
+    }
+
+    .session-action-icon-only::after {
+      display: none;
+    }
+
+    .session-action:hover::after,
+    .session-action:focus-visible::after {
+      transform: scaleX(1.08);
+    }
+
+    .session-action:hover .session-action-label,
+    .session-action:focus-visible .session-action-label {
+      transform: translateX(-0.18rem);
+    }
+
+    .session-action:hover .session-action-arrow,
+    .session-action:focus-visible .session-action-arrow {
+      transform: translateX(0.3rem);
+    }
+
     .session-secondary-list {
       display: grid;
       grid-template-rows: repeat(2, minmax(0, 1fr));
@@ -619,7 +704,7 @@
     }
 
     .sessions-editorial::before {
-      border-top-color: #6f686d;
+      border-top-color: var(--gallery-muted);
     }
 
     .sessions-search {

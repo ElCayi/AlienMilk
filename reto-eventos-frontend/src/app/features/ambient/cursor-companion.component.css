@@ -7,7 +7,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: 9;
   width: 1.35rem;
   height: 1.35rem;
   opacity: 0;

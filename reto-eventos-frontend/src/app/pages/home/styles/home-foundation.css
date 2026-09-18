@@ -1,14 +1,20 @@
     app-home-page {
       --home-section-width: 100%;
       --home-section-gap: 6rem;
-      --home-eyebrow-gap: clamp(2.75rem, 4vw, 3.75rem);
+      --home-eyebrow-gap: clamp(1.75rem, 2.5vw, 2.5rem);
       --home-editorial-copy-size: clamp(1.05rem, 1vw, 1.1rem);
       --home-editorial-copy-leading: 1.6;
       --gallery-canvas: var(--page-canvas);
       --gallery-surface: #ffffff;
       --gallery-ink: #211e24;
-      --gallery-muted: #6f686d;
-      --gallery-line: rgba(33, 30, 36, 0.16);
+      --gallery-muted: #68727d;
+      --gallery-line: rgba(55, 66, 78, 0.17);
+      --gallery-orbit: rgba(92, 106, 120, 0.54);
+      --gallery-orbit-strong: rgba(57, 70, 84, 0.74);
+      --gallery-halo: rgba(92, 106, 120, 0.2);
+      --gallery-shadow: rgba(33, 30, 36, 0.2);
+      --gallery-showcase: #e8edf0;
+      --home-showcase-height: 46rem;
       position: relative;
       isolation: isolate;
       display: block;
@@ -34,15 +40,19 @@
       position: relative;
     }
 
+    app-sessions-program {
+      display: block;
+    }
+
     .sessions-block::before {
       content: '';
       position: absolute;
       top: var(--sessions-section-start, 0);
       right: 0;
-      bottom: 0;
+      bottom: 2rem;
       left: 0;
       z-index: 0;
-      background: #eeebed;
+      background: var(--gallery-showcase);
       pointer-events: none;
     }
 
@@ -56,7 +66,7 @@
 
     @media (min-width: 901px) {
       .sessions-tools {
-        transform: translateY(-1.8rem);
+        transform: translateY(-2.75rem);
       }
 
       .sessions-carousel {
@@ -160,7 +170,7 @@
         0 5.5rem 9rem rgba(186, 226, 235, 0.12);
       position: relative;
       overflow: hidden;
-      margin-bottom: 7.8rem;
+      margin-bottom: 5.4rem;
     }
 
     .hero > *:not(.hero-video):not(.hero-overlay):not(.hero-intro):not(.hero-mobile-actions) {

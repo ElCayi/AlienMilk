@@ -20,61 +20,95 @@
   </header>
 
   <div class="locations-layout">
-    <aside class="locations-brief" aria-label="Criterios de estación">
-      <span class="locations-brief-code">AM / IMPLANTACIÓN 04</span>
-      <h3>Criterios de estación</h3>
+    <aside class="locations-brief" aria-label="Información para asistentes">
+      <span class="locations-brief-code">AM / INFORMACIÓN AL ASISTENTE</span>
+      <h3>Antes de su visita</h3>
+      <p class="locations-brief-disclaimer">
+        AlienMilk responde exclusivamente de las actividades coordinadas por su personal acreditado.
+        La logística anterior y posterior al ingreso puede ser prestada por operadores independientes
+        y queda sujeta a sus propias condiciones.
+      </p>
       <p>
-        Cada sede se incorpora temporalmente a la red después de una evaluación técnica y de
-        convivencia.
+        Para acceder a cualquier instalación, localice la <strong>taquilla de acreditación</strong>
+        con al menos <strong>45 minutos de antelación</strong> respecto a la franja asignada. Presente su
+        <strong>código de acceso</strong> y un <strong>documento identificativo</strong>; el control
+        de ingreso <strong>cierra 10 minutos antes</strong>.
       </p>
       <dl>
-        <div><dt>Acceso</dt><dd>Civil o asistido</dd></div>
-        <div><dt>Ambiente</dt><dd>Estable durante la cata</dd></div>
-        <div><dt>Custodia</dt><dd>Cadena documentada</dd></div>
+        <div>
+          <dt>Transporte</dt>
+          <dd>
+            <a class="locations-operator-link" href="/operadores/am-transit">
+              <span>AM Transit</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt>Equipaje</dt>
+          <dd>
+            <a class="locations-operator-link" href="/operadores/helix-transfer">
+              <span>Helix Transfer</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt>Coordinación</dt>
+          <dd>
+            <a class="locations-operator-link" href="/operadores/kepler-liaison">
+              <span>Kepler Liaison</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </dd>
+        </div>
       </dl>
-      <strong>Los horarios corresponden al huso operativo de cada instalación.</strong>
-      <span>Las coordenadas pueden actualizarse hasta 72 h antes de la sesión.</span>
-      <details class="locations-protocol" id="protocolo-convivencia">
-        <summary>Consultar protocolo de convivencia</summary>
-        <p>
-          Se solicita respetar las indicaciones de cada estación, preservar el silencio durante
-          las fases de cata y no interferir con muestras o participantes ajenos.
-        </p>
-      </details>
+      <a class="locations-brief-cta" href="/documentacion/asistentes">
+        <span>Consultar documentación</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
     </aside>
 
-    <div class="locations-chart" [class.is-loading]="loading">
-      <article
-        class="location-node"
-        *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
-        [class.location-node-secondary]="index === 1"
-        [class.location-node-tertiary]="index === 2"
-      >
-        <div class="location-orbit" aria-hidden="true">
-          <span class="location-orbit-ring">
-            <span class="location-marker"><span></span></span>
-          </span>
-          <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
-            <source src="alienmilk-planet-loop.webm" type="video/webm" />
-            <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
-          </video>
-          <span class="location-planet" *ngIf="index !== 0"></span>
-          <span class="location-identifier">
-            <b>{{ location.tipoEvento }}</b>
-            <small>REGISTRO {{ location.idEvento | number: '2.0' }}</small>
-          </span>
-        </div>
-        <div class="location-data">
-          <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
-          <strong>{{ location.direccion }}</strong>
-          <small>
-            {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
-            {{ location.aforoMaximo }}
-          </small>
-        </div>
-      </article>
+    <div class="locations-chart-viewport">
+      <div class="locations-chart" [class.is-loading]="loading">
+        <article
+          class="location-node"
+          *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
+          [class.location-node-secondary]="index === 1"
+          [class.location-node-tertiary]="index === 2"
+        >
+          <div class="location-orbit" aria-hidden="true">
+            <span class="location-orbit-ring">
+              <span class="location-marker"><span></span></span>
+            </span>
+            <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
+              <source src="alienmilk-planet-loop.webm" type="video/webm" />
+              <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
+            </video>
+            <span class="location-planet" *ngIf="index !== 0"></span>
+          </div>
+          <details class="location-data" name="location-stations">
+            <summary>
+              <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
+              <strong>{{ location.direccion }}</strong>
+              <small>
+                {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
+                {{ location.aforoMaximo }}
+              </small>
+            </summary>
+            <div class="location-data-details">
+              <p>{{ location.descripcion }}</p>
+              <dl>
+                <div><dt>Estado</dt><dd>{{ location.estado }}</dd></div>
+                <div><dt>Asistencia mínima</dt><dd>{{ location.minimoAsistencia }}</dd></div>
+                <div><dt>Tarifa</dt><dd>{{ location.precio | currency: 'EUR' }}</dd></div>
+              </dl>
+            </div>
+          </details>
+        </article>
 
-      <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
+        <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
+      </div>
     </div>
   </div>
 

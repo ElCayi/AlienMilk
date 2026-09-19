@@ -455,7 +455,7 @@
   top: 10%;
   bottom: 10%;
   left: clamp(3rem, 5vw, 4.5rem);
-  border-left: 1px solid var(--gallery-orbit, rgba(33, 30, 36, 0.32));
+  border-left: 1.5px solid #394654;
 }
 
 .location-node {
@@ -479,7 +479,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  border: 1px solid var(--gallery-orbit-strong, rgba(33, 30, 36, 0.52));
+  border: 1.5px solid #394654;
   border-radius: 50%;
   transform: scale(0.92);
   transition:
@@ -494,7 +494,7 @@
   top: 50%;
   left: 50%;
   width: 118%;
-  border-top: 1px solid var(--gallery-orbit-strong, rgba(57, 70, 84, 0.74));
+  border-top: 1.5px solid #394654;
   transform: translate(-50%, -50%) rotate(-18deg);
 }
 
@@ -509,8 +509,8 @@
 .location-node:hover .location-orbit-ring,
 .location-node:focus-within .location-orbit-ring {
   transform: scale(0.92) rotate(20deg);
-  border-color: rgba(57, 70, 84, 0.92);
-  box-shadow: 0 0 0 0.55rem rgba(92, 106, 120, 0.22);
+  border-color: #394654;
+  box-shadow: none;
 }
 
 .location-planet {
@@ -548,7 +548,7 @@
 .location-node-tertiary .location-planet {
   width: 32%;
   background: transparent;
-  border: 2px dashed #ff7f7f;
+  border: 3.5px dashed #ff7f7f;
   box-shadow: none;
 }
 
@@ -565,10 +565,10 @@
 }
 
 .location-marker > span {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
   display: block;
-  background: #46535f;
+  background: #ff7f7f;
   -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
@@ -611,7 +611,8 @@
   position: absolute;
   inset: 0.35rem var(--location-card-right-air) 0.35rem clamp(-1.75rem, -2vw, -1rem);
   z-index: -1;
-  border: 1px solid rgba(70, 83, 95, 0.34);
+  background: var(--gallery-showcase, #dbe5eb);
+  border: 1.5px solid #394654;
   border-radius: 0.35rem;
   pointer-events: none;
 }

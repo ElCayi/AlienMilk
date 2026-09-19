@@ -12,7 +12,7 @@ run_service() {
   case "$service" in
     mariadb)
       exec mariadbd --datadir="$DB_DIR" --socket="$DB_SOCKET" \
-        --pid-file="$(pwd)/.dev-state/mariadb.pid" \
+        --pid-file="$ROOT_DIR/.dev-state/mariadb.pid" \
         --bind-address=127.0.0.1 --port="$DB_PORT" --skip-networking=0
       ;;
     backend)
@@ -37,10 +37,7 @@ if [[ "${1:-}" == --run ]]; then
   run_service "$2"
 fi
 
-list=("$@")
-[[ $# -eq 0 ]] && list=("${SERVICES[@]}")
-for service in "${list[@]}"; do
-  case " ${WT_SUPPRESS:-} " in *" $service "*) continue ;; esac
+while read -r service; do
   service_alive "$service" && continue
 
   if port_in_use "$(service_port "$service")"; then
@@ -61,10 +58,4 @@ for service in "${list[@]}"; do
 
   "$0" --run "$service" >"$LOG_DIR/$service.log" 2>&1 &
   echo $! >"$RUN/$service.pid"
-
-  # The backend does not own database retry/initialisation. When this invocation
-  # starts MariaDB, make that dependency ready (and seed it) before continuing.
-  if [[ "$service" == mariadb ]]; then
-    scripts/services/wait.sh mariadb
-  fi
-done
+done < <(targets "$@")

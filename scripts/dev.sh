@@ -12,5 +12,7 @@ case "${1:-}" in
 esac
 
 services_dir="$(dirname "${BASH_SOURCE[0]}")/services"
-"$services_dir/up.sh"
+"$services_dir/up.sh" mariadb
+"$services_dir/wait.sh" mariadb
+"$services_dir/up.sh" backend frontend
 "$services_dir/wait.sh" backend frontend

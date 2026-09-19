@@ -5,11 +5,9 @@ cd "$(dirname "$0")/../.."
 # shellcheck source=/dev/null
 . scripts/services/_common.sh
 
-list=("$@")
-[[ $# -eq 0 ]] && list=("${SERVICES[@]}")
-for service in "${list[@]}"; do
+while read -r service; do
   ready=0
-  for _ in $(seq 1 120); do
+  for _ in $(seq 1 $(( ${WT_WAIT_TIMEOUT:-120} * 2 ))); do
     if port_in_use "$(service_port "$service")"; then ready=1; break; fi
     service_alive "$service" || break
     sleep 0.5
@@ -27,4 +25,4 @@ for service in "${list[@]}"; do
     fi
   fi
   echo "$service: listo en el puerto $(service_port "$service")"
-done
+done < <(targets "$@")

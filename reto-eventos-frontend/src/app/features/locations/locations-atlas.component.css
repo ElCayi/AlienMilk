@@ -510,7 +510,7 @@
 .location-node:focus-within .location-orbit-ring {
   transform: scale(0.92) rotate(20deg);
   border-color: #394654;
-  box-shadow: none;
+  box-shadow: 0 0 0 0.55rem rgba(247, 248, 249, 0.48);
 }
 
 .location-planet {

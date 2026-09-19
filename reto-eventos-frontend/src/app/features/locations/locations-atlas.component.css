@@ -166,7 +166,16 @@
   left: 0;
   height: var(--home-showcase-height, 46rem);
   z-index: -1;
-  background: var(--gallery-showcase, #e8edf0);
+  background-color: var(--gallery-showcase, #dbe5eb);
+  background-image:
+    linear-gradient(
+      var(--gallery-showcase-veil, rgba(219, 229, 235, 0.8)),
+      var(--gallery-showcase-veil, rgba(219, 229, 235, 0.8))
+    ),
+    var(--gallery-showcase-texture, url('/alienmilk-showcase-texture.webp'));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   pointer-events: none;
   transform: none;
 }

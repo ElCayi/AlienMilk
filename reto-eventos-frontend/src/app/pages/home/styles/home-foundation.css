@@ -14,6 +14,8 @@
       --gallery-halo: rgba(92, 106, 120, 0.2);
       --gallery-shadow: rgba(33, 30, 36, 0.2);
       --gallery-showcase: #dbe5eb;
+      --gallery-showcase-texture: url('/alienmilk-showcase-texture.webp');
+      --gallery-showcase-veil: rgba(219, 229, 235, 0.8);
       --home-showcase-height: 46rem;
       position: relative;
       isolation: isolate;
@@ -47,12 +49,18 @@
     .sessions-block::before {
       content: '';
       position: absolute;
-      top: var(--sessions-section-start, 0);
+      top: calc(var(--sessions-section-start, 0px) + 5rem + 26.5px);
       right: 0;
-      bottom: 2rem;
+      bottom: calc(2.5rem - 23.5px);
       left: 0;
       z-index: 0;
-      background: var(--gallery-showcase);
+      background-color: var(--gallery-showcase);
+      background-image:
+        linear-gradient(var(--gallery-showcase-veil), var(--gallery-showcase-veil)),
+        var(--gallery-showcase-texture);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
       pointer-events: none;
     }
 

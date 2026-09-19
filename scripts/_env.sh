@@ -20,6 +20,13 @@ fi
 
 FRONTEND_PORT="${FRONTEND_PORT:-4300}"
 BACKEND_PORT="${BACKEND_PORT:-8081}"
+DB_PORT="${DB_PORT:-3306}"
+
+# Under `wt svc up`, a normal secondary worktree uses the database hosted by
+# main. With no override (plain clone or --standalone), its own DB_PORT applies.
+case " ${WT_SUPPRESS:-} " in
+  *" mariadb "*) DB_PORT=3306 ;;
+esac
 # Each worktree owns its backend. Exported because proxy.conf.mjs reads it.
 BACKEND_URL="${BACKEND_URL:-http://127.0.0.1:$BACKEND_PORT}"
 export BACKEND_URL

@@ -1,14 +1,5 @@
-# Per-worktree environment contract.
-#
-# Declares which variables change from one worktree to the next, so that several
-# copies of this project can run side by side. On our machines a helper reads
-# this file when a worktree is created and materialises the values into
-# .env.worktree (gitignored); scripts/dev.sh then simply sources that file.
-#
-# NOTHING HERE IS REQUIRED TO RUN THE PROJECT. Without .env.worktree the
-# defaults below apply and you get the original single-copy behaviour, so a
-# plain clone with no extra tooling works unchanged. To provision a worktree by
-# hand, read this file and write .env.worktree yourself.
+# What every copy of this project needs to run side by side.
+# Full reference: wt project --help
 
 [ports]
 # Offsets from a base port allocated once per worktree. The base is derived from
@@ -16,13 +7,10 @@
 # URL for its whole life and it can be bookmarked.
 FRONTEND_PORT = 0
 BACKEND_PORT = 1
+DB_PORT = 2
 
-[defaults]
-# Applied when .env.worktree is absent. These are the values this repo used
-# before per-worktree ports existed.
-FRONTEND_PORT = 4300
-BACKEND_PORT = 8081
-
-# scripts/dev.sh starts Spring Boot on BACKEND_PORT and exports its URL to the
-# Angular proxy. The database remains shared infrastructure, but application
-# processes are isolated so backend edits in one worktree do not affect another.
+[services]
+supervisor = "script"
+# The main worktree hosts the database. Applications remain isolated per
+# worktree. This is the only place where that split is declared.
+commons = ["mariadb"]

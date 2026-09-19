@@ -1,0 +1,6 @@
+# workmux: panes opened for each project worktree.
+panes:
+  - command: <agent>
+    focus: true
+  - command: wt svc up
+    split: horizontal

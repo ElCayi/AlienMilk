@@ -184,7 +184,7 @@
         top: clamp(2rem, 3vh, 3rem);
         right: 4.4rem;
         left: auto;
-        width: min(31vw, 32rem);
+        width: min(35vw, 36rem);
         color: #1f2430;
         font-size: clamp(0.72rem, 0.75vw, 0.86rem);
         text-align: right;

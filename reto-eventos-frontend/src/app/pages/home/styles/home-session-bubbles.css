@@ -19,6 +19,12 @@
   display: none;
 }
 
+@media (min-width: 901px) {
+  .sessions-program {
+    transform: translateX(-0.75rem);
+  }
+}
+
 .session-featured,
 .session-secondary {
   overflow: visible;

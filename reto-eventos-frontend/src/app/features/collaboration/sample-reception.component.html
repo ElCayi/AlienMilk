@@ -1,12 +1,25 @@
-<section class="sample-reception" aria-labelledby="sample-reception-title">
-  <video class="sample-reception-media" autoplay muted loop playsinline aria-hidden="true" tabindex="-1">
-    <source src="alienmilk-sample-reception-color.mp4" type="video/mp4" />
-  </video>
-  <div class="sample-reception-tint" aria-hidden="true"></div>
-  <p class="sample-reception-kicker">
+<section
+  class="sample-reception"
+  [class.is-panel-only]="panelOnly"
+  aria-labelledby="sample-reception-title"
+>
+  <div class="sample-reception-media" *ngIf="!panelOnly" aria-hidden="true"></div>
+  <div class="sample-reception-tint" *ngIf="!panelOnly" aria-hidden="true"></div>
+  <p class="sample-reception-kicker" *ngIf="!panelOnly">
     <span class="sample-reception-kicker-icon" aria-hidden="true"></span>
     <span>Programa de colaboradores · 2026</span>
   </p>
+
+  <div class="sample-reception-editorial" *ngIf="!panelOnly">
+    <h2>Próximas sesiones</h2>
+    <p class="sample-reception-editorial-subtitle">Algunas preguntas forman parte de la experiencia.</p>
+    <p class="sample-reception-editorial-copy">
+      Cada sesión combina degustación, instalación y performance para explorar sabores, texturas y
+      procedencias difícilmente accesibles por medios convencionales. Por respeto a nuestros
+      proveedores y a los acuerdos que hacen posible cada extracción, AlienMilk no revela el
+      origen biológico ni el método de obtención de sus muestras.
+    </p>
+  </div>
 
   <div class="sample-reception-layout">
     <h2 id="sample-reception-title">
@@ -22,48 +35,26 @@
     </div>
 
     <div class="sample-reception-copy">
-      <p class="sample-reception-lead">
-        <span class="sample-reception-brand">AlienMilk</span> está hecho por personas
-        como usted. <strong class="sample-reception-emphasis">Literalmente.</strong>
-      </p>
       <p class="sample-reception-reward">
-        Con el programa de
-        <strong class="sample-reception-collaborators">
+        Con
+        <span class="sample-reception-inline-lockup">
           <span class="sample-reception-brand">AlienMilk</span>
-          <span class="sample-reception-collaborators-label">Collaborators</span>
-        </strong>
-        podrá conocer nuestros estándares de calidad de primera mano. Después de todo, pocas
-        garantías resultan tan convincentes como
-        <strong class="sample-reception-inline-strong">formar parte del producto</strong>.
+          <span class="sample-reception-inline-lockup-label">Collaborators</span>
+        </span>, cada muestra amplía el archivo, alimenta futuras sesiones y
+        <strong class="sample-reception-inline-strong">le acerca a una comunidad unida</strong> por la
+        curiosidad y el descubrimiento.
       </p>
       <p class="sample-reception-continuation">
-        <span class="sample-reception-highlight">
-          La colaboración puede continuar más allá del archivo.
-        </span>
-        Algunos participantes son invitados a formar parte de las propias sesiones de AlienMilk,
-        con alojamiento cubierto, espacios de convivencia y acceso al programa completo de
-        preparación.
-        <strong class="sample-reception-inline-strong">Nosotros nos ocupamos del resto</strong>:
-        evaluación, extracción y, cuando proceda, abducción.
+        Y no termina ahí. Los colaboradores pueden acceder a viajes, estancias y experiencias únicas
+        <strong class="sample-reception-inline-strong">completamente gratis</strong> dentro del ecosistema
+        AlienMilk.
       </p>
-      <div class="sample-reception-placeholder">
-        <p>
-          Lea atentamente el <strong class="sample-reception-notice-strong">Protocolo de Colaboradores</strong>
-          antes de remitir cualquier muestra. En caso de duda sobre su origen, naturaleza o condiciones
-          de conservación, consulte con el equipo de
-          <strong class="sample-reception-notice-strong">AlienMilk</strong>.
-        </p>
-        <span class="sample-reception-notice-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" focusable="false">
-            <path d="M12 3 2.75 20h18.5L12 3Z" />
-            <path d="M12 9v5" />
-            <path d="M12 17.25h.01" />
-          </svg>
-        </span>
-      </div>
+      <p class="sample-reception-motto">
+        <span>El dolor es temporal.</span> La gloria es eterna.
+      </p>
     </div>
 
-    <div class="sample-reception-actions">
+    <div class="sample-reception-actions" *ngIf="!hideActions">
         <a
           class="sample-reception-primary"
           href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20muestra%20para%20evaluaci%C3%B3n"
@@ -82,7 +73,10 @@
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </span>
-        </a>
+      </a>
     </div>
+
+    <span class="sample-reception-portal-ceiling" *ngIf="panelOnly" aria-hidden="true"></span>
+    <span class="sample-reception-portal-surface" *ngIf="panelOnly" aria-hidden="true"></span>
   </div>
 </section>

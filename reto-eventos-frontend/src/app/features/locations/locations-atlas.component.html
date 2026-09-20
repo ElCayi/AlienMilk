@@ -4,22 +4,38 @@
     <div class="locations-editorial-main">
       <p class="locations-kicker">
         <span class="locations-kicker-icon" aria-hidden="true"></span>
-        <span>Cartografía / Red operativa · 2026</span>
+        <span *ngIf="!collaborationMode">Cartografía / Red operativa · 2026</span>
+        <span *ngIf="collaborationMode">Programa de colaboradores · 2026</span>
       </p>
       <div class="locations-copy">
-        <h2 id="locations-title">Localizaciones</h2>
-        <p class="locations-subtitle">Cada estación responde a un entorno distinto.</p>
-        <p class="locations-intro">
+        <h2 id="locations-title" *ngIf="!collaborationMode">Localizaciones</h2>
+        <h2 class="locations-collaborators-title" *ngIf="collaborationMode">
+          <span class="locations-collaborators-brand">AlienMilk</span>
+          <span class="locations-collaborators-label">Collaborators</span>
+        </h2>
+        <p class="locations-subtitle" *ngIf="!collaborationMode">
+          Cada estación responde a un entorno distinto.
+        </p>
+        <p class="locations-subtitle locations-collaborators-subtitle" *ngIf="collaborationMode">
+          <strong>AlienMilk</strong> está hecho por personas como usted. <em>Literalmente.</em>
+        </p>
+        <p class="locations-intro" *ngIf="!collaborationMode">
           Las sesiones se programan de acuerdo con la disponibilidad de cada estación y las
           condiciones locales de tránsito, presión, aislamiento y acceso. Antes de confirmar una
           apertura, AlienMilk verifica que el espacio pueda conservar las muestras y sostener el
           protocolo completo de la experiencia.
         </p>
+        <p class="locations-intro" *ngIf="collaborationMode">
+          AlienMilk Collaborators es la división del ecosistema AlienMilk dedicada a la captación y
+          evaluación de muestras aportadas voluntariamente. Permite a particulares proponer material
+          propio y solicitar una valoración cuando se considere que su producción presenta
+          cualidades de interés sensorial para el archivo y futuras degustaciones.
+        </p>
       </div>
     </div>
   </header>
 
-  <div class="locations-layout">
+  <div class="locations-layout" *ngIf="!collaborationMode">
     <aside class="locations-brief" aria-label="Información para asistentes">
       <span class="locations-brief-code">AM / INFORMACIÓN AL ASISTENTE</span>
       <h3>Antes de su visita</h3>
@@ -63,10 +79,6 @@
           </dd>
         </div>
       </dl>
-      <a class="locations-brief-cta" href="/documentacion/asistentes">
-        <span>Consultar documentación</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </a>
     </aside>
 
     <div class="locations-chart-viewport">
@@ -110,6 +122,51 @@
         <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
       </div>
     </div>
+  </div>
+
+  <a class="locations-brief-cta locations-brief-cta-external" *ngIf="!collaborationMode" href="/documentacion/asistentes">
+    <span>Consultar documentación</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+  </a>
+
+  <div
+    class="locations-layout locations-layout-collaboration"
+    *ngIf="collaborationMode"
+    aria-label="Área de colaboradores en preparación"
+  >
+    <div class="locations-collaboration-gate" aria-hidden="true">
+      <span class="locations-collaboration-gate-fill is-left"></span>
+      <span class="locations-collaboration-gate-fill is-right"></span>
+      <span class="locations-collaboration-gate-fill is-left is-middle"></span>
+      <span class="locations-collaboration-gate-fill is-right is-middle"></span>
+      <span class="locations-collaboration-gate-fill is-left is-far"></span>
+      <span class="locations-collaboration-gate-fill is-right is-far"></span>
+      <span class="locations-collaboration-gate-line is-left is-near"></span>
+      <span class="locations-collaboration-gate-line is-left is-middle"></span>
+      <span class="locations-collaboration-gate-line is-left is-far"></span>
+      <span class="locations-collaboration-gate-line is-right is-near"></span>
+      <span class="locations-collaboration-gate-line is-right is-middle"></span>
+      <span class="locations-collaboration-gate-line is-right is-far"></span>
+    </div>
+    <app-sample-reception [panelOnly]="true" [hideActions]="true" />
+  </div>
+
+  <div class="locations-collaboration-actions" *ngIf="collaborationMode">
+    <a
+      class="locations-collaboration-action locations-collaboration-action-primary"
+      href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20muestra%20para%20evaluaci%C3%B3n"
+    >
+      <span class="locations-collaboration-action-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+      </span>
+      <span>Proponer una muestra</span>
+    </a>
+    <a class="locations-collaboration-action" href="#protocolo-convivencia">
+      <span>Consultar protocolo</span>
+      <span class="locations-collaboration-action-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </span>
+    </a>
   </div>
 
 </section>

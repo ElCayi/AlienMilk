@@ -181,8 +181,9 @@
 }
 
 .sample-reception.is-panel-only .sample-reception-layout {
+  --sample-portal-neck-inset: calc(var(--sample-panel-padding) + 0.25rem);
   --sample-portal-spread: calc(
-    var(--collaboration-frame-half-width) + var(--sample-panel-padding) - 13.75rem
+    var(--collaboration-frame-half-width) + var(--sample-panel-padding) - 14rem
   );
   position: absolute;
   top: 50%;
@@ -206,9 +207,9 @@
   content: '';
   position: absolute;
   top: calc(0rem - var(--home-showcase-height, 46rem));
-  right: calc(var(--sample-panel-padding) + 0.5rem);
+  right: var(--sample-portal-neck-inset);
   bottom: calc(var(--sample-panel-padding) - 2.5rem);
-  left: calc(var(--sample-panel-padding) + 0.5rem);
+  left: var(--sample-portal-neck-inset);
   z-index: 0;
   background: #394654;
   pointer-events: none;
@@ -222,10 +223,10 @@
 .sample-reception.is-panel-only .sample-reception-layout > .sample-reception-portal-surface {
   position: absolute;
   top: calc(100% - var(--sample-panel-padding) + 2.25rem);
-  left: calc(var(--sample-panel-padding) + 0.5rem - var(--sample-portal-spread));
+  left: calc(var(--sample-portal-neck-inset) - var(--sample-portal-spread));
   z-index: 1;
   width: calc(
-    100% - var(--sample-panel-padding) - var(--sample-panel-padding) - 1rem +
+    100% - var(--sample-portal-neck-inset) - var(--sample-portal-neck-inset) +
       var(--sample-portal-spread) + var(--sample-portal-spread)
   );
   height: calc(
@@ -244,10 +245,10 @@
 .sample-reception.is-panel-only .sample-reception-layout > .sample-reception-portal-ceiling {
   position: absolute;
   top: calc((100% - var(--home-showcase-height, 46rem)) / 2);
-  left: calc(var(--sample-panel-padding) + 0.5rem - var(--sample-portal-spread));
+  left: calc(var(--sample-portal-neck-inset) - var(--sample-portal-spread));
   z-index: 1;
   width: calc(
-    100% - var(--sample-panel-padding) - var(--sample-panel-padding) - 1rem +
+    100% - var(--sample-portal-neck-inset) - var(--sample-portal-neck-inset) +
       var(--sample-portal-spread) + var(--sample-portal-spread)
   );
   height: calc(
@@ -270,6 +271,14 @@
   font-size: clamp(2.35rem, 3.8vw, 3.8rem);
   text-wrap: balance;
   transform: none;
+}
+
+@media (min-width: 1001px) {
+  .sample-reception.is-panel-only .sample-reception-layout > h2,
+  .sample-reception.is-panel-only .sample-reception-layout > .sample-reception-marks,
+  .sample-reception.is-panel-only .sample-reception-layout > .sample-reception-copy {
+    transform: translateY(2rem);
+  }
 }
 
 .sample-reception h2 {

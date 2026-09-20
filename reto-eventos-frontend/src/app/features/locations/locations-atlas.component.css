@@ -578,6 +578,12 @@
   height: 1.35rem;
 }
 
+@media (min-width: 1001px) {
+  .locations-brief-cta-external {
+    margin: 2rem 0 0 auto;
+  }
+}
+
 .locations-brief dl {
   display: grid;
   gap: 0.55rem;

@@ -79,39 +79,46 @@
             <span>{{ archiveCode(featured) }}</span>
             <span>{{ featured.tipoEvento }}</span>
           </div>
-          <h3>{{ featured.nombre }}</h3>
-          <dl class="session-file-data">
-            <div>
-              <dt>Muestra</dt>
-              <dd>{{ sampleCode(featured) }}</dd>
+          <h3
+            [class.session-title-tight]="featured.nombre.length > 21 && featured.nombre.length <= 26"
+            [class.session-title-compact]="featured.nombre.length > 26"
+          >
+            {{ featured.nombre }}
+          </h3>
+          <div class="session-featured-details">
+            <dl class="session-file-data">
+              <div>
+                <dt>Muestra</dt>
+                <dd>{{ sampleCode(featured) }}</dd>
+              </div>
+              <div>
+                <dt>Procedencia</dt>
+                <dd>No declarada</dd>
+              </div>
+              <div>
+                <dt>Fecha</dt>
+                <dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }}</dd>
+              </div>
+              <div>
+                <dt>Compatibilidad</dt>
+                <dd>{{ compatibility(featured) }}</dd>
+              </div>
+            </dl>
+            <div class="session-featured-footer">
+              <span>{{ featured.precio | currency: 'EUR' }}</span>
+              <a
+                class="session-action"
+                routerLink="/sesiones"
+                [queryParams]="{ sesion: featured.idEvento }"
+              >
+                <span class="session-action-label">Explorar</span>
+                <span class="session-action-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
             </div>
-            <div>
-              <dt>Procedencia</dt>
-              <dd>No declarada</dd>
-            </div>
-            <div>
-              <dt>Fecha</dt>
-              <dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }}</dd>
-            </div>
-            <div>
-              <dt>Compatibilidad</dt>
-              <dd>{{ compatibility(featured) }}</dd>
-            </div>
-          </dl>
-          <div class="session-featured-footer">
-            <span>{{ featured.precio | currency: 'EUR' }}</span>
-            <a
-              class="session-action"
-              routerLink="/sesiones"
-              [queryParams]="{ sesion: featured.idEvento }"
-            >
-              <span class="session-action-label">Explorar</span>
-              <span class="session-action-arrow" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </span>
-            </a>
           </div>
         </div>
       </article>

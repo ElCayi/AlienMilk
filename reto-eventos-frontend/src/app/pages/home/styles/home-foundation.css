@@ -26,6 +26,7 @@
 
     .home-editorial-sections {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       grid-auto-rows: 1fr;
       gap: var(--home-section-gap);
       margin-bottom: var(--home-section-gap);
@@ -44,6 +45,9 @@
 
     app-sessions-program {
       display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .sessions-block::before {

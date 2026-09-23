@@ -501,6 +501,15 @@
       gap: 0.55rem;
       padding-bottom: 0.3rem;
       white-space: nowrap;
+      transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .session-action:active {
+      transform: translateY(0.08rem) scale(0.94);
+    }
+
+    .session-action:active::after {
+      transform: scaleX(0.88);
     }
 
     .session-action::after {

@@ -51,37 +51,54 @@
   </p>
 
   <div class="sessions-carousel" *ngIf="!loading && !error && featuredSession as featured">
-    <button
-      class="sessions-carousel-arrow sessions-carousel-arrow-prev"
-      type="button"
-      aria-label="Sesión anterior"
-      [disabled]="!hasMultipleSessions"
-      (click)="previousSession()"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m14 6-6 6 6 6"></path>
-      </svg>
-    </button>
-
     <div class="sessions-program">
       <article class="session-featured">
-        <a
-          class="session-image-link"
-          routerLink="/sesiones"
-          [queryParams]="{ sesion: featured.idEvento }"
-          [style.view-transition-name]="'session-sample-' + featured.idEvento"
-        >
-          <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
-          <span>{{ featured.tipoEvento }}</span>
-        </a>
+        <div class="session-visual">
+          <a
+            class="session-image-link"
+            routerLink="/sesiones"
+            [queryParams]="{ sesion: featured.idEvento }"
+            [style.view-transition-name]="'session-sample-' + featured.idEvento"
+          >
+            <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
+            <span>{{ featured.tipoEvento }}</span>
+          </a>
+          <button
+            class="sessions-carousel-arrow sessions-carousel-arrow-prev"
+            type="button"
+            aria-label="Sesión anterior"
+            [disabled]="!hasMultipleSessions"
+            (click)="previousSession()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                class="sessions-carousel-arrow-outline"
+                d="m14 6-6 6 6 6"
+              ></path>
+              <path d="m14 6-6 6 6 6"></path>
+            </svg>
+          </button>
+          <button
+            class="sessions-carousel-arrow sessions-carousel-arrow-next"
+            type="button"
+            aria-label="Siguiente sesión"
+            [disabled]="!hasMultipleSessions"
+            (click)="nextSession()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                class="sessions-carousel-arrow-outline"
+                d="m10 6 6 6-6 6"
+              ></path>
+              <path d="m10 6 6 6-6 6"></path>
+            </svg>
+          </button>
+        </div>
         <div class="session-featured-info">
           <div class="session-file-heading">
             <span>{{ archiveCode(featured) }}</span>
           </div>
-          <h3
-            [class.session-title-tight]="featured.nombre.length > 21 && featured.nombre.length <= 26"
-            [class.session-title-compact]="featured.nombre.length > 26"
-          >
+          <h3 class="session-title-compact">
             {{ featured.nombre }}
           </h3>
           <div class="session-featured-details">
@@ -163,18 +180,6 @@
         </article>
       </div>
     </div>
-
-    <button
-      class="sessions-carousel-arrow sessions-carousel-arrow-next"
-      type="button"
-      aria-label="Siguiente sesión"
-      [disabled]="!hasMultipleSessions"
-      (click)="nextSession()"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m10 6 6 6-6 6"></path>
-      </svg>
-    </button>
 
   </div>
 

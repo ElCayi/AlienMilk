@@ -17,6 +17,11 @@
         align-items: center;
       }
 
+      .final-cta-section .about-content {
+        min-height: 30rem;
+        align-content: space-between;
+      }
+
       .sessions-block {
         --sessions-section-start: calc(
           var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem) - 1rem
@@ -498,6 +503,10 @@
     }
 
     @media (max-width: 600px) {
+      .about-content {
+        aspect-ratio: auto;
+      }
+
       .sessions-block {
         width: 100%;
         margin-left: 0;

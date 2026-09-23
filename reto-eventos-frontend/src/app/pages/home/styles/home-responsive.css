@@ -1,4 +1,22 @@
     @media (min-width: 1001px) {
+      .home-editorial-sections {
+        grid-template-rows: repeat(3, minmax(0, 1fr)) auto;
+      }
+
+      .final-cta-section {
+        --final-cta-upper-air: 9.625rem;
+        height: auto;
+        min-height: 0;
+        align-self: start;
+        padding: var(--final-cta-upper-air) 0 calc(var(--final-cta-upper-air) + 12rem);
+      }
+
+      .final-cta-section .about-card {
+        min-height: 36.8rem;
+        display: grid;
+        align-items: center;
+      }
+
       .sessions-block {
         --sessions-section-start: calc(
           var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem) - 1rem
@@ -7,12 +25,12 @@
         width: var(--home-section-width);
         height: auto;
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr) auto;
+        grid-template-rows: auto minmax(0, 1fr);
         gap: clamp(1.75rem, 3.6vh, 2.6rem);
         margin-bottom: 0;
         margin-left: 50%;
         padding-top: calc(var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem));
-        padding-bottom: clamp(4.75rem, 7vh, 5.75rem);
+        padding-bottom: 0.75rem;
         background: transparent;
         transform: translateX(-50%);
       }

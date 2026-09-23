@@ -328,11 +328,10 @@
 }
 
 .locations-collaboration-actions {
-  justify-self: center;
+  justify-self: end;
   display: flex;
   align-items: center;
-  gap: clamp(3rem, 6.5vw, 5.25rem);
-  margin-top: 1.75rem;
+  margin: 2rem 0 0 auto;
 }
 
 .locations-collaboration-action {
@@ -579,8 +578,13 @@
 }
 
 @media (min-width: 1001px) {
-  .locations-brief-cta-external {
-    margin: 2rem 0 0 auto;
+  .locations-atlas:has(.locations-layout-collaboration) {
+    grid-template-rows: auto var(--home-showcase-height, 46rem) auto;
+  }
+
+  .locations-brief-cta-external,
+  .locations-collaboration-actions {
+    margin-top: 1.85rem;
   }
 }
 
@@ -1098,6 +1102,11 @@
   }
 
   .locations-brief-cta-external {
+    justify-self: center;
+    margin: 2rem auto 0;
+  }
+
+  .locations-collaboration-actions {
     justify-self: center;
     margin: 2rem auto 0;
   }

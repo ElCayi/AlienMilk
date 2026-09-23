@@ -277,7 +277,7 @@
   .sample-reception.is-panel-only .sample-reception-layout > h2,
   .sample-reception.is-panel-only .sample-reception-layout > .sample-reception-marks,
   .sample-reception.is-panel-only .sample-reception-layout > .sample-reception-copy {
-    transform: translateY(2rem);
+    transform: translateY(1rem);
   }
 }
 

@@ -423,8 +423,8 @@
 
     .session-file-heading {
       display: flex;
-      justify-content: space-between;
-      gap: 1rem;
+      justify-content: flex-start;
+      gap: 0.55rem;
       color: #ff7f7f;
       font-size: 0.68rem;
       font-weight: 800;

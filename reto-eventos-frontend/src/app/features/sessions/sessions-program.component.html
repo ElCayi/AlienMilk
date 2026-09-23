@@ -61,7 +61,6 @@
             [style.view-transition-name]="'session-sample-' + featured.idEvento"
           >
             <img [src]="sessionImage(featured)" [alt]="'Sesión ' + featured.nombre" />
-            <span>{{ featured.tipoEvento }}</span>
           </a>
           <button
             class="sessions-carousel-arrow sessions-carousel-arrow-prev"
@@ -97,6 +96,7 @@
         <div class="session-featured-info">
           <div class="session-file-heading">
             <span>{{ archiveCode(featured) }}</span>
+            <span>{{ featured.tipoEvento }}</span>
           </div>
           <h3 class="session-title-compact">
             {{ featured.nombre }}

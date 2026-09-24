@@ -137,6 +137,21 @@
             </div>
           </div>
         </div>
+
+        <nav
+          class="sessions-carousel-pagination"
+          *ngIf="hasMultipleSessions"
+          aria-label="Seleccionar sesión del carrusel"
+        >
+          <button
+            *ngFor="let session of sessions; let index = index; trackBy: trackSession"
+            type="button"
+            [class.is-active]="index === featuredSessionIndex()"
+            [attr.aria-current]="index === featuredSessionIndex() ? 'true' : null"
+            [attr.aria-label]="'Mostrar ' + session.nombre"
+            (click)="goToSession(session)"
+          ></button>
+        </nav>
       </article>
 
       <div class="session-secondary-list">

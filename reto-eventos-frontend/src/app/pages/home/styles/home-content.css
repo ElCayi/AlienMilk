@@ -304,28 +304,53 @@
   width: min(1240px, 100%);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 34rem) minmax(20rem, 1fr);
+  grid-template-columns: minmax(0, 40rem) minmax(20rem, 1fr);
   align-items: center;
   gap: clamp(3.5rem, 6vw, 6rem);
 }
 
 .about-content {
-  display: grid;
+  display: block;
   width: 100%;
   min-width: 0;
-  max-width: 30rem;
+  max-width: 40rem;
   aspect-ratio: 1;
-  gap: clamp(1.1rem, 2vw, 1.5rem);
   font-family: Arial, sans-serif;
+}
+
+.about-content-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding-top: clamp(3rem, 5.5vw, 4.35rem);
+  gap: clamp(2.25rem, 3.8vw, 3.25rem);
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+}
+
+.about-copy-block {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 23rem;
+  min-width: 0;
+  gap: 1.5rem;
+  padding-block: 0.5rem;
 }
 
 .about-eyebrow {
   display: inline-flex;
   align-items: center;
+  width: max-content;
+  max-width: 100%;
   justify-self: start;
+  margin: 0;
   gap: 0.7rem;
-  color: #f1ecef;
-  font-size: 1.3rem;
+  color: #ff7f7f;
+  font-size: clamp(1.8rem, 3.4vw, 2.4rem);
   font-weight: 800;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -333,8 +358,8 @@
 }
 
 .about-eyebrow .brand-logo {
-  width: 2rem;
-  height: 2rem;
+  width: clamp(2.65rem, 4.8vw, 3.5rem);
+  height: clamp(2.65rem, 4.8vw, 3.5rem);
   display: block;
   flex: 0 0 auto;
   background: currentColor;
@@ -349,12 +374,12 @@
 }
 
 .about-eyebrow .brand-name {
-  color: #f1ecef;
+  color: currentColor;
   font-family: 'Nunito', sans-serif;
 }
 
 .about-eyebrow .brand-subtitle {
-  color: #d9d0d6;
+  color: currentColor;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   font-size: 0.72em;
   font-weight: 600;
@@ -363,12 +388,16 @@
 
 .about-content h2 {
   margin: 0;
-  transform: translateY(-1.2rem);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+  font-size: clamp(2.9rem, 5.6vw, 4.5rem);
   line-height: 1.02;
   font-weight: 700;
   color: #23272f;
+}
+
+.about-title-lead {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
 }
 
 .about-kicker {
@@ -391,11 +420,11 @@
 
 .about-actions {
   width: 100%;
-  max-width: 100%;
+  max-width: 23rem;
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 0.35rem;
   margin: 0;
 }
 

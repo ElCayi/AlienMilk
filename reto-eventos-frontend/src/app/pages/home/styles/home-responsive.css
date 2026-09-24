@@ -17,9 +17,9 @@
         align-items: center;
       }
 
-      .final-cta-section .about-content {
+      .final-cta-section .about-content-inner {
         min-height: 30rem;
-        align-content: space-between;
+        justify-content: space-between;
       }
 
       .sessions-block {

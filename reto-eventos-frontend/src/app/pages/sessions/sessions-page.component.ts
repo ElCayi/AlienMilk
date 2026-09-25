@@ -31,6 +31,8 @@ import { filterSessions } from '../../features/sessions/session-search';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { SessionDossier } from '../../models/session-dossier.models';
 
+type DossierTab = 'expediente' | 'cata' | 'programa' | 'acceso' | 'equipo' | 'preguntas';
+
 interface OpenedSession {
   detail: EventoDetalle;
   dossier: SessionDossier;
@@ -65,6 +67,7 @@ export class SessionsPageComponent implements OnInit {
   readonly loadingDetail = signal(false);
   readonly loadingReservation = signal(false);
   readonly imageExpanded = signal(false);
+  readonly activeTab = signal<DossierTab>('expediente');
   readonly listError = signal('');
   readonly detailError = signal('');
   readonly reservationFeedback = signal('');
@@ -87,6 +90,24 @@ export class SessionsPageComponent implements OnInit {
     return visible.some((session) => session.idEvento === this.selectedId())
       ? visible
       : this.sessions();
+  });
+
+  /** Solo aparecen las pestañas cuyo contenido existe en el expediente abierto. */
+  readonly tabs = computed(() => {
+    const dossier = this.opened()?.dossier;
+    if (!dossier) {
+      return [];
+    }
+
+    const tabs: { id: DossierTab; label: string; visible: boolean }[] = [
+      { id: 'expediente', label: 'Expediente', visible: true },
+      { id: 'cata', label: 'Notas de cata', visible: dossier.notasCata.length > 0 },
+      { id: 'programa', label: 'Desarrollo', visible: dossier.programa.length > 0 },
+      { id: 'acceso', label: 'Acceso', visible: dossier.acceso.length > 0 },
+      { id: 'equipo', label: 'Equipo', visible: dossier.equipo.length > 0 },
+      { id: 'preguntas', label: 'Preguntas', visible: dossier.preguntas.length > 0 },
+    ];
+    return tabs.filter((tab) => tab.visible);
   });
 
   readonly openedView = computed(() => {
@@ -150,6 +171,10 @@ export class SessionsPageComponent implements OnInit {
         }
 
         this.opened.set(opened);
+        // Se conserva la pestaña al cambiar de sesión, salvo que la nueva no la tenga.
+        if (!this.tabs().some((tab) => tab.id === this.activeTab())) {
+          this.activeTab.set('expediente');
+        }
       });
 
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -209,6 +234,26 @@ export class SessionsPageComponent implements OnInit {
   scrollIndex(direction: -1 | 1): void {
     const track = this.indexTrack()?.nativeElement;
     track?.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' });
+  }
+
+  /** Flechas, Inicio y Fin recorren las pestañas, como en cualquier tablist. */
+  moveTab(event: KeyboardEvent): void {
+    const tabs = this.tabs();
+    const index = tabs.findIndex((tab) => tab.id === this.activeTab());
+    const targets: Record<string, number> = {
+      ArrowRight: (index + 1) % tabs.length,
+      ArrowLeft: (index - 1 + tabs.length) % tabs.length,
+      Home: 0,
+      End: tabs.length - 1,
+    };
+    const next = targets[event.key];
+    if (next === undefined) {
+      return;
+    }
+
+    event.preventDefault();
+    this.activeTab.set(tabs[next].id);
+    this.document.getElementById(`tab-${tabs[next].id}`)?.focus();
   }
 
   toggleImage(): void {

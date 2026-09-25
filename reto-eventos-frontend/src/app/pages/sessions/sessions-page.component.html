@@ -25,6 +25,14 @@
     </div>
 
     <div class="program-tools">
+      <label class="program-filter">
+        <span>Clasificación</span>
+        <select [value]="category()" (change)="updateCategory($event)">
+          <option value="todas">Todas las sesiones</option>
+          <option *ngFor="let item of categories()" [value]="item">{{ typeLabel(item) }}</option>
+        </select>
+      </label>
+
       <label class="program-search">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="6.5"></circle>
@@ -37,14 +45,6 @@
           (input)="updateQuery($event)"
           placeholder="Nombre, clasificación, fecha o precio"
         />
-      </label>
-
-      <label class="program-filter">
-        <span>Clasificación</span>
-        <select [value]="category()" (change)="updateCategory($event)">
-          <option value="todas">Todas las sesiones</option>
-          <option *ngFor="let item of categories()" [value]="item">{{ typeLabel(item) }}</option>
-        </select>
       </label>
     </div>
   </header>
@@ -84,9 +84,12 @@
             [attr.aria-current]="selectedId() === session.idEvento ? 'true' : null"
             (click)="selectSession(session)"
           >
-            <img [src]="sessionImage(session)" alt="" loading="lazy" />
+            <span class="index-orb">
+              <img [src]="sessionImage(session)" alt="" loading="lazy" />
+              <span class="index-tag">{{ archiveCode(session) }}</span>
+            </span>
             <span class="index-card-copy">
-              <span class="index-code">{{ archiveCode(session) }}</span>
+              <span class="index-code">{{ typeLabel(session.tipoEvento) }}</span>
               <strong>{{ session.nombre }}</strong>
               <span class="index-meta">
                 {{ shortDate(session.fechaInicio) }} · {{ price(session.precio) }}
@@ -215,10 +218,45 @@
           </aside>
 
           <div class="dossier-main">
-            <p class="dossier-lead">{{ current.dossier.entradilla }}</p>
-            <p *ngFor="let paragraph of current.dossier.texto">{{ paragraph }}</p>
+            <!-- En escritorio las secciones son pestañas; en móvil se leen seguidas. -->
+            <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
+              <button
+                type="button"
+                role="tab"
+                *ngFor="let tab of tabs()"
+                [id]="'tab-' + tab.id"
+                [attr.aria-controls]="'panel-' + tab.id"
+                [attr.aria-selected]="activeTab() === tab.id"
+                [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
+                (click)="activeTab.set(tab.id)"
+                (keydown)="moveTab($event)"
+              >
+                {{ tab.label }}
+              </button>
+            </div>
 
-            <section class="dossier-section" *ngIf="current.dossier.notasCata.length">
+            <section
+              class="dossier-section dossier-text"
+              id="panel-expediente"
+              role="tabpanel"
+              aria-labelledby="tab-expediente"
+              [class.is-active]="activeTab() === 'expediente'"
+            >
+              <p class="dossier-lead">{{ current.dossier.entradilla }}</p>
+              <p *ngFor="let paragraph of current.dossier.texto">{{ paragraph }}</p>
+              <p class="dossier-credits" *ngIf="current.dossier.creditos">
+                {{ current.dossier.creditos }}
+              </p>
+            </section>
+
+            <section
+              class="dossier-section"
+              id="panel-cata"
+              role="tabpanel"
+              aria-labelledby="tab-cata"
+              *ngIf="current.dossier.notasCata.length"
+              [class.is-active]="activeTab() === 'cata'"
+            >
               <h3>Notas de cata</h3>
               <dl class="tasting">
                 <div *ngFor="let note of current.dossier.notasCata">
@@ -228,7 +266,14 @@
               </dl>
             </section>
 
-            <section class="dossier-section" *ngIf="current.dossier.programa.length">
+            <section
+              class="dossier-section"
+              id="panel-programa"
+              role="tabpanel"
+              aria-labelledby="tab-programa"
+              *ngIf="current.dossier.programa.length"
+              [class.is-active]="activeTab() === 'programa'"
+            >
               <h3>Desarrollo de la sesión</h3>
               <ol class="timeline">
                 <li *ngFor="let step of current.dossier.programa">
@@ -241,7 +286,14 @@
               </ol>
             </section>
 
-            <section class="dossier-section" *ngIf="current.dossier.acceso.length">
+            <section
+              class="dossier-section"
+              id="panel-acceso"
+              role="tabpanel"
+              aria-labelledby="tab-acceso"
+              *ngIf="current.dossier.acceso.length"
+              [class.is-active]="activeTab() === 'acceso'"
+            >
               <h3>Condiciones de acceso</h3>
               <dl class="conditions">
                 <div *ngFor="let condition of current.dossier.acceso">
@@ -254,7 +306,14 @@
               </ul>
             </section>
 
-            <section class="dossier-section" *ngIf="current.dossier.equipo.length">
+            <section
+              class="dossier-section"
+              id="panel-equipo"
+              role="tabpanel"
+              aria-labelledby="tab-equipo"
+              *ngIf="current.dossier.equipo.length"
+              [class.is-active]="activeTab() === 'equipo'"
+            >
               <h3>Equipo de sala</h3>
               <dl class="conditions">
                 <div *ngFor="let member of current.dossier.equipo">
@@ -264,17 +323,20 @@
               </dl>
             </section>
 
-            <section class="dossier-section" *ngIf="current.dossier.preguntas.length">
+            <section
+              class="dossier-section"
+              id="panel-preguntas"
+              role="tabpanel"
+              aria-labelledby="tab-preguntas"
+              *ngIf="current.dossier.preguntas.length"
+              [class.is-active]="activeTab() === 'preguntas'"
+            >
               <h3>Preguntas frecuentes</h3>
               <details class="faq" *ngFor="let item of current.dossier.preguntas">
                 <summary>{{ item.pregunta }}</summary>
                 <p>{{ item.respuesta }}</p>
               </details>
             </section>
-
-            <p class="dossier-credits" *ngIf="current.dossier.creditos">
-              {{ current.dossier.creditos }}
-            </p>
           </div>
         </div>
 

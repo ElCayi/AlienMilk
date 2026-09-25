@@ -1,42 +1,74 @@
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError, map, of, Subject, switchMap } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
 import { EventService } from '../../core/services/event.service';
 import { ReservationService } from '../../core/services/reservation.service';
-import { anomaly, archiveCode, compatibility, sampleCode, sessionImage } from '../../features/sessions/session.presenter';
+import { SessionDossierService } from '../../core/services/session-dossier.service';
+import {
+  humanizeSessionType,
+  longSessionDate,
+  sessionDuration,
+  sessionPrice,
+  shortSessionDate,
+} from '../../features/sessions/session-dossier';
+import { archiveCode, compatibility, sampleCode, sessionImage } from '../../features/sessions/session.presenter';
 import { filterSessions } from '../../features/sessions/session-search';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
+import { SessionDossier } from '../../models/session-dossier.models';
+
+interface OpenedSession {
+  detail: EventoDetalle;
+  dossier: SessionDossier;
+}
 
 @Component({
   selector: 'app-sessions-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe, CurrencyPipe],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './sessions-page.component.html',
   styleUrl: './sessions-page.component.css',
 })
 export class SessionsPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   private readonly eventService = inject(EventService);
+  private readonly dossierService = inject(SessionDossierService);
   private readonly reservationService = inject(ReservationService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly requestedSession = new Subject<number>();
+  private readonly indexTrack = viewChild<ElementRef<HTMLElement>>('indexTrack');
+  private readonly fileAnchor = viewChild<ElementRef<HTMLElement>>('fileAnchor');
   readonly authService = inject(AuthService);
 
   readonly sessions = signal<EventoListado[]>([]);
-  readonly detail = signal<EventoDetalle | null>(null);
+  readonly opened = signal<OpenedSession | null>(null);
   readonly selectedId = signal<number | null>(null);
   readonly query = signal('');
   readonly category = signal('todas');
   readonly loadingSessions = signal(true);
   readonly loadingDetail = signal(false);
   readonly loadingReservation = signal(false);
+  readonly imageExpanded = signal(false);
   readonly listError = signal('');
   readonly detailError = signal('');
   readonly reservationFeedback = signal('');
+  readonly shareFeedback = signal('');
 
   cantidad = 1;
   observaciones = '';
@@ -45,8 +77,39 @@ export class SessionsPageComponent implements OnInit {
     [...new Set(this.sessions().map((session) => session.tipoEvento))].sort(),
   );
 
-  readonly filteredSessions = computed(() => {
-    return filterSessions(this.sessions(), this.query(), this.category());
+  readonly filteredSessions = computed(() =>
+    filterSessions(this.sessions(), this.query(), this.category()),
+  );
+
+  /** El paginador recorre el índice visible; si la sesión abierta quedó fuera del filtro, el ciclo entero. */
+  private readonly navigableSessions = computed(() => {
+    const visible = this.filteredSessions();
+    return visible.some((session) => session.idEvento === this.selectedId())
+      ? visible
+      : this.sessions();
+  });
+
+  readonly openedView = computed(() => {
+    const opened = this.opened();
+    return opened ? [opened] : [];
+  });
+
+  readonly previousSession = computed(() => this.neighbour(-1));
+  readonly nextSession = computed(() => this.neighbour(1));
+
+  readonly relatedSessions = computed(() => {
+    const current = this.opened()?.detail;
+    if (!current) {
+      return [];
+    }
+
+    return this.sessions()
+      .filter((session) => session.idEvento !== current.idEvento)
+      .sort(
+        (a, b) =>
+          Number(b.tipoEvento === current.tipoEvento) - Number(a.tipoEvento === current.tipoEvento),
+      )
+      .slice(0, 3);
   });
 
   readonly currentUrl = computed(() => {
@@ -60,9 +123,35 @@ export class SessionsPageComponent implements OnInit {
   readonly archiveCode = archiveCode;
   readonly sampleCode = sampleCode;
   readonly compatibility = compatibility;
-  readonly anomaly = anomaly;
+  readonly longDate = longSessionDate;
+  readonly shortDate = shortSessionDate;
+  readonly price = sessionPrice;
+  readonly duration = sessionDuration;
+  readonly typeLabel = humanizeSessionType;
 
   ngOnInit(): void {
+    this.requestedSession
+      .pipe(
+        switchMap((idEvento) =>
+          this.eventService.getDetalle(idEvento).pipe(
+            switchMap((detail) =>
+              this.dossierService.getDossier(detail).pipe(map((dossier) => ({ detail, dossier }))),
+            ),
+            catchError(() => of(null)),
+          ),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((opened) => {
+        this.loadingDetail.set(false);
+        if (!opened) {
+          this.detailError.set('El expediente solicitado no está disponible para consulta pública.');
+          return;
+        }
+
+        this.opened.set(opened);
+      });
+
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.query.set(params.get('q') ?? '');
       const requestedId = Number(params.get('sesion'));
@@ -70,7 +159,7 @@ export class SessionsPageComponent implements OnInit {
       if (nextId !== this.selectedId()) {
         this.selectedId.set(nextId);
         if (nextId) {
-          this.loadDetail(nextId);
+          this.openSession(nextId);
         }
       }
     });
@@ -87,7 +176,7 @@ export class SessionsPageComponent implements OnInit {
         this.sessions.set(ordered);
         this.loadingSessions.set(false);
         if (!this.selectedId() && ordered.length) {
-          this.selectSession(ordered[0]);
+          this.updateUrl({ sesion: ordered[0].idEvento }, true);
         }
       },
       error: () => {
@@ -100,19 +189,59 @@ export class SessionsPageComponent implements OnInit {
   updateQuery(event: Event): void {
     const query = (event.target as HTMLInputElement).value;
     this.query.set(query);
-    this.updateUrl({ q: query || null });
+    this.updateUrl({ q: query || null }, true);
   }
 
   updateCategory(event: Event): void {
     this.category.set((event.target as HTMLSelectElement).value);
   }
 
-  selectSession(session: EventoListado): void {
-    this.updateUrl({ sesion: session.idEvento });
+  selectSession(session: EventoListado, reveal = true): void {
+    if (session.idEvento !== this.selectedId()) {
+      this.updateUrl({ sesion: session.idEvento });
+    }
+
+    if (reveal) {
+      this.revealFile();
+    }
+  }
+
+  scrollIndex(direction: -1 | 1): void {
+    const track = this.indexTrack()?.nativeElement;
+    track?.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' });
+  }
+
+  toggleImage(): void {
+    this.imageExpanded.update((expanded) => !expanded);
+  }
+
+  @HostListener('document:keydown.escape')
+  collapseImage(): void {
+    this.imageExpanded.set(false);
+  }
+
+  async share(session: EventoDetalle): Promise<void> {
+    const url = new URL(this.currentUrl(), this.document.baseURI).toString();
+    const navigator = this.document.defaultView?.navigator;
+
+    try {
+      if (navigator?.share) {
+        await navigator.share({ title: `${session.nombre} · AlienMilk Sessions`, url });
+        return;
+      }
+
+      await navigator?.clipboard.writeText(url);
+      this.shareFeedback.set('Enlace copiado');
+    } catch {
+      this.shareFeedback.set('');
+      return;
+    }
+
+    setTimeout(() => this.shareFeedback.set(''), 2400);
   }
 
   reservar(): void {
-    const detail = this.detail();
+    const detail = this.opened()?.detail;
     if (!detail || !this.authService.isAuthenticated()) {
       return;
     }
@@ -134,40 +263,62 @@ export class SessionsPageComponent implements OnInit {
   }
 
   totalReserva(): number {
-    return (this.detail()?.precio ?? 0) * Math.max(Number(this.cantidad) || 0, 0);
+    return (this.opened()?.detail.precio ?? 0) * Math.max(Number(this.cantidad) || 0, 0);
   }
 
   trackSession(_index: number, session: EventoListado): number {
     return session.idEvento;
   }
 
-  private loadDetail(idEvento: number): void {
+  trackOpened(_index: number, opened: OpenedSession): number {
+    return opened.detail.idEvento;
+  }
+
+  private openSession(idEvento: number): void {
+    // El expediente anterior sigue a la vista, atenuado, hasta que llega el nuevo.
     this.loadingDetail.set(true);
     this.detailError.set('');
-    this.detail.set(null);
+    this.imageExpanded.set(false);
     this.cantidad = 1;
     this.observaciones = '';
     this.reservationFeedback.set('');
-
-    this.eventService.getDetalle(idEvento).subscribe({
-      next: (detail) => {
-        this.detail.set(detail);
-        this.loadingDetail.set(false);
-      },
-      error: () => {
-        this.loadingDetail.set(false);
-        this.detailError.set('El expediente solicitado no está disponible.');
-      },
-    });
+    this.shareFeedback.set('');
+    this.requestedSession.next(idEvento);
   }
 
-  private updateUrl(queryParams: Record<string, string | number | null>): void {
+  private neighbour(offset: -1 | 1): EventoListado | null {
+    const list = this.navigableSessions();
+    const index = list.findIndex((session) => session.idEvento === this.selectedId());
+    if (index < 0 || list.length < 2) {
+      return null;
+    }
+
+    return list[(index + offset + list.length) % list.length];
+  }
+
+  private revealFile(): void {
+    const anchor = this.fileAnchor()?.nativeElement;
+    const window = this.document.defaultView;
+    if (!anchor || !window) {
+      return;
+    }
+
+    const top = anchor.getBoundingClientRect().top;
+    // Solo se desplaza si el expediente queda fuera de la vista (p. ej. al pulsar el paginador).
+    if (top < 0 || top > window.innerHeight * 0.55) {
+      const offset = parseFloat(window.getComputedStyle(anchor).scrollMarginTop) || 0;
+      window.scrollTo({ top: window.scrollY + top - offset, behavior: 'smooth' });
+    }
+  }
+
+  private updateUrl(queryParams: Record<string, string | number | null>, replaceUrl = false): void {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
-      replaceUrl: 'q' in queryParams,
+      replaceUrl,
+      // Cambiar de expediente no es cambiar de página: el desplazamiento lo decide revealFile().
+      scroll: 'manual',
     });
   }
-
 }

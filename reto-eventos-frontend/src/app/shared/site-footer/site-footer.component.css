@@ -87,10 +87,16 @@ ul {
   gap: 1.5rem;
 }
 
-/* Más aire entre el título de cada columna y su contenido. */
+/* Fila de títulos de altura fija en las tres columnas, para que el contenido de todas empiece a la
+   misma altura aunque el título escale con la ventana. */
 .footer-col > h3,
 .footer-brand {
+  height: 2.2rem;
   margin-bottom: 0.9rem;
+}
+
+.footer-col > h3 {
+  line-height: 2.2rem;
 }
 
 /* Firma de marca, igual que en la cabecera: AlienMilk en Nunito y la unidad en Barlow, más
@@ -98,7 +104,7 @@ ul {
 .lockup {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.4em;
+  gap: 0.22em;
   font-family: 'Nunito', sans-serif;
 }
 
@@ -240,7 +246,7 @@ h3 {
 }
 
 .footer-menu a:first-child {
-  padding-top: 0.4rem;
+  padding-top: 0.2rem;
 }
 
 .footer-menu a span {
@@ -263,7 +269,7 @@ h3 {
   gap: 0.55rem;
   color: var(--footer-ink);
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1;
 }
 
 .footer-status-dot {
@@ -333,10 +339,10 @@ h3 {
 /* Recuadro oscuro. El fondo sobresale por los lados (::before) para que las columnas de dentro
    sigan alineadas con las de arriba. */
 .footer-ecosystem {
-  --eco-pad: clamp(1.25rem, 3vw, 2.5rem);
+  --eco-pad: clamp(1rem, 1.6vw, 1.5rem);
   position: relative;
   isolation: isolate;
-  padding: var(--eco-pad) 0;
+  padding: 1.5rem 0 1.75rem;
 }
 
 .footer-ecosystem::before {
@@ -350,7 +356,7 @@ h3 {
 }
 
 .footer-eyebrow {
-  margin: 0 0 1.75rem;
+  margin: 0 0 1.25rem;
   color: var(--footer-faint);
   font-size: 0.72rem;
   font-weight: 800;
@@ -497,8 +503,8 @@ h3 {
 }
 
 .footer-author img {
-  width: 5rem;
-  height: 5rem;
+  width: 6rem;
+  height: 6rem;
   flex: 0 0 auto;
   object-fit: contain;
 }

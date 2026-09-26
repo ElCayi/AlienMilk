@@ -115,6 +115,8 @@ cuatro que aparecen hoy están en `false` a conciencia: se comprobó que el buil
 
 ## Documentación
 
+- [Identidad de AlienMilk](docs/identidad-alienmilk.md) — voz, tono y criterio de la
+  marca; leer antes de escribir texto, diseñar o proponer funcionalidades
 - [Guía de despliegue](docs/guia-despliegue.md) — puesta en producción
 - [Del navegador a nvim](docs/click-a-nvim.md) — pinchar un componente en la página y
   abrirlo en el editor (requiere nuestro entorno Nix)

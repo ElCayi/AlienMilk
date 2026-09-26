@@ -24,7 +24,7 @@
     <nav class="nav-links" id="main-navigation">
       <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
       <a routerLink="/sesiones" (click)="closeMenu()">Sesiones</a>
-      <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros</a>
+      <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
       <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
     </nav>
 
@@ -53,19 +53,12 @@
     <div class="footer-top">
       <section class="footer-col footer-intro">
         <p>
-          <strong>AlienMilk</strong> es una plataforma de reservas para sesiones y experiencias
-          tematicas. Reune eventos, gestion de usuarios y consulta de plazas desde una API REST
-          sencilla pensada para un proyecto academico.
+          <strong>AlienMilk</strong> estudia, conserva y comparte leches de procedencias extraordinarias.
+          Sessions abre una parte de ese archivo al público a través de experiencias presenciales.
         </p>
 
         <a class="footer-cta" routerLink="/registro">Regístrate</a>
 
-        <div class="footer-social" aria-label="Canales">
-          <a routerLink="/">X</a>
-          <a routerLink="/">YT</a>
-          <a routerLink="/">in</a>
-          <a routerLink="/">TG</a>
-        </div>
       </section>
 
       <section class="footer-col">
@@ -73,7 +66,7 @@
         <nav class="footer-menu" aria-label="Explora AlienMilk">
           <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio <span>+</span></a>
           <a routerLink="/sesiones" (click)="closeMenu()">Sesiones <span>+</span></a>
-          <a href="/#nosotros" (click)="goToSection($event, 'nosotros')">Nosotros <span>+</span></a>
+          <a routerLink="/nosotros" (click)="closeMenu()">Nosotros <span>+</span></a>
           <a routerLink="/contacto" (click)="closeMenu()">Contacto <span>+</span></a>
         </nav>
       </section>
@@ -81,9 +74,8 @@
       <section class="footer-col">
         <h3>Contacto</h3>
         <ul class="footer-contact">
-          <li>Coordinacion del proyecto</li>
-          <li>999 999 999</li>
-          <li>Hangar 7, Cupula Central, Madrid</li>
+          <li>Atención a visitantes</li>
+          <li>Hangar 7, Cúpula Central, Madrid</li>
           <li>Jueves a domingo · 18:00 a 23:30</li>
           <li>contacto@alienmilksessions.com</li>
         </ul>
@@ -94,21 +86,18 @@
       <div class="footer-legal">
         <div>
           <strong>AlienMilk Sessions</strong>
-          <p>Proyecto academico para el Reto Transversal de DWES.</p>
+          <p>Archivo, preparación y experiencias de degustación.</p>
         </div>
 
-        <nav class="footer-meta" aria-label="Informacion legal">
-          <a routerLink="/">Privacidad</a>
-          <a routerLink="/">Terminos</a>
-          <a routerLink="/">Cookies</a>
-          <span>© 2026 Proyecto academico</span>
-        </nav>
+        <div class="footer-meta">
+          <span>© 2026 AlienMilk</span>
+        </div>
       </div>
 
       <div class="footer-badges" aria-hidden="true">
-        <span class="footer-badge">UNIR</span>
-        <span class="footer-badge">DWES</span>
-        <span class="footer-badge">API REST</span>
+        <span class="footer-badge">Archivo</span>
+        <span class="footer-badge">Sessions</span>
+        <span class="footer-badge">Collaborators</span>
       </div>
     </div>
   </footer>

@@ -14,6 +14,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'nosotros',
+    loadComponent: () =>
+      import('./pages/about/about-page.component').then(
+        ({ AboutPageComponent }) => AboutPageComponent,
+      ),
+  },
+  {
     path: 'contacto',
     loadComponent: () =>
       import('./pages/contact/contact-page.component').then(

@@ -572,6 +572,16 @@ h3 {
     --footer-gutter: 1.5rem;
   }
 
+  /* Recuadros de contacto más ceñidos para que cada dato siga cabiendo en una línea. */
+  .footer-contact > div {
+    gap: 0.65rem;
+    padding: 0.7rem 0.75rem;
+  }
+
+  .footer-contact dd {
+    font-size: 0.88rem;
+  }
+
   .footer-credit {
     display: grid;
     justify-items: start;

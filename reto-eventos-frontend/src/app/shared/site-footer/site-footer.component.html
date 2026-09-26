@@ -101,10 +101,7 @@
               </svg>
               <span class="visually-hidden">Sede</span>
             </dt>
-            <dd>
-              {{ sede.direccion }}<br />
-              {{ sede.ciudad }}
-            </dd>
+            <dd>{{ sede.direccion }}, {{ sede.ciudad }}</dd>
           </div>
           <div>
             <dt>
@@ -114,7 +111,7 @@
               </svg>
               <span class="visually-hidden">Horario</span>
             </dt>
-            <dd>{{ days() }}<br />{{ hours() }}</dd>
+            <dd>{{ days() }} · {{ hours() }}</dd>
           </div>
           @if (sede.telefono) {
             <div>

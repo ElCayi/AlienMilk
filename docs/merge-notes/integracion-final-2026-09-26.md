@@ -44,3 +44,16 @@ tamaño total del componente.
 Los cambios del backend requieren reiniciar su servicio en cada worktree que
 estuviera ejecutándose antes de esta integración. La referencia de voz y tono
 del proyecto está en `docs/identidad-alienmilk.md`.
+
+## Detalles móviles para futuras ediciones
+
+- El fondo de Localizaciones llega hasta la barra superior de Colaboradores porque
+  `:host::before` cubre el espacio definido por `--home-section-gap`. La clase de
+  host condicionada por `collaborationMode` cambia `--mobile-section-canvas` a
+  `--page-canvas` en Colaboradores. Revisar ambas reglas si cambia el espacio entre
+  secciones o se reorganiza `locations-responsive.css`.
+- El eje vertical del planetario móvil está a `3.125rem` del borde del gráfico,
+  justo en el centro de las órbitas de `6.25rem`. Ajustar ambos valores juntos.
+- Los títulos de `.location-data` reservan espacio para dos líneas y centran los
+  títulos de una sola línea dentro de ese espacio. Mantener las dos reglas para
+  conservar la altura uniforme de las tarjetas cerradas.

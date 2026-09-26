@@ -519,6 +519,9 @@ h3 {
 
 .footer-author-text p {
   line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
 }
 
 .footer-author-text .footer-author-signature {

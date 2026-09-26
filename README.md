@@ -123,6 +123,8 @@ cuatro que aparecen hoy están en `false` a conciencia: se comprobó que el buil
 
 - [Identidad de AlienMilk](docs/identidad-alienmilk.md) — voz, tono y criterio de la
   marca; leer antes de escribir texto, diseñar o proponer funcionalidades
+- [Trabajar en paralelo](docs/colaboracion.md) — worktrees, merges, migraciones de base de
+  datos, servicios y CSS; leer antes de editar o fusionar
 - [Entrega de la integración](docs/merge-notes/integracion-final-2026-09-26.md) —
   cambios incorporados, comprobaciones y puntos pendientes para colaboradores
 - [Guía de despliegue](docs/guia-despliegue.md) — puesta en producción

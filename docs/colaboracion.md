@@ -51,9 +51,11 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
 - Presupuesto de `anyComponentStyle` (`angular.json`): aviso desde 20 kB, error a partir de 48 kB.
   Separar en hojas **no** reduce el total del componente. `home-foundation.css` ronda los 43 kB,
   cerca del límite de error.
-- El ancho de cada página se ajusta en `app.css` con `.page-container:has(app-<pagina>-page)`.
-  Varias páginas añaden ahí su propia excepción (ancho, margen del pie); al crear una página
-  nueva, mirar esas reglas antes de inventar otra.
+- El ancho de cada página se ajusta en `app.css` con `.page-container:has(app-<pagina>-page)`;
+  al crear una página nueva, mirar esas reglas antes de inventar otra.
+- **El pie es un componente común** (`shared/site-footer/`) y sale en toda la web salvo en
+  `/admin`. No deja margen propio: cada página decide el espacio con el que termina su último
+  bloque y el pie se apoya justo debajo. No añadir excepciones del pie por página.
 
 ## Archivos que no se versionan
 
@@ -67,6 +69,6 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
   horarios escritos a mano, y conviven dos rutas de ficha (`/eventos/:id` y
   `/sesiones?sesion=:id`). Detalle en
   [integracion-final-2026-09-26.md](merge-notes/integracion-final-2026-09-26.md).
-- Entre el final de las páginas con textura (`/sesiones`, `/contacto`) y el pie queda una franja
-  clara: es el `margin-top: 4rem` de `.site-footer`. `/nosotros` lo anula con su propia excepción
-  en `app.css`; falta decidir si se unifica.
+- `/eventos/:id` (la ficha antigua de sesión) muestra el título y los datos con texto oscuro sobre
+  fondo oscuro, el mismo fallo que tenía el admin. Conviene arreglarlo o retirarlo al decidir la
+  ruta canónica.

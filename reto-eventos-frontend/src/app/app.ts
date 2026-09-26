@@ -1,25 +1,19 @@
-import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
 import { DOCUMENT, NgIf } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
 import { AuthService } from './core/services/auth.service';
-import { ContactService } from './core/services/contact.service';
-import { describeSchedule } from './features/contact/opening-hours';
+import { SiteFooterComponent } from './shared/site-footer/site-footer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [NgIf, RouterLink, RouterOutlet],
+  imports: [NgIf, RouterLink, RouterOutlet, SiteFooterComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App {
   readonly authService = inject(AuthService);
-  readonly contactService = inject(ContactService);
   readonly menuOpen = signal(false);
-  readonly footerSchedule = computed(() => {
-    const contacto = this.contactService.contacto();
-    return contacto ? describeSchedule(contacto) : '';
-  });
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -53,7 +47,6 @@ export class App {
     });
 
     this.authService.loadSession()?.subscribe();
-    this.contactService.load();
   }
 
   goToSection(event: Event, sectionId: string): void {
@@ -92,9 +85,10 @@ export class App {
     });
   }
 
+  /** El pie es común a toda la web salvo el área de administración, que es una herramienta. */
   shouldShowFooter(): boolean {
     const path = this.router.url.split('?')[0].split('#')[0];
-    return path === '/' || path === '/sesiones' || path === '/nosotros' || path === '/contacto' || path === '/login' || path === '/registro';
+    return !path.startsWith('/admin');
   }
 
   logout(): void {

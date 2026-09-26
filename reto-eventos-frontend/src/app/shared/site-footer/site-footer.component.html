@@ -1,0 +1,61 @@
+<footer class="site-footer">
+  <div class="footer-top">
+    <section class="footer-col footer-intro">
+      <p>
+        <strong>AlienMilk</strong> estudia, conserva y comparte leches de procedencias
+        extraordinarias. Sessions abre una parte de ese archivo al público a través de experiencias
+        presenciales.
+      </p>
+
+      <a class="footer-cta" routerLink="/registro">Regístrate</a>
+    </section>
+
+    <section class="footer-col">
+      <h3>Explora AlienMilk</h3>
+      <nav class="footer-menu" aria-label="Explora AlienMilk">
+        <a href="/" (click)="goHome($event)">Inicio <span aria-hidden="true">+</span></a>
+        <a routerLink="/sesiones">Sesiones <span aria-hidden="true">+</span></a>
+        <a routerLink="/nosotros">Nosotros <span aria-hidden="true">+</span></a>
+        <a routerLink="/contacto">Contacto <span aria-hidden="true">+</span></a>
+      </nav>
+    </section>
+
+    <section class="footer-col">
+      <h3>Contacto</h3>
+      <ul class="footer-contact">
+        @if (contacto(); as sede) {
+          <li>Atención a visitantes</li>
+          <li>{{ sede.nombreSede }} · {{ sede.direccion }}, {{ sede.ciudad }}</li>
+          <li>{{ schedule() }}</li>
+          @if (sede.telefono) {
+            <li>{{ sede.telefono }}</li>
+          }
+          <li>
+            <a [href]="'mailto:' + sede.email">{{ sede.email }}</a>
+          </li>
+        } @else {
+          <li><a routerLink="/contacto">Ficha de contacto de la sede</a></li>
+        }
+      </ul>
+    </section>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-legal">
+      <div>
+        <strong>AlienMilk Sessions</strong>
+        <p>Archivo, preparación y experiencias de degustación.</p>
+      </div>
+
+      <div class="footer-meta">
+        <span>© 2026 AlienMilk</span>
+      </div>
+    </div>
+
+    <div class="footer-badges" aria-hidden="true">
+      <span class="footer-badge">Archivo</span>
+      <span class="footer-badge">Sessions</span>
+      <span class="footer-badge">Collaborators</span>
+    </div>
+  </div>
+</footer>

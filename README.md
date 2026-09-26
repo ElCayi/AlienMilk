@@ -123,6 +123,8 @@ cuatro que aparecen hoy están en `false` a conciencia: se comprobó que el buil
 
 - [Identidad de AlienMilk](docs/identidad-alienmilk.md) — voz, tono y criterio de la
   marca; leer antes de escribir texto, diseñar o proponer funcionalidades
+- [Entrega de la integración](docs/merge-notes/integracion-final-2026-09-26.md) —
+  cambios incorporados, comprobaciones y puntos pendientes para colaboradores
 - [Guía de despliegue](docs/guia-despliegue.md) — puesta en producción
 - [Del navegador a nvim](docs/click-a-nvim.md) — pinchar un componente en la página y
   abrirlo en el editor (requiere nuestro entorno Nix)

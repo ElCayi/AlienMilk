@@ -353,3 +353,53 @@
     width: var(--home-section-width, 82vw);
   }
 }
+
+/* Escritorio: el planetario se compone con una sola medida, --orbit. Las órbitas, su columna, el
+   eje vertical y el ritmo entre estaciones salen de ella, y el conjunto se centra en el panel de
+   textura sin escalados ni desplazamientos de corrección. Sustituye a los ajustes por rangos de
+   arriba (scale, translateY, sesgo inferior). */
+@media (min-width: 1001px) {
+  .locations-layout:not(.locations-layout-collaboration) {
+    grid-template-columns: clamp(19rem, 24vw, 26rem) minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .locations-chart-viewport {
+    --orbit: min(9rem, 10vw, calc((var(--home-showcase-height, 46rem) - 4rem) / 3.7));
+    --chart-air: clamp(1.5rem, 4vw, 4.5rem);
+    place-items: center;
+    padding: 0 var(--chart-air);
+  }
+
+  .locations-chart {
+    width: min(100%, 46rem);
+    gap: calc(var(--orbit) * 0.3);
+    scale: 1;
+    transform: none;
+  }
+
+  .locations-chart::before {
+    top: calc(var(--orbit) / 2);
+    bottom: calc(var(--orbit) / 2);
+    left: calc(var(--orbit) / 2);
+    transform: translateX(-50%);
+  }
+
+  .location-node {
+    grid-template-columns: var(--orbit) minmax(0, 1fr);
+    gap: calc(var(--orbit) * 0.3);
+    min-height: var(--orbit);
+  }
+
+  .location-orbit {
+    width: var(--orbit);
+  }
+
+  .location-data {
+    --location-card-right-air: 0rem;
+  }
+
+  .location-data-details {
+    margin-right: 1.25rem;
+  }
+}

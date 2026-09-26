@@ -19,7 +19,13 @@
       --gallery-showcase: #dbe5eb;
       --gallery-showcase-texture: url('/alienmilk-showcase-texture.webp');
       --gallery-showcase-veil: rgba(219, 229, 235, 0.8);
-      --home-showcase-height: 46rem;
+      /* El escaparate cabe entero bajo la barra superior, con su enlace de debajo a la vista: en
+         portátiles bajos se encoge con la pantalla y en las grandes se queda en su tamaño de diseño. */
+      --home-showcase-height: clamp(
+        30rem,
+        calc(100svh - var(--topbar-height, 4rem) - 6rem),
+        46rem
+      );
       position: relative;
       isolation: isolate;
       display: block;

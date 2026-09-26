@@ -19,6 +19,10 @@
   display: none;
 }
 
+.sessions-carousel-pagination {
+  display: none;
+}
+
 @media (min-width: 901px) {
   .sessions-program {
     transform: translateX(-0.75rem);
@@ -37,6 +41,16 @@
   grid-template-rows: minmax(0, 1fr);
   align-items: center;
   gap: clamp(2.75rem, 3.5vw, 4rem);
+}
+
+.session-visual {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: visible;
 }
 
 .session-image-link,
@@ -221,7 +235,7 @@
   align-self: end;
 }
 
-.session-featured:hover .session-image-link {
+.session-featured .session-image-link:hover {
   z-index: 3;
   border-color: rgba(57, 70, 84, 0.92);
   box-shadow:
@@ -241,7 +255,7 @@
   transform: scale(1.12);
 }
 
-.session-featured:hover img,
+.session-featured .session-image-link:hover img,
 .session-secondary:hover img {
   transform: scale(1.015);
 }
@@ -330,7 +344,7 @@
     transform: translateX(-50%);
   }
 
-  .session-featured:hover .session-image-link::after {
+  .session-featured .session-image-link:hover::after {
     width: auto;
   }
 
@@ -393,65 +407,93 @@
     position: absolute;
     top: 50%;
     z-index: 4;
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 6.25rem;
+    height: 7.25rem;
     display: grid;
     place-items: center;
     padding: 0;
     border: 0;
     border-radius: 0;
-    color: #f1ecef;
+    color: rgba(247, 248, 249, 0.2);
     background: transparent;
     font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-    font-size: 1.4rem;
+    font-size: 5.25rem;
     line-height: 1;
     cursor: pointer;
+    opacity: 1;
     transform: translateY(-50%);
-    transition:
-      color 180ms ease,
-      transform 180ms ease;
+    transition: transform 150ms ease, opacity 150ms ease;
   }
 
   .sessions-carousel-arrow svg {
-    width: 3rem;
-    height: 3rem;
+    width: 5.75rem;
+    height: 5.75rem;
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.8;
+    stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
+    shape-rendering: geometricPrecision;
+    filter: none;
+  }
+
+  .sessions-carousel-arrow .sessions-carousel-arrow-outline {
+    fill: none;
+    stroke: rgba(83, 100, 115, 0.68);
+    stroke-width: 2.45;
+  }
+
+  .sessions-carousel-arrow svg > path:not(.sessions-carousel-arrow-outline) {
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 1.9;
   }
 
   .sessions-carousel-arrow-prev {
-    left: -1.625rem;
+    left: -0.65rem;
   }
 
   .sessions-carousel-arrow-next {
-    right: -1.625rem;
+    right: -0.65rem;
+  }
+
+  .sessions-carousel-arrow-prev svg {
+    justify-self: start;
+    transform: translateX(-0.75rem);
+  }
+
+  .sessions-carousel-arrow-next svg {
+    justify-self: end;
+    transform: translateX(0.75rem);
   }
 
   .sessions-carousel-arrow:focus-visible {
-    color: #ff7f7f;
-    outline: 1px solid currentColor;
+    outline: 2px solid #ff7f7f;
     outline-offset: 0.25rem;
   }
 
   .sessions-carousel-arrow:focus:not(:focus-visible) {
-    color: #f1ecef;
+    color: rgba(247, 248, 249, 0.2);
   }
 
   @media (hover: hover) {
     .sessions-carousel-arrow:hover {
-      color: #ff7f7f;
+      color: #ffffff;
+      opacity: 0.5;
+      transform: translateY(-50%) scale(1.08);
     }
 
-    .sessions-carousel-arrow-prev:hover {
-      transform: translate(-0.25rem, -50%);
+    .sessions-carousel-arrow:hover svg > path:not(.sessions-carousel-arrow-outline) {
+      stroke: rgba(255, 255, 255, 0.35);
     }
+  }
 
-    .sessions-carousel-arrow-next:hover {
-      transform: translate(0.25rem, -50%);
-    }
+  .sessions-carousel-arrow:active {
+    opacity: 1;
+    transform: translateY(-50%) scale(0.94);
+  }
+
+  .sessions-carousel-arrow:active svg > path:not(.sessions-carousel-arrow-outline) {
+    stroke: #ffffff;
   }
 
   .sessions-carousel-arrow:disabled {
@@ -489,14 +531,11 @@
 
   .session-featured .session-file-heading,
   .session-featured h3,
+  .session-featured .session-visual,
   .session-featured .session-file-data,
   .session-featured .session-featured-footer {
     width: min(100%, 20rem);
     justify-self: center;
-  }
-
-  .session-featured .session-image-link {
-    width: min(78vw, 20rem);
   }
 
   .session-featured .session-file-heading {
@@ -512,7 +551,7 @@
     -webkit-line-clamp: 2;
   }
 
-  .session-featured .session-image-link {
+  .session-featured .session-visual {
     order: 2;
   }
 
@@ -523,12 +562,82 @@
   .session-featured .session-featured-footer {
     order: 4;
   }
+
+  .sessions-carousel-pagination {
+    width: fit-content;
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    order: 5;
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+  }
+
+  .sessions-carousel-pagination button {
+    width: 0.82rem;
+    height: 0.82rem;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 1px solid rgba(57, 70, 84, 0.34);
+    border-radius: 999px;
+    background: #dbe5eb;
+    box-shadow: 0 0.18rem 0.5rem rgba(33, 30, 36, 0.12);
+    cursor: pointer;
+    transition:
+      width 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 180ms ease,
+      border-color 180ms ease,
+      transform 150ms ease;
+  }
+
+  .sessions-carousel-pagination button.is-active {
+    width: 2.45rem;
+    border-color: #394654;
+    background: #394654;
+    animation: sessions-pagination-arrive 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .sessions-carousel-pagination button:hover,
+  .sessions-carousel-pagination button:focus-visible {
+    border-color: #ff7f7f;
+  }
+
+  .sessions-carousel-pagination button:focus-visible {
+    outline: 2px solid #ff7f7f;
+    outline-offset: 0.2rem;
+  }
+
+  .sessions-carousel-pagination button:active {
+    transform: scale(0.88);
+  }
 }
 
 @media (max-width: 520px) {
   .sessions-carousel {
     width: min(calc(100% - 2rem), 23rem);
     margin-inline: auto;
+  }
+
+  .sessions-carousel::before {
+    bottom: -2rem;
+  }
+
+  .sessions-explore {
+    margin-top: 3.5rem;
+    gap: 1rem;
+    padding-bottom: 0.55rem;
+    font-size: 1.15rem;
+  }
+
+  .sessions-explore::after {
+    height: 2px;
+  }
+
+  .sessions-explore-arrow {
+    width: 1.55rem;
+    height: 1.55rem;
   }
 
   .sessions-program,
@@ -541,11 +650,12 @@
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
     gap: 0.65rem;
+    --session-panel-bg: #536473;
+    transform: translateY(-0.4rem);
   }
 
   .session-featured .session-file-heading,
   .session-featured h3,
-  .session-featured .session-image-link,
   .session-featured .session-file-data,
   .session-featured .session-featured-footer {
     grid-column: 1;
@@ -557,10 +667,14 @@
   .session-featured h3 {
     width: 100%;
     max-width: 100%;
-    height: calc(2 * 0.98em);
-    margin-block: 1rem 1.1rem;
+    height: auto;
+    min-height: calc(2 * 1.05em);
+    margin-block: 0.65rem 1.1rem;
     font-size: clamp(2.35rem, 10vw, 3rem);
-    line-height: 0.98;
+    line-height: 1.05;
+    overflow: visible;
+    display: block;
+    -webkit-line-clamp: unset;
     color: #211e24;
   }
 
@@ -572,24 +686,37 @@
     font-size: clamp(2.35rem, 10vw, 3rem);
   }
 
+  .session-featured h3 {
+    transform: translate(1rem, -0.65rem);
+  }
+
   .session-featured .session-file-heading {
     width: 100%;
     padding: 0;
     color: #f7f8f9;
     background: transparent;
+    transform: translate(0.75rem, -0.65rem);
   }
 
   .session-featured .session-file-heading span {
-    padding: 0.34rem 0.52rem;
+    padding: 0.42rem 0.68rem;
     border-radius: 999px;
     color: #ff7f7f;
-    background: #1f2430;
+    background: var(--session-panel-bg);
+    font-size: 0.88rem;
     line-height: 1;
   }
 
-  .session-featured .session-image-link {
-    width: min(calc(100% + 0.75rem), 20rem);
-    margin-left: -0.375rem;
+  .session-featured .session-visual {
+    width: min(calc(100% + 4rem), 22rem);
+    aspect-ratio: 1;
+    display: block;
+    margin-left: 0;
+  }
+
+  .session-featured .session-visual .session-image-link {
+    width: 100%;
+    margin-left: 0;
   }
 
   .session-featured-details {
@@ -603,10 +730,12 @@
     justify-self: center;
     box-sizing: border-box;
     margin-left: 0;
-    padding: 1rem;
-    border-radius: 0;
+    margin-bottom: 1.75rem;
+    padding: 1rem 1rem 1.5rem;
+    border-radius: 0 0 1.15rem 1.15rem;
     color: #f7f8f9;
-    background: #1f2430;
+    background: var(--session-panel-bg);
+    box-shadow: 0 -8rem 0 var(--session-panel-bg);
   }
 
   .session-featured-details .session-file-data,
@@ -627,21 +756,49 @@
     color: #f7f8f9;
   }
 
+  .session-featured-details .session-file-data dd {
+    text-align: right;
+  }
+
+  .session-featured-details .session-file-data dt,
+  .session-featured-details .session-file-data dd {
+    font-size: 1.05rem;
+    letter-spacing: 0.07em;
+    line-height: 1.2;
+  }
+
+  .session-featured-details .session-featured-footer a {
+    font-size: 1.1rem;
+    letter-spacing: 0.07em;
+  }
+
+  .session-featured-details .session-action-arrow {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
   .session-featured-details .session-file-data div {
     border-top-color: rgba(247, 248, 249, 0.2);
   }
 
   .session-featured-details .session-featured-footer {
-    padding-top: 0.65rem;
+    box-sizing: border-box;
+    max-width: 100%;
+    margin-top: 0.5rem;
+    padding-top: 1.4rem;
     border-top: 1px solid rgba(247, 248, 249, 0.2);
   }
 
+  .sessions-carousel-pagination {
+    margin-top: -1.2rem;
+  }
+
   .sessions-carousel-arrow-prev {
-    left: -1.625rem;
+    left: 0;
   }
 
   .sessions-carousel-arrow-next {
-    right: -1.625rem;
+    right: 0;
   }
 
   .session-secondary {
@@ -683,7 +840,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .sessions-carousel-pagination button {
+    animation: none;
+    transition: none;
+  }
+
   ::view-transition-group(*) {
     animation-duration: 0s;
+  }
+}
+
+@keyframes sessions-pagination-arrive {
+  from {
+    transform: scaleX(0.72);
+  }
+
+  to {
+    transform: scaleX(1);
   }
 }

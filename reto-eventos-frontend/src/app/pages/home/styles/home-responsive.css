@@ -273,14 +273,22 @@
 
     @media (max-width: 900px) {
       .home-editorial-sections {
+        --home-section-gap: clamp(5rem, 12vh, 8rem);
         grid-auto-rows: auto;
-        gap: clamp(3rem, 7vh, 5rem);
-        margin-bottom: clamp(3rem, 7vh, 5rem);
+        gap: var(--home-section-gap);
+        margin-bottom: var(--home-section-gap);
+      }
+
+      .home-editorial-sections > app-locations-atlas,
+      .home-editorial-sections > app-sample-reception {
+        box-sizing: border-box;
+        border-top: 3px solid var(--gallery-muted);
       }
 
       .final-cta-section {
         width: 100%;
         height: auto;
+        margin-bottom: 0;
       }
 
       .about-card {
@@ -290,12 +298,16 @@
       }
 
       .sessions-block {
-        margin-bottom: clamp(2rem, 6vh, 4rem);
-        padding-top: clamp(2rem, 6vh, 4rem);
+        margin-bottom: 0;
+        padding-top: var(--home-section-gap);
       }
 
       .sessions-block::before {
         display: none;
+      }
+
+      .about-card {
+        border-top-width: 3px;
       }
 
       .sessions-carousel {
@@ -341,7 +353,9 @@
 
       .sessions-editorial::before {
         top: -0.15rem;
-        border-top: 2px solid var(--gallery-muted);
+        right: 0;
+        left: 0;
+        border-top: 3px solid var(--gallery-muted);
       }
 
       .sessions-eyebrow {

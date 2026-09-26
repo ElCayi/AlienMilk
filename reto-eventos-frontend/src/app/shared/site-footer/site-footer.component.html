@@ -28,8 +28,7 @@
         aria-label="AlienMilk Sessions, inicio"
       >
         <span class="footer-brand-mark" aria-hidden="true"></span>
-        <span class="footer-brand-name">AlienMilk</span>
-        <span class="footer-brand-unit">Sessions</span>
+        <span class="lockup">AlienMilk <span class="lockup-unit">Sessions</span></span>
       </a>
 
       <p>
@@ -39,7 +38,10 @@
         volver a ser probado.
       </p>
 
-      <a class="footer-cta" routerLink="/registro">Regístrate</a>
+      <div class="footer-access">
+        <a class="footer-button is-outline" routerLink="/login">Entrar</a>
+        <a class="footer-button is-solid" routerLink="/registro">Regístrate</a>
+      </div>
 
       <ul class="footer-socials" aria-label="AlienMilk en redes sociales">
         @for (red of socials; track red.icon) {
@@ -70,7 +72,9 @@
     </section>
 
     <section class="footer-col">
-      <h3>Explora AlienMilk Sessions</h3>
+      <h3>
+        Explora <span class="lockup">AlienMilk <span class="lockup-unit">Sessions</span></span>
+      </h3>
       <nav class="footer-menu" aria-label="Explora AlienMilk Sessions">
         <a href="/" (click)="goHome($event)">Inicio <span aria-hidden="true">+</span></a>
         <a routerLink="/sesiones">Sesiones <span aria-hidden="true">+</span></a>
@@ -90,26 +94,51 @@
         }
         <dl class="footer-contact">
           <div>
-            <dt>Sede</dt>
+            <dt>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" />
+                <circle cx="12" cy="10.5" r="2.3" />
+              </svg>
+              <span class="visually-hidden">Sede</span>
+            </dt>
             <dd>
               {{ sede.direccion }}<br />
               {{ sede.ciudad }}
             </dd>
           </div>
           <div>
-            <dt>Horario</dt>
+            <dt>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M12 7.5V12l3 2" />
+              </svg>
+              <span class="visually-hidden">Horario</span>
+            </dt>
             <dd>{{ days() }}<br />{{ hours() }}</dd>
           </div>
           @if (sede.telefono) {
             <div>
-              <dt>Teléfono</dt>
+              <dt>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M6.5 4h2.8l1.4 3.8-1.9 1.3a10.5 10.5 0 0 0 6.1 6.1l1.3-1.9 3.8 1.4v2.8a1.5 1.5 0 0 1-1.6 1.5A14.5 14.5 0 0 1 5 5.6 1.5 1.5 0 0 1 6.5 4z"
+                  />
+                </svg>
+                <span class="visually-hidden">Teléfono</span>
+              </dt>
               <dd>
                 <a [href]="phoneHref()">{{ sede.telefono }}</a>
               </dd>
             </div>
           }
           <div>
-            <dt>Correo</dt>
+            <dt>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+                <path d="m4.5 7 7.5 5.5L19.5 7" />
+              </svg>
+              <span class="visually-hidden">Correo</span>
+            </dt>
             <dd>
               <a [href]="'mailto:' + sede.email"
                 >{{ emailParts()[0] }}<wbr />&#64;{{ emailParts()[1] }}</a
@@ -128,7 +157,7 @@
     <h2 id="footer-ecosystem-title" class="footer-eyebrow">Ecosistema AlienMilk</h2>
     <ul class="footer-columns">
       <li class="footer-unit">
-        <strong>AlienMilk Archive</strong>
+        <strong class="lockup">AlienMilk <span class="lockup-unit">Archive</span></strong>
         <p>Conservación, catalogación y estudio de muestras de cualquier procedencia.</p>
         <a class="footer-unit-action" routerLink="/nosotros">
           <span>Conocer el archivo</span>
@@ -136,7 +165,10 @@
         </a>
       </li>
       <li class="footer-unit is-current">
-        <strong>AlienMilk Sessions <span class="footer-unit-here">Está aquí</span></strong>
+        <strong class="lockup"
+          >AlienMilk <span class="lockup-unit">Sessions</span>
+          <span class="footer-unit-here">Está aquí</span></strong
+        >
         <p>Degustaciones, instalaciones y experiencias presenciales abiertas al público.</p>
         <a class="footer-unit-action" routerLink="/sesiones">
           <span>Ver la programación</span>
@@ -144,7 +176,7 @@
         </a>
       </li>
       <li class="footer-unit">
-        <strong>AlienMilk Collaborators</strong>
+        <strong class="lockup">AlienMilk <span class="lockup-unit">Collaborators</span></strong>
         <p>Aportación voluntaria de muestras, evaluación y seguimiento de cada propuesta.</p>
         <a class="footer-unit-action" [href]="proposalHref()">
           <span>Proponer una muestra</span>
@@ -162,7 +194,10 @@
 
   <!-- Capa real del portfolio: identidad, textos legales y autoría. -->
   <div class="footer-legal">
-    <p><strong>AlienMilk Sessions</strong> · Archivo, preparación y experiencias de degustación.</p>
+    <p>
+      <strong class="lockup">AlienMilk <span class="lockup-unit">Sessions</span></strong> · Archivo,
+      preparación y experiencias de degustación.
+    </p>
     <nav class="footer-legal-links" aria-label="Información legal">
       <a routerLink="/aviso-legal">Aviso legal</a>
       <a routerLink="/privacidad">Privacidad</a>
@@ -173,13 +208,15 @@
 
   <div class="footer-credit">
     <div class="footer-author">
-      <img src="cayi-logo.svg" alt="" width="64" height="64" />
+      <img src="cayi-logo.svg" alt="" width="80" height="80" />
       <div class="footer-author-text">
         <p>
           AlienMilk es un proyecto ficticio desarrollado como portfolio. No representa una empresa
           real y las sesiones mostradas forman parte de su propuesta conceptual.
         </p>
-        <p>Diseño y desarrollo por <strong>Claudia Rodríguez Mayán — Cayi</strong>.</p>
+        <p class="footer-author-signature">
+          Diseño y desarrollo por <strong>Claudia Rodríguez Mayán — Cayi</strong>.
+        </p>
       </div>
     </div>
 

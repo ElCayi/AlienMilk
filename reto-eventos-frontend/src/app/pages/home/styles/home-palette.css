@@ -1,0 +1,62 @@
+/* Gallery palette: preserve hierarchy on the light canvas. */
+.sessions-tools a,
+.sessions-explore,
+.sessions-search input {
+  color: var(--gallery-ink);
+}
+
+.sessions-count,
+.sessions-status {
+  color: var(--gallery-muted);
+}
+
+.sessions-editorial::before {
+  border-top-color: var(--gallery-muted);
+}
+
+.sessions-search {
+  border-color: rgba(33, 30, 36, 0.26);
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.sessions-search svg {
+  stroke: #b9afb6;
+}
+
+.sessions-search input::placeholder {
+  color: #8f858c;
+}
+
+.sessions-status {
+  border-color: var(--gallery-line);
+  background: var(--gallery-surface);
+  box-shadow: 0 18px 34px rgba(33, 30, 36, 0.08);
+}
+
+.sessions-status-error button {
+  color: var(--gallery-ink);
+  border-color: rgba(33, 30, 36, 0.4);
+}
+
+.about-card {
+  background: transparent;
+}
+
+.about-content h2,
+.about-kicker,
+.about-copy {
+  color: var(--gallery-ink);
+}
+
+.about-kicker,
+.about-copy {
+  color: var(--gallery-muted);
+}
+
+.about-card .about-content h2 {
+  color: #f1ecef;
+}
+
+.about-card .about-copy {
+  color: #d9d0d6;
+}

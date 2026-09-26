@@ -1,0 +1,321 @@
+/* Texto del expediente */
+.dossier-main {
+  min-width: 0;
+  padding-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* Pestañas: solo en escritorio. En móvil las secciones se leen seguidas. */
+.dossier-tabs {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  .dossier-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .dossier-tabs button {
+    margin-bottom: -1px;
+    padding: 0.2rem 0 0.8rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    background: none;
+    font: 700 1rem var(--condensed);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .dossier-tabs button:hover {
+    color: var(--ink);
+  }
+
+  .dossier-tabs button[aria-selected="true"] {
+    border-bottom-color: var(--coral);
+    color: var(--ink);
+  }
+
+  .dossier-section {
+    display: none;
+  }
+
+  .dossier-section.is-active {
+    display: block;
+    margin-top: 2rem;
+    animation: rise 360ms ease both;
+  }
+
+  .dossier-section h3 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+.dossier-lead {
+  margin: 0 0 1.6rem;
+  font: 600 clamp(1.3rem, 2vw, 1.75rem) / 1.3 'Nunito', sans-serif;
+}
+
+.dossier-section {
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.dossier-section h3 {
+  margin: 0 0 1.2rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--muted);
+  font: 700 1.15rem var(--condensed);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.tasting {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.tasting div {
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: var(--paper);
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 1rem;
+  padding: 0 0 1.1rem 1.2rem;
+  border-left: 1px solid var(--line);
+}
+
+.timeline li::before {
+  content: '';
+  position: absolute;
+  top: 0.35rem;
+  left: -0.3rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.timeline time {
+  color: var(--coral);
+  font: 700 1.05rem var(--condensed);
+  letter-spacing: 0.06em;
+}
+
+.timeline div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.timeline strong {
+  font: 700 0.98rem 'Nunito', sans-serif;
+}
+
+.timeline span,
+.conditions dd,
+.advice,
+.faq p {
+  color: var(--muted);
+  font: 0.92rem / 1.55 Arial, sans-serif;
+}
+
+.conditions {
+  margin: 0;
+}
+
+.conditions div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) 1fr;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.conditions dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.advice {
+  margin: 1.2rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.advice li + li {
+  margin-top: 0.4rem;
+}
+
+.faq {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  font: 700 0.98rem 'Nunito', sans-serif;
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '+';
+  color: var(--coral);
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 200ms ease;
+}
+
+.faq[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq summary:hover {
+  color: var(--coral);
+}
+
+.faq p {
+  margin: 0 0 1rem;
+}
+
+.dossier-credits {
+  margin: 2.5rem 0 0;
+  color: var(--muted);
+  font: 800 0.66rem 'Nunito', sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Estación */
+.station {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  padding: clamp(2rem, 4vw, 3.25rem) var(--inset);
+  color: #faf9f7;
+}
+
+.station-code {
+  margin: 0;
+  color: var(--coral);
+}
+
+.station h3 {
+  margin: 0.8rem 0 0;
+  font: 400 clamp(1.8rem, 2.6vw, 2.6rem) / 1 var(--condensed);
+}
+
+.station-copy p:last-child,
+.station-disclaimer {
+  margin: 0.6rem 0 0;
+  color: rgba(250, 249, 247, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.station-data {
+  margin: 0;
+}
+
+.station-data div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(250, 249, 247, 0.18);
+}
+
+.station dt {
+  color: rgba(250, 249, 247, 0.55);
+}
+
+.station dd {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.station-disclaimer {
+  align-self: end;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(250, 249, 247, 0.3);
+}
+
+/* Paginador */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: clamp(0.5rem, 1.5vw, 1rem) var(--inset);
+  background: var(--page-canvas);
+}
+
+.pager-link {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.3rem 0;
+  border: 0;
+  color: var(--ink);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pager-next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.pager-link span {
+  color: var(--muted);
+}
+
+.pager-link strong {
+  font: 400 clamp(1.3rem, 2vw, 1.8rem) var(--condensed);
+  transition: color 180ms ease;
+}
+
+.pager-link:hover strong {
+  color: var(--coral);
+}
+
+:is(button, a, select, input, summary):focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

@@ -1,0 +1,147 @@
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .index-track {
+    grid-auto-columns: calc((100% - 3 * 1.5rem) / 4);
+  }
+
+  .station {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .station-disclaimer {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1000px) {
+  .program-header,
+  .dossier-body,
+  .station {
+    grid-template-columns: 1fr;
+  }
+
+  .program-header {
+    gap: 1.8rem;
+  }
+
+  .index-track {
+    grid-auto-columns: calc((100% - 2 * 1.5rem) / 3);
+  }
+
+  .dossier-text {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .index-arrows {
+    display: none;
+  }
+
+  .index-track {
+    grid-auto-columns: 46%;
+    gap: 1rem;
+  }
+
+  .dossier-hero {
+    height: 22rem;
+  }
+
+  .dossier-hero.is-expanded {
+    height: 72vh;
+  }
+
+  .dossier-hero-toggle {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .dossier-kicker {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .conditions div,
+  .station-data div {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .pager {
+    grid-template-columns: 1fr;
+  }
+
+  .pager-next {
+    grid-column: 1;
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* El lienzo termina donde empieza la textura: el texto necesita aire propio. */
+.dossier-main {
+  padding-right: var(--inset);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+@media (max-width: 1000px) {
+  .dossier-main {
+    padding-left: var(--inset);
+  }
+}
+
+/* Migas en una franja intermedia: escalón entre la barra superior y la textura. */
+.program-stage .breadcrumb {
+  position: relative;
+  /* Más baja que la barra superior: es un escalón, no un segundo header. */
+  padding: 1.3rem 0;
+}
+
+.program-stage .breadcrumb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: rgba(17, 21, 29, 0.42);
+}
+
+/* La entradilla es grande: justificada abre huecos, así que va en bandera. */
+.dossier-main .dossier-lead {
+  text-align: left;
+}
+
+/* El foco sigue la forma del orbe, no la caja del botón. */
+.index-card:focus-visible {
+  outline: none;
+}
+
+.index-card:focus-visible .index-orb {
+  outline: 2px solid var(--coral);
+  outline-offset: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  figcaption {
+    padding: 0.5rem calc(var(--corner) + 0.5rem) 0.65rem 1.25rem;
+  }
+
+  figcaption strong {
+    font-size: 1.65rem;
+  }
+}
+
+/* Título, fecha, sala y horario ya van en la banda de la imagen: la ficha no los repite. */
+.dossier-aside h2,
+.dossier-date,
+.dossier-place {
+  display: none;
+}

@@ -1,0 +1,224 @@
+@media (max-width: 900px) {
+  :host {
+    --mobile-section-canvas: #eef5f7;
+    background: var(--mobile-section-canvas);
+  }
+
+  :host(.locations-collaboration-section) {
+    --mobile-section-canvas: var(--page-canvas);
+  }
+
+  :host::before {
+    background: var(--mobile-section-canvas);
+  }
+
+  .locations-atlas {
+    border-top: 0;
+    background: var(--mobile-section-canvas);
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    gap: 0.9rem;
+    margin: 0 auto;
+    padding: 0.85rem 0 4rem;
+  }
+
+  .locations-copy,
+  .locations-copy::before,
+  .locations-copy::after {
+    background: var(--mobile-section-canvas);
+  }
+
+  .locations-copy {
+    width: 100%;
+    margin-left: 0;
+    padding-inline: 0;
+  }
+
+  .locations-copy::before,
+  .locations-copy::after {
+    display: none;
+  }
+
+  .locations-editorial h2 {
+    max-width: none;
+    font-size: clamp(2.6rem, 11vw, 3.8rem);
+  }
+
+  .locations-brief {
+    position: relative;
+    z-index: 0;
+    background: transparent;
+  }
+
+  .locations-brief::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    z-index: 0;
+    width: 100vw;
+    background: #536473;
+    transform: translateX(-50%);
+  }
+
+  .locations-brief > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .locations-layout {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 3.5rem;
+  }
+
+  .locations-layout.locations-layout-collaboration {
+    height: auto;
+    overflow: visible;
+  }
+
+  .locations-collaboration-gate {
+    display: none;
+  }
+
+  .locations-chart {
+    scale: 1;
+    transform: none;
+  }
+
+  .locations-chart-viewport {
+    width: 100%;
+    height: auto;
+    display: block;
+    padding-block: 0;
+  }
+
+  .locations-brief {
+    height: auto;
+    padding: 1.5rem;
+    transform: none;
+  }
+
+  .locations-brief-cta-external {
+    justify-self: center;
+    margin: 2rem auto 0;
+  }
+
+  .locations-collaboration-actions {
+    justify-self: center;
+    margin: 2rem auto 0;
+  }
+
+  .location-node {
+    grid-template-columns: 6.75rem minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+    min-height: 10rem;
+    padding-block: 0.5rem;
+  }
+
+  .locations-chart::before {
+    left: 3.125rem;
+  }
+
+  .location-orbit {
+    width: 6.25rem;
+  }
+
+  .location-orbit-ring::before {
+    width: 110%;
+  }
+
+  .location-data {
+    --location-card-right-air: 0rem;
+    width: 100%;
+    min-width: 0;
+    padding: 0.5rem 0;
+  }
+
+  .location-data::before {
+    inset: 0.15rem 0 0.15rem -0.5rem;
+  }
+
+  .location-data summary {
+    gap: 0.65rem;
+    padding: 1.05rem 2rem 1.05rem 0.9rem;
+  }
+
+  .location-data summary::after {
+    top: 1rem;
+    right: 0.75rem;
+    width: 0.65rem;
+    height: 0.65rem;
+    background: none;
+    background-image: none;
+    border: 0;
+    border-right: 2px solid #536473;
+    border-bottom: 2px solid #536473;
+    border-radius: 0;
+    box-shadow: none;
+    transform: rotate(45deg);
+  }
+
+  .location-data[open] summary::after {
+    background-image: none;
+    transform: rotate(225deg);
+  }
+
+  .location-data summary:hover::after,
+  .location-data summary:focus-visible::after {
+    color: #ff7f7f;
+    background-color: transparent;
+    border-color: #ff7f7f;
+    box-shadow: none;
+    transform: rotate(45deg) scale(1.08);
+  }
+
+  .location-data[open] summary:hover::after,
+  .location-data[open] summary:focus-visible::after {
+    transform: rotate(225deg) scale(1.08);
+  }
+
+  .location-data strong {
+    display: grid;
+    align-content: center;
+    min-width: 0;
+    font-size: clamp(1.7rem, 11cqi, 2.2rem);
+    line-height: 1.08;
+    min-height: calc(2 * 1.08em);
+    white-space: normal;
+  }
+
+  .location-data summary > span,
+  .location-data small {
+    line-height: 1.4;
+  }
+
+  .location-data-details {
+    margin: 0.35rem 0.9rem 0;
+    padding: 1rem 0 0.35rem;
+  }
+
+  .location-data-details p {
+    line-height: 1.65;
+  }
+
+  .location-data-details dl {
+    margin-top: 1rem;
+    gap: 0.85rem;
+  }
+
+  .location-data-details dd {
+    margin-top: 0.3rem;
+    line-height: 1.35;
+  }
+
+  .location-data strong,
+  .location-data small,
+  .location-data > span {
+    overflow-wrap: anywhere;
+  }
+}

@@ -102,6 +102,12 @@ cd reto-eventos-frontend
 pnpm check          # lint + tests + build
 ```
 
+Los estilos de la portada, ubicaciones y sesiones están repartidos en hojas por
+sección. Cada componente las importa en orden desde su `.component.css`; ese orden
+forma parte de la cascada y debe conservarse al mover reglas. El presupuesto
+`anyComponentStyle` mide el CSS combinado de cada componente, aunque sus reglas
+vivan en varios archivos. Avisa a partir de 20 kB y detiene la build a los 48 kB.
+
 ## Nota sobre las dependencias
 
 pnpm 11 **no ejecuta los scripts de instalación** de las dependencias salvo que estén

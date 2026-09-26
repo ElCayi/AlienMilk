@@ -1,0 +1,230 @@
+.final-cta-section {
+  box-sizing: border-box;
+  width: var(--home-section-width);
+  height: 100%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.about-card {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  padding: clamp(2rem, 5vw, 3.4rem);
+  border-radius: 2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 127, 127, 0.22);
+  border-top-width: 2px;
+  border-top-color: var(--gallery-muted);
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
+  width: min(1260px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.about-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  background: rgba(5, 13, 22, 0.9);
+}
+
+.about-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scaleX(-1);
+  transform-origin: center;
+  border-radius: inherit;
+  background: url('/alienmilk-final-cta-hand.png') left 0 bottom 1rem / auto 86% no-repeat;
+}
+
+.about-layout {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 40rem) minmax(20rem, 1fr);
+  align-items: center;
+  gap: clamp(3.5rem, 6vw, 6rem);
+}
+
+.about-content {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 40rem;
+  aspect-ratio: 1;
+  font-family: Arial, sans-serif;
+}
+
+.about-content-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding-top: clamp(3rem, 5.5vw, 4.35rem);
+  gap: clamp(2.25rem, 3.8vw, 3.25rem);
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+}
+
+.about-copy-block {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 23rem;
+  min-width: 0;
+  gap: 1.5rem;
+  padding-block: 0.5rem;
+}
+
+.about-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+  justify-self: start;
+  margin: 0;
+  gap: 0.7rem;
+  color: #ff7f7f;
+  font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.about-eyebrow .brand-logo {
+  width: clamp(2.65rem, 4.8vw, 3.5rem);
+  height: clamp(2.65rem, 4.8vw, 3.5rem);
+  display: block;
+  flex: 0 0 auto;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.about-eyebrow .brand-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.about-eyebrow .brand-name {
+  color: currentColor;
+  font-family: 'Nunito', sans-serif;
+}
+
+.about-eyebrow .brand-subtitle {
+  color: currentColor;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.about-content h2 {
+  margin: 0;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(2.9rem, 5.6vw, 4.5rem);
+  line-height: 1.02;
+  font-weight: 700;
+  color: #23272f;
+}
+
+.about-title-lead {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+}
+
+.about-kicker {
+  margin: 0;
+  color: #2f3743;
+  font-size: 1.08rem;
+  line-height: 1.62;
+}
+
+.about-copy {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  color: #2f3743;
+  font-size: 1.08rem;
+  line-height: 1.62;
+  max-width: none;
+  overflow-wrap: break-word;
+}
+
+.about-actions {
+  width: 100%;
+  max-width: 23rem;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.about-actions .hero-button {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+.about-actions .ghost-btn.hero-button {
+  color: #f1ecef;
+  border-color: rgba(241, 236, 239, 0.72);
+}
+
+.about-actions .ghost-btn.hero-button:hover,
+.about-actions .ghost-btn.hero-button:focus,
+.about-actions .ghost-btn.hero-button:active {
+  color: #fff;
+  background: #ff7f7f;
+  border: 1px solid transparent !important;
+}
+
+.about-signoff {
+  margin: 0;
+  color: #ff7f7f;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.about-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.about-image {
+  width: 100%;
+  height: 25rem;
+  display: block;
+  border-radius: 28px;
+  background-image: url('/alienmilk-about-milk.png');
+  background-repeat: no-repeat;
+  background-size: 205% 100%;
+  box-shadow: 0 20px 34px rgba(15, 23, 42, 0.14);
+}
+
+.about-image-main {
+  margin-top: -1.2rem;
+  background-position: left center;
+}
+
+.about-image-offset {
+  margin-top: 1.8rem;
+  background-position: right center;
+}

@@ -1,0 +1,109 @@
+/* Cierre para visitantes: tarjeta oscura de la familia de la CTA final de la home. */
+.closing-cta {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  margin: 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.75rem, 5vw, 4.5rem);
+  overflow: hidden;
+  border-radius: 1.25rem;
+  color: #f1ecef;
+  background: rgba(5, 13, 22, 0.9);
+  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+}
+
+.closing-cta-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.25rem;
+  max-width: 30rem;
+}
+
+.closing-cta h2 {
+  margin: 0;
+  font: 700 clamp(2.2rem, 4vw, 3.6rem) / 1 var(--condensed);
+}
+
+.closing-cta-copy > p:not(.closing-cta-note) {
+  margin: 0;
+  color: rgba(241, 236, 239, 0.78);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.closing-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.closing-cta-primary,
+.closing-cta-secondary {
+  min-width: 10rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid #faf9f7;
+  border-radius: 999px;
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.closing-cta-primary {
+  color: #151217;
+  background: #faf9f7;
+}
+
+.closing-cta-secondary {
+  border-color: rgba(250, 249, 247, 0.55);
+  color: #faf9f7;
+}
+
+.closing-cta-primary:hover,
+.closing-cta-secondary:hover {
+  border-color: var(--coral);
+  color: #fff;
+  background: var(--coral);
+}
+
+.closing-cta-note {
+  margin: 0.75rem 0 0;
+  color: var(--coral);
+  font: 700 1.05rem var(--condensed);
+  letter-spacing: 0.02em;
+}
+
+/* Volteada como en la home: el brazo, cortado en la imagen, entra por el borde derecho. */
+.closing-cta-image {
+  position: absolute;
+  right: 0;
+  bottom: 1rem;
+  width: min(60%, 44rem);
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+/* Lienzo alrededor de la tarjeta, para que no flote sobre la textura. */
+.closing {
+  padding: clamp(1.5rem, 3vw, 2.5rem) var(--inset) clamp(3rem, 6vw, 5rem);
+  background: var(--page-canvas);
+}
+
+@media (max-width: 800px) {
+  .closing-cta {
+    grid-template-columns: 1fr;
+    padding-bottom: 14rem;
+  }
+
+  .closing-cta-image {
+    width: min(90%, 24rem);
+  }
+}

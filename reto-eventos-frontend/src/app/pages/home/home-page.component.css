@@ -1,4 +1,9 @@
+/* Import order is part of the cascade; keep the later overrides last. */
 @import './styles/home-foundation.css';
-@import './styles/home-content.css';
+@import './styles/home-editorial.css';
+@import './styles/home-final-cta.css';
+@import './styles/home-session-content.css';
+@import './styles/home-palette.css';
 @import './styles/home-responsive.css';
-@import './styles/home-session-bubbles.css';
+@import './styles/home-session-cards.css';
+@import './styles/home-session-mobile.css';

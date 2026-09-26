@@ -1,0 +1,334 @@
+/* Expediente */
+.file-anchor {
+  scroll-margin-top: var(--topbar-height, 4.5rem);
+}
+
+.dossier {
+  margin-top: 0;
+  transition: opacity 200ms ease;
+}
+
+.dossier.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.dossier-hero {
+  position: relative;
+  /* Absorbe el hueco que antes lo separaba del carrusel. */
+  height: calc(clamp(20rem, 64vh, 46rem) + clamp(2rem, 4vw, 3.5rem));
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0 0 var(--corner) 0;
+  background: var(--slate-deep);
+  animation: unfold 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition: height 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.dossier-hero.is-expanded {
+  height: min(86vh, 62rem);
+}
+
+.dossier-hero img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  animation: settle 1200ms ease both;
+}
+
+.dossier-hero.is-expanded img {
+  object-fit: contain;
+}
+
+.dossier-hero-code,
+.dossier-hero-toggle,
+figcaption {
+  position: absolute;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  color: #faf9f7;
+  background: rgba(31, 36, 48, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.dossier-hero-code {
+  top: 1rem;
+  left: 1rem;
+  font: 700 0.72rem var(--condensed);
+  letter-spacing: 0.12em;
+}
+
+.dossier-hero-toggle {
+  top: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  font: 700 0.75rem 'Nunito', sans-serif;
+  cursor: pointer;
+}
+
+.dossier-hero-toggle:hover {
+  background: var(--coral);
+}
+
+/* Banda baja a todo el ancho, oscura como la barra superior. Termina siguiendo la esquina
+   redondeada de la imagen. */
+figcaption {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 1.4rem;
+  padding: 0.45rem calc(var(--corner) + 1rem) 0.6rem clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: 0;
+  background: #0d161f;
+  backdrop-filter: none;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+figcaption strong {
+  font: 400 clamp(1.9rem, 3.2vw, 3rem) / 1 var(--condensed);
+  letter-spacing: 0.015em;
+}
+
+figcaption span {
+  color: rgba(250, 249, 247, 0.78);
+  font: 800 0.66rem 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@keyframes unfold {
+  from {
+    clip-path: inset(0 0 100% 0 round 0 0 var(--corner) 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0 0 var(--corner) 0);
+  }
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.dossier-body {
+  display: grid;
+  grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.6fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  /* Ficha y texto siempre a la misma altura: la ficha baja hasta donde acaba el texto. */
+  align-items: stretch;
+  background: var(--page-canvas);
+  /* -1px: tapa la costura de subpíxel entre la placa de la imagen y la ficha. */
+  margin-top: -1px;
+  animation: rise 600ms 150ms ease both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+/* Columna izquierda: ficha oscura, como las etiquetas y escaparates de la landing. */
+.dossier-aside {
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: 0 0 0.45rem 0.45rem;
+  color: var(--light);
+  background: var(--slate);
+  box-shadow: 0 18px 40px rgba(33, 30, 36, 0.14);
+}
+
+.dossier-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--light-muted);
+  color: var(--coral);
+}
+
+.dossier-aside h2 {
+  margin: 1rem 0 0;
+  font-family: var(--condensed);
+  font-size: clamp(2.3rem, 3.4vw, 3.6rem);
+  font-weight: 400;
+  line-height: 0.98;
+}
+
+.dossier-date {
+  margin: 1rem 0 0;
+  font: 700 0.95rem 'Nunito', sans-serif;
+}
+
+.dossier-place {
+  margin: 0.3rem 0 0;
+  color: var(--light-muted);
+  font-size: 0.88rem;
+}
+
+.dossier-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+  margin: 1.5rem 0 0;
+}
+
+.dossier-facts div {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--light-line);
+}
+
+.tasting dt,
+.conditions dt,
+.station dt {
+  color: var(--muted);
+}
+
+.dossier-facts dt {
+  color: var(--light-muted);
+}
+
+.dossier-facts dd,
+.tasting dd {
+  margin: 0.2rem 0 0;
+  font: 400 1.15rem / 1.15 var(--condensed);
+}
+
+.dossier-share {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+
+.dossier-share button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--light);
+  background: none;
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.dossier-share button:hover {
+  color: var(--coral);
+}
+
+.dossier-share span {
+  color: var(--coral);
+  font-size: 0.78rem;
+}
+
+/* Reserva */
+.booking {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
+  padding: 1.4rem;
+  border-radius: 0.45rem;
+  color: #faf9f7;
+  background: rgba(31, 36, 48, 0.32);
+}
+
+.booking-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.booking-price span,
+.booking-fields span {
+  color: rgba(250, 249, 247, 0.6);
+}
+
+.booking-price strong {
+  font: 400 1.9rem var(--condensed);
+}
+
+.booking-fields {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+}
+
+.booking-fields label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.booking-fields input {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid rgba(250, 249, 247, 0.25);
+  border-radius: 0.3rem;
+  color: #faf9f7;
+  background: transparent;
+  font: 0.85rem Arial, sans-serif;
+}
+
+.booking-note {
+  margin: 0;
+  color: rgba(250, 249, 247, 0.72);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.booking-button {
+  display: flex;
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: #151217;
+  background: #faf9f7;
+  font: 800 0.8rem 'Nunito', sans-serif;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.booking-button:hover {
+  color: white;
+  background: var(--coral);
+}
+
+.booking-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.booking-link {
+  justify-self: center;
+  color: rgba(250, 249, 247, 0.78);
+  font-size: 0.8rem;
+}
+
+.booking-error {
+  margin: 0;
+  color: #fecaca;
+  font-size: 0.8rem;
+}

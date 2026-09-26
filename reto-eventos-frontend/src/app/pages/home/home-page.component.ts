@@ -6,7 +6,6 @@ import { catchError, forkJoin, of } from 'rxjs';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { EventService } from '../../core/services/event.service';
 import { CursorCompanionComponent } from '../../features/ambient/cursor-companion.component';
-import { SampleReceptionComponent } from '../../features/collaboration/sample-reception.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
 import { SessionsProgramComponent } from '../../features/sessions/sessions-program.component';
 
@@ -19,7 +18,6 @@ import { SessionsProgramComponent } from '../../features/sessions/sessions-progr
     CursorCompanionComponent,
     SessionsProgramComponent,
     LocationsAtlasComponent,
-    SampleReceptionComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',

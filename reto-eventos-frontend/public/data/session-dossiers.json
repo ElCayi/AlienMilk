@@ -1,0 +1,313 @@
+{
+  "general": {
+    "horario": "Horario local de la estación",
+    "acceso": [
+      { "etiqueta": "Acreditación", "valor": "Taquilla de acreditación, 45 minutos antes del inicio. El control de ingreso cierra 10 minutos antes." },
+      { "etiqueta": "Documentación", "valor": "Código de acceso y documento identificativo vigente." },
+      { "etiqueta": "Edad mínima", "valor": "18 años, salvo indicación expresa en la sesión." }
+    ],
+    "recomendaciones": [
+      "No acuda en ayunas ni inmediatamente después de una comida copiosa.",
+      "Indique cualquier intolerancia en el campo de observaciones al reservar.",
+      "Los objetos personales se depositan en consigna durante toda la sesión."
+    ],
+    "preguntas": [
+      {
+        "pregunta": "¿Puedo asistir si tengo alguna intolerancia alimentaria?",
+        "respuesta": "Sí. Indíquela en el campo de observaciones al reservar. El equipo de sala preparará una alternativa o le asignará un puesto de observación sin degustación."
+      },
+      {
+        "pregunta": "¿Puedo cancelar mi reserva?",
+        "respuesta": "Sí, desde su panel de participante hasta el día anterior a la sesión. El importe se reintegra en un plazo de cinco días hábiles."
+      },
+      {
+        "pregunta": "¿Qué ocurre si la sesión se suspende?",
+        "respuesta": "Las suspensiones por condiciones de la estación se comunican con al menos 48 horas de antelación, salvo causa sobrevenida. Se reintegra el importe íntegro o se ofrece plaza en la siguiente convocatoria."
+      },
+      {
+        "pregunta": "¿Se puede fotografiar la sala?",
+        "respuesta": "Solo en las zonas señalizadas. Las muestras no se fotografían."
+      },
+      {
+        "pregunta": "¿De dónde proceden las muestras?",
+        "respuesta": "AlienMilk trabaja con una red estable de proveedores y colaboradores. Por respeto a los acuerdos que hacen posible cada extracción, no revelamos el origen biológico ni el método de obtención."
+      }
+    ],
+    "estacion": {
+      "complemento": "Instalación AlienMilk",
+      "franja": "Hora local de la estación",
+      "operadores": [
+        { "etiqueta": "Transporte", "valor": "AM Transit" },
+        { "etiqueta": "Equipaje", "valor": "Helix Transfer" },
+        { "etiqueta": "Coordinación", "valor": "Kepler Liaison" }
+      ]
+    },
+    "equipo": [
+      { "etiqueta": "Acompañamiento", "valor": "Personal acreditado AlienMilk" }
+    ],
+    "creditos": "Programa AlienMilk Sessions · Ciclo 2026."
+  },
+  "porTipo": {
+    "CATA_COSMICA": {
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Variable según lote" },
+        { "etiqueta": "Cuerpo", "valor": "Medio" },
+        { "etiqueta": "Textura", "valor": "Sedosa" },
+        { "etiqueta": "Servicio", "valor": "10–14 °C" }
+      ],
+      "programa": [
+        { "hora": "−00:45", "titulo": "Apertura de taquilla de acreditación" },
+        { "hora": "00:00", "titulo": "Bienvenida y lectura del protocolo de sala" },
+        { "hora": "00:15", "titulo": "Servicio de muestras" },
+        { "hora": "Final", "titulo": "Puesta en común y cierre" }
+      ]
+    },
+    "ABDUCCION_SUAVE": {
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Blanco translúcido" },
+        { "etiqueta": "Cuerpo", "valor": "Ligero" },
+        { "etiqueta": "Textura", "valor": "Aireada" },
+        { "etiqueta": "Servicio", "valor": "4–6 °C" }
+      ],
+      "programa": [
+        { "hora": "−00:45", "titulo": "Acreditación y entrega de indumentaria" },
+        { "hora": "00:00", "titulo": "Ascenso" },
+        { "hora": "Final", "titulo": "Descenso, degustación de bienvenida y procedimiento de salida" }
+      ]
+    },
+    "LABORATORIO_SENSORIAL": {
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Según preparación" },
+        { "etiqueta": "Cuerpo", "valor": "Variable" },
+        { "etiqueta": "Textura", "valor": "Espuma, emulsión o gel" },
+        { "etiqueta": "Servicio", "valor": "Temperatura ambiente" }
+      ],
+      "programa": [
+        { "hora": "−00:30", "titulo": "Acreditación y asignación de puesto" },
+        { "hora": "00:00", "titulo": "Presentación de la base de trabajo" },
+        { "hora": "00:20", "titulo": "Práctica guiada" },
+        { "hora": "Final", "titulo": "Degustación en común" }
+      ],
+      "acceso": [
+        { "etiqueta": "Indumentaria", "valor": "Calzado cerrado. El resto del equipo se proporciona en sala." }
+      ]
+    },
+    "ORBITA_GUIADA": {
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Según lote histórico" },
+        { "etiqueta": "Cuerpo", "valor": "Denso" },
+        { "etiqueta": "Textura", "valor": "Untuosa" },
+        { "etiqueta": "Servicio", "valor": "8 °C" }
+      ],
+      "programa": [
+        { "hora": "−00:15", "titulo": "Acreditación en el punto de encuentro" },
+        { "hora": "00:00", "titulo": "Inicio del recorrido" },
+        { "hora": "Final", "titulo": "Degustación y salida" }
+      ],
+      "acceso": [
+        { "etiqueta": "Recorrido", "valor": "A pie. Incluye escaleras y zonas de baja iluminación." }
+      ]
+    }
+  },
+  "porSesion": {
+    "1": {
+      "entradilla": "Sesión inaugural del ciclo 2026. Cinco muestras de la cosecha recuperada en la órbita de Orión, servidas en orden de densidad creciente.",
+      "texto": [
+        "La Cata de Leche Abducida abre cada año la programación de AlienMilk Sessions. Es, por tradición, la sesión más concurrida del ciclo y también la más sencilla de explicar: se prueba lo que ha llegado.",
+        "El lote de este año procede de la órbita de Orión y se conserva en la cámara principal del Hangar 7 desde su recepción. El equipo de sala presenta cinco muestras en orden de densidad creciente, acompañadas de agua templada y pan sin sal para neutralizar el paladar entre servicios.",
+        "No se requiere experiencia previa. Cada asistente recibe una ficha de cata en papel donde anotar sus impresiones, que pasan a formar parte del archivo si así lo autoriza.",
+        "Algunas muestras presentan una ligera actividad durante los primeros minutos tras el servicio. Es habitual y no afecta a la degustación."
+      ],
+      "procedencia": "Órbita de Orión",
+      "horario": "19:15 – 21:45",
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Del marfil al gris perla" },
+        { "etiqueta": "Cuerpo", "valor": "Medio a denso" },
+        { "etiqueta": "Textura", "valor": "Sedosa, con un final ligeramente granulado" },
+        { "etiqueta": "Servicio", "valor": "11–13 °C" },
+        { "etiqueta": "Persistencia", "valor": "Larga" }
+      ],
+      "programa": [
+        { "hora": "19:15", "titulo": "Apertura de taquilla de acreditación" },
+        { "hora": "19:45", "titulo": "Bienvenida y lectura del protocolo de sala" },
+        { "hora": "20:00", "titulo": "Primer servicio", "detalle": "Muestras I y II." },
+        { "hora": "20:40", "titulo": "Pausa y ventilación de sala" },
+        { "hora": "20:55", "titulo": "Segundo servicio", "detalle": "Muestras III a V." },
+        { "hora": "21:45", "titulo": "Puesta en común y cierre" }
+      ],
+      "equipo": [
+        { "etiqueta": "Dirección de sala", "valor": "Irene Valcárcel" },
+        { "etiqueta": "Sumillería", "valor": "Tomás Aguirre-Nnadi" },
+        { "etiqueta": "Conservación", "valor": "Unidad Técnica del Hangar 7" },
+        { "etiqueta": "Acompañamiento", "valor": "Personal acreditado AlienMilk" }
+      ],
+      "estacion": {
+        "complemento": "Cúpula Central · Madrid",
+        "franja": "Hora peninsular (UTC+2)",
+        "operadores": [
+          { "etiqueta": "Transporte", "valor": "AM Transit" },
+          { "etiqueta": "Equipaje", "valor": "Helix Transfer" }
+        ]
+      },
+      "creditos": "Con la colaboración de los proveedores del ciclo 2026, que han preferido no ser mencionados."
+    },
+    "2": {
+      "entradilla": "Una primera aproximación al contacto, con luces bajas, humo frío y un protocolo de bienvenida pensado para quien nunca ha sido recogido.",
+      "texto": [
+        "Esta sesión está diseñada para visitantes sin experiencia previa en procesos de recogida. Durante cien minutos, la Cúpula Beta reproduce las condiciones habituales de un primer contacto a una intensidad deliberadamente reducida.",
+        "La experiencia combina iluminación de baja frecuencia, humo frío y una degustación breve al final del recorrido. El personal explica cada fase antes de que comience, y es posible abandonar la sala en cualquier momento por las salidas señalizadas.",
+        "Recomendamos acudir con ropa cómoda y sin objetos metálicos de gran tamaño. Los relojes analógicos pueden adelantarse ligeramente durante la sesión; recuperan la hora al salir.",
+        "El acompañamiento del personal finaliza una vez completado el procedimiento de salida correspondiente."
+      ],
+      "procedencia": "No declarada",
+      "horario": "18:30 – 20:40",
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Blanco translúcido" },
+        { "etiqueta": "Cuerpo", "valor": "Ligero" },
+        { "etiqueta": "Textura", "valor": "Aireada, casi espuma" },
+        { "etiqueta": "Servicio", "valor": "4–6 °C" },
+        { "etiqueta": "Persistencia", "valor": "Breve" }
+      ],
+      "programa": [
+        { "hora": "18:30", "titulo": "Acreditación" },
+        { "hora": "19:00", "titulo": "Recepción en el vestíbulo", "detalle": "Entrega de indumentaria y lectura del protocolo." },
+        { "hora": "19:15", "titulo": "Ascenso" },
+        { "hora": "19:55", "titulo": "Estancia" },
+        { "hora": "20:25", "titulo": "Descenso y degustación de bienvenida" },
+        { "hora": "20:40", "titulo": "Procedimiento de salida" }
+      ],
+      "equipo": [
+        { "etiqueta": "Coordinación", "valor": "Marta Oyelaran-Ruiz" },
+        { "etiqueta": "Iluminación y atmósfera", "valor": "Estudio Nimbo" },
+        { "etiqueta": "Acompañamiento", "valor": "Personal acreditado AlienMilk" }
+      ],
+      "acceso": [
+        { "etiqueta": "Edad mínima", "valor": "16 años acompañados de una persona adulta." },
+        { "etiqueta": "Salud", "valor": "No recomendada para personas con fotosensibilidad." }
+      ],
+      "estacion": {
+        "complemento": "Recinto de cúpulas · Madrid",
+        "franja": "Hora peninsular (UTC+2)",
+        "operadores": [{ "etiqueta": "Transporte", "valor": "AM Transit" }]
+      }
+    },
+    "3": {
+      "entradilla": "Taller práctico de preparación. Cada participante trabaja con su propia base y se lleva a casa lo que consiga estabilizar.",
+      "texto": [
+        "El Taller de Espuma Galáctica es la sesión más práctica del programa. En grupos de seis, los participantes aprenden a airear, templar y estabilizar mezclas de base AlienMilk hasta obtener espumas con cuerpo suficiente para el servicio.",
+        "El Módulo Lácteo 3 dispone de puestos individuales con batidor de vaina, placa de temperatura controlada y campana de extracción. Todo el material se proporciona en sala.",
+        "Las espumas se prueban en común al final del taller. Las que mantienen la forma durante más de cuarenta minutos pueden llevarse a casa en envase isotérmico.",
+        "Algunas mezclas tienden a crecer. El equipo de sala indicará en qué momento conviene dejar de batir."
+      ],
+      "procedencia": "Base AlienMilk de archivo",
+      "horario": "17:30 – 20:15",
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Lavanda pálido a violeta" },
+        { "etiqueta": "Cuerpo", "valor": "Según técnica" },
+        { "etiqueta": "Textura", "valor": "Espuma firme, burbuja fina" },
+        { "etiqueta": "Servicio", "valor": "18 °C" },
+        { "etiqueta": "Persistencia", "valor": "Media" }
+      ],
+      "programa": [
+        { "hora": "17:30", "titulo": "Acreditación y asignación de puesto" },
+        { "hora": "18:00", "titulo": "Presentación de la base" },
+        { "hora": "18:20", "titulo": "Primera práctica: aireado" },
+        { "hora": "19:10", "titulo": "Segunda práctica: templado y estabilización" },
+        { "hora": "19:50", "titulo": "Emplatado" },
+        { "hora": "20:15", "titulo": "Degustación en común y entrega de envases" }
+      ],
+      "equipo": [
+        { "etiqueta": "Dirección del taller", "valor": "Aurelio Bastida" },
+        { "etiqueta": "Asistencia técnica", "valor": "Noa Ferreira" },
+        { "etiqueta": "Seguridad alimentaria", "valor": "Departamento de Conservación" }
+      ],
+      "acceso": [{ "etiqueta": "Grupos", "valor": "Seis participantes por puesto." }],
+      "estacion": {
+        "complemento": "Área de laboratorios · Madrid",
+        "franja": "Hora peninsular (UTC+2)",
+        "operadores": [
+          { "etiqueta": "Transporte", "valor": "AM Transit" },
+          { "etiqueta": "Envases", "valor": "Helix Transfer" }
+        ]
+      }
+    },
+    "4": {
+      "entradilla": "Recorrido narrado por las zonas de conservación donde descansa el primer lote de leche abducida. Se camina a oscuras y en silencio.",
+      "texto": [
+        "La Ruta Nocturna recorre las zonas del Hangar que permanecen cerradas el resto del ciclo: la antigua sala de recepción, los pasillos de frío y la cámara donde se conserva el primer lote recibido por AlienMilk.",
+        "El recorrido se realiza en grupos reducidos, con guía y linternas de luz roja para no alterar las condiciones de las cámaras. Se ruega no tocar las superficies ni golpear los cristales.",
+        "La visita termina en el antiguo muelle de carga, donde se sirve una pequeña muestra del lote histórico. Es la única ocasión del año en que se abre.",
+        "Si durante el recorrido escucha algo, no es necesario comunicarlo al personal."
+      ],
+      "procedencia": "Primer lote de archivo",
+      "horario": "22:30 – 00:15",
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Ámbar pálido" },
+        { "etiqueta": "Cuerpo", "valor": "Denso" },
+        { "etiqueta": "Textura", "valor": "Untuosa" },
+        { "etiqueta": "Servicio", "valor": "8 °C" },
+        { "etiqueta": "Persistencia", "valor": "Muy larga" }
+      ],
+      "programa": [
+        { "hora": "22:30", "titulo": "Acreditación en el Acceso Norte" },
+        { "hora": "22:45", "titulo": "Entrega de linternas" },
+        { "hora": "23:00", "titulo": "Antigua sala de recepción" },
+        { "hora": "23:25", "titulo": "Pasillos de frío" },
+        { "hora": "23:50", "titulo": "Cámara del primer lote" },
+        { "hora": "00:15", "titulo": "Muelle de carga y degustación" }
+      ],
+      "equipo": [
+        { "etiqueta": "Guía", "valor": "Rosa Etxeberria, archivo histórico" },
+        { "etiqueta": "Conservación", "valor": "Unidad Técnica del Hangar 7" }
+      ],
+      "acceso": [
+        { "etiqueta": "Distancia", "valor": "1,4 km a pie." },
+        { "etiqueta": "Fotografía", "valor": "No se permite el uso de flash." }
+      ],
+      "estacion": {
+        "complemento": "Hangar 7 · Madrid",
+        "franja": "Hora peninsular (UTC+2)",
+        "operadores": [{ "etiqueta": "Transporte nocturno", "valor": "AM Transit" }]
+      }
+    },
+    "5": {
+      "entradilla": "Cata nocturna bajo la cúpula de ordeño lunar, sincronizada con el paso de la sombra. Tres tiempos, tres muestras, tres temperaturas.",
+      "texto": [
+        "La Sesión Eclipse Lunar se programa según el calendario astronómico y las condiciones de la Cúpula Eclipse. Durante tres horas, los asistentes degustan muestras obtenidas en la cara oculta mientras la sala se oscurece al ritmo del eclipse.",
+        "El servicio se divide en tres tiempos: antes, durante y después de la totalidad. Cada tiempo tiene su propia muestra y su propia temperatura de servicio.",
+        "La cúpula acoge a quinientas personas en gradas escalonadas. Recomendamos llegar con antelación para elegir ubicación: las filas superiores ofrecen mejor visibilidad y algo menos de gravedad.",
+        "Si el cielo no permite observar el eclipse, la sesión se celebra igualmente. La muestra no depende del cielo."
+      ],
+      "procedencia": "Cara oculta",
+      "horario": "21:00 – 23:50",
+      "notasCata": [
+        { "etiqueta": "Color", "valor": "Gris plata con reflejo azul" },
+        { "etiqueta": "Cuerpo", "valor": "Medio" },
+        { "etiqueta": "Textura", "valor": "Fría, ligeramente eléctrica" },
+        { "etiqueta": "Servicio", "valor": "2 °C · 9 °C · 14 °C" },
+        { "etiqueta": "Persistencia", "valor": "Larga" }
+      ],
+      "programa": [
+        { "hora": "21:00", "titulo": "Apertura de puertas" },
+        { "hora": "21:40", "titulo": "Primer tiempo: penumbra" },
+        { "hora": "22:30", "titulo": "Segundo tiempo: totalidad" },
+        { "hora": "23:15", "titulo": "Tercer tiempo: salida de la sombra" },
+        { "hora": "23:50", "titulo": "Cierre" }
+      ],
+      "equipo": [
+        { "etiqueta": "Dirección de sala", "valor": "Irene Valcárcel" },
+        { "etiqueta": "Observación", "valor": "Oficina Astronómica AlienMilk" },
+        { "etiqueta": "Sumillería", "valor": "Tomás Aguirre-Nnadi" }
+      ],
+      "estacion": {
+        "complemento": "Recinto de cúpulas · Madrid",
+        "franja": "Hora peninsular (UTC+2)",
+        "operadores": [
+          { "etiqueta": "Transporte", "valor": "AM Transit" },
+          { "etiqueta": "Coordinación", "valor": "Kepler Liaison" }
+        ]
+      },
+      "creditos": "Con el asesoramiento de la Oficina Astronómica AlienMilk."
+    }
+  }
+}

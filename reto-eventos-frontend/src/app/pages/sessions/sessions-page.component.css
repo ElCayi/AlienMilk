@@ -1,416 +1,1104 @@
 :host {
+  --ink: #211e24;
+  --muted: #68727d;
+  --line: rgba(55, 66, 78, 0.17);
+  --coral: #ff7f7f;
+  --slate: #536473;
+  --light: #f7f8f9;
+  --light-muted: rgba(247, 248, 249, 0.68);
+  --light-line: rgba(247, 248, 249, 0.2);
+  --light-rule: rgba(247, 248, 249, 0.42);
+  --slate-deep: #1f2430;
+  --paper: rgba(255, 255, 255, 0.72);
+  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --corner: clamp(2rem, 4vw, 3.5rem);
   display: block;
-  width: min(1600px, 100vw);
-  margin-left: 50%;
-  transform: translateX(-50%);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
 }
 
-.sessions-room {
-  box-sizing: border-box;
-  padding: clamp(2rem, 4vw, 4.5rem) 3.75rem 5rem;
-  color: #f1ecef;
+.program {
+  --stage-texture:
+    linear-gradient(rgba(63, 73, 87, 0.9), rgba(63, 73, 87, 0.9)),
+    url('/alienmilk-showcase-texture.webp') center / cover fixed;
+  position: relative;
+  isolation: isolate;
 }
 
-.room-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) auto;
-  gap: 3rem;
-  align-items: start;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(241, 236, 239, 0.22);
+/* Una sola capa de textura a sangre detrás de toda la página. El lienzo de .program-body solo cubre
+   el ancho del contenido, así que se lee como franja arriba y como columna en cada margen. */
+.program::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: var(--stage-texture);
 }
 
-.room-eyebrow,
-.room-clearance,
+/* Franja del header, hasta donde empieza el carrusel. */
+.program-stage {
+  padding: 0 0 clamp(1.75rem, 3.5vw, 3rem);
+  color: var(--light);
+}
+
+/* El cuerpo es transparente: cada bloque pone su lienzo y la estación deja ver la textura, unida a
+   las columnas laterales. */
+.program-body {
+  --inset: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+button {
+  font: inherit;
+}
+
+/* Tipografía compartida */
+.eyebrow,
+.breadcrumb,
 .index-code,
-.file-classification,
-.file-data dt,
-.file-price span,
-.room-filter > span {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  letter-spacing: 0.14em;
+.dossier-kicker,
+.dossier-facts dt,
+.booking-price span,
+.booking-fields span,
+.tasting dt,
+.conditions dt,
+.station dt,
+.station-code,
+.program-filter > span,
+.pager-link span,
+figcaption {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.room-eyebrow {
-  margin: 0 0 0.8rem;
-  color: #ff7f7f;
-  font-size: 0.78rem;
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--muted);
 }
 
-.room-header h1 {
-  margin: 0;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(2.8rem, 5vw, 5.6rem);
-  font-weight: 300;
-  line-height: 0.95;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.room-intro {
-  max-width: 68ch;
-  margin: 1.2rem 0 0;
-  color: #5b6471;
-  font-size: 0.88rem;
-  line-height: 1.65;
+.breadcrumb a:hover,
+.breadcrumb [aria-current='page'] {
+  color: var(--coral);
 }
 
-.room-clearance {
-  margin: 0;
-  color: rgba(241, 236, 239, 0.45);
-  font-size: 0.75rem;
-}
-
-.room-toolbar {
+/* Cabecera */
+.program-header {
   display: grid;
-  grid-template-columns: minmax(16rem, 1fr) minmax(12rem, 0.35fr) auto;
-  gap: 1rem;
+  grid-template-columns: minmax(0, 2.2fr) minmax(16rem, 0.7fr);
+  gap: clamp(2rem, 6vw, 6rem);
   align-items: end;
-  margin: clamp(2rem, 4vw, 3.5rem) 0 1.4rem;
 }
 
-.room-search {
+/* Cabecera editorial calcada de la landing (.sessions-editorial). */
+.program-copy {
+  min-width: 0;
+  padding-top: 0.4rem;
+  border-top: 2px solid var(--light-rule);
+}
+
+.program-intro {
+  max-width: 48rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 clamp(1.75rem, 2.5vw, 2.5rem);
+  color: var(--muted);
+}
+
+.eyebrow-icon {
+  width: 1.2em;
+  height: 1.2em;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+h1 {
+  margin: 2.35rem 0 0;
+  font-family: var(--condensed);
+  font-size: clamp(2.8rem, 4.4vw, 4.8rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: 0.025em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+.program-subtitle {
+  /* Más aire que en la landing: el título es mayor aquí y se apelmazaba con el subtítulo. */
+  margin: 1.6rem 0 0;
+  color: var(--coral);
+  font: 700 clamp(1.05rem, 1.55vw, 1.3rem) / 1.3 'Nunito', sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.program-intro,
+.dossier-text > p:not(.dossier-lead):not(.dossier-credits) {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font: clamp(1.05rem, 1vw, 1.1rem) / 1.6 Arial, sans-serif;
+}
+
+.program-intro,
+.dossier-main p,
+.dossier-main dd {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.program-tools {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.program-search {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid rgba(241, 236, 239, 0.18);
-  background: rgba(33, 30, 36, 0.82);
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(33, 30, 36, 0.26);
+  border-radius: 0.45rem;
+  background: var(--paper);
 }
 
-.room-search:focus-within {
-  border-color: #ff7f7f;
+.program-search:focus-within {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 2px rgba(255, 127, 127, 0.12);
 }
 
-.room-search svg {
+.program-search svg,
+.index-arrows svg,
+.dossier-hero-toggle svg,
+.dossier-share svg {
   width: 1rem;
+  flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.7;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.room-search input,
-.room-filter select {
+.program-search input,
+.program-filter select {
   width: 100%;
+  min-width: 0;
   border: 0;
   outline: 0;
-  color: #f1ecef;
+  color: var(--ink);
   background: transparent;
-  font: 0.82rem Arial, sans-serif;
+  font: 0.95rem Arial, sans-serif;
 }
 
-.room-filter {
+.program-filter {
   display: grid;
-  gap: 0.35rem;
-  padding: 0.45rem 0.85rem 0.75rem;
-  border-bottom: 1px solid rgba(241, 236, 239, 0.22);
+  gap: 0.3rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
 }
 
-.room-filter > span {
-  color: #91878e;
-  font-size: 0.63rem;
+.program-filter select {
+  cursor: pointer;
 }
 
-.room-count {
-  padding-bottom: 0.75rem;
-  color: #91878e;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+.program-status {
+  padding: 2rem 0;
+  color: var(--muted);
+  text-align: center;
 }
 
-.room-layout {
+.program-status-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.program-status button {
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: #faf9f7;
+  background: var(--slate-deep);
+  cursor: pointer;
+}
+
+/* Índice de sesiones */
+/* Esquina grande hacia la textura; la derecha, discreta, en la línea del buscador que tiene encima. */
+.program-index {
+  padding: clamp(1.25rem, 2vw, 1.75rem) clamp(1.5rem, 3.5vw, 3.5rem) clamp(0.75rem, 1.5vw, 1.25rem);
+  border-radius: var(--corner) 1rem 0 0;
+  color: var(--light);
+  background: #0d151e;
+}
+
+.index-head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.index-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.index-arrows button {
+  width: 2.2rem;
+  height: 2.2rem;
   display: grid;
-  grid-template-columns: minmax(20rem, 0.72fr) minmax(0, 1.55fr);
-  gap: clamp(1.5rem, 3vw, 3rem);
-  align-items: start;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--paper);
+  cursor: pointer;
 }
 
-.session-index {
+.index-arrows button:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+/* Índice en forma de orbes, en la línea de las burbujas de la landing. */
+.index-track {
   display: grid;
-  gap: 0.65rem;
-  max-height: calc(100vh - 14rem);
-  overflow-y: auto;
-  padding-right: 0.45rem;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 4 * 1.5rem) / 5);
+  gap: 1.5rem;
+  margin: 0;
+  padding: 1.25rem 0.25rem 1.25rem;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
   scrollbar-width: thin;
-  scrollbar-color: #9ca3af transparent;
+  scrollbar-color: #b9afb6 transparent;
+}
+
+.index-track li {
+  scroll-snap-align: start;
 }
 
 .index-card {
   width: 100%;
   display: grid;
-  grid-template-columns: 6.4rem minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: center;
+  justify-items: center;
+  gap: 1.1rem;
   padding: 0;
-  border: 1px solid rgba(241, 236, 239, 0.14);
-  color: inherit;
-  background: rgba(33, 30, 36, 0.82);
-  text-align: left;
+  border: 0;
+  color: var(--ink);
+  background: none;
+  text-align: center;
   cursor: pointer;
-  transition: border-color 180ms ease, background 180ms ease;
 }
 
-.index-card:hover,
-.index-card.is-selected {
-  border-color: #ff7f7f;
-  background: rgba(33, 30, 36, 0.92);
+.index-orb {
+  position: relative;
+  width: min(calc(100% - 1.4rem), 13rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(57, 70, 84, 0.74);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 0 0.6rem rgba(92, 106, 120, 0.16),
+    0 16px 40px rgba(33, 30, 36, 0.16);
+  transition:
+    box-shadow 240ms ease,
+    border-color 240ms ease,
+    transform 240ms ease;
 }
 
-.index-card img {
-  width: 6.4rem;
-  height: 7rem;
+.index-orb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
   object-fit: cover;
-  filter: saturate(0.72) contrast(1.05);
+  filter: saturate(0.7) contrast(1.05);
+  transition: filter 240ms ease;
+}
+
+.index-tag {
+  position: absolute;
+  bottom: -0.2rem;
+  left: 50%;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 12px rgba(33, 30, 36, 0.12);
+  font: 700 0.72rem var(--condensed);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.index-card:hover .index-orb {
+  transform: translateY(-3px);
+}
+
+.index-card:hover img,
+.index-card.is-selected img {
+  filter: none;
+}
+
+.index-card.is-selected .index-orb {
+  border-color: var(--coral);
+  box-shadow:
+    0 0 0 0.6rem rgba(255, 127, 127, 0.22),
+    0 16px 40px rgba(33, 30, 36, 0.2);
 }
 
 .index-card-copy {
-  min-width: 0;
   display: grid;
+  align-content: start;
   gap: 0.35rem;
 }
 
+.index-card-copy {
+  justify-items: center;
+}
+
 .index-code {
+  color: var(--coral);
+}
+
+.index-card strong {
+  font-family: var(--condensed);
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.index-card.is-selected strong {
+  color: var(--coral);
+}
+
+.index-meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+
+/* Tinta clara sobre la franja y el carrusel oscuros. */
+.program-stage .breadcrumb,
+.program-stage .program-filter,
+.program-index .index-meta {
+  color: var(--light-muted);
+}
+
+.program-stage .program-filter {
+  border-bottom: 2px solid var(--light-rule);
+}
+
+.program-stage .program-filter select {
+  color: var(--light);
+}
+
+.program-stage .program-filter option {
+  color: var(--ink);
+}
+
+.program-index .index-card {
+  color: var(--light);
+}
+
+.program-index .index-arrows button {
+  border-color: var(--light-line);
+  color: var(--light);
+  background: transparent;
+}
+
+.program-index .index-arrows button:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.program-index .index-orb {
+  border-color: rgba(247, 248, 249, 0.5);
+  box-shadow:
+    0 0 0 0.6rem rgba(247, 248, 249, 0.1),
+    0 16px 40px rgba(20, 24, 32, 0.35);
+}
+
+.program-index .index-track {
+  scrollbar-color: rgba(247, 248, 249, 0.4) transparent;
+}
+
+.program-stage .program-copy .eyebrow,
+.program-stage .program-intro {
+  color: var(--light-muted);
+}
+
+.program-stage .program-search {
+  border-color: transparent;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+/* Expediente */
+.file-anchor {
+  scroll-margin-top: var(--topbar-height, 4.5rem);
+}
+
+.dossier {
+  margin-top: 0;
+  transition: opacity 200ms ease;
+}
+
+.dossier.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.dossier-hero {
+  position: relative;
+  /* Absorbe el hueco que antes lo separaba del carrusel. */
+  height: calc(clamp(20rem, 64vh, 46rem) + clamp(2rem, 4vw, 3.5rem));
+  margin: 0;
   overflow: hidden;
-  color: #ff7f7f;
-  font-size: 0.62rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  border-radius: 0 0 var(--corner) 0;
+  background: var(--slate-deep);
+  animation: unfold 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition: height 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.index-card-copy strong {
-  font-family: 'Nunito', sans-serif;
-  font-size: 1rem;
-  line-height: 1.1;
+.dossier-hero.is-expanded {
+  height: min(86vh, 62rem);
 }
 
-.index-card-copy > span:not(.index-code),
-.index-card-copy small {
-  color: #91878e;
-  font-size: 0.7rem;
+.dossier-hero img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  animation: settle 1200ms ease both;
 }
 
-.index-card-copy small {
+.dossier-hero.is-expanded img {
+  object-fit: contain;
+}
+
+.dossier-hero-code,
+.dossier-hero-toggle,
+figcaption {
+  position: absolute;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  color: #faf9f7;
+  background: rgba(31, 36, 48, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.dossier-hero-code {
+  top: 1rem;
+  left: 1rem;
+  font: 700 0.72rem var(--condensed);
+  letter-spacing: 0.12em;
+}
+
+.dossier-hero-toggle {
+  top: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  font: 700 0.75rem 'Nunito', sans-serif;
+  cursor: pointer;
+}
+
+.dossier-hero-toggle:hover {
+  background: var(--coral);
+}
+
+/* Banda baja a todo el ancho, oscura como la barra superior. Termina siguiendo la esquina
+   redondeada de la imagen. */
+figcaption {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 1.4rem;
+  padding: 0.45rem calc(var(--corner) + 1rem) 0.6rem clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: 0;
+  background: #0d161f;
+  backdrop-filter: none;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+figcaption strong {
+  font: 400 clamp(1.9rem, 3.2vw, 3rem) / 1 var(--condensed);
+  letter-spacing: 0.015em;
+}
+
+figcaption span {
+  color: rgba(250, 249, 247, 0.78);
+  font: 800 0.66rem 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.index-arrow {
-  padding-right: 1rem;
-  font-size: 1.25rem;
+@keyframes unfold {
+  from {
+    clip-path: inset(0 0 100% 0 round 0 0 var(--corner) 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0 0 var(--corner) 0);
+  }
 }
 
-.session-file {
-  min-height: 34rem;
-  color: #faf9f7;
-  background: #1f2430;
+@keyframes settle {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
-.session-file article {
+.dossier-body {
   display: grid;
-  grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.15fr);
-  min-height: 34rem;
+  grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.6fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  /* Ficha y texto siempre a la misma altura: la ficha baja hasta donde acaba el texto. */
+  align-items: stretch;
+  background: var(--page-canvas);
+  /* -1px: tapa la costura de subpíxel entre la placa de la imagen y la ficha. */
+  margin-top: -1px;
+  animation: rise 600ms 150ms ease both;
 }
 
-.file-image {
-  position: relative;
-  min-height: 100%;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
 }
 
-.file-image img {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0;
-  object-fit: cover;
-  filter: saturate(0.72) contrast(1.08);
+/* Columna izquierda: ficha oscura, como las etiquetas y escaparates de la landing. */
+.dossier-aside {
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: 0 0 0.45rem 0.45rem;
+  color: var(--light);
+  background: var(--slate);
+  box-shadow: 0 18px 40px rgba(33, 30, 36, 0.14);
 }
 
-.file-image > span {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.4rem 0.55rem;
-  background: rgba(31, 36, 48, 0.82);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-}
-
-.file-content {
-  display: flex;
-  flex-direction: column;
-  padding: clamp(1.5rem, 2.7vw, 2.6rem);
-}
-
-.file-classification {
+.dossier-kicker {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  color: #ff7f7f;
-  font-size: 0.65rem;
+  margin: 0;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--light-muted);
+  color: var(--coral);
 }
 
-.file-content h2 {
-  max-width: 18ch;
+.dossier-aside h2 {
   margin: 1rem 0 0;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(2.3rem, 3.6vw, 4.2rem);
-  font-weight: 300;
+  font-family: var(--condensed);
+  font-size: clamp(2.3rem, 3.4vw, 3.6rem);
+  font-weight: 400;
   line-height: 0.98;
-  letter-spacing: 0.035em;
 }
 
-.file-description {
-  margin: 1.1rem 0 0;
-  color: rgba(250, 249, 247, 0.72);
-  font-size: 0.82rem;
-  line-height: 1.6;
+.dossier-date {
+  margin: 1rem 0 0;
+  font: 700 0.95rem 'Nunito', sans-serif;
 }
 
-.file-data {
+.dossier-place {
+  margin: 0.3rem 0 0;
+  color: var(--light-muted);
+  font-size: 0.88rem;
+}
+
+.dossier-facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem 1.5rem;
-  margin: 1.5rem 0;
+  gap: 0.75rem 1.25rem;
+  margin: 1.5rem 0 0;
 }
 
-.file-data div {
-  display: grid;
-  grid-template-columns: minmax(5.5rem, 0.8fr) 1fr;
-  gap: 0.6rem;
+.dossier-facts div {
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(250, 249, 247, 0.18);
+  border-top: 1px solid var(--light-line);
 }
 
-.file-data dt,
-.file-data dd {
-  margin: 0;
-  font-size: 0.64rem;
+.tasting dt,
+.conditions dt,
+.station dt {
+  color: var(--muted);
 }
 
-.file-data dt {
-  color: rgba(250, 249, 247, 0.45);
+.dossier-facts dt {
+  color: var(--light-muted);
 }
 
-.file-reservation {
-  margin-top: auto;
-  padding-top: 1.2rem;
-  border-top: 1px solid rgba(250, 249, 247, 0.2);
+.dossier-facts dd,
+.tasting dd {
+  margin: 0.2rem 0 0;
+  font: 400 1.15rem / 1.15 var(--condensed);
 }
 
-.file-price {
+.dossier-share {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+
+.dossier-share button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--light);
+  background: none;
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.dossier-share button:hover {
+  color: var(--coral);
+}
+
+.dossier-share span {
+  color: var(--coral);
+  font-size: 0.78rem;
+}
+
+/* Reserva */
+.booking {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.6rem;
+  padding: 1.4rem;
+  border-radius: 0.45rem;
+  color: #faf9f7;
+  background: rgba(31, 36, 48, 0.32);
+}
+
+.booking-price {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 1rem;
 }
 
-.file-price span {
-  color: rgba(250, 249, 247, 0.55);
-  font-size: 0.65rem;
+.booking-price span,
+.booking-fields span {
+  color: rgba(250, 249, 247, 0.6);
 }
 
-.file-price strong {
-  font-size: 1.3rem;
+.booking-price strong {
+  font: 400 1.9rem var(--condensed);
 }
 
-.reservation-fields {
+.booking-fields {
   display: grid;
-  grid-template-columns: 6rem 1fr;
+  grid-template-columns: 5.5rem 1fr;
   gap: 0.75rem;
-  margin-top: 1rem;
 }
 
-.reservation-fields label {
+.booking-fields label {
   display: grid;
   gap: 0.35rem;
-  color: rgba(250, 249, 247, 0.62);
-  font-size: 0.68rem;
 }
 
-.reservation-fields input {
+.booking-fields input {
   min-width: 0;
-  padding: 0.7rem;
-  border: 1px solid rgba(250, 249, 247, 0.22);
+  padding: 0.65rem;
+  border: 1px solid rgba(250, 249, 247, 0.25);
+  border-radius: 0.3rem;
   color: #faf9f7;
   background: transparent;
+  font: 0.85rem Arial, sans-serif;
 }
 
-.reserve-button,
-.access-prompt a,
-.room-status button {
-  display: inline-flex;
+.booking-note {
+  margin: 0;
+  color: rgba(250, 249, 247, 0.72);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.booking-button {
+  display: flex;
   justify-content: center;
+  padding: 0.85rem 1rem;
   border: 0;
+  border-radius: 999px;
   color: #151217;
   background: #faf9f7;
-  font: 700 0.76rem 'Nunito', sans-serif;
+  font: 800 0.8rem 'Nunito', sans-serif;
+  letter-spacing: 0.08em;
   text-decoration: none;
+  text-transform: uppercase;
   cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
 }
 
-.reserve-button {
-  width: 100%;
-  margin-top: 0.75rem;
-  padding: 0.85rem 1rem;
-}
-
-.reserve-button:hover,
-.access-prompt a:hover,
-.room-status button:hover {
+.booking-button:hover {
   color: white;
-  background: #ff7f7f;
+  background: var(--coral);
 }
 
-.reserve-button:disabled {
+.booking-button:disabled {
   opacity: 0.55;
   cursor: wait;
 }
 
-.access-prompt p {
-  margin: 0.85rem 0;
-  color: rgba(250, 249, 247, 0.7);
-  font-size: 0.75rem;
-  line-height: 1.5;
+.booking-link {
+  justify-self: center;
+  color: rgba(250, 249, 247, 0.78);
+  font-size: 0.8rem;
 }
 
-.access-prompt strong {
-  color: #faf9f7;
+.booking-error {
+  margin: 0;
+  color: #fecaca;
+  font-size: 0.8rem;
+}
+
+/* Texto del expediente */
+.dossier-main {
+  min-width: 0;
+  padding-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* Pestañas: solo en escritorio. En móvil las secciones se leen seguidas. */
+.dossier-tabs {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  .dossier-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .dossier-tabs button {
+    margin-bottom: -1px;
+    padding: 0.2rem 0 0.8rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    background: none;
+    font: 700 1rem var(--condensed);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .dossier-tabs button:hover {
+    color: var(--ink);
+  }
+
+  .dossier-tabs button[aria-selected="true"] {
+    border-bottom-color: var(--coral);
+    color: var(--ink);
+  }
+
+  .dossier-section {
+    display: none;
+  }
+
+  .dossier-section.is-active {
+    display: block;
+    margin-top: 2rem;
+    animation: rise 360ms ease both;
+  }
+
+  .dossier-section h3 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+.dossier-lead {
+  margin: 0 0 1.6rem;
+  font: 600 clamp(1.3rem, 2vw, 1.75rem) / 1.3 'Nunito', sans-serif;
+}
+
+.dossier-section {
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.dossier-section h3 {
+  margin: 0 0 1.2rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--muted);
+  font: 700 1.15rem var(--condensed);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.access-prompt a {
-  padding: 0.75rem 1rem;
+.tasting {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
 }
 
-.reservation-error {
-  margin: 0.75rem 0 0;
-  color: #fca5a5;
-  font-size: 0.75rem;
+.tasting div {
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: var(--paper);
 }
 
-.file-loading,
-.room-status {
-  padding: 2rem;
-  color: #91878e;
-  text-align: center;
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.file-loading {
-  color: rgba(250, 249, 247, 0.7);
-}
-
-.room-status-error {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
   gap: 1rem;
+  padding: 0 0 1.1rem 1.2rem;
+  border-left: 1px solid var(--line);
 }
 
-.room-status button {
-  padding: 0.65rem 1rem;
+.timeline li::before {
+  content: '';
+  position: absolute;
+  top: 0.35rem;
+  left: -0.3rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.timeline time {
+  color: var(--coral);
+  font: 700 1.05rem var(--condensed);
+  letter-spacing: 0.06em;
+}
+
+.timeline div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.timeline strong {
+  font: 700 0.98rem 'Nunito', sans-serif;
+}
+
+.timeline span,
+.conditions dd,
+.advice,
+.faq p {
+  color: var(--muted);
+  font: 0.92rem / 1.55 Arial, sans-serif;
+}
+
+.conditions {
+  margin: 0;
+}
+
+.conditions div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) 1fr;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.conditions dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.advice {
+  margin: 1.2rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.advice li + li {
+  margin-top: 0.4rem;
+}
+
+.faq {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 0;
+  font: 700 0.98rem 'Nunito', sans-serif;
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '+';
+  color: var(--coral);
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 200ms ease;
+}
+
+.faq[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq summary:hover {
+  color: var(--coral);
+}
+
+.faq p {
+  margin: 0 0 1rem;
+}
+
+.dossier-credits {
+  margin: 2.5rem 0 0;
+  color: var(--muted);
+  font: 800 0.66rem 'Nunito', sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Estación */
+.station {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.8fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  padding: clamp(2rem, 4vw, 3.25rem) var(--inset);
   color: #faf9f7;
-  background: #1f2430;
+}
+
+.station-code {
+  margin: 0;
+  color: var(--coral);
+}
+
+.station h3 {
+  margin: 0.8rem 0 0;
+  font: 400 clamp(1.8rem, 2.6vw, 2.6rem) / 1 var(--condensed);
+}
+
+.station-copy p:last-child,
+.station-disclaimer {
+  margin: 0.6rem 0 0;
+  color: rgba(250, 249, 247, 0.7);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.station-data {
+  margin: 0;
+}
+
+.station-data div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(250, 249, 247, 0.18);
+}
+
+.station dt {
+  color: rgba(250, 249, 247, 0.55);
+}
+
+.station dd {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.station-disclaimer {
+  align-self: end;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(250, 249, 247, 0.3);
+}
+
+/* Paginador */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: clamp(0.5rem, 1.5vw, 1rem) var(--inset);
+  background: var(--page-canvas);
+}
+
+.pager-link {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.3rem 0;
+  border: 0;
+  color: var(--ink);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pager-next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.pager-link span {
+  color: var(--muted);
+}
+
+.pager-link strong {
+  font: 400 clamp(1.3rem, 2vw, 1.8rem) var(--condensed);
+  transition: color 180ms ease;
+}
+
+.pager-link:hover strong {
+  color: var(--coral);
+}
+
+:is(button, a, select, input, summary):focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
 }
 
 .visually-hidden {
@@ -423,90 +1111,260 @@
   white-space: nowrap;
 }
 
-@media (max-width: 1000px) {
-  :host {
-    width: 100vw;
-  }
-
-  .sessions-room {
-    padding-right: clamp(1rem, 6vw, 3.75rem);
-    padding-left: clamp(1rem, 6vw, 3.75rem);
-  }
-
-  .room-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .session-index {
-    max-height: 28rem;
-  }
-
-  .session-file article {
-    grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
-@media (max-width: 700px) {
-  :host {
-    width: 100%;
+@media (max-width: 1200px) {
+  .index-track {
+    grid-auto-columns: calc((100% - 3 * 1.5rem) / 4);
   }
 
-  .sessions-room {
-    padding: 1.5rem clamp(1rem, 6vw, 3.75rem) 3rem;
+  .station {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .room-header,
-  .room-toolbar {
+  .station-disclaimer {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1000px) {
+  .program-header,
+  .dossier-body,
+  .station {
     grid-template-columns: 1fr;
   }
 
-  .room-header {
+  .program-header {
+    gap: 1.8rem;
+  }
+
+  .index-track {
+    grid-auto-columns: calc((100% - 2 * 1.5rem) / 3);
+  }
+
+  .dossier-text {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .index-arrows {
+    display: none;
+  }
+
+  .index-track {
+    grid-auto-columns: 46%;
     gap: 1rem;
   }
 
-  .room-clearance {
-    justify-self: start;
+  .dossier-hero {
+    height: 22rem;
   }
 
-  .room-toolbar {
-    margin-top: 2rem;
+  .dossier-hero.is-expanded {
+    height: 72vh;
   }
 
-  .room-count {
-    padding: 0;
+  .dossier-hero-toggle {
+    font-size: 0;
+    gap: 0;
   }
 
-  .session-index {
-    max-height: none;
+  .dossier-kicker {
+    flex-direction: column;
+    gap: 0.3rem;
   }
 
-  .index-card {
-    grid-template-columns: 5.2rem minmax(0, 1fr) auto;
+  .conditions div,
+  .station-data div {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
   }
 
-  .index-card img {
-    width: 5.2rem;
-    height: 6rem;
-  }
-
-  .session-file article {
+  .pager {
     grid-template-columns: 1fr;
   }
 
-  .file-image {
-    min-height: 22rem;
+  .pager-next {
+    grid-column: 1;
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* El lienzo termina donde empieza la textura: el texto necesita aire propio. */
+.dossier-main {
+  padding-right: var(--inset);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+@media (max-width: 1000px) {
+  .dossier-main {
+    padding-left: var(--inset);
+  }
+}
+
+/* Migas en una franja intermedia: escalón entre la barra superior y la textura. */
+.program-stage .breadcrumb {
+  position: relative;
+  /* Más baja que la barra superior: es un escalón, no un segundo header. */
+  padding: 1.3rem 0;
+}
+
+.program-stage .breadcrumb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: rgba(17, 21, 29, 0.42);
+}
+
+/* La entradilla es grande: justificada abre huecos, así que va en bandera. */
+.dossier-main .dossier-lead {
+  text-align: left;
+}
+
+/* El foco sigue la forma del orbe, no la caja del botón. */
+.index-card:focus-visible {
+  outline: none;
+}
+
+.index-card:focus-visible .index-orb {
+  outline: 2px solid var(--coral);
+  outline-offset: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  figcaption {
+    padding: 0.5rem calc(var(--corner) + 0.5rem) 0.65rem 1.25rem;
   }
 
-  .file-classification,
-  .file-data {
+  figcaption strong {
+    font-size: 1.65rem;
+  }
+}
+
+/* Título, fecha, sala y horario ya van en la banda de la imagen: la ficha no los repite. */
+.dossier-aside h2,
+.dossier-date,
+.dossier-place {
+  display: none;
+}
+
+/* Cierre para visitantes: tarjeta oscura de la familia de la CTA final de la home. */
+.closing-cta {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  margin: 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.75rem, 5vw, 4.5rem);
+  overflow: hidden;
+  border-radius: 1.25rem;
+  color: #f1ecef;
+  background: rgba(5, 13, 22, 0.9);
+  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+}
+
+.closing-cta-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.25rem;
+  max-width: 30rem;
+}
+
+.closing-cta h2 {
+  margin: 0;
+  font: 700 clamp(2.2rem, 4vw, 3.6rem) / 1 var(--condensed);
+}
+
+.closing-cta-copy > p:not(.closing-cta-note) {
+  margin: 0;
+  color: rgba(241, 236, 239, 0.78);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.closing-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.closing-cta-primary,
+.closing-cta-secondary {
+  min-width: 10rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid #faf9f7;
+  border-radius: 999px;
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.closing-cta-primary {
+  color: #151217;
+  background: #faf9f7;
+}
+
+.closing-cta-secondary {
+  border-color: rgba(250, 249, 247, 0.55);
+  color: #faf9f7;
+}
+
+.closing-cta-primary:hover,
+.closing-cta-secondary:hover {
+  border-color: var(--coral);
+  color: #fff;
+  background: var(--coral);
+}
+
+.closing-cta-note {
+  margin: 0.75rem 0 0;
+  color: var(--coral);
+  font: 700 1.05rem var(--condensed);
+  letter-spacing: 0.02em;
+}
+
+/* Volteada como en la home: el brazo, cortado en la imagen, entra por el borde derecho. */
+.closing-cta-image {
+  position: absolute;
+  right: 0;
+  bottom: 1rem;
+  width: min(60%, 44rem);
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+/* Lienzo alrededor de la tarjeta, para que no flote sobre la textura. */
+.closing {
+  padding: clamp(1.5rem, 3vw, 2.5rem) var(--inset) clamp(3rem, 6vw, 5rem);
+  background: var(--page-canvas);
+}
+
+@media (max-width: 800px) {
+  .closing-cta {
     grid-template-columns: 1fr;
+    padding-bottom: 14rem;
   }
 
-  .file-classification {
-    display: grid;
-  }
-
-  .reservation-fields {
-    grid-template-columns: 1fr;
+  .closing-cta-image {
+    width: min(90%, 24rem);
   }
 }

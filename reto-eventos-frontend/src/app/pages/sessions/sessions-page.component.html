@@ -1,133 +1,466 @@
-<section class="sessions-room">
-  <header class="room-header">
-    <div>
-      <p class="room-eyebrow">Archivo público / Ciclo 2026</p>
-      <h1>Programación de experiencias</h1>
-      <p class="room-intro">
-        Consulta las muestras autorizadas, examina cada expediente y selecciona la experiencia
-        adecuada para tu umbral de curiosidad.
-      </p>
+<section class="program">
+  <!-- Franja superior a sangre: textura de fondo con el copy y el índice recortados en lienzo. -->
+  <div class="program-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/sesiones" [attr.aria-current]="opened() ? null : 'page'">Sesiones</a>
+      <ng-container *ngIf="opened() as current">
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ current.detail.nombre }}</span>
+      </ng-container>
+    </nav>
+
+    <header class="program-header">
+      <div class="program-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>Archivo público / Ciclo 2026</span>
+        </p>
+        <h1>Programación de experiencias</h1>
+        <p class="program-subtitle">Cada expediente describe una sesión. Ninguno la sustituye.</p>
+        <p class="program-intro">
+          Consulte las sesiones autorizadas del ciclo, examine su expediente y reserve plaza en la
+          experiencia adecuada para su umbral de curiosidad. La programación se amplía a medida que
+          nuevas muestras superan el proceso de evaluación.
+        </p>
+      </div>
+
+      <div class="program-tools">
+        <label class="program-filter">
+          <span>Clasificación</span>
+          <select [value]="category()" (change)="updateCategory($event)">
+            <option value="todas">Todas las sesiones</option>
+            <option *ngFor="let item of categories()" [value]="item">{{ typeLabel(item) }}</option>
+          </select>
+        </label>
+
+        <label class="program-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="m16 16 4 4"></path>
+          </svg>
+          <span class="visually-hidden">Buscar sesiones</span>
+          <input
+            type="search"
+            [value]="query()"
+            (input)="updateQuery($event)"
+            placeholder="Nombre, clasificación, fecha o precio"
+          />
+        </label>
+      </div>
+    </header>
+
+    <p class="program-status" *ngIf="loadingSessions()" role="status">
+      Consultando la programación...
+    </p>
+    <div class="program-status program-status-error" *ngIf="listError()" role="alert">
+      <span>{{ listError() }}</span>
+      <button type="button" (click)="loadSessions()">Reintentar</button>
     </div>
-    <p class="room-clearance">Consulta pública autorizada</p>
-  </header>
-
-  <div class="room-toolbar">
-    <label class="room-search">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="11" cy="11" r="6.5"></circle>
-        <path d="m16 16 4 4"></path>
-      </svg>
-      <span class="visually-hidden">Buscar sesiones</span>
-      <input
-        type="search"
-        [value]="query()"
-        (input)="updateQuery($event)"
-        placeholder="Buscar por nombre, protocolo, fecha o precio"
-      />
-    </label>
-
-    <label class="room-filter">
-      <span>Clasificación</span>
-      <select [value]="category()" (change)="updateCategory($event)">
-        <option value="todas">Todas las sesiones</option>
-        <option *ngFor="let item of categories()" [value]="item">{{ item }}</option>
-      </select>
-    </label>
-
-    <span class="room-count">{{ filteredSessions().length }} expedientes</span>
   </div>
 
-  <div class="room-status" *ngIf="loadingSessions()">Descifrando programación...</div>
-  <div class="room-status room-status-error" *ngIf="listError()">
-    <span>{{ listError() }}</span>
-    <button type="button" (click)="loadSessions()">Reintentar</button>
-  </div>
+  <nav
+    class="program-index"
+    *ngIf="!loadingSessions() && !listError()"
+    aria-label="Sesiones del ciclo"
+  >
+    <div class="index-head" *ngIf="indexOverflows()">
+      <div class="index-arrows">
+        <button
+          type="button"
+          aria-label="Desplazar el índice hacia atrás"
+          (click)="scrollIndex(-1)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+        </button>
+        <button
+          type="button"
+          aria-label="Desplazar el índice hacia delante"
+          (click)="scrollIndex(1)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" /></svg>
+        </button>
+      </div>
+    </div>
 
-  <div class="room-layout" *ngIf="!loadingSessions() && !listError()">
-    <section class="session-index" aria-label="Sesiones disponibles">
-      <p class="room-status" *ngIf="!filteredSessions().length">
-        No existen expedientes que coincidan con estos parámetros.
+    <p class="program-status" *ngIf="!filteredSessions().length">
+      Ningún expediente coincide con estos parámetros.
+    </p>
+
+    <ol class="index-track" #indexTrack>
+      <li *ngFor="let session of filteredSessions(); trackBy: trackSession">
+        <button
+          class="index-card"
+          type="button"
+          [class.is-selected]="selectedId() === session.idEvento"
+          [attr.aria-current]="selectedId() === session.idEvento ? 'true' : null"
+          (click)="selectSession(session)"
+        >
+          <span class="index-orb">
+            <img [src]="sessionImage(session)" alt="" loading="lazy" />
+            <span class="index-tag">{{ archiveCode(session) }}</span>
+          </span>
+          <span class="index-card-copy">
+            <span class="index-code">{{ typeLabel(session.tipoEvento) }}</span>
+            <strong>{{ session.nombre }}</strong>
+            <span class="index-meta">
+              {{ shortDate(session.fechaInicio) }} · {{ price(session.precio) }}
+            </span>
+          </span>
+        </button>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Lienzo claro al ancho del contenido: la textura queda como columna en ambos márgenes. -->
+  <div class="program-body">
+    <ng-container *ngIf="!loadingSessions() && !listError()">
+      <div class="file-anchor" #fileAnchor></div>
+
+      <p class="program-status program-status-error" *ngIf="detailError()" role="alert">
+        {{ detailError() }}
       </p>
 
-      <button
-        class="index-card"
-        type="button"
-        *ngFor="let session of filteredSessions(); trackBy: trackSession"
-        [class.is-selected]="selectedId() === session.idEvento"
-        [attr.aria-pressed]="selectedId() === session.idEvento"
-        (click)="selectSession(session)"
+      <!-- Una sola entrada rastreada por id: cambiar de sesión recrea la vista y repite la apertura. -->
+      <article
+        class="dossier"
+        *ngFor="let current of openedView(); trackBy: trackOpened"
+        [class.is-loading]="loadingDetail()"
+        [attr.aria-busy]="loadingDetail()"
+        aria-labelledby="dossier-title"
       >
-        <img [src]="sessionImage(session)" [alt]="''" />
-        <span class="index-card-copy">
-          <span class="index-code">{{ archiveCode(session) }} / {{ session.tipoEvento }}</span>
-          <strong>{{ session.nombre }}</strong>
-          <span>{{ session.fechaInicio | date: 'dd.MM.yy' }} · {{ session.precio | currency: 'EUR' }}</span>
-          <small>{{ anomaly(session) }}</small>
-        </span>
-        <span class="index-arrow" aria-hidden="true">→</span>
-      </button>
-    </section>
+        <ng-container *ngIf="current.detail as data">
+          <figure class="dossier-hero" [class.is-expanded]="imageExpanded()">
+            <img [src]="sessionImage(data)" [alt]="'Registro visual de la sesión ' + data.nombre" />
+            <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
+            <button
+              type="button"
+              class="dossier-hero-toggle"
+              [attr.aria-expanded]="imageExpanded()"
+              (click)="toggleImage()"
+            >
+              {{ imageExpanded() ? 'Reducir registro' : 'Ampliar registro' }}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path *ngIf="!imageExpanded()" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                <path *ngIf="imageExpanded()" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+              </svg>
+            </button>
+            <!-- El título viaja con la imagen: con el visor ampliado no hace falta bajar a buscarlo. -->
+            <figcaption>
+              <strong>{{ data.nombre }}</strong>
+              <span>
+                {{ data.direccion }} · {{ longDate(data.fechaInicio)
+                }}<ng-container *ngIf="current.dossier.horario">
+                  · {{ current.dossier.horario }}</ng-container
+                >
+              </span>
+            </figcaption>
+          </figure>
 
-    <section class="session-file" aria-live="polite">
-      <div class="file-loading" *ngIf="loadingDetail()">Abriendo expediente...</div>
-      <div class="file-loading" *ngIf="detailError()">{{ detailError() }}</div>
+          <div class="dossier-body">
+            <aside class="dossier-aside">
+              <p class="dossier-kicker">
+                <span>{{ typeLabel(data.tipoEvento) }}</span>
+                <span>{{ archiveCode(data) }}</span>
+              </p>
+              <h2 id="dossier-title">{{ data.nombre }}</h2>
+              <p class="dossier-date">{{ longDate(data.fechaInicio) }}</p>
+              <p class="dossier-place">
+                {{ data.direccion
+                }}<ng-container *ngIf="current.dossier.horario">
+                  · {{ current.dossier.horario }}</ng-container
+                >
+              </p>
 
-      <article *ngIf="!loadingDetail() && !detailError() && detail() as data">
-        <div class="file-image">
-          <img [src]="sessionImage(data)" [alt]="'Imagen de ' + data.nombre" />
-          <span>{{ archiveCode(data) }}</span>
-        </div>
+              <dl class="dossier-facts">
+                <div>
+                  <dt>Duración</dt>
+                  <dd>{{ duration(data.duracion) }}</dd>
+                </div>
+                <div>
+                  <dt>Aforo</dt>
+                  <dd>{{ data.aforoMaximo }} plazas</dd>
+                </div>
+                <div>
+                  <dt>Procedencia</dt>
+                  <dd>{{ current.dossier.procedencia }}</dd>
+                </div>
+                <div>
+                  <dt>Compatibilidad</dt>
+                  <dd>{{ compatibility(data) }}</dd>
+                </div>
+              </dl>
 
-        <div class="file-content">
-          <div class="file-classification">
-            <span>{{ data.tipoEvento }}</span>
-            <span>Compatibilidad humana {{ compatibility(data) }}</span>
-          </div>
-          <h2>{{ data.nombre }}</h2>
-          <p class="file-description">{{ data.descripcion }}</p>
+              <div class="dossier-share">
+                <button type="button" (click)="share(data)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="18" cy="5" r="2.5" />
+                    <circle cx="6" cy="12" r="2.5" />
+                    <circle cx="18" cy="19" r="2.5" />
+                    <path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" />
+                  </svg>
+                  Compartir expediente
+                </button>
+                <span role="status">{{ shareFeedback() }}</span>
+              </div>
 
-          <dl class="file-data">
-            <div><dt>Muestra</dt><dd>{{ sampleCode(data) }}</dd></div>
-            <div><dt>Fecha</dt><dd>{{ data.fechaInicio | date: 'dd.MM.yyyy' }}</dd></div>
-            <div><dt>Duración</dt><dd>{{ data.duracion }} minutos</dd></div>
-            <div><dt>Localización</dt><dd>{{ data.direccion }}</dd></div>
-            <div><dt>Aforo autorizado</dt><dd>{{ data.aforoMaximo }} sujetos</dd></div>
-            <div><dt>Procedencia</dt><dd>No declarada</dd></div>
-          </dl>
+              <div class="booking">
+                <div class="booking-price">
+                  <span>Acceso individual</span>
+                  <strong>{{ price(data.precio) }}</strong>
+                </div>
 
-          <div class="file-reservation">
-            <div class="file-price">
-              <span>Acceso individual</span>
-              <strong>{{ data.precio | currency: 'EUR' }}</strong>
+                <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
+                  <div class="booking-fields">
+                    <label>
+                      <span>Plazas</span>
+                      <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
+                    </label>
+                    <label>
+                      <span>Observaciones</span>
+                      <input
+                        [(ngModel)]="observaciones"
+                        placeholder="Intolerancias, accesibilidad..."
+                      />
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    class="booking-button"
+                    (click)="reservar()"
+                    [disabled]="loadingReservation()"
+                  >
+                    {{
+                      loadingReservation()
+                        ? 'Procesando acceso...'
+                        : 'Reservar plaza · ' + price(totalReserva())
+                    }}
+                  </button>
+                </ng-container>
+
+                <ng-template #accessPrompt>
+                  <p class="booking-note">
+                    La consulta del programa es pública. Para reservar plaza es necesario
+                    identificarse como participante.
+                  </p>
+                  <a
+                    class="booking-button"
+                    routerLink="/login"
+                    [queryParams]="{ redirectTo: currentUrl() }"
+                  >
+                    Identificarse para reservar
+                  </a>
+                  <a class="booking-link" routerLink="/registro"
+                    >Solicitar acceso de participante</a
+                  >
+                </ng-template>
+
+                <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
+                  {{ reservationFeedback() }}
+                </p>
+              </div>
+            </aside>
+
+            <div class="dossier-main">
+              <!-- En escritorio las secciones son pestañas; en móvil se leen seguidas. -->
+              <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
+                <button
+                  type="button"
+                  role="tab"
+                  *ngFor="let tab of tabs()"
+                  [id]="'tab-' + tab.id"
+                  [attr.aria-controls]="'panel-' + tab.id"
+                  [attr.aria-selected]="activeTab() === tab.id"
+                  [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
+                  (click)="activeTab.set(tab.id)"
+                  (keydown)="moveTab($event)"
+                >
+                  {{ tab.label }}
+                </button>
+              </div>
+
+              <section
+                class="dossier-section dossier-text"
+                id="panel-expediente"
+                role="tabpanel"
+                aria-labelledby="tab-expediente"
+                [class.is-active]="activeTab() === 'expediente'"
+              >
+                <p class="dossier-lead">{{ current.dossier.entradilla }}</p>
+                <p *ngFor="let paragraph of current.dossier.texto">{{ paragraph }}</p>
+                <p class="dossier-credits" *ngIf="current.dossier.creditos">
+                  {{ current.dossier.creditos }}
+                </p>
+              </section>
+
+              <section
+                class="dossier-section"
+                id="panel-cata"
+                role="tabpanel"
+                aria-labelledby="tab-cata"
+                *ngIf="current.dossier.notasCata.length"
+                [class.is-active]="activeTab() === 'cata'"
+              >
+                <h3>Notas de cata</h3>
+                <dl class="tasting">
+                  <div *ngFor="let note of current.dossier.notasCata">
+                    <dt>{{ note.etiqueta }}</dt>
+                    <dd>{{ note.valor }}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section
+                class="dossier-section"
+                id="panel-programa"
+                role="tabpanel"
+                aria-labelledby="tab-programa"
+                *ngIf="current.dossier.programa.length"
+                [class.is-active]="activeTab() === 'programa'"
+              >
+                <h3>Desarrollo de la sesión</h3>
+                <ol class="timeline">
+                  <li *ngFor="let step of current.dossier.programa">
+                    <time>{{ step.hora }}</time>
+                    <div>
+                      <strong>{{ step.titulo }}</strong>
+                      <span *ngIf="step.detalle">{{ step.detalle }}</span>
+                    </div>
+                  </li>
+                </ol>
+              </section>
+
+              <section
+                class="dossier-section"
+                id="panel-acceso"
+                role="tabpanel"
+                aria-labelledby="tab-acceso"
+                *ngIf="current.dossier.acceso.length"
+                [class.is-active]="activeTab() === 'acceso'"
+              >
+                <h3>Condiciones de acceso</h3>
+                <dl class="conditions">
+                  <div *ngFor="let condition of current.dossier.acceso">
+                    <dt>{{ condition.etiqueta }}</dt>
+                    <dd>{{ condition.valor }}</dd>
+                  </div>
+                </dl>
+                <ul class="advice" *ngIf="current.dossier.recomendaciones.length">
+                  <li *ngFor="let advice of current.dossier.recomendaciones">{{ advice }}</li>
+                </ul>
+              </section>
+
+              <section
+                class="dossier-section"
+                id="panel-equipo"
+                role="tabpanel"
+                aria-labelledby="tab-equipo"
+                *ngIf="current.dossier.equipo.length"
+                [class.is-active]="activeTab() === 'equipo'"
+              >
+                <h3>Equipo de sala</h3>
+                <dl class="conditions">
+                  <div *ngFor="let member of current.dossier.equipo">
+                    <dt>{{ member.etiqueta }}</dt>
+                    <dd>{{ member.valor }}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section
+                class="dossier-section"
+                id="panel-preguntas"
+                role="tabpanel"
+                aria-labelledby="tab-preguntas"
+                *ngIf="current.dossier.preguntas.length"
+                [class.is-active]="activeTab() === 'preguntas'"
+              >
+                <h3>Preguntas frecuentes</h3>
+                <details class="faq" *ngFor="let item of current.dossier.preguntas">
+                  <summary>{{ item.pregunta }}</summary>
+                  <p>{{ item.respuesta }}</p>
+                </details>
+              </section>
             </div>
-
-            <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
-              <div class="reservation-fields">
-                <label>
-                  <span>Plazas</span>
-                  <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
-                </label>
-                <label>
-                  <span>Observaciones</span>
-                  <input [(ngModel)]="observaciones" placeholder="Opcional" />
-                </label>
-              </div>
-              <button type="button" class="reserve-button" (click)="reservar()" [disabled]="loadingReservation()">
-                {{ loadingReservation() ? 'Procesando acceso...' : 'Reservar plaza · ' + (totalReserva() | currency: 'EUR') }}
-              </button>
-            </ng-container>
-
-            <ng-template #accessPrompt>
-              <div class="access-prompt">
-                <p><strong>Acceso de participante requerido.</strong> La consulta pública está autorizada; las reservas requieren identificación humana.</p>
-                <a routerLink="/login" [queryParams]="{ redirectTo: currentUrl() }">Identificarse para reservar →</a>
-              </div>
-            </ng-template>
-
-            <p class="reservation-error" *ngIf="reservationFeedback()">{{ reservationFeedback() }}</p>
           </div>
-        </div>
+
+          <section class="station" aria-labelledby="station-title">
+            <div class="station-copy">
+              <p class="station-code">AM / Información al asistente</p>
+              <h3 id="station-title">{{ data.direccion }}</h3>
+              <p>{{ current.dossier.estacion.complemento }}</p>
+            </div>
+            <dl class="station-data">
+              <div>
+                <dt>Fecha</dt>
+                <dd>{{ longDate(data.fechaInicio) }}</dd>
+              </div>
+              <div>
+                <dt>Franja</dt>
+                <dd>
+                  {{ current.dossier.horario || 'Por confirmar' }} ·
+                  {{ current.dossier.estacion.franja }}
+                </dd>
+              </div>
+              <div *ngFor="let operator of current.dossier.estacion.operadores">
+                <dt>{{ operator.etiqueta }}</dt>
+                <dd>{{ operator.valor }}</dd>
+              </div>
+            </dl>
+            <p class="station-disclaimer">
+              AlienMilk responde exclusivamente de las actividades coordinadas por su personal
+              acreditado. La logística anterior y posterior al ingreso puede ser prestada por
+              operadores independientes.
+            </p>
+          </section>
+
+          <nav class="pager" aria-label="Otras sesiones">
+            <button
+              type="button"
+              class="pager-link"
+              *ngIf="previousSession() as previous"
+              (click)="selectSession(previous)"
+            >
+              <span>← Sesión anterior</span>
+              <strong>{{ previous.nombre }}</strong>
+            </button>
+            <button
+              type="button"
+              class="pager-link pager-next"
+              *ngIf="nextSession() as next"
+              (click)="selectSession(next)"
+            >
+              <span>Sesión siguiente →</span>
+              <strong>{{ next.nombre }}</strong>
+            </button>
+          </nav>
+        </ng-container>
       </article>
-    </section>
+
+      <!-- Cierre para visitantes: la consulta es pública, la reserva requiere identificarse. -->
+      <div class="closing" *ngIf="!authService.isAuthenticated()">
+        <section class="closing-cta" aria-labelledby="closing-cta-title">
+          <div class="closing-cta-copy">
+            <h2 id="closing-cta-title">Hay una plaza esperando su nombre.</h2>
+            <p>
+              Identifíquese como participante para reservar sesiones, seguir el estado de sus
+              accesos y recibir cada convocatoria antes de que se publique.
+            </p>
+            <div class="closing-cta-actions">
+              <a class="closing-cta-primary" routerLink="/registro">Registrarse</a>
+              <a
+                class="closing-cta-secondary"
+                routerLink="/login"
+                [queryParams]="{ redirectTo: currentUrl() }"
+                >Entrar</a
+              >
+            </div>
+            <p class="closing-cta-note">La consulta es pública. La degustación, no.</p>
+          </div>
+          <img class="closing-cta-image" src="alienmilk-final-cta-hand.png" alt="" loading="lazy" />
+        </section>
+      </div>
+    </ng-container>
   </div>
 </section>

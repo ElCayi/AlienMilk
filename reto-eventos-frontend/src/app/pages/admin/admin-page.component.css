@@ -30,6 +30,7 @@
       border-radius: 28px;
       background: #19171d;
       box-shadow: 0 24px 44px rgba(241, 236, 239, 0.1);
+      color: #f1ecef;
     }
 
     .panel-card {
@@ -250,7 +251,9 @@
       border-radius: 14px;
       border: 1px solid rgba(241, 236, 239, 0.14);
       font: inherit;
+      color: inherit;
       background: #19171d;
+      color-scheme: dark;
       box-sizing: border-box;
     }
 

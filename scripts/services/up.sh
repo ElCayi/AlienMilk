@@ -23,6 +23,9 @@ run_service() {
       export SPRING_DATASOURCE_PASSWORD="${DB_PASS:-}"
       export SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
       export SPRING_JPA_HIBERNATE_DDL_AUTO=none
+      # Sin esto rige el valor por defecto (puerto 4200) y el navegador recibe 403
+      # "Invalid CORS request" en cualquier POST/PUT/DELETE desde el frontend del worktree.
+      export CORS_ALLOWED_ORIGINS="${CORS_ORIGINS:-http://127.0.0.1:$FRONTEND_PORT,http://localhost:$FRONTEND_PORT}"
       exec ./mvnw spring-boot:run
       ;;
     frontend)

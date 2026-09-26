@@ -1,5 +1,25 @@
+<ng-template #socialIcon let-icon>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    @switch (icon) {
+      @case ('instagram') {
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle class="is-filled" cx="17.2" cy="6.8" r="1.1" />
+      }
+      @case ('x') {
+        <path d="M4.5 4.5h4l11 15h-4z" />
+        <path d="M19.5 4.5 13.4 11.4M4.5 19.5l6.1-6.9" />
+      }
+      @case ('linkedin') {
+        <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+        <path d="M8 10.5v6M8 7.5v.01M11.5 16.5v-6M11.5 13a2.5 2.5 0 0 1 5 0v3.5" />
+      }
+    }
+  </svg>
+</ng-template>
+
 <footer class="site-footer">
-  <div class="footer-top">
+  <div class="footer-top footer-columns">
     <section class="footer-col footer-intro">
       <p>
         <strong>AlienMilk</strong> estudia, conserva y comparte leches de procedencias
@@ -8,6 +28,33 @@
       </p>
 
       <a class="footer-cta" routerLink="/registro">Regístrate</a>
+
+      <ul class="footer-socials" aria-label="AlienMilk en redes sociales">
+        @for (red of socials; track red.icon) {
+          <li>
+            @if (red.href) {
+              <a
+                class="footer-social"
+                [href]="red.href"
+                target="_blank"
+                rel="noopener"
+                [attr.aria-label]="red.name"
+              >
+                <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red.icon }" />
+              </a>
+            } @else {
+              <span
+                class="footer-social"
+                [attr.aria-label]="red.name"
+                [title]="red.name"
+                role="img"
+              >
+                <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red.icon }" />
+              </span>
+            }
+          </li>
+        }
+      </ul>
     </section>
 
     <section class="footer-col">
@@ -46,35 +93,47 @@
     </section>
   </div>
 
-  <div class="footer-bottom">
-    <div class="footer-legal">
-      <div>
-        <strong>AlienMilk Sessions</strong>
-        <p>Archivo, preparación y experiencias de degustación.</p>
-      </div>
+  <!-- Las tres unidades del ecosistema, alineadas con las columnas de arriba. -->
+  <section class="footer-units" aria-labelledby="footer-units-title">
+    <h2 id="footer-units-title" class="footer-eyebrow">Unidades de AlienMilk</h2>
+    <ul class="footer-columns">
+      <li class="footer-unit">
+        <strong>Archivo</strong>
+        <p>Conservación, catalogación y estudio de muestras de cualquier procedencia.</p>
+      </li>
+      <li class="footer-unit is-current">
+        <strong>Sesiones <span class="footer-unit-here">Está aquí</span></strong>
+        <p>Degustaciones, instalaciones y experiencias presenciales abiertas al público.</p>
+      </li>
+      <li class="footer-unit">
+        <strong>Colaboradores</strong>
+        <p>Aportación voluntaria de muestras, evaluación y seguimiento de cada propuesta.</p>
+      </li>
+    </ul>
+  </section>
 
-      <div class="footer-meta">
-        <span>© 2026 AlienMilk</span>
-      </div>
-    </div>
-
-    <div class="footer-badges" aria-hidden="true">
-      <span class="footer-badge">Archivo</span>
-      <span class="footer-badge">Sessions</span>
-      <span class="footer-badge">Collaborators</span>
-    </div>
+  <div class="footer-signature">
+    <p><strong>AlienMilk Sessions</strong> · Archivo, preparación y experiencias de degustación.</p>
+    <p>© 2026 AlienMilk</p>
   </div>
 
   <div class="footer-credit">
     <div class="footer-author">
-      <img src="cayi-logo.svg" alt="" width="44" height="44" />
+      <img src="cayi-logo.svg" alt="" width="64" height="64" />
       <p>
-        <strong>AlienMilk es un proyecto de portfolio.</strong>
-        No es una empresa real y sus sesiones no se celebran. Diseño y desarrollo: Cayi.
+        AlienMilk es un proyecto ficticio desarrollado como portfolio. No representa una empresa
+        real y las sesiones mostradas forman parte de su propuesta conceptual. Diseño y desarrollo
+        por <strong>Claudia Rodríguez Mayán — Cayi</strong>.
       </p>
     </div>
 
     <nav class="footer-author-links" aria-label="Autora del proyecto">
+      <a href="https://www.linkedin.com/in/cayi" target="_blank" rel="noopener">
+        LinkedIn
+        <svg class="footer-external" viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" />
+        </svg>
+      </a>
       <a href="https://github.com/ElCayi" target="_blank" rel="noopener">
         GitHub
         <svg class="footer-external" viewBox="0 0 12 12" aria-hidden="true">

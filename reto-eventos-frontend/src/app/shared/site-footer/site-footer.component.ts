@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,7 +19,7 @@ import { describeSchedule, siteStatus } from '../../features/contact/opening-hou
 @Component({
   selector: 'app-site-footer',
   standalone: true,
-  imports: [RouterLink],
+  imports: [NgTemplateOutlet, RouterLink],
   templateUrl: './site-footer.component.html',
   styleUrl: './site-footer.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +36,13 @@ export class SiteFooterComponent {
     const contacto = this.contacto();
     return contacto ? describeSchedule(contacto) : '';
   });
+  /** Redes de AlienMilk. Sin `href`, el icono se muestra pero no enlaza a ningún sitio. */
+  readonly socials: { name: string; icon: 'instagram' | 'x' | 'linkedin'; href?: string }[] = [
+    { name: 'Instagram', icon: 'instagram' },
+    { name: 'X (Twitter)', icon: 'x' },
+    { name: 'LinkedIn', icon: 'linkedin' },
+  ];
+
   readonly status = computed(() => {
     const contacto = this.contacto();
     return contacto ? siteStatus(contacto, this.now()) : null;

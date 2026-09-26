@@ -6,6 +6,7 @@ import {
   DestroyRef,
   inject,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
@@ -82,5 +83,38 @@ export class SiteFooterComponent {
 
   scrollTop(): void {
     this.document.defaultView?.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /*
+   * En móvil las columnas y el ecosistema son carruseles que se deslizan con el dedo. Estas
+   * funciones mantienen las barritas indicadoras sincronizadas con el apartado visible.
+   */
+  readonly topSections = ['Presentación', 'Explora AlienMilk Sessions', 'Contacto'];
+  readonly units = ['AlienMilk Archive', 'AlienMilk Sessions', 'AlienMilk Collaborators'];
+  readonly topSlide = signal(0);
+  readonly unitSlide = signal(0);
+
+  trackSlide(track: HTMLElement, active: WritableSignal<number>): void {
+    const slides = [...track.children] as HTMLElement[];
+    const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 2;
+    if (atEnd) {
+      active.set(slides.length - 1);
+      return;
+    }
+
+    const origin = slides[0].offsetLeft;
+    let nearest = 0;
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.offsetLeft - origin - track.scrollLeft);
+      if (distance < Math.abs(slides[nearest].offsetLeft - origin - track.scrollLeft)) {
+        nearest = index;
+      }
+    });
+    active.set(nearest);
+  }
+
+  goToSlide(track: HTMLElement, index: number): void {
+    const slides = [...track.children] as HTMLElement[];
+    track.scrollTo({ left: slides[index].offsetLeft - slides[0].offsetLeft, behavior: 'smooth' });
   }
 }

@@ -566,6 +566,64 @@ h3 {
   font-size: 0.82rem;
 }
 
+/* Barritas de los carruseles; solo se muestran en móvil. */
+.footer-swipe {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.footer-swipe-bars {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.footer-swipe-bars button {
+  width: 1.1rem;
+  height: 1.5rem;
+  padding: 0.6rem 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(241, 236, 239, 0.3) content-box;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.footer-swipe-bars button.is-active {
+  width: 2.2rem;
+  background-color: var(--footer-coral);
+}
+
+.footer-swipe-hint {
+  color: var(--footer-faint);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.footer-swipe-hint span {
+  display: inline-block;
+  margin-left: 0.3rem;
+  animation: footer-swipe-nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes footer-swipe-nudge {
+  50% {
+    transform: translateX(0.3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-swipe-hint span {
+    animation: none;
+  }
+}
+
 /* Portátil estrecho: los créditos se apilan antes de apretarse. */
 @media (max-width: 1200px) {
   :host {
@@ -607,20 +665,52 @@ h3 {
     padding-top: 3.5rem;
   }
 
+  /* Carruseles: cada apartado ocupa casi todo el ancho y deja asomar el siguiente, para que se
+     note que se puede deslizar. */
+  /* position: relative para que el texto oculto de los lectores de pantalla quede dentro del carril
+     y no ensanche la página. */
   .footer-top,
   .footer-unit-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: none;
+    position: relative;
+    grid-auto-flow: column;
+    grid-auto-columns: 86%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .footer-top::-webkit-scrollbar,
+  .footer-unit-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .footer-top > *,
+  .footer-unit {
+    scroll-snap-align: start;
   }
 
   .footer-top > * {
-    padding-inline: 0;
+    padding-inline: 1.25rem;
   }
 
-  .footer-top > * + * {
-    margin-top: var(--footer-gutter);
-    padding-top: var(--footer-gutter);
-    border-left: 0;
-    border-top: 1px solid var(--footer-coral);
+  .footer-top > :first-child {
+    padding-left: 0;
+  }
+
+  .footer-swipe {
+    display: flex;
+  }
+
+  .footer-access {
+    flex-wrap: nowrap;
+  }
+
+  .footer-button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 0.75rem;
   }
 
   .footer-author {

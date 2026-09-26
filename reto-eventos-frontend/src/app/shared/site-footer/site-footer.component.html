@@ -18,8 +18,32 @@
   </svg>
 </ng-template>
 
+<!-- Barritas de los carruseles de móvil: marcan el apartado visible y permiten saltar a otro. -->
+<ng-template #swipeNav let-labels="labels" let-active="active" let-track="track">
+  <div class="footer-swipe">
+    <div class="footer-swipe-bars">
+      @for (label of labels; track label; let i = $index) {
+        <button
+          type="button"
+          [class.is-active]="active === i"
+          [attr.aria-current]="active === i ? 'true' : null"
+          [attr.aria-label]="'Ver ' + label"
+          (click)="goToSlide(track, i)"
+        ></button>
+      }
+    </div>
+    <span class="footer-swipe-hint" aria-hidden="true">Desliza <span>→</span></span>
+  </div>
+</ng-template>
+
 <footer class="site-footer">
-  <div class="footer-top">
+  <div
+    class="footer-top"
+    #topTrack
+    (scroll)="trackSlide(topTrack, topSlide)"
+    role="group"
+    aria-label="Apartados del pie; desliza para ver más"
+  >
     <section class="footer-col footer-intro">
       <a
         class="footer-brand"
@@ -148,11 +172,22 @@
       }
     </section>
   </div>
+  <ng-container
+    *ngTemplateOutlet="
+      swipeNav;
+      context: { labels: topSections, active: topSlide(), track: topTrack }
+    "
+  />
 
   <!-- Las tres marcas del ecosistema, cada una en su tarjeta. -->
   <section class="footer-ecosystem" aria-labelledby="footer-ecosystem-title">
     <h2 id="footer-ecosystem-title" class="footer-eyebrow">Ecosistema AlienMilk</h2>
-    <ul class="footer-unit-grid">
+    <ul
+      class="footer-unit-grid"
+      #unitTrack
+      (scroll)="trackSlide(unitTrack, unitSlide)"
+      aria-label="Unidades del ecosistema; desliza para ver más"
+    >
       <li class="footer-unit">
         <strong class="lockup">AlienMilk <span class="lockup-unit">Archive</span></strong>
         <p>Conservación, catalogación y estudio de muestras de cualquier procedencia.</p>
@@ -181,6 +216,12 @@
         </a>
       </li>
     </ul>
+    <ng-container
+      *ngTemplateOutlet="
+        swipeNav;
+        context: { labels: units, active: unitSlide(), track: unitTrack }
+      "
+    />
   </section>
 
   <ng-template #actionArrow>

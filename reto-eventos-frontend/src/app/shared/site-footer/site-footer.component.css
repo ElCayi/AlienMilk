@@ -698,7 +698,7 @@ h3 {
   }
 
   .footer-unit {
-    scroll-snap-align: start;
+    scroll-snap-align: center;
   }
 
   .footer-swipe {

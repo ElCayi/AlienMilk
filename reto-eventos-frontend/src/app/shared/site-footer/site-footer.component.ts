@@ -86,12 +86,10 @@ export class SiteFooterComponent {
   }
 
   /*
-   * En móvil las columnas y el ecosistema son carruseles que se deslizan con el dedo. Estas
-   * funciones mantienen las barritas indicadoras sincronizadas con el apartado visible.
+   * En móvil el ecosistema es un carrusel que se desliza con el dedo. Estas funciones mantienen
+   * las barritas indicadoras sincronizadas con la tarjeta visible.
    */
-  readonly topSections = ['Presentación', 'Explora AlienMilk Sessions', 'Contacto'];
   readonly units = ['AlienMilk Archive', 'AlienMilk Sessions', 'AlienMilk Collaborators'];
-  readonly topSlide = signal(0);
   readonly unitSlide = signal(0);
 
   trackSlide(track: HTMLElement, active: WritableSignal<number>): void {

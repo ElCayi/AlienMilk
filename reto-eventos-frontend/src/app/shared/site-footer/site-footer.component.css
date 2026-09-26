@@ -665,14 +665,26 @@ h3 {
     padding-top: 3.5rem;
   }
 
-  /* Carruseles: cada apartado ocupa casi todo el ancho y deja asomar el siguiente, para que se
-     note que se puede deslizar. */
-  /* position: relative para que el texto oculto de los lectores de pantalla quede dentro del carril
-     y no ensanche la página. */
-  .footer-top,
+  /* Las columnas se apilan; los filetes pasan a ser horizontales. */
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-top > * {
+    padding-inline: 0;
+  }
+
+  .footer-top > * + * {
+    margin-top: var(--footer-gutter);
+    padding-top: var(--footer-gutter);
+    border-left: 0;
+    border-top: 1px solid var(--footer-coral);
+  }
+
+  /* El ecosistema es un carrusel: cada tarjeta ocupa casi todo el ancho y deja asomar la
+     siguiente, para que se note que se puede deslizar. */
   .footer-unit-grid {
     grid-template-columns: none;
-    position: relative;
     grid-auto-flow: column;
     grid-auto-columns: 86%;
     overflow-x: auto;
@@ -681,22 +693,12 @@ h3 {
     scrollbar-width: none;
   }
 
-  .footer-top::-webkit-scrollbar,
   .footer-unit-grid::-webkit-scrollbar {
     display: none;
   }
 
-  .footer-top > *,
   .footer-unit {
     scroll-snap-align: start;
-  }
-
-  .footer-top > * {
-    padding-inline: 1.25rem;
-  }
-
-  .footer-top > :first-child {
-    padding-left: 0;
   }
 
   .footer-swipe {

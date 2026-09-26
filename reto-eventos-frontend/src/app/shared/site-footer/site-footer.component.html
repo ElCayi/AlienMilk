@@ -18,7 +18,7 @@
   </svg>
 </ng-template>
 
-<!-- Barritas de los carruseles de móvil: marcan el apartado visible y permiten saltar a otro. -->
+<!-- Barritas del carrusel de móvil: marcan el apartado visible y permiten saltar a otro. -->
 <ng-template #swipeNav let-labels="labels" let-active="active" let-track="track">
   <div class="footer-swipe">
     <div class="footer-swipe-bars">
@@ -37,13 +37,7 @@
 </ng-template>
 
 <footer class="site-footer">
-  <div
-    class="footer-top"
-    #topTrack
-    (scroll)="trackSlide(topTrack, topSlide)"
-    role="group"
-    aria-label="Apartados del pie; desliza para ver más"
-  >
+  <div class="footer-top">
     <section class="footer-col footer-intro">
       <a
         class="footer-brand"
@@ -172,12 +166,6 @@
       }
     </section>
   </div>
-  <ng-container
-    *ngTemplateOutlet="
-      swipeNav;
-      context: { labels: topSections, active: topSlide(), track: topTrack }
-    "
-  />
 
   <!-- Las tres marcas del ecosistema, cada una en su tarjeta. -->
   <section class="footer-ecosystem" aria-labelledby="footer-ecosystem-title">

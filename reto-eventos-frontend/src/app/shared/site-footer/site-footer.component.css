@@ -18,6 +18,10 @@
   border-top: 1px solid var(--footer-line);
   color: var(--footer-ink);
   background: var(--footer-bg);
+  /* La altura de la página casi nunca es un número entero de píxeles: bajo el pie quedaba una
+     fracción de píxel del fondo claro, visible como una raya en pantallas de alta densidad. Esta
+     sombra sólida prolonga el pie hacia abajo y la tapa, sin cambiar la altura del documento. */
+  box-shadow: 0 2rem 0 var(--footer-bg);
   font-family: 'Nunito', sans-serif;
 }
 
@@ -716,9 +720,5 @@ h3 {
     flex: 1 1 0;
     min-width: 0;
     padding-inline: 0.75rem;
-  }
-
-  .footer-author {
-    align-items: flex-start;
   }
 }

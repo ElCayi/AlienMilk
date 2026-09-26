@@ -94,7 +94,7 @@ export class App {
 
   shouldShowFooter(): boolean {
     const path = this.router.url.split('?')[0].split('#')[0];
-    return path === '/' || path === '/sesiones' || path === '/contacto' || path === '/login' || path === '/registro';
+    return path === '/' || path === '/sesiones' || path === '/nosotros' || path === '/contacto' || path === '/login' || path === '/registro';
   }
 
   logout(): void {

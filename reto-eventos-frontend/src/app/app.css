@@ -251,6 +251,14 @@
   width: min(1480px, 76vw);
 }
 
+.page-container:has(app-about-page) {
+  width: 100%;
+}
+
+.app-shell:has(app-about-page) .site-footer {
+  margin-top: 0;
+}
+
 @media (min-width: 1600px) and (max-height: 1200px) {
   .page-container:has(app-home-page),
   .page-container:has(app-sessions-page) {
@@ -328,17 +336,11 @@
   font-weight: 800;
 }
 
-.footer-social,
 .footer-meta,
 .footer-badges {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-}
-
-.footer-social a {
-  font-weight: 700;
-  letter-spacing: 0.04em;
 }
 
 .footer-menu,

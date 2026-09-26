@@ -7,17 +7,47 @@
   --light: #f7f8f9;
   --light-muted: rgba(247, 248, 249, 0.68);
   --light-line: rgba(247, 248, 249, 0.2);
+  --light-rule: rgba(247, 248, 249, 0.42);
   --slate-deep: #1f2430;
   --paper: rgba(255, 255, 255, 0.72);
   --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --sticky-top: calc(var(--topbar-height, 4.5rem) + 1.5rem);
+  --corner: clamp(2rem, 4vw, 3.5rem);
   display: block;
   color: var(--ink);
   font-family: Arial, sans-serif;
 }
 
 .program {
-  padding: clamp(1.5rem, 3vw, 2.5rem) 0 clamp(3rem, 6vw, 6rem);
+  --stage-texture:
+    linear-gradient(rgba(63, 73, 87, 0.9), rgba(63, 73, 87, 0.9)),
+    url('/alienmilk-showcase-texture.webp') center / cover fixed;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Una sola capa de textura a sangre detrás de toda la página. El lienzo de .program-body solo cubre
+   el ancho del contenido, así que se lee como franja arriba y como columna en cada margen. */
+.program::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: var(--stage-texture);
+}
+
+/* Franja del header, hasta donde empieza el carrusel. */
+.program-stage {
+  padding: 0 0 clamp(1.75rem, 3.5vw, 3rem);
+  color: var(--light);
+}
+
+/* El cuerpo es transparente: cada bloque pone su lienzo y la estación deja ver la textura, unida a
+   las columnas laterales. */
+.program-body {
+  --inset: clamp(1.25rem, 3vw, 2.5rem);
 }
 
 button {
@@ -27,7 +57,6 @@ button {
 /* Tipografía compartida */
 .eyebrow,
 .breadcrumb,
-.index-count,
 .index-code,
 .dossier-kicker,
 .dossier-facts dt,
@@ -71,13 +100,13 @@ figcaption {
   grid-template-columns: minmax(0, 2.2fr) minmax(16rem, 0.7fr);
   gap: clamp(2rem, 6vw, 6rem);
   align-items: end;
-  padding-top: 0.4rem;
-  border-top: 1px solid var(--muted);
 }
 
 /* Cabecera editorial calcada de la landing (.sessions-editorial). */
 .program-copy {
   min-width: 0;
+  padding-top: 0.4rem;
+  border-top: 2px solid var(--light-rule);
 }
 
 .program-intro {
@@ -99,8 +128,7 @@ figcaption {
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
-h1,
-.related h2 {
+h1 {
   margin: 2.35rem 0 0;
   font-family: var(--condensed);
   font-size: clamp(2.8rem, 4.4vw, 4.8rem);
@@ -112,7 +140,8 @@ h1,
 }
 
 .program-subtitle {
-  margin: 0.9rem 0 0;
+  /* Más aire que en la landing: el título es mayor aquí y se apelmazaba con el subtítulo. */
+  margin: 1.6rem 0 0;
   color: var(--coral);
   font: 700 clamp(1.05rem, 1.55vw, 1.3rem) / 1.3 'Nunito', sans-serif;
   letter-spacing: 0.025em;
@@ -156,8 +185,7 @@ h1,
 .program-search svg,
 .index-arrows svg,
 .dossier-hero-toggle svg,
-.dossier-share svg,
-.related-arrow svg {
+.dossier-share svg {
   width: 1rem;
   flex: 0 0 auto;
   fill: none;
@@ -213,19 +241,19 @@ h1,
 }
 
 /* Índice de sesiones */
+/* Esquina grande hacia la textura; la derecha, discreta, en la línea del buscador que tiene encima. */
 .program-index {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding: clamp(1.25rem, 2vw, 1.75rem) clamp(1.5rem, 3.5vw, 3.5rem) clamp(0.75rem, 1.5vw, 1.25rem);
+  border-radius: var(--corner) 1rem 0 0;
+  color: var(--light);
+  background: #0d151e;
 }
 
 .index-head {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 0.9rem;
-}
-
-.index-count {
-  color: var(--muted);
 }
 
 .index-arrows {
@@ -339,8 +367,7 @@ h1,
     0 16px 40px rgba(33, 30, 36, 0.2);
 }
 
-.index-card-copy,
-.related-copy {
+.index-card-copy {
   display: grid;
   align-content: start;
   gap: 0.35rem;
@@ -350,16 +377,11 @@ h1,
   justify-items: center;
 }
 
-.related-copy {
-  padding: 0.9rem 1rem 1rem;
-}
-
 .index-code {
   color: var(--coral);
 }
 
-.index-card strong,
-.related-copy strong {
+.index-card strong {
   font-family: var(--condensed);
   font-size: 1.35rem;
   font-weight: 400;
@@ -375,13 +397,70 @@ h1,
   font-size: 0.78rem;
 }
 
+
+/* Tinta clara sobre la franja y el carrusel oscuros. */
+.program-stage .breadcrumb,
+.program-stage .program-filter,
+.program-index .index-meta {
+  color: var(--light-muted);
+}
+
+.program-stage .program-filter {
+  border-bottom: 2px solid var(--light-rule);
+}
+
+.program-stage .program-filter select {
+  color: var(--light);
+}
+
+.program-stage .program-filter option {
+  color: var(--ink);
+}
+
+.program-index .index-card {
+  color: var(--light);
+}
+
+.program-index .index-arrows button {
+  border-color: var(--light-line);
+  color: var(--light);
+  background: transparent;
+}
+
+.program-index .index-arrows button:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.program-index .index-orb {
+  border-color: rgba(247, 248, 249, 0.5);
+  box-shadow:
+    0 0 0 0.6rem rgba(247, 248, 249, 0.1),
+    0 16px 40px rgba(20, 24, 32, 0.35);
+}
+
+.program-index .index-track {
+  scrollbar-color: rgba(247, 248, 249, 0.4) transparent;
+}
+
+.program-stage .program-copy .eyebrow,
+.program-stage .program-intro {
+  color: var(--light-muted);
+}
+
+.program-stage .program-search {
+  border-color: transparent;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.94);
+}
+
 /* Expediente */
 .file-anchor {
-  scroll-margin-top: var(--sticky-top);
+  scroll-margin-top: var(--topbar-height, 4.5rem);
 }
 
 .dossier {
-  margin-top: clamp(2rem, 4vw, 3.5rem);
+  margin-top: 0;
   transition: opacity 200ms ease;
 }
 
@@ -392,10 +471,11 @@ h1,
 
 .dossier-hero {
   position: relative;
-  height: clamp(20rem, 64vh, 46rem);
+  /* Absorbe el hueco que antes lo separaba del carrusel. */
+  height: calc(clamp(20rem, 64vh, 46rem) + clamp(2rem, 4vw, 3.5rem));
   margin: 0;
   overflow: hidden;
-  border-radius: 0.45rem;
+  border-radius: 0 0 var(--corner) 0;
   background: var(--slate-deep);
   animation: unfold 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   transition: height 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -450,18 +530,42 @@ figcaption {
   background: var(--coral);
 }
 
+/* Banda baja a todo el ancho, oscura como la barra superior. Termina siguiendo la esquina
+   redondeada de la imagen. */
 figcaption {
-  bottom: 1rem;
-  left: 1rem;
-  font-size: 0.6rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 1.4rem;
+  padding: 0.45rem calc(var(--corner) + 1rem) 0.6rem clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: 0;
+  background: #0d161f;
+  backdrop-filter: none;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+figcaption strong {
+  font: 400 clamp(1.9rem, 3.2vw, 3rem) / 1 var(--condensed);
+  letter-spacing: 0.015em;
+}
+
+figcaption span {
+  color: rgba(250, 249, 247, 0.78);
+  font: 800 0.66rem 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 @keyframes unfold {
   from {
-    clip-path: inset(0 0 100% 0 round 0.45rem);
+    clip-path: inset(0 0 100% 0 round 0 0 var(--corner) 0);
   }
   to {
-    clip-path: inset(0 0 0 0 round 0.45rem);
+    clip-path: inset(0 0 0 0 round 0 0 var(--corner) 0);
   }
 }
 
@@ -478,8 +582,11 @@ figcaption {
   display: grid;
   grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.6fr);
   gap: clamp(2rem, 5vw, 5.5rem);
-  align-items: start;
-  margin-top: clamp(2rem, 4vw, 3.5rem);
+  /* Ficha y texto siempre a la misma altura: la ficha baja hasta donde acaba el texto. */
+  align-items: stretch;
+  background: var(--page-canvas);
+  /* -1px: tapa la costura de subpíxel entre la placa de la imagen y la ficha. */
+  margin-top: -1px;
   animation: rise 600ms 150ms ease both;
 }
 
@@ -490,17 +597,10 @@ figcaption {
   }
 }
 
-@media (min-width: 1001px) and (min-height: 860px) {
-  .dossier-aside {
-    position: sticky;
-    top: var(--sticky-top);
-  }
-}
-
 /* Columna izquierda: ficha oscura, como las etiquetas y escaparates de la landing. */
 .dossier-aside {
   padding: clamp(1.5rem, 2.4vw, 2.25rem);
-  border-radius: 0.45rem;
+  border-radius: 0 0 0.45rem 0.45rem;
   color: var(--light);
   background: var(--slate);
   box-shadow: 0 18px 40px rgba(33, 30, 36, 0.14);
@@ -692,6 +792,7 @@ figcaption {
 /* Texto del expediente */
 .dossier-main {
   min-width: 0;
+  padding-top: clamp(1.75rem, 3vw, 2.5rem);
 }
 
 /* Pestañas: solo en escritorio. En móvil las secciones se leen seguidas. */
@@ -703,7 +804,7 @@ figcaption {
   .dossier-tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem 1.8rem;
+    gap: 0.35rem 1.35rem;
     border-bottom: 1px solid var(--line);
   }
 
@@ -714,8 +815,8 @@ figcaption {
     border-bottom: 2px solid transparent;
     color: var(--muted);
     background: none;
-    font: 700 1.05rem var(--condensed);
-    letter-spacing: 0.12em;
+    font: 700 1rem var(--condensed);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
     transition:
@@ -909,13 +1010,8 @@ figcaption {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.8fr);
   gap: clamp(1.5rem, 4vw, 4rem);
-  margin-top: clamp(3rem, 6vw, 5rem);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  border-radius: 0.45rem;
+  padding: clamp(2rem, 4vw, 3.25rem) var(--inset);
   color: #faf9f7;
-  background:
-    linear-gradient(rgba(63, 73, 87, 0.9), rgba(63, 73, 87, 0.9)),
-    url('/alienmilk-showcase-texture.webp') center / cover;
 }
 
 .station-code {
@@ -963,13 +1059,12 @@ figcaption {
   border-left: 1px solid rgba(250, 249, 247, 0.3);
 }
 
-/* Paginador y relacionadas */
+/* Paginador */
 .pager {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: clamp(2rem, 4vw, 3rem);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  padding: clamp(0.5rem, 1.5vw, 1rem) var(--inset);
+  background: var(--page-canvas);
 }
 
 .pager-link {
@@ -999,60 +1094,6 @@ figcaption {
 
 .pager-link:hover strong {
   color: var(--coral);
-}
-
-.related {
-  margin-top: clamp(4rem, 8vw, 7rem);
-  padding-top: 1.2rem;
-  border-top: 1px solid var(--muted);
-}
-
-.related h2 {
-  font-size: clamp(2.2rem, 3.4vw, 3.4rem);
-}
-
-.related-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.related-card {
-  display: grid;
-  grid-template-columns: 38% 1fr auto;
-  align-items: stretch;
-  min-height: 8.5rem;
-  padding: 0;
-  overflow: hidden;
-  border: 0;
-  border-radius: 0.35rem;
-  color: #faf9f7;
-  background: var(--slate);
-  text-align: left;
-  cursor: pointer;
-}
-
-.related-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(0.75);
-}
-
-.related-card .index-meta {
-  color: rgba(250, 249, 247, 0.62);
-}
-
-.related-arrow {
-  align-self: end;
-  padding: 1rem;
-  color: var(--coral);
-  transition: transform 180ms ease;
-}
-
-.related-card:hover .related-arrow {
-  transform: translateX(0.3rem);
 }
 
 :is(button, a, select, input, summary):focus-visible {
@@ -1089,10 +1130,6 @@ figcaption {
 
   .station-disclaimer {
     grid-column: 1 / -1;
-  }
-
-  .related-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1158,8 +1195,176 @@ figcaption {
     grid-column: 1;
     border-top: 1px solid var(--line);
   }
+}
 
-  .related-grid {
+/* El lienzo termina donde empieza la textura: el texto necesita aire propio. */
+.dossier-main {
+  padding-right: var(--inset);
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+@media (max-width: 1000px) {
+  .dossier-main {
+    padding-left: var(--inset);
+  }
+}
+
+/* Migas en una franja intermedia: escalón entre la barra superior y la textura. */
+.program-stage .breadcrumb {
+  position: relative;
+  /* Más baja que la barra superior: es un escalón, no un segundo header. */
+  padding: 1.3rem 0;
+}
+
+.program-stage .breadcrumb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: rgba(17, 21, 29, 0.42);
+}
+
+/* La entradilla es grande: justificada abre huecos, así que va en bandera. */
+.dossier-main .dossier-lead {
+  text-align: left;
+}
+
+/* El foco sigue la forma del orbe, no la caja del botón. */
+.index-card:focus-visible {
+  outline: none;
+}
+
+.index-card:focus-visible .index-orb {
+  outline: 2px solid var(--coral);
+  outline-offset: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  figcaption {
+    padding: 0.5rem calc(var(--corner) + 0.5rem) 0.65rem 1.25rem;
+  }
+
+  figcaption strong {
+    font-size: 1.65rem;
+  }
+}
+
+/* Título, fecha, sala y horario ya van en la banda de la imagen: la ficha no los repite. */
+.dossier-aside h2,
+.dossier-date,
+.dossier-place {
+  display: none;
+}
+
+/* Cierre para visitantes: tarjeta oscura de la familia de la CTA final de la home. */
+.closing-cta {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  margin: 0;
+  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.75rem, 5vw, 4.5rem);
+  overflow: hidden;
+  border-radius: 1.25rem;
+  color: #f1ecef;
+  background: rgba(5, 13, 22, 0.9);
+  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+}
+
+.closing-cta-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.25rem;
+  max-width: 30rem;
+}
+
+.closing-cta h2 {
+  margin: 0;
+  font: 700 clamp(2.2rem, 4vw, 3.6rem) / 1 var(--condensed);
+}
+
+.closing-cta-copy > p:not(.closing-cta-note) {
+  margin: 0;
+  color: rgba(241, 236, 239, 0.78);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.closing-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.closing-cta-primary,
+.closing-cta-secondary {
+  min-width: 10rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid #faf9f7;
+  border-radius: 999px;
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.closing-cta-primary {
+  color: #151217;
+  background: #faf9f7;
+}
+
+.closing-cta-secondary {
+  border-color: rgba(250, 249, 247, 0.55);
+  color: #faf9f7;
+}
+
+.closing-cta-primary:hover,
+.closing-cta-secondary:hover {
+  border-color: var(--coral);
+  color: #fff;
+  background: var(--coral);
+}
+
+.closing-cta-note {
+  margin: 0.75rem 0 0;
+  color: var(--coral);
+  font: 700 1.05rem var(--condensed);
+  letter-spacing: 0.02em;
+}
+
+/* Volteada como en la home: el brazo, cortado en la imagen, entra por el borde derecho. */
+.closing-cta-image {
+  position: absolute;
+  right: 0;
+  bottom: 1rem;
+  width: min(60%, 44rem);
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+/* Lienzo alrededor de la tarjeta, para que no flote sobre la textura. */
+.closing {
+  padding: clamp(1.5rem, 3vw, 2.5rem) var(--inset) clamp(3rem, 6vw, 5rem);
+  background: var(--page-canvas);
+}
+
+@media (max-width: 800px) {
+  .closing-cta {
     grid-template-columns: 1fr;
+    padding-bottom: 14rem;
+  }
+
+  .closing-cta-image {
+    width: min(90%, 24rem);
   }
 }

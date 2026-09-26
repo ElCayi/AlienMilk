@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   HostListener,
   inject,
@@ -54,6 +55,7 @@ export class SessionsPageComponent implements OnInit {
   private readonly reservationService = inject(ReservationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly requestedSession = new Subject<number>();
+  private pendingReveal = false;
   private readonly indexTrack = viewChild<ElementRef<HTMLElement>>('indexTrack');
   private readonly fileAnchor = viewChild<ElementRef<HTMLElement>>('fileAnchor');
   readonly authService = inject(AuthService);
@@ -72,6 +74,7 @@ export class SessionsPageComponent implements OnInit {
   readonly detailError = signal('');
   readonly reservationFeedback = signal('');
   readonly shareFeedback = signal('');
+  readonly indexOverflows = signal(false);
 
   cantidad = 1;
   observaciones = '';
@@ -118,21 +121,6 @@ export class SessionsPageComponent implements OnInit {
   readonly previousSession = computed(() => this.neighbour(-1));
   readonly nextSession = computed(() => this.neighbour(1));
 
-  readonly relatedSessions = computed(() => {
-    const current = this.opened()?.detail;
-    if (!current) {
-      return [];
-    }
-
-    return this.sessions()
-      .filter((session) => session.idEvento !== current.idEvento)
-      .sort(
-        (a, b) =>
-          Number(b.tipoEvento === current.tipoEvento) - Number(a.tipoEvento === current.tipoEvento),
-      )
-      .slice(0, 3);
-  });
-
   readonly currentUrl = computed(() => {
     const tree = this.router.createUrlTree(['/sesiones'], {
       queryParams: { q: this.query() || null, sesion: this.selectedId() },
@@ -149,6 +137,27 @@ export class SessionsPageComponent implements OnInit {
   readonly price = sessionPrice;
   readonly duration = sessionDuration;
   readonly typeLabel = humanizeSessionType;
+
+  constructor() {
+    // Las flechas del índice solo aparecen si alguna sesión queda fuera de la vista.
+    effect((onCleanup) => {
+      const track = this.indexTrack()?.nativeElement;
+      if (!track) {
+        return;
+      }
+
+      const measure = () => this.indexOverflows.set(track.scrollWidth > track.clientWidth + 1);
+      const resize = new ResizeObserver(measure);
+      const mutation = new MutationObserver(measure);
+      resize.observe(track);
+      mutation.observe(track, { childList: true });
+      measure();
+      onCleanup(() => {
+        resize.disconnect();
+        mutation.disconnect();
+      });
+    });
+  }
 
   ngOnInit(): void {
     this.requestedSession
@@ -171,6 +180,10 @@ export class SessionsPageComponent implements OnInit {
         }
 
         this.opened.set(opened);
+        if (this.pendingReveal) {
+          this.pendingReveal = false;
+          setTimeout(() => this.revealFile());
+        }
         // Se conserva la pestaña al cambiar de sesión, salvo que la nueva no la tenga.
         if (!this.tabs().some((tab) => tab.id === this.activeTab())) {
           this.activeTab.set('expediente');
@@ -221,14 +234,15 @@ export class SessionsPageComponent implements OnInit {
     this.category.set((event.target as HTMLSelectElement).value);
   }
 
-  selectSession(session: EventoListado, reveal = true): void {
+  selectSession(session: EventoListado): void {
     if (session.idEvento !== this.selectedId()) {
       this.updateUrl({ sesion: session.idEvento });
+      // Al recrearse el expediente el navegador puede cortar el desplazamiento suave: se repite
+      // cuando la sesión nueva ya está pintada.
+      this.pendingReveal = true;
     }
 
-    if (reveal) {
-      this.revealFile();
-    }
+    this.revealFile();
   }
 
   scrollIndex(direction: -1 | 1): void {
@@ -348,11 +362,12 @@ export class SessionsPageComponent implements OnInit {
       return;
     }
 
-    const top = anchor.getBoundingClientRect().top;
-    // Solo se desplaza si el expediente queda fuera de la vista (p. ej. al pulsar el paginador).
-    if (top < 0 || top > window.innerHeight * 0.55) {
-      const offset = parseFloat(window.getComputedStyle(anchor).scrollMarginTop) || 0;
-      window.scrollTo({ top: window.scrollY + top - offset, behavior: 'smooth' });
+    // Elegir una sesión siempre encuadra su imagen de portada bajo la barra superior, se esté donde
+    // se esté de la página.
+    const offset = parseFloat(window.getComputedStyle(anchor).scrollMarginTop) || 0;
+    const target = window.scrollY + anchor.getBoundingClientRect().top - offset;
+    if (Math.abs(target - window.scrollY) > 2) {
+      window.scrollTo({ top: target, behavior: 'smooth' });
     }
   }
 

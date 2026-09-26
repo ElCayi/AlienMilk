@@ -1,16 +1,9 @@
 .locations-chart-viewport {
-  --locations-chart-edge-air: 2.5rem;
-  --locations-chart-bottom-bias: clamp(2.25rem, 6vh, 4.25rem);
   box-sizing: border-box;
   width: 100%;
   height: var(--home-showcase-height, 46rem);
   min-width: 0;
   display: grid;
-  place-items: center end;
-  padding-top: var(--locations-chart-edge-air);
-  padding-bottom: calc(
-    var(--locations-chart-edge-air) + var(--locations-chart-bottom-bias)
-  );
 }
 
 .locations-chart {
@@ -18,8 +11,6 @@
   width: min(100%, 50rem);
   display: grid;
   gap: clamp(1rem, 2vh, 1.6rem);
-  scale: 1.08;
-  transform-origin: right center;
 }
 
 .locations-chart::before {
@@ -329,36 +320,16 @@
   }
 }
 
-@media (min-width: 901px) and (max-width: 1599px) {
-  .locations-chart {
-    transform: translateY(1.25rem);
-  }
-}
-
-@media (min-width: 1600px) {
-  .locations-layout {
-    grid-template-columns: minmax(20rem, 26rem) minmax(0, 1fr);
-    gap: clamp(7.5rem, 8.5vw, 10.5rem);
-  }
-
-  .locations-chart {
-    width: 100%;
-    max-width: none;
-    transform: translateY(-1.25rem);
-  }
-}
-
 @media (min-width: 901px) and (max-width: 1000px) {
   .locations-atlas {
     width: var(--home-section-width, 82vw);
   }
 }
 
-/* Escritorio: el planetario se compone con una sola medida, --orbit. Las órbitas, su columna, el
+/* Desde tablet: el planetario se compone con una sola medida, --orbit. Las órbitas, su columna, el
    eje vertical y el ritmo entre estaciones salen de ella, y el conjunto se centra en el panel de
-   textura sin escalados ni desplazamientos de corrección. Sustituye a los ajustes por rangos de
-   arriba (scale, translateY, sesgo inferior). */
-@media (min-width: 1001px) {
+   textura. En móvil lo sustituye locations-responsive.css. */
+@media (min-width: 901px) {
   .locations-layout:not(.locations-layout-collaboration) {
     grid-template-columns: clamp(19rem, 24vw, 26rem) minmax(0, 1fr);
     gap: 0;
@@ -366,16 +337,16 @@
 
   .locations-chart-viewport {
     --orbit: min(9rem, 10vw, calc((var(--home-showcase-height, 46rem) - 4rem) / 3.7));
+    /* Un mismo aire separa la órbita de su tarjeta y la tarjeta del borde del panel. */
+    --station-air: calc(var(--orbit) * 0.5);
     --chart-air: clamp(1.5rem, 4vw, 4.5rem);
-    place-items: center;
-    padding: 0 var(--chart-air);
+    place-items: center end;
+    padding: 0 var(--station-air) 0 var(--chart-air);
   }
 
   .locations-chart {
-    width: min(100%, 46rem);
+    width: min(100%, 50rem);
     gap: calc(var(--orbit) * 0.3);
-    scale: 1;
-    transform: none;
   }
 
   .locations-chart::before {
@@ -387,7 +358,7 @@
 
   .location-node {
     grid-template-columns: var(--orbit) minmax(0, 1fr);
-    gap: calc(var(--orbit) * 0.3);
+    gap: var(--station-air);
     min-height: var(--orbit);
   }
 
@@ -397,6 +368,16 @@
 
   .location-data {
     --location-card-right-air: 0rem;
+  }
+
+  /* La tarjeta empieza donde empieza su caja: el texto lleva su propio margen interior. */
+  .location-data::before {
+    left: 0;
+  }
+
+  .location-data summary,
+  .location-data-details {
+    margin-left: clamp(1rem, 1.8vw, 1.75rem);
   }
 
   .location-data-details {

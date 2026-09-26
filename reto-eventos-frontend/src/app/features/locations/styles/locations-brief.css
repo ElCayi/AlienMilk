@@ -276,9 +276,9 @@
   outline-offset: 0.35rem;
 }
 
-/* Portátiles bajos: el escaparate encoge con la pantalla y la ficha, que es la parte con más
+/* Portátiles bajos o estrechos: el escaparate encoge con la pantalla y la ficha, que es la parte con más
    texto, aprieta el ritmo para seguir cabiendo entera sin robar ancho al gráfico. */
-@media (min-width: 1001px) and (max-height: 860px) {
+@media (min-width: 901px) and (max-height: 860px), (min-width: 901px) and (max-width: 1200px) {
   .locations-brief {
     gap: 0.85rem;
     padding: 1.35rem 1.6rem;

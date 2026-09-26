@@ -549,6 +549,7 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    color: #211e24;
   }
 
   .session-featured .session-visual {

@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
-import { AuthService } from '../../core/services/auth.service';
 import { ContactService } from '../../core/services/contact.service';
 import { describeSchedule, siteStatus } from '../../features/contact/opening-hours';
 
@@ -29,7 +28,6 @@ export class SiteFooterComponent {
   private readonly contactService = inject(ContactService);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  readonly authService = inject(AuthService);
 
   private readonly now = signal(new Date());
 

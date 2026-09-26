@@ -578,6 +578,10 @@
 }
 
 @media (min-width: 1001px) {
+  .locations-atlas {
+    padding-bottom: 0;
+  }
+
   .locations-atlas:has(.locations-layout-collaboration) {
     grid-template-rows: auto var(--home-showcase-height, 46rem) auto;
   }

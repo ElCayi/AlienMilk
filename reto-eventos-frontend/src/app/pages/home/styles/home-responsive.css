@@ -1,6 +1,8 @@
     @media (min-width: 1001px) {
       .home-editorial-sections {
-        grid-template-rows: repeat(3, minmax(0, 1fr)) auto;
+        --home-section-gap: 4rem;
+        grid-template-rows: none;
+        grid-auto-rows: auto;
       }
 
       .final-cta-section {
@@ -8,7 +10,7 @@
         height: auto;
         min-height: 0;
         align-self: start;
-        padding: var(--final-cta-upper-air) 0 calc(var(--final-cta-upper-air) + 12rem);
+        padding: var(--final-cta-upper-air) 0;
       }
 
       .final-cta-section .about-card {
@@ -26,21 +28,31 @@
         --sessions-section-start: calc(
           var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem) - 1rem
         );
+        --sessions-showcase-inset: clamp(2rem, 4vh, 2.75rem);
         box-sizing: border-box;
         width: var(--home-section-width);
         height: auto;
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
         gap: clamp(1.75rem, 3.6vh, 2.6rem);
         margin-bottom: 0;
         margin-left: 50%;
         padding-top: calc(var(--topbar-height) + clamp(0.65rem, 1.35vh, 1rem));
         padding-bottom: 0.75rem;
         background: transparent;
-        transform: translateX(-50%);
+        transform: translate(-50%, calc(-0.9rem - 1vh));
+      }
+
+      .sessions-block::before {
+        position: relative;
+        inset: auto;
+        grid-column: 1;
+        grid-row: 2;
+        align-self: stretch;
       }
 
       .sessions-editorial {
+        grid-row: 1;
         position: relative;
         align-items: end;
         gap: clamp(2rem, 5vw, 5rem);
@@ -48,6 +60,18 @@
         margin-bottom: clamp(3rem, 8vh, 6rem);
         padding-top: 0.35rem;
         border-top: 0;
+      }
+
+      .sessions-carousel {
+        box-sizing: border-box;
+        grid-column: 1;
+        grid-row: 2;
+        min-height: var(--home-showcase-height);
+        display: grid;
+        align-items: center;
+        margin-bottom: 0;
+        padding-block: var(--sessions-showcase-inset);
+        transform: none;
       }
 
       .sessions-editorial::before {
@@ -175,7 +199,6 @@
         width: var(--home-section-width);
         height: auto;
         min-height: 0;
-        transform: translate(-50%, -1.4rem);
       }
 
       .sessions-program {

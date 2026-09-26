@@ -9,7 +9,7 @@
   --footer-block: clamp(3.5rem, 6vw, 5rem);
   --footer-card: #070d13;
   --footer-card-gap: 1rem;
-  --footer-card-pad: clamp(1.5rem, 2.4vw, 2.25rem);
+  --footer-gutter: clamp(1.75rem, 3.5vw, 3.5rem);
   display: block;
 }
 
@@ -55,23 +55,36 @@ ul {
   list-style: none;
 }
 
-/* Cada apartado va en su recuadro oscuro, para que el ojo separe bien los bloques. */
+/* Tres columnas separadas por filetes verticales en el color de acento. */
 .footer-top {
   display: grid;
   grid-template-columns: 1.15fr 1fr 1.1fr;
-  gap: var(--footer-card-gap);
 }
 
-.footer-top > .footer-col,
+.footer-top > * {
+  min-width: 0;
+  padding-inline: var(--footer-gutter);
+}
+
+.footer-top > :first-child {
+  padding-left: 0;
+}
+
+.footer-top > :last-child {
+  padding-right: 0;
+}
+
+.footer-top > * + * {
+  border-left: 1px solid var(--footer-coral);
+}
+
+/* Recuadros oscuros: cada dato de contacto y cada tarjeta del ecosistema. */
+.footer-contact > div,
 .footer-unit {
   min-width: 0;
   border: 1px solid rgba(241, 236, 239, 0.06);
-  border-radius: 1.25rem;
+  border-radius: 0.9rem;
   background: var(--footer-card);
-}
-
-.footer-top > .footer-col {
-  padding: var(--footer-card-pad);
 }
 
 .footer-col {
@@ -280,15 +293,16 @@ h3 {
 
 .footer-contact {
   display: grid;
-  gap: 1.1rem;
+  gap: 0.55rem;
   margin: 0;
 }
 
-.footer-contact div {
+.footer-contact > div {
   display: grid;
   grid-template-columns: 1.25rem minmax(0, 1fr);
-  gap: 1rem;
+  gap: 0.9rem;
   align-items: start;
+  padding: 0.8rem 1rem;
 }
 
 /* Iconos en lugar de etiquetas; el nombre del dato queda para lectores de pantalla. */
@@ -328,21 +342,14 @@ h3 {
   color: var(--footer-ink);
 }
 
-/* Ecosistema: tarjetas cuadradas agrupadas en el centro. El grupo se centra; el texto de dentro
-   sigue alineado a la izquierda. */
+/* Ecosistema: tres tarjetas oscuras a todo el ancho del pie. */
 .footer-ecosystem {
   margin-top: var(--footer-block);
 }
 
-.footer-ecosystem-inner {
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto;
-}
-
 .footer-unit-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 16.5rem));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--footer-card-gap);
 }
 
@@ -356,11 +363,10 @@ h3 {
 }
 
 .footer-unit {
-  aspect-ratio: 1;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 0.75rem;
-  padding: 1.5rem;
+  gap: 0.9rem;
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
 }
 
 /* La unidad en la que está el visitante lleva el borde en el color de acento. */
@@ -373,11 +379,11 @@ h3 {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.4rem 0.75rem;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
 }
 
 .footer-unit p {
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   line-height: 1.7;
 }
 
@@ -562,6 +568,10 @@ h3 {
 
 /* Portátil estrecho: los créditos se apilan antes de apretarse. */
 @media (max-width: 1200px) {
+  :host {
+    --footer-gutter: 1.5rem;
+  }
+
   .footer-credit {
     display: grid;
     justify-items: start;
@@ -576,6 +586,7 @@ h3 {
 @media (max-width: 1000px) {
   :host {
     --footer-inline: clamp(1rem, 6vw, 3.75rem);
+    --footer-gutter: 2.25rem;
   }
 
   h3 {
@@ -591,12 +602,15 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .footer-ecosystem-inner {
-    width: auto;
+  .footer-top > * {
+    padding-inline: 0;
   }
 
-  .footer-unit {
-    aspect-ratio: auto;
+  .footer-top > * + * {
+    margin-top: var(--footer-gutter);
+    padding-top: var(--footer-gutter);
+    border-left: 0;
+    border-top: 1px solid var(--footer-coral);
   }
 
   .footer-author {

@@ -152,40 +152,38 @@
     </section>
   </div>
 
-  <!-- Las tres marcas del ecosistema: tarjetas cuadradas agrupadas en el centro. -->
+  <!-- Las tres marcas del ecosistema, cada una en su tarjeta. -->
   <section class="footer-ecosystem" aria-labelledby="footer-ecosystem-title">
-    <div class="footer-ecosystem-inner">
-      <h2 id="footer-ecosystem-title" class="footer-eyebrow">Ecosistema AlienMilk</h2>
-      <ul class="footer-unit-grid">
-        <li class="footer-unit">
-          <strong class="lockup">AlienMilk <span class="lockup-unit">Archive</span></strong>
-          <p>Conservación, catalogación y estudio de muestras de cualquier procedencia.</p>
-          <a class="footer-unit-action" routerLink="/nosotros">
-            <span>Conocer el archivo</span>
-            <ng-container *ngTemplateOutlet="actionArrow" />
-          </a>
-        </li>
-        <li class="footer-unit is-current">
-          <strong class="lockup"
-            >AlienMilk <span class="lockup-unit">Sessions</span>
-            <span class="footer-unit-here">Está aquí</span></strong
-          >
-          <p>Degustaciones, instalaciones y experiencias presenciales abiertas al público.</p>
-          <a class="footer-unit-action" routerLink="/sesiones">
-            <span>Ver la programación</span>
-            <ng-container *ngTemplateOutlet="actionArrow" />
-          </a>
-        </li>
-        <li class="footer-unit">
-          <strong class="lockup">AlienMilk <span class="lockup-unit">Collaborators</span></strong>
-          <p>Aportación voluntaria de muestras, evaluación y seguimiento de cada propuesta.</p>
-          <a class="footer-unit-action" [href]="proposalHref()">
-            <span>Proponer una muestra</span>
-            <ng-container *ngTemplateOutlet="actionArrow" />
-          </a>
-        </li>
-      </ul>
-    </div>
+    <h2 id="footer-ecosystem-title" class="footer-eyebrow">Ecosistema AlienMilk</h2>
+    <ul class="footer-unit-grid">
+      <li class="footer-unit">
+        <strong class="lockup">AlienMilk <span class="lockup-unit">Archive</span></strong>
+        <p>Conservación, catalogación y estudio de muestras de cualquier procedencia.</p>
+        <a class="footer-unit-action" routerLink="/nosotros">
+          <span>Conocer el archivo</span>
+          <ng-container *ngTemplateOutlet="actionArrow" />
+        </a>
+      </li>
+      <li class="footer-unit is-current">
+        <strong class="lockup"
+          >AlienMilk <span class="lockup-unit">Sessions</span>
+          <span class="footer-unit-here">Está aquí</span></strong
+        >
+        <p>Degustaciones, instalaciones y experiencias presenciales abiertas al público.</p>
+        <a class="footer-unit-action" routerLink="/sesiones">
+          <span>Ver la programación</span>
+          <ng-container *ngTemplateOutlet="actionArrow" />
+        </a>
+      </li>
+      <li class="footer-unit">
+        <strong class="lockup">AlienMilk <span class="lockup-unit">Collaborators</span></strong>
+        <p>Aportación voluntaria de muestras, evaluación y seguimiento de cada propuesta.</p>
+        <a class="footer-unit-action" [href]="proposalHref()">
+          <span>Proponer una muestra</span>
+          <ng-container *ngTemplateOutlet="actionArrow" />
+        </a>
+      </li>
+    </ul>
   </section>
 
   <ng-template #actionArrow>

@@ -10,7 +10,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 
 import { ContactService } from '../../core/services/contact.service';
-import { describeSchedule, siteStatus } from '../../features/contact/opening-hours';
+import { describeDays, formatHour, siteStatus } from '../../features/contact/opening-hours';
 
 /**
  * Pie común de la web. No deja margen propio: cada página decide cómo termina su último bloque,
@@ -32,10 +32,28 @@ export class SiteFooterComponent {
   private readonly now = signal(new Date());
 
   readonly contacto = this.contactService.contacto;
-  readonly schedule = computed(() => {
+  readonly days = computed(() => describeDays(this.contacto()?.diasApertura ?? []));
+  readonly hours = computed(() => {
     const contacto = this.contacto();
-    return contacto ? describeSchedule(contacto) : '';
+    return contacto
+      ? `${formatHour(contacto.horaApertura)} a ${formatHour(contacto.horaCierre)}`
+      : '';
   });
+  readonly phoneHref = computed(
+    () => `tel:${this.contacto()?.telefono?.replace(/[^\d+]/g, '') ?? ''}`,
+  );
+  /** Permite partir el correo en la arroba y no a mitad de palabra. */
+  readonly emailParts = computed(() => {
+    const email = this.contacto()?.email ?? '';
+    const arroba = email.lastIndexOf('@');
+    return [email.slice(0, arroba), email.slice(arroba + 1)];
+  });
+  /** Mismo canal que usa la portada para las propuestas de Collaborators. */
+  readonly proposalHref = computed(
+    () =>
+      `mailto:${this.contacto()?.email ?? ''}?subject=${encodeURIComponent('Propuesta de muestra para evaluación')}`,
+  );
+
   /** Redes de AlienMilk. Sin `href`, el icono se muestra pero no enlaza a ningún sitio. */
   readonly socials: { name: string; icon: 'instagram' | 'x' | 'linkedin'; href?: string }[] = [
     { name: 'Instagram', icon: 'instagram' },

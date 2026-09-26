@@ -72,3 +72,7 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
 - `/eventos/:id` (la ficha antigua de sesión) muestra el título y los datos con texto oscuro sobre
   fondo oscuro, el mismo fallo que tenía el admin. Conviene arreglarlo o retirarlo al decidir la
   ruta canónica.
+- Aviso legal, privacidad y cookies (`/aviso-legal`, `/privacidad`, `/cookies`) comparten
+  `pages/legal/` y de momento solo dicen que el documento está en redacción, qué es el proyecto
+  y quién es la responsable. Falta redactar los textos (JT se ofreció); ojo con lo que de verdad
+  hace la web: registro de usuarios, credenciales en `localStorage` y fuentes de Google Fonts.

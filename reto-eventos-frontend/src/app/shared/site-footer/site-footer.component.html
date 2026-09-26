@@ -21,10 +21,22 @@
 <footer class="site-footer">
   <div class="footer-top footer-columns">
     <section class="footer-col footer-intro">
+      <a
+        class="footer-brand"
+        href="/"
+        (click)="goHome($event)"
+        aria-label="AlienMilk Sessions, inicio"
+      >
+        <span class="footer-brand-mark" aria-hidden="true"></span>
+        <span class="footer-brand-name">AlienMilk</span>
+        <span class="footer-brand-unit">Sessions</span>
+      </a>
+
       <p>
-        <strong>AlienMilk</strong> estudia, conserva y comparte leches de procedencias
-        extraordinarias. Sessions abre una parte de ese archivo al público a través de experiencias
-        presenciales.
+        AlienMilk nace del placer de descubrir leche de procedencias extraordinarias para
+        descubrirlas, compartirlas y disfrutarlas. Sessions las convierte en experiencias,
+        Collaborators abre la puerta a nuevas aportaciones y Archivo guarda aquello que merece
+        volver a ser probado.
       </p>
 
       <a class="footer-cta" routerLink="/registro">Regístrate</a>
@@ -58,8 +70,8 @@
     </section>
 
     <section class="footer-col">
-      <h3>Explora AlienMilk</h3>
-      <nav class="footer-menu" aria-label="Explora AlienMilk">
+      <h3>Explora AlienMilk Sessions</h3>
+      <nav class="footer-menu" aria-label="Explora AlienMilk Sessions">
         <a href="/" (click)="goHome($event)">Inicio <span aria-hidden="true">+</span></a>
         <a routerLink="/sesiones">Sesiones <span aria-hidden="true">+</span></a>
         <a routerLink="/nosotros">Nosotros <span aria-hidden="true">+</span></a>
@@ -69,78 +81,125 @@
 
     <section class="footer-col">
       <h3>Contacto</h3>
-      <ul class="footer-contact">
-        @if (contacto(); as sede) {
-          @if (status(); as estado) {
-            <li class="footer-status" [class.is-open]="estado.abierta">
-              <span class="footer-status-dot" aria-hidden="true"></span>
-              {{ estado.estado }} · {{ estado.detalle }}
-            </li>
-          }
-          <li>Atención a visitantes</li>
-          <li>{{ sede.nombreSede }} · {{ sede.direccion }}, {{ sede.ciudad }}</li>
-          <li>{{ schedule() }}</li>
-          @if (sede.telefono) {
-            <li>{{ sede.telefono }}</li>
-          }
-          <li>
-            <a [href]="'mailto:' + sede.email">{{ sede.email }}</a>
-          </li>
-        } @else {
-          <li><a routerLink="/contacto">Ficha de contacto de la sede</a></li>
+      @if (contacto(); as sede) {
+        @if (status(); as estado) {
+          <p class="footer-status" [class.is-open]="estado.abierta">
+            <span class="footer-status-dot" aria-hidden="true"></span>
+            {{ estado.estado }} · {{ estado.detalle }}
+          </p>
         }
-      </ul>
+        <dl class="footer-contact">
+          <div>
+            <dt>Sede</dt>
+            <dd>
+              {{ sede.direccion }}<br />
+              {{ sede.ciudad }}
+            </dd>
+          </div>
+          <div>
+            <dt>Horario</dt>
+            <dd>{{ days() }}<br />{{ hours() }}</dd>
+          </div>
+          @if (sede.telefono) {
+            <div>
+              <dt>Teléfono</dt>
+              <dd>
+                <a [href]="phoneHref()">{{ sede.telefono }}</a>
+              </dd>
+            </div>
+          }
+          <div>
+            <dt>Correo</dt>
+            <dd>
+              <a [href]="'mailto:' + sede.email"
+                >{{ emailParts()[0] }}<wbr />&#64;{{ emailParts()[1] }}</a
+              >
+            </dd>
+          </div>
+        </dl>
+      } @else {
+        <p><a routerLink="/contacto">Ficha de contacto de la sede</a></p>
+      }
     </section>
   </div>
 
-  <!-- Las tres unidades del ecosistema, alineadas con las columnas de arriba. -->
-  <section class="footer-units" aria-labelledby="footer-units-title">
-    <h2 id="footer-units-title" class="footer-eyebrow">Unidades de AlienMilk</h2>
+  <!-- Las tres marcas del ecosistema, alineadas con las columnas de arriba. -->
+  <section class="footer-ecosystem" aria-labelledby="footer-ecosystem-title">
+    <h2 id="footer-ecosystem-title" class="footer-eyebrow">Ecosistema AlienMilk</h2>
     <ul class="footer-columns">
       <li class="footer-unit">
-        <strong>Archivo</strong>
+        <strong>AlienMilk Archive</strong>
         <p>Conservación, catalogación y estudio de muestras de cualquier procedencia.</p>
+        <a class="footer-unit-action" routerLink="/nosotros">
+          <span>Conocer el archivo</span>
+          <ng-container *ngTemplateOutlet="actionArrow" />
+        </a>
       </li>
       <li class="footer-unit is-current">
-        <strong>Sesiones <span class="footer-unit-here">Está aquí</span></strong>
+        <strong>AlienMilk Sessions <span class="footer-unit-here">Está aquí</span></strong>
         <p>Degustaciones, instalaciones y experiencias presenciales abiertas al público.</p>
+        <a class="footer-unit-action" routerLink="/sesiones">
+          <span>Ver la programación</span>
+          <ng-container *ngTemplateOutlet="actionArrow" />
+        </a>
       </li>
       <li class="footer-unit">
-        <strong>Colaboradores</strong>
+        <strong>AlienMilk Collaborators</strong>
         <p>Aportación voluntaria de muestras, evaluación y seguimiento de cada propuesta.</p>
+        <a class="footer-unit-action" [href]="proposalHref()">
+          <span>Proponer una muestra</span>
+          <ng-container *ngTemplateOutlet="actionArrow" />
+        </a>
       </li>
     </ul>
   </section>
 
-  <div class="footer-signature">
+  <ng-template #actionArrow>
+    <span class="footer-unit-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+    </span>
+  </ng-template>
+
+  <!-- Capa real del portfolio: identidad, textos legales y autoría. -->
+  <div class="footer-legal">
     <p><strong>AlienMilk Sessions</strong> · Archivo, preparación y experiencias de degustación.</p>
-    <p>© 2026 AlienMilk</p>
+    <nav class="footer-legal-links" aria-label="Información legal">
+      <a routerLink="/aviso-legal">Aviso legal</a>
+      <a routerLink="/privacidad">Privacidad</a>
+      <a routerLink="/cookies">Cookies</a>
+      <a routerLink="/contacto">Contacto</a>
+    </nav>
   </div>
 
   <div class="footer-credit">
     <div class="footer-author">
       <img src="cayi-logo.svg" alt="" width="64" height="64" />
-      <p>
-        AlienMilk es un proyecto ficticio desarrollado como portfolio. No representa una empresa
-        real y las sesiones mostradas forman parte de su propuesta conceptual. Diseño y desarrollo
-        por <strong>Claudia Rodríguez Mayán — Cayi</strong>.
-      </p>
+      <div class="footer-author-text">
+        <p>
+          AlienMilk es un proyecto ficticio desarrollado como portfolio. No representa una empresa
+          real y las sesiones mostradas forman parte de su propuesta conceptual.
+        </p>
+        <p>Diseño y desarrollo por <strong>Claudia Rodríguez Mayán — Cayi</strong>.</p>
+      </div>
     </div>
 
-    <nav class="footer-author-links" aria-label="Autora del proyecto">
-      <a href="https://www.linkedin.com/in/cayi" target="_blank" rel="noopener">
-        LinkedIn
-        <svg class="footer-external" viewBox="0 0 12 12" aria-hidden="true">
-          <path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" />
-        </svg>
-      </a>
-      <a href="https://github.com/ElCayi" target="_blank" rel="noopener">
-        GitHub
-        <svg class="footer-external" viewBox="0 0 12 12" aria-hidden="true">
-          <path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" />
-        </svg>
-      </a>
-      <a href="mailto:claudia.rmayan@gmail.com">claudia.rmayan&#64;gmail.com</a>
-    </nav>
+    <div class="footer-author-meta">
+      <nav class="footer-author-links" aria-label="Autora del proyecto">
+        <a href="https://www.linkedin.com/in/cayi" target="_blank" rel="noopener">
+          LinkedIn
+          <svg class="footer-external" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" />
+          </svg>
+        </a>
+        <a href="https://github.com/ElCayi" target="_blank" rel="noopener">
+          GitHub
+          <svg class="footer-external" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" />
+          </svg>
+        </a>
+        <a href="mailto:claudia.rmayan@gmail.com">claudia.rmayan&#64;gmail.com</a>
+      </nav>
+      <p class="footer-copyright">© 2026 Claudia Rodríguez Mayán · AlienMilk</p>
+    </div>
   </div>
 </footer>

@@ -10,6 +10,7 @@ import { SampleReceptionComponent } from '../collaboration/sample-reception.comp
   imports: [CommonModule, SampleReceptionComponent],
   templateUrl: './locations-atlas.component.html',
   styleUrl: './locations-atlas.component.css',
+  host: { '[class.locations-collaboration-section]': 'collaborationMode' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LocationsAtlasComponent {

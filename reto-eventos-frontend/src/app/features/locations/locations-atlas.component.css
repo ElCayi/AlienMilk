@@ -1050,8 +1050,11 @@
     background: var(--mobile-section-canvas);
   }
 
+  :host(.locations-collaboration-section) {
+    --mobile-section-canvas: var(--page-canvas);
+  }
+
   :host::before {
-    bottom: calc(-1 * clamp(3rem, 7vh, 5rem));
     background: var(--mobile-section-canvas);
   }
 
@@ -1159,7 +1162,7 @@
   }
 
   .locations-chart::before {
-    left: 3.375rem;
+    left: 3.125rem;
   }
 
   .location-orbit {
@@ -1221,8 +1224,12 @@
   }
 
   .location-data strong {
+    display: grid;
+    align-content: center;
+    min-width: 0;
     font-size: clamp(1.7rem, 11cqi, 2.2rem);
     line-height: 1.08;
+    min-height: calc(2 * 1.08em);
     white-space: normal;
   }
 

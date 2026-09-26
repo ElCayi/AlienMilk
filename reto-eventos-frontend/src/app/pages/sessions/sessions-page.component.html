@@ -133,7 +133,6 @@
         <ng-container *ngIf="current.detail as data">
           <figure class="dossier-hero" [class.is-expanded]="imageExpanded()">
             <img [src]="sessionImage(data)" [alt]="'Registro visual de la sesión ' + data.nombre" />
-            <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
             <button
               type="button"
               class="dossier-hero-toggle"
@@ -149,11 +148,14 @@
             <!-- El título viaja con la imagen: con el visor ampliado no hace falta bajar a buscarlo. -->
             <figcaption>
               <strong>{{ data.nombre }}</strong>
-              <span>
-                {{ data.direccion }} · {{ longDate(data.fechaInicio)
-                }}<ng-container *ngIf="current.dossier.horario">
-                  · {{ current.dossier.horario }}</ng-container
-                >
+              <span class="dossier-hero-meta">
+                <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
+                <span class="dossier-hero-details">
+                  {{ data.direccion }} · {{ longDate(data.fechaInicio)
+                  }}<ng-container *ngIf="current.dossier.horario">
+                    · {{ current.dossier.horario }}</ng-container
+                  >
+                </span>
               </span>
             </figcaption>
           </figure>

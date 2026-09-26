@@ -137,6 +137,10 @@
   figcaption strong {
     font-size: 1.65rem;
   }
+
+  figcaption .dossier-hero-meta {
+    margin-left: 0;
+  }
 }
 
 /* Título, fecha, sala y horario ya van en la banda de la imagen: la ficha no los repite. */

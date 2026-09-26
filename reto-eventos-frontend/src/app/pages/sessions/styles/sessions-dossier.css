@@ -15,6 +15,7 @@
 
 .dossier-hero {
   position: relative;
+  container: dossier-hero / inline-size;
   /* Absorbe el hueco que antes lo separaba del carrusel. */
   height: calc(clamp(20rem, 64vh, 46rem) + clamp(2rem, 4vw, 3.5rem));
   margin: 0;
@@ -41,7 +42,6 @@
   object-fit: contain;
 }
 
-.dossier-hero-code,
 .dossier-hero-toggle,
 figcaption {
   position: absolute;
@@ -52,22 +52,20 @@ figcaption {
   backdrop-filter: blur(6px);
 }
 
-.dossier-hero-code {
-  top: 1rem;
-  left: 1rem;
-  font: 700 0.72rem var(--condensed);
-  letter-spacing: 0.12em;
-}
-
 .dossier-hero-toggle {
   top: 1rem;
   right: 1rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  padding: 0.58rem 1.5rem;
   border: 0;
-  font: 700 0.75rem 'Nunito', sans-serif;
+  font: 700 0.82rem 'Nunito', sans-serif;
   cursor: pointer;
+}
+
+.dossier-hero-toggle svg {
+  width: 1.08rem;
 }
 
 .dossier-hero-toggle:hover {
@@ -82,7 +80,7 @@ figcaption {
   left: 0;
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: 0.2rem 1.4rem;
   padding: 0.45rem calc(var(--corner) + 1rem) 0.6rem clamp(1.5rem, 2.4vw, 2.25rem);
   border-radius: 0;
@@ -97,11 +95,39 @@ figcaption strong {
   letter-spacing: 0.015em;
 }
 
-figcaption span {
+figcaption .dossier-hero-meta {
+  display: grid;
+  justify-items: start;
+  gap: 0.24rem;
+  margin-left: auto;
+  transform: translateY(0.2rem);
+}
+
+figcaption .dossier-hero-code {
+  color: var(--coral);
+  font: 700 0.72rem var(--condensed);
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+figcaption .dossier-hero-details {
   color: rgba(250, 249, 247, 0.78);
   font: 800 0.66rem 'Nunito', sans-serif;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+@container dossier-hero (max-width: 70rem) {
+  figcaption {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+
+  figcaption .dossier-hero-meta {
+    margin-left: 0;
+    transform: none;
+  }
 }
 
 @keyframes unfold {

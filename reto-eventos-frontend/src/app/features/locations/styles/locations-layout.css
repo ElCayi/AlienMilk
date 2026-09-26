@@ -12,7 +12,7 @@
   left: 50%;
   width: 100vw;
   z-index: -1;
-  background: var(--gallery-canvas, #faf9f7);
+  background: var(--page-canvas);
   pointer-events: none;
   transform: translateX(-50%);
 }

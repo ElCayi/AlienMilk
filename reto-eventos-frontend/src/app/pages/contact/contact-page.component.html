@@ -1,22 +1,128 @@
-<section class="contact-page" aria-labelledby="contact-title">
-  <header class="contact-intro">
-    <p class="contact-eyebrow">Comunicaciones / Base central · 2026</p>
-    <h1 id="contact-title">Contacto</h1>
-    <p>Puedes encontrarnos en la base central de AlienMilk Sessions.</p>
-  </header>
+<section class="contact">
+  <div class="contact-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Contacto</span>
+    </nav>
 
-  <div class="contact-grid">
-    <article>
-      <span class="contact-label">Dirección</span>
-      <strong>Hangar 7, Cúpula Central, Madrid</strong>
-    </article>
-    <article>
-      <span class="contact-label">Horario</span>
-      <strong>Jueves a domingo · 18:00 a 23:30</strong>
-    </article>
-    <article>
-      <span class="contact-label">Canal</span>
-      <a href="mailto:contacto@alienmilksessions.com">contacto@alienmilksessions.com</a>
-    </article>
+    <header class="contact-header">
+      <div class="contact-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>Comunicaciones / Sede central</span>
+        </p>
+        <h1>Contacto</h1>
+        <p class="contact-subtitle">Atendemos consultas de cualquier procedencia.</p>
+        <p class="contact-intro">
+          La sede central acoge la programación pública del ciclo, el archivo de muestras y la
+          oficina de atención a participantes. Para reservas, cambios de plaza o dudas sobre una
+          sesión concreta, escríbanos: el personal responde durante el horario de apertura.
+        </p>
+      </div>
+
+      @if (contacto()) {
+        <aside class="site-card" aria-label="Estado de la sede">
+          <div class="site-orb" aria-hidden="true">
+            <video autoplay muted loop playsinline preload="metadata">
+              <source src="alienmilk-planet-loop.webm" type="video/webm" />
+              <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
+            </video>
+          </div>
+
+          <div class="site-state">
+            @if (status(); as estado) {
+              <p class="site-signal" [class.is-open]="estado.abierta" role="status">
+                <span class="site-dot" aria-hidden="true"></span>
+                {{ estado.estado }}
+              </p>
+              <p class="site-next">{{ estado.detalle }}</p>
+              <p class="site-clock">
+                Hora local de la sede · <time>{{ estado.horaLocal }}</time>
+              </p>
+            } @else {
+              <p class="site-next">{{ days() }} · {{ hours() }}</p>
+            }
+          </div>
+        </aside>
+      }
+    </header>
+  </div>
+
+  <div class="contact-body">
+    @if (contacto(); as sede) {
+      <div class="contact-grid">
+        <article class="contact-block block-site">
+          <h2 class="block-label">{{ sede.nombreSede }}</h2>
+          <address>
+            <span class="site-address">{{ sede.direccion }}</span>
+            <span class="site-city">{{ sede.ciudad }}</span>
+          </address>
+          <a class="block-link" [href]="mapUrl()" target="_blank" rel="noopener">
+            Abrir en el mapa <span aria-hidden="true">→</span>
+          </a>
+        </article>
+
+        <article class="contact-block block-mail">
+          <h2 class="block-label">Correspondencia</h2>
+          <a class="mail-link" [href]="'mailto:' + sede.email"
+            >{{ emailParts()[0] }}<wbr />&#64;{{ emailParts()[1] }}</a
+          >
+          @if (sede.telefono) {
+            <a class="phone-link" [href]="phoneHref()">{{ sede.telefono }}</a>
+          }
+          <p class="block-note">Las consultas se atienden por orden de llegada.</p>
+        </article>
+
+        <article class="contact-block block-hours">
+          <h2 class="block-label">Horario</h2>
+          <dl class="hours">
+            <div>
+              <dt>Días</dt>
+              <dd>{{ days() }}</dd>
+            </div>
+            <div>
+              <dt>Apertura</dt>
+              <dd>{{ hours() }}</dd>
+            </div>
+            <div>
+              <dt>Zona horaria</dt>
+              <dd>{{ sede.zonaHoraria }}</dd>
+            </div>
+          </dl>
+        </article>
+
+        @if (sede.comoLlegar) {
+          <article class="contact-block block-route">
+            <h2 class="block-label">Cómo llegar</h2>
+            <p>{{ sede.comoLlegar }}</p>
+          </article>
+        }
+
+        @if (sede.condicionesAcceso) {
+          <article class="contact-block block-access">
+            <h2 class="block-label">Condiciones de acceso</h2>
+            <p>{{ sede.condicionesAcceso }}</p>
+          </article>
+        }
+      </div>
+
+      <footer class="contact-footnote">
+        <p>
+          Los objetos olvidados en la sede se conservan durante treinta días. Las muestras, según
+          protocolo.
+        </p>
+        @if (sede.actualizadoEn) {
+          <p>Ficha revisada el {{ sede.actualizadoEn | date: 'dd.MM.yyyy' }}</p>
+        }
+      </footer>
+    } @else if (error()) {
+      <div class="contact-status" role="alert">
+        <span>No hemos podido consultar la ficha de la sede.</span>
+        <button type="button" (click)="retry()">Reintentar</button>
+      </div>
+    } @else {
+      <p class="contact-status" role="status">Consultando la ficha de la sede...</p>
+    }
   </div>
 </section>

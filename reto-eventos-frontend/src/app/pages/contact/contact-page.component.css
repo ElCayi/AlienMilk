@@ -1,104 +1,476 @@
 :host {
+  --ink: #f7f8f9;
+  --muted: rgba(247, 248, 249, 0.68);
+  --faint: rgba(247, 248, 249, 0.46);
+  --line: rgba(247, 248, 249, 0.16);
+  --rule: rgba(247, 248, 249, 0.42);
+  --coral: #ff7f7f;
+  --open: #9fe3b5;
+  --canvas: #0d151e;
+  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --corner: clamp(2rem, 4vw, 3.5rem);
   display: block;
-  min-height: calc(100dvh - var(--topbar-height));
-  color: #f1ecef;
-  background: #100e12;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
 }
 
-.contact-page {
-  box-sizing: border-box;
-  width: min(1240px, calc(100% - 8rem));
-  min-height: calc(100dvh - var(--topbar-height));
-  margin: 0 auto;
-  padding: clamp(5rem, 11vh, 8rem) 0;
+.contact {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: clamp(3rem, 6vw, 5rem);
 }
 
-.contact-intro {
-  display: grid;
-  gap: 1rem;
-  max-width: 48rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 127, 127, 0.48);
+/* Textura a sangre detrás de toda la página, como en la programación de sesiones. */
+.contact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background:
+    linear-gradient(rgba(63, 73, 87, 0.9), rgba(63, 73, 87, 0.9)),
+    url('/alienmilk-showcase-texture.webp') center / cover fixed;
 }
 
-.contact-eyebrow {
-  margin: 0;
-  color: #ff7f7f;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 400;
+.contact-stage {
+  padding: 0 0 clamp(1.75rem, 3.5vw, 3rem);
+}
+
+/* Tipografía compartida */
+.breadcrumb,
+.eyebrow,
+.block-label,
+.hours dt,
+.site-signal,
+.site-clock,
+.contact-footnote {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.contact-intro h1 {
-  margin: 1.4rem 0 0;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(4rem, 9vw, 8rem);
-  font-weight: 300;
-  line-height: 0.88;
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--muted);
 }
 
-.contact-intro > p:last-child {
-  max-width: 36rem;
-  margin: 0.5rem 0 0;
-  color: #b9afb6;
-  font-size: 1rem;
-  line-height: 1.65;
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb [aria-current='page'] {
+  color: var(--coral);
+}
+
+/* Cabecera */
+.contact-header {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(17rem, 0.8fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: end;
+}
+
+.contact-copy {
+  min-width: 0;
+  padding-top: 0.4rem;
+  border-top: 2px solid var(--rule);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  color: var(--muted);
+}
+
+.eyebrow-icon {
+  width: 1.2em;
+  height: 1.2em;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+h1 {
+  margin: clamp(2rem, 4vw, 3.5rem) 0 0;
+  font-family: var(--condensed);
+  font-size: clamp(3.2rem, 6vw, 6.4rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: 0.025em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+.contact-subtitle {
+  margin: 1.3rem 0 0;
+  color: var(--coral);
+  font:
+    700 clamp(1.05rem, 1.55vw, 1.3rem) / 1.3 'Nunito',
+    sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.contact-intro {
+  max-width: 48rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font:
+    clamp(1rem, 1vw, 1.1rem) / 1.6 Arial,
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* Estado de la sede */
+.site-card {
+  display: grid;
+  justify-items: center;
+  gap: 1.4rem;
+  text-align: center;
+}
+
+.site-orb {
+  width: min(100%, 13rem);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(247, 248, 249, 0.34);
+  border-radius: 50%;
+  background: var(--canvas);
+  box-shadow:
+    0 0 0 0.6rem rgba(247, 248, 249, 0.08),
+    0 18px 44px rgba(13, 21, 30, 0.35);
+}
+
+.site-orb video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.site-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+}
+
+.site-state p {
+  margin: 0;
+}
+
+.site-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(13, 21, 30, 0.55);
+  font-size: 0.72rem;
+}
+
+.site-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.site-signal.is-open .site-dot {
+  background: var(--open);
+  box-shadow: 0 0 0 0.25rem rgba(159, 227, 181, 0.2);
+  animation: site-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes site-pulse {
+  50% {
+    box-shadow: 0 0 0 0.45rem rgba(159, 227, 181, 0.05);
+  }
+}
+
+.site-next {
+  font:
+    700 1.05rem / 1.3 'Nunito',
+    sans-serif;
+}
+
+.site-clock {
+  color: var(--muted);
+}
+
+.site-clock time {
+  color: var(--ink);
+}
+
+/* Cuerpo: lienzo oscuro con la esquina grande hacia la textura. */
+.contact-body {
+  padding: clamp(1.75rem, 3.5vw, 3.25rem) clamp(1.5rem, 3.5vw, 3.5rem) clamp(1.25rem, 2.5vw, 2rem);
+  border-radius: var(--corner) 1rem 1rem 1rem;
+  background: var(--canvas);
 }
 
 .contact-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  margin-top: clamp(4rem, 10vh, 7rem);
-  border-top: 1px solid rgba(241, 236, 239, 0.18);
-  border-bottom: 1px solid rgba(241, 236, 239, 0.18);
-  background: rgba(241, 236, 239, 0.18);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-areas:
+    'site site mail hours'
+    'route route access access';
+  gap: clamp(1.75rem, 3vw, 3rem) clamp(1.5rem, 3vw, 3rem);
 }
 
-.contact-grid article {
+.block-site {
+  grid-area: site;
+}
+
+.block-mail {
+  grid-area: mail;
+}
+
+.block-hours {
+  grid-area: hours;
+}
+
+.block-route {
+  grid-area: route;
+}
+
+.block-access {
+  grid-area: access;
+}
+
+.contact-block {
+  min-width: 0;
   display: grid;
   align-content: start;
-  gap: 1rem;
-  min-height: 9rem;
-  padding: 1.6rem;
-  background: #100e12;
+  gap: 0.85rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
 }
 
-.contact-label {
-  color: #91878e;
-  font: 400 0.8rem 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.block-label {
+  margin: 0;
+  color: var(--coral);
 }
 
-.contact-grid strong,
-.contact-grid a {
-  color: #f1ecef;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.5;
+.contact-block p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+address {
+  display: grid;
+  gap: 0.35rem;
+  font-style: normal;
+}
+
+.site-address {
+  font-family: var(--condensed);
+  font-size: clamp(2rem, 3.2vw, 3.1rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: 0.02em;
+}
+
+.site-city {
+  color: var(--muted);
+  font:
+    700 1rem 'Nunito',
+    sans-serif;
+}
+
+.block-link,
+.mail-link,
+.phone-link {
+  color: var(--ink);
   text-decoration: none;
+  transition: color 180ms ease;
 }
 
-.contact-grid a:hover,
-.contact-grid a:focus-visible {
-  color: #ff7f7f;
+.block-link {
+  justify-self: start;
+  font:
+    700 0.85rem 'Nunito',
+    sans-serif;
+}
+
+.mail-link {
+  overflow-wrap: anywhere;
+  font:
+    700 clamp(1.05rem, 1.35vw, 1.25rem) / 1.3 'Nunito',
+    sans-serif;
+}
+
+.phone-link {
+  font:
+    1rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.block-link:hover,
+.mail-link:hover,
+.phone-link:hover,
+.block-link:focus-visible,
+.mail-link:focus-visible,
+.phone-link:focus-visible {
+  color: var(--coral);
+}
+
+.contact-block .block-note {
+  color: var(--faint);
+  font-size: 0.82rem;
+}
+
+.hours {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.hours div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.hours dt {
+  color: var(--faint);
+  font-size: 0.6rem;
+}
+
+.hours dd {
+  margin: 0;
+  font:
+    700 0.98rem 'Nunito',
+    sans-serif;
+}
+
+.contact-footnote {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-top: clamp(2rem, 4vw, 3.25rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 0.6rem;
+}
+
+.contact-footnote p {
+  margin: 0;
+}
+
+.contact-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+  padding: 3rem 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.contact-status button {
+  padding: 0.6rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: #151217;
+  background: var(--ink);
+  font:
+    700 0.8rem 'Nunito',
+    sans-serif;
+  cursor: pointer;
+}
+
+.contact-status button:hover {
+  color: white;
+  background: var(--coral);
+}
+
+/* Portátil y pantallas cuadradas: la sede ocupa toda la fila. */
+@media (max-width: 1400px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'site site'
+      'mail hours'
+      'route access';
+  }
 }
 
 @media (max-width: 1000px) {
-  .contact-page {
-    width: min(100% - 3rem, 48rem);
-    padding-block: 3.5rem;
+  .contact-header {
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.55fr);
+    gap: 2rem;
+  }
+
+  .site-orb {
+    width: min(100%, 10rem);
+  }
+}
+
+/* Móvil: una columna; el orbe y el estado quedan en fila bajo el titular. */
+@media (max-width: 700px) {
+  .contact-header {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .site-card {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    gap: 1.1rem;
+    text-align: left;
+  }
+
+  .site-orb {
+    width: 5.5rem;
+    box-shadow: 0 0 0 0.35rem rgba(247, 248, 249, 0.08);
+  }
+
+  .site-state {
+    justify-items: start;
+  }
+
+  .contact-body {
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-radius: 1.75rem 0.75rem 0.75rem 0.75rem;
   }
 
   .contact-grid {
     grid-template-columns: 1fr;
-    margin-top: 3.5rem;
+    grid-template-areas:
+      'site'
+      'mail'
+      'hours'
+      'route'
+      'access';
+    gap: 1.75rem;
   }
 
-  .contact-grid article {
-    min-height: auto;
+  .contact-footnote {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-signal.is-open .site-dot {
+    animation: none;
   }
 }

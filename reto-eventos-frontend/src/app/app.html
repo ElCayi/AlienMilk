@@ -80,13 +80,17 @@
 
       <section class="footer-col">
         <h3>Contacto</h3>
-        <ul class="footer-contact">
-          <li>Coordinacion del proyecto</li>
-          <li>999 999 999</li>
-          <li>Hangar 7, Cupula Central, Madrid</li>
-          <li>Jueves a domingo · 18:00 a 23:30</li>
-          <li>contacto@alienmilksessions.com</li>
+        <ul class="footer-contact" *ngIf="contactService.contacto() as sede; else footerContactFallback">
+          <li>{{ sede.nombreSede }} · {{ sede.direccion }}, {{ sede.ciudad }}</li>
+          <li>{{ footerSchedule() }}</li>
+          <li *ngIf="sede.telefono">{{ sede.telefono }}</li>
+          <li><a [href]="'mailto:' + sede.email">{{ sede.email }}</a></li>
         </ul>
+        <ng-template #footerContactFallback>
+          <ul class="footer-contact">
+            <li><a routerLink="/contacto">Ficha de contacto de la sede</a></li>
+          </ul>
+        </ng-template>
       </section>
     </div>
 

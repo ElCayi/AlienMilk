@@ -7,7 +7,7 @@
           </p>
           <h1>Control de AlienMilk Sessions</h1>
           <p class="helper">
-            Revisa y gestiona sesiones, usuarios, tipos, perfiles y reservas desde la cabina central.
+            Revisa y gestiona sesiones, usuarios, tipos, perfiles, reservas y la ficha de contacto desde la cabina central.
           </p>
         </div>
       </div>
@@ -44,6 +44,13 @@
             >
               Perfiles
             </button>
+            <button
+              type="button"
+              [class.active]="activeTab() === 'contacto'"
+              (click)="setTab('contacto')"
+            >
+              Contacto
+            </button>
             <a routerLink="/admin/reservas">Gestionar reservas por usuario</a>
           </nav>
         </aside>
@@ -72,6 +79,8 @@
       
 
       <app-admin-profiles-panel *ngIf="activeTab() === 'perfiles'" [perfiles]="perfiles()" [form]="perfilForm" [editingId]="perfilEditandoId" (save)="guardarPerfil()" (edit)="editarPerfil($event)" (removeRequested)="borrarPerfil($event)" (cancelRequested)="cancelarEdicionPerfil()" />
+
+      <app-admin-contact-panel *ngIf="activeTab() === 'contacto'" />
 
       
 

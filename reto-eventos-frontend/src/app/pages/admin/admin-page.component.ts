@@ -13,6 +13,7 @@ import {
   Usuario,
   UsuarioPayload,
 } from '../../models/api.models';
+import { AdminContactPanelComponent } from './panels/admin-contact-panel.component';
 import { AdminProfilesPanelComponent } from './panels/admin-profiles-panel.component';
 import { AdminSessionsPanelComponent } from './panels/admin-sessions-panel.component';
 import { AdminTypesPanelComponent } from './panels/admin-types-panel.component';
@@ -28,6 +29,7 @@ import { AdminUsersPanelComponent } from './panels/admin-users-panel.component';
     AdminUsersPanelComponent,
     AdminTypesPanelComponent,
     AdminProfilesPanelComponent,
+    AdminContactPanelComponent,
   ],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css',
@@ -42,9 +44,9 @@ export class AdminPageComponent implements OnInit {
   readonly tipos = signal<TipoEvento[]>([]);
   readonly perfiles = signal<Perfil[]>([]);
   readonly feedback = signal('');
-  readonly activeTab = signal<'sesiones' | 'usuarios' | 'tipos' | 'perfiles'>('sesiones');
+  readonly activeTab = signal<'sesiones' | 'usuarios' | 'tipos' | 'perfiles' | 'contacto'>('sesiones');
 
-  setTab(tab: 'sesiones' | 'usuarios' | 'tipos' | 'perfiles'): void {
+  setTab(tab: 'sesiones' | 'usuarios' | 'tipos' | 'perfiles' | 'contacto'): void {
     this.activeTab.set(tab);
     this.feedback.set('');
   }

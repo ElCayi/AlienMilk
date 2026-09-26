@@ -1,8 +1,10 @@
-import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { DOCUMENT, NgIf } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
 import { AuthService } from './core/services/auth.service';
+import { ContactService } from './core/services/contact.service';
+import { describeSchedule } from './features/contact/opening-hours';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +14,12 @@ import { AuthService } from './core/services/auth.service';
 })
 export class App {
   readonly authService = inject(AuthService);
+  readonly contactService = inject(ContactService);
   readonly menuOpen = signal(false);
+  readonly footerSchedule = computed(() => {
+    const contacto = this.contactService.contacto();
+    return contacto ? describeSchedule(contacto) : '';
+  });
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -46,6 +53,7 @@ export class App {
     });
 
     this.authService.loadSession()?.subscribe();
+    this.contactService.load();
   }
 
   goToSection(event: Event, sectionId: string): void {

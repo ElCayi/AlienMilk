@@ -39,6 +39,14 @@ SQL
 mysql -u retoeventos -p reserva_eventos_bbdd < /opt/reto-eventos/reto-eventos-backend/script_bbdd.sql
 ```
 
+`script_bbdd.sql` **borra y recrea** las tablas, así que solo sirve para una base nueva. Sobre una
+base que ya tiene datos, aplica en su lugar las migraciones de
+`reto-eventos-backend/migraciones/` que falten. Son idempotentes: repetir una no rompe nada.
+
+```bash
+mysql -u retoeventos -p reserva_eventos_bbdd < /opt/reto-eventos/reto-eventos-backend/migraciones/2026-09-26-contacto.sql
+```
+
 ## Fase 3 — Backend como servicio systemd
 
 Crear `/etc/systemd/system/reto-eventos-backend.service`:

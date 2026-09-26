@@ -100,3 +100,23 @@ export interface EventoPayload {
   precio: number;
   idTipo: number;
 }
+
+export interface Contacto {
+  nombreSede: string;
+  direccion: string;
+  ciudad: string;
+  email: string;
+  telefono: string | null;
+  /** ISO-8601: 1 = lunes … 7 = domingo. */
+  diasApertura: number[];
+  /** 'HH:mm' o 'HH:mm:ss'. */
+  horaApertura: string;
+  horaCierre: string;
+  zonaHoraria: string;
+  comoLlegar: string | null;
+  condicionesAcceso: string | null;
+  actualizadoEn: string | null;
+  actualizadoPor: string | null;
+}
+
+export type ContactoPayload = Omit<Contacto, 'actualizadoEn' | 'actualizadoPor'>;

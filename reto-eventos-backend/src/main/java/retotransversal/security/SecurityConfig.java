@@ -3,6 +3,7 @@ package retotransversal.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +41,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/auth/register")
 						.permitAll()
 						.requestMatchers("/api/eventos/**")
+						.permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/contacto")
 						.permitAll()
 						.requestMatchers("/api/admin/**")
 						.hasRole("ADMON")

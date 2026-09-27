@@ -255,3 +255,58 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* Intro: una sala pequeña antes del escaparate, solo con la presentación del programa. */
+.home-intro {
+  display: grid;
+  box-sizing: border-box;
+  width: var(--home-section-width, 100%);
+  margin: 0 auto var(--home-section-gap, 4rem);
+  grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: clamp(1.5rem, 5vw, 5rem);
+  padding: clamp(3rem, 9vh, 6rem) 0 clamp(2.5rem, 7vh, 5rem);
+  border-top: 2px solid var(--gallery-muted);
+}
+
+.home-intro-eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0;
+  color: var(--gallery-ink);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(1.1rem, 1.35vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.home-intro-number {
+  color: var(--gallery-muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+}
+
+.home-intro-copy {
+  max-width: 50rem;
+  margin: 0;
+  color: var(--gallery-ink);
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.home-intro-copy strong {
+  color: #ff7f7f;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .home-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    padding-inline: 1.4rem;
+  }
+}

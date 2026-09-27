@@ -198,7 +198,7 @@
       margin-bottom: 5.4rem;
     }
 
-    .hero > *:not(.hero-video):not(.hero-overlay):not(.hero-intro):not(.hero-mobile-actions) {
+    .hero > *:not(.hero-video):not(.hero-overlay):not(.hero-mobile-actions) {
       position: relative;
       z-index: 1;
     }
@@ -247,25 +247,6 @@
       z-index: -1;
       background: rgba(62, 181, 211, 0.2);
       pointer-events: none;
-    }
-
-    .hero-intro {
-      position: absolute;
-      z-index: 1;
-      top: clamp(0.7rem, 1.5vh, 1.15rem);
-      right: auto;
-      left: 4.4rem;
-      width: min(38vw, 39rem);
-      margin: 0;
-      color: #faf9f7;
-      font-family: Arial, sans-serif;
-      font-size: clamp(0.76rem, 0.8vw, 0.9rem);
-      line-height: 1.65;
-      text-align: left;
-    }
-
-    .hero-intro-mobile {
-      display: none;
     }
 
     .hero-copy {

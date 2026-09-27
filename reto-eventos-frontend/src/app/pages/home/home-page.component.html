@@ -111,23 +111,25 @@
     </div>
 
     <div class="home-editorial-sections">
-      <app-sessions-program
-        [sessions]="sessions()"
-        [loading]="loadingSessions()"
-        [error]="sessionsError()"
-        (retry)="loadSessions()"
-      />
+      <app-showcase-stage [chapters]="showcaseChapters">
+        <app-sessions-program
+          [sessions]="sessions()"
+          [loading]="loadingSessions()"
+          [error]="sessionsError()"
+          (retry)="loadSessions()"
+        />
 
-      <app-locations-atlas
-        [locations]="sessionLocations()"
-        [loading]="loadingLocations()"
-      />
+        <app-locations-atlas
+          [locations]="sessionLocations()"
+          [loading]="loadingLocations()"
+        />
 
-      <app-locations-atlas
-        [locations]="sessionLocations()"
-        [loading]="loadingLocations()"
-        [collaborationMode]="true"
-      />
+        <app-locations-atlas
+          [locations]="sessionLocations()"
+          [loading]="loadingLocations()"
+          [collaborationMode]="true"
+        />
+      </app-showcase-stage>
 
       <section class="section-block final-cta-section">
         <div class="about-card">

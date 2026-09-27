@@ -279,8 +279,8 @@
         margin-bottom: var(--home-section-gap);
       }
 
-      .home-editorial-sections > app-locations-atlas,
-      .home-editorial-sections > app-sample-reception {
+      .home-editorial-sections app-locations-atlas,
+      .home-editorial-sections app-sample-reception {
         box-sizing: border-box;
         border-top: 3px solid var(--gallery-muted);
       }

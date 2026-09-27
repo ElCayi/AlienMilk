@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService, DemoAccount } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -23,7 +23,38 @@ export class LoginPageComponent {
   readonly loading = signal(false);
   readonly errorMessage = signal('');
 
+  readonly demoAccounts = signal<DemoAccount[]>([]);
+  readonly demoLoading = signal(true);
+  readonly demoError = signal(false);
+  readonly showPassword = signal(false);
+
+  constructor() {
+    this.loadDemoAccounts();
+  }
+
+  loadDemoAccounts(): void {
+    this.demoLoading.set(true);
+    this.demoError.set(false);
+    this.authService.demoAccounts().subscribe({
+      next: (accounts) => {
+        this.demoAccounts.set(accounts);
+        this.demoLoading.set(false);
+      },
+      error: () => {
+        this.demoError.set(true);
+        this.demoLoading.set(false);
+      },
+    });
+  }
+
+  selectDemo(account: DemoAccount): void {
+    this.username = account.username;
+    this.password = account.password;
+    this.errorMessage.set('');
+  }
+
   submit(): void {
+    if (this.loading() || !this.username.trim() || !this.password) return;
     this.loading.set(true);
     this.errorMessage.set('');
 

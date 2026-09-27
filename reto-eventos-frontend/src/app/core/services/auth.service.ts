@@ -5,6 +5,12 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthUser, RegisterPayload, Usuario } from '../../models/api.models';
 
+export interface DemoAccount {
+  username: string;
+  password: string;
+  perfil: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -38,6 +44,10 @@ export class AuthService {
         error: () => this.logout(),
       }),
     );
+  }
+
+  demoAccounts(): Observable<DemoAccount[]> {
+    return this.http.get<DemoAccount[]>(`${this.apiUrl}/auth/demo-accounts`);
   }
 
   register(payload: RegisterPayload): Observable<Usuario> {

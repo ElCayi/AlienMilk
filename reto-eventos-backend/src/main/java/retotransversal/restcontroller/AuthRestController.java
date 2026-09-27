@@ -1,6 +1,7 @@
 package retotransversal.restcontroller;
 
 import java.util.List;
+import retotransversal.modelo.service.DemoAccountService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,13 @@ public class AuthRestController {
 
 	private final UsuarioService usuarioService;
 	private final PerfilService perfilService;
+	private final DemoAccountService demoAccountService;
+
+	@GetMapping("/demo-accounts")
+	public ResponseEntity<List<DemoAccountService.DemoAccount>> demoAccounts() {
+		return ResponseEntity.ok().cacheControl(org.springframework.http.CacheControl.noStore())
+				.body(demoAccountService.availableAccounts());
+	}
 
 	@PostMapping("/register")
 	public ResponseEntity<UsuarioSalidaDto> register(@RequestBody RegistroUsuarioDto dto) {

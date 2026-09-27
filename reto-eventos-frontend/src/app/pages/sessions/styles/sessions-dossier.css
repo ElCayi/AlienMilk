@@ -13,16 +13,20 @@
   pointer-events: none;
 }
 
-.dossier-hero {
+.dossier-media {
   position: relative;
-  container: dossier-hero / inline-size;
-  /* Absorbe el hueco que antes lo separaba del carrusel. */
-  height: calc(clamp(20rem, 64vh, 46rem) + clamp(2rem, 4vw, 3.5rem));
-  margin: 0;
   overflow: hidden;
   border-radius: 0 0 var(--corner) 0;
   background: var(--slate-deep);
   animation: unfold 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.dossier-hero {
+  position: relative;
+  /* Absorbe el hueco que antes lo separaba del carrusel. */
+  height: calc(clamp(20rem, 64vh, 46rem) + clamp(2rem, 4vw, 3.5rem));
+  margin: 0;
+  background: var(--slate-deep);
   transition: height 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -42,10 +46,8 @@
   object-fit: contain;
 }
 
-.dossier-hero-toggle,
-figcaption {
+.dossier-hero-toggle {
   position: absolute;
-  padding: 0.45rem 0.7rem;
   border-radius: 999px;
   color: #faf9f7;
   background: rgba(31, 36, 48, 0.72);
@@ -72,62 +74,49 @@ figcaption {
   background: var(--coral);
 }
 
-/* Banda baja a todo el ancho, oscura como la barra superior. Termina siguiendo la esquina
-   redondeada de la imagen. */
-figcaption {
+/* La banda es un encabezado propio: ni la figura ni la ficha dictan su composición. */
+.dossier-heading {
+  position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.2rem 1.4rem;
-  padding: 0.45rem calc(var(--corner) + 1rem) 0.6rem clamp(1.5rem, 2.4vw, 2.25rem);
-  border-radius: 0;
+  gap: 2rem;
+  padding: 0.6rem calc(var(--corner) + 1rem) 0.65rem clamp(1.5rem, 2.4vw, 2.25rem);
+  color: var(--light);
   background: #0d161f;
-  backdrop-filter: none;
-  letter-spacing: normal;
-  text-transform: none;
 }
 
-figcaption strong {
-  font: 400 clamp(1.9rem, 3.2vw, 3rem) / 1 var(--condensed);
+.dossier-heading h2 {
+  flex: 0 1 auto;
+  max-width: 58%;
+  min-width: 0;
+  margin: 0;
+  font: 400 clamp(1.8rem, 3.3vw, 3.2rem) / 1.06 var(--condensed);
   letter-spacing: 0.015em;
 }
 
-figcaption .dossier-hero-meta {
+.dossier-heading-meta {
   display: grid;
-  justify-items: start;
-  gap: 0.24rem;
-  margin-left: auto;
-  transform: translateY(0.2rem);
+  align-content: center;
+  gap: 0.3rem;
+  flex: 1 1 24rem;
+  min-width: 0;
 }
 
-figcaption .dossier-hero-code {
+.dossier-hero-code {
   color: var(--coral);
-  font: 700 0.72rem var(--condensed);
+  font: 700 0.8rem var(--condensed);
   letter-spacing: 0.14em;
-  line-height: 1;
+  white-space: nowrap;
 }
 
-figcaption .dossier-hero-details {
-  color: rgba(250, 249, 247, 0.78);
-  font: 800 0.66rem 'Nunito', sans-serif;
-  letter-spacing: 0.16em;
+.dossier-hero-details {
+  color: rgba(250, 249, 247, 0.64);
+  font: 800 clamp(0.78rem, 0.9vw, 0.9rem) / 1.35 'Nunito', sans-serif;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-@container dossier-hero (max-width: 70rem) {
-  figcaption {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.4rem;
-  }
-
-  figcaption .dossier-hero-meta {
-    margin-left: 0;
-    transform: none;
-  }
 }
 
 @keyframes unfold {
@@ -149,12 +138,13 @@ figcaption .dossier-hero-details {
 }
 
 .dossier-body {
+  --dossier-column-gap: 1.25rem;
   display: grid;
   grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.6fr);
-  gap: clamp(2rem, 5vw, 5.5rem);
-  /* Ficha y texto siempre a la misma altura: la ficha baja hasta donde acaba el texto. */
+  gap: clamp(2rem, 5vw, 5.5rem) var(--dossier-column-gap);
+  /* El texto puede ocupar toda la fila; la ficha conserva su propio aire interior. */
   align-items: stretch;
-  background: var(--page-canvas);
+  background: transparent;
   /* -1px: tapa la costura de subpíxel entre la placa de la imagen y la ficha. */
   margin-top: -1px;
   animation: rise 600ms 150ms ease both;
@@ -167,13 +157,28 @@ figcaption .dossier-hero-details {
   }
 }
 
-/* Columna izquierda: ficha oscura, como las etiquetas y escaparates de la landing. */
+/* La textura atraviesa la ficha; el lienzo claro pertenece solo al expediente. */
+.dossier-main {
+  padding-left: clamp(1.5rem, 2.4vw, 2.25rem);
+  background: var(--page-canvas);
+}
+
 .dossier-aside {
+  --dossier-tile: rgba(13, 22, 31, 0.86);
+  align-self: start;
+  margin: 0.65rem 0.65rem 0 0;
   padding: clamp(1.5rem, 2.4vw, 2.25rem);
-  border-radius: 0 0 0.45rem 0.45rem;
+  border: 2px solid var(--light);
+  border-radius: 0 0 0 var(--corner);
   color: var(--light);
-  background: var(--slate);
-  box-shadow: 0 18px 40px rgba(33, 30, 36, 0.14);
+  background: transparent;
+}
+
+@media (min-width: 1001px) {
+  .dossier-aside {
+    /* El hueco sobre el marco iguala el que lo separa del expediente. */
+    margin-top: calc(var(--dossier-column-gap) + 0.65rem + 1px);
+  }
 }
 
 .dossier-kicker {
@@ -181,40 +186,33 @@ figcaption .dossier-hero-details {
   justify-content: space-between;
   gap: 1rem;
   margin: 0;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--light-muted);
   color: var(--coral);
 }
 
-.dossier-aside h2 {
-  margin: 1rem 0 0;
-  font-family: var(--condensed);
-  font-size: clamp(2.3rem, 3.4vw, 3.6rem);
-  font-weight: 400;
-  line-height: 0.98;
-}
-
-.dossier-date {
-  margin: 1rem 0 0;
-  font: 700 0.95rem 'Nunito', sans-serif;
-}
-
-.dossier-place {
-  margin: 0.3rem 0 0;
-  color: var(--light-muted);
-  font-size: 0.88rem;
+.dossier-kicker span {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--light-line);
+  border-radius: 0.35rem;
+  background: var(--dossier-tile);
 }
 
 .dossier-facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem 1.25rem;
+  gap: 0.65rem;
   margin: 1.5rem 0 0;
 }
 
 .dossier-facts div {
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--light-line);
+  display: grid;
+  align-content: center;
+  gap: 0.35rem;
+  min-width: 0;
+  min-height: 5.5rem;
+  padding: 0.8rem 0.85rem;
+  border: 1px solid var(--light-line);
+  border-radius: 0.35rem;
+  background: var(--dossier-tile);
 }
 
 .tasting dt,
@@ -224,13 +222,20 @@ figcaption .dossier-hero-details {
 }
 
 .dossier-facts dt {
-  color: var(--light-muted);
+  color: rgba(247, 248, 249, 0.82);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
 }
 
 .dossier-facts dd,
 .tasting dd {
   margin: 0.2rem 0 0;
   font: 400 1.15rem / 1.15 var(--condensed);
+}
+
+.dossier-facts dd {
+  margin-top: 0;
+  font-size: 1.25rem;
 }
 
 .dossier-share {
@@ -244,11 +249,11 @@ figcaption .dossier-hero-details {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid currentColor;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--light-line);
+  border-radius: 0.35rem;
   color: var(--light);
-  background: none;
+  background: var(--dossier-tile);
   font: 700 0.95rem var(--condensed);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -271,8 +276,9 @@ figcaption .dossier-hero-details {
   margin-top: 1.6rem;
   padding: 1.4rem;
   border-radius: 0.45rem;
-  color: #faf9f7;
-  background: rgba(31, 36, 48, 0.32);
+  border: 1px solid var(--light-line);
+  color: var(--light);
+  background: var(--dossier-tile);
 }
 
 .booking-price {
@@ -284,11 +290,11 @@ figcaption .dossier-hero-details {
 
 .booking-price span,
 .booking-fields span {
-  color: rgba(250, 249, 247, 0.6);
+  color: rgba(247, 248, 249, 0.82);
 }
 
 .booking-price strong {
-  font: 400 1.9rem var(--condensed);
+  font: 400 2rem var(--condensed);
 }
 
 .booking-fields {
@@ -314,7 +320,7 @@ figcaption .dossier-hero-details {
 
 .booking-note {
   margin: 0;
-  color: rgba(250, 249, 247, 0.72);
+  color: rgba(247, 248, 249, 0.86);
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -349,7 +355,7 @@ figcaption .dossier-hero-details {
 
 .booking-link {
   justify-self: center;
-  color: rgba(250, 249, 247, 0.78);
+  color: var(--light);
   font-size: 0.8rem;
 }
 

@@ -131,24 +131,30 @@
         aria-labelledby="dossier-title"
       >
         <ng-container *ngIf="current.detail as data">
-          <figure class="dossier-hero" [class.is-expanded]="imageExpanded()">
-            <img [src]="sessionImage(data)" [alt]="'Registro visual de la sesión ' + data.nombre" />
-            <button
-              type="button"
-              class="dossier-hero-toggle"
-              [attr.aria-expanded]="imageExpanded()"
-              (click)="toggleImage()"
-            >
-              {{ imageExpanded() ? 'Reducir registro' : 'Ampliar registro' }}
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path *ngIf="!imageExpanded()" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
-                <path *ngIf="imageExpanded()" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
-              </svg>
-            </button>
-            <!-- El título viaja con la imagen: con el visor ampliado no hace falta bajar a buscarlo. -->
-            <figcaption>
-              <strong>{{ data.nombre }}</strong>
-              <span class="dossier-hero-meta">
+          <div class="dossier-media">
+            <figure class="dossier-hero" [class.is-expanded]="imageExpanded()">
+              <img
+                [src]="sessionImage(data)"
+                [alt]="'Registro visual de la sesión ' + data.nombre"
+              />
+              <button
+                type="button"
+                class="dossier-hero-toggle"
+                [attr.aria-expanded]="imageExpanded()"
+                (click)="toggleImage()"
+              >
+                {{ imageExpanded() ? 'Reducir registro' : 'Ampliar registro' }}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path *ngIf="!imageExpanded()" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+                  <path *ngIf="imageExpanded()" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />
+                </svg>
+              </button>
+            </figure>
+
+            <!-- Encabezado independiente de la imagen y de la ficha del expediente. -->
+            <header class="dossier-heading">
+              <h2 id="dossier-title">{{ data.nombre }}</h2>
+              <div class="dossier-heading-meta">
                 <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
                 <span class="dossier-hero-details">
                   {{ data.direccion }} · {{ longDate(data.fechaInicio)
@@ -156,9 +162,9 @@
                     · {{ current.dossier.horario }}</ng-container
                   >
                 </span>
-              </span>
-            </figcaption>
-          </figure>
+              </div>
+            </header>
+          </div>
 
           <div class="dossier-body">
             <aside class="dossier-aside">
@@ -166,15 +172,6 @@
                 <span>{{ typeLabel(data.tipoEvento) }}</span>
                 <span>{{ archiveCode(data) }}</span>
               </p>
-              <h2 id="dossier-title">{{ data.nombre }}</h2>
-              <p class="dossier-date">{{ longDate(data.fechaInicio) }}</p>
-              <p class="dossier-place">
-                {{ data.direccion
-                }}<ng-container *ngIf="current.dossier.horario">
-                  · {{ current.dossier.horario }}</ng-container
-                >
-              </p>
-
               <dl class="dossier-facts">
                 <div>
                   <dt>Duración</dt>

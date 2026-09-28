@@ -4,7 +4,10 @@
       --home-eyebrow-gap: clamp(1.75rem, 2.5vw, 2.5rem);
       --home-editorial-copy-size: clamp(1.05rem, 1vw, 1.1rem);
       --home-editorial-copy-leading: 1.6;
-      --gallery-canvas: var(--page-canvas);
+      /* La lámina de textura líquida va por debajo del contenido: los bloques de lienzo de las
+         secciones se vuelven transparentes para que el fondo sea continuo. */
+      --gallery-canvas: #fbf6f5;
+      --page-canvas: transparent;
       --gallery-surface: #ffffff;
       --gallery-ink: #211e24;
       --gallery-muted: #68727d;
@@ -16,7 +19,13 @@
       --gallery-showcase: #dbe5eb;
       --gallery-showcase-texture: url('/alienmilk-showcase-texture.webp');
       --gallery-showcase-veil: rgba(219, 229, 235, 0.8);
-      --home-showcase-height: 46rem;
+      /* El escaparate cabe entero bajo la barra superior, con su enlace de debajo a la vista: en
+         portátiles bajos se encoge con la pantalla y en las grandes se queda en su tamaño de diseño. */
+      --home-showcase-height: clamp(
+        30rem,
+        calc(100svh - var(--topbar-height, 4rem) - 6rem),
+        46rem
+      );
       position: relative;
       isolation: isolate;
       display: block;
@@ -99,9 +108,9 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      gap: 1.15rem;
+      gap: 1.4rem;
       padding: 0 3.98rem;
-      transform: translateY(-0.40rem);
+      transform: translateY(-1.3rem);
     }
 
     .hero-mobile-actions {
@@ -137,6 +146,8 @@
 
     .hero-divider .hero-icon-actions button {
       color: var(--gallery-ink);
+      width: 2.5rem;
+      height: 2.5rem;
     }
 
     .hero-icon-actions svg {
@@ -148,6 +159,15 @@
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    .hero-divider .hero-icon-actions svg {
+      width: 2.05rem;
+      height: 2.05rem;
+    }
+
+    .hero-divider .hero-action-feedback {
+      right: 11.2rem;
     }
 
 .hero-icon-actions button:hover,
@@ -181,17 +201,25 @@
       margin-right: calc(50% - 50vw);
       padding: 4.25rem clamp(2rem, 6vw, 5rem);
       background: transparent;
-      box-shadow:
-        0 2.5rem 4.5rem rgba(205, 235, 241, 0.16),
-        0 5.5rem 9rem rgba(186, 226, 235, 0.12);
+      /* Sin sombra: dibujaba una franja recta bajo el hero que delataba el borde del fundido. */
       position: relative;
-      overflow: hidden;
+      /* El vídeo se derrama por debajo del hero para que el fundido quede bajo los botones. Solo se
+         recorta en horizontal: arriba lo tapa la barra y abajo se funde con el lienzo. */
+      overflow-x: clip;
       margin-bottom: 5.4rem;
     }
 
-    .hero > *:not(.hero-video):not(.hero-overlay):not(.hero-intro):not(.hero-mobile-actions) {
+    .hero > *:not(.hero-video):not(.hero-overlay):not(.hero-mobile-actions) {
       position: relative;
       z-index: 1;
+    }
+
+    /* Fundido viscoso: el vídeo no termina en un corte, se escurre hacia el lienzo. La máscara es un
+       degradado deformado por ruido fractal, así que el borde se deshace de forma irregular. */
+    .hero {
+      --hero-melt: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0.5' stop-color='%23fff'/><stop offset='0.74' stop-color='%23fff' stop-opacity='0'/></linearGradient><filter id='f' x='-10%25' y='-20%25' width='120%25' height='140%25'><feTurbulence type='fractalNoise' baseFrequency='0.0035 0.011' numOctaves='3' seed='7'/><feDisplacementMap in='SourceGraphic' scale='200' xChannelSelector='R' yChannelSelector='G'/></filter></defs><rect x='-100' y='-200' width='1800' height='1100' fill='url(%23g)' filter='url(%23f)'/></svg>");
+      /* El vídeo va volteado (scaleY(-1)) y ampliado: su máscara lleva el degradado invertido. */
+      --hero-melt-flipped: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='1' x2='0' y2='0'><stop offset='0.5' stop-color='%23fff'/><stop offset='0.68' stop-color='%23fff' stop-opacity='0'/></linearGradient><filter id='f' x='-10%25' y='-20%25' width='120%25' height='140%25'><feTurbulence type='fractalNoise' baseFrequency='0.0035 0.011' numOctaves='3' seed='7'/><feDisplacementMap in='SourceGraphic' scale='200' xChannelSelector='R' yChannelSelector='G'/></filter></defs><rect x='-100' y='-200' width='1800' height='1100' fill='url(%23g)' filter='url(%23f)'/></svg>");
     }
 
     .hero-video {
@@ -207,31 +235,29 @@
       transform: scaleY(-1) scale(1.14);
     }
 
+    .hero-video,
+    .hero-overlay {
+      bottom: auto;
+      /* Altura explícita: con height:auto un <video> toma su tamaño natural, no el del hero. */
+      height: calc(100% + var(--hero-spill, 7rem));
+    }
+
+    .hero-overlay {
+      -webkit-mask: var(--hero-melt) center / 100% 100% no-repeat;
+      mask: var(--hero-melt) center / 100% 100% no-repeat;
+    }
+
+    .hero-video {
+      -webkit-mask: var(--hero-melt-flipped) center / 100% 100% no-repeat;
+      mask: var(--hero-melt-flipped) center / 100% 100% no-repeat;
+    }
+
     .hero-overlay {
       position: absolute;
       inset: 0;
       z-index: -1;
       background: rgba(62, 181, 211, 0.2);
       pointer-events: none;
-    }
-
-    .hero-intro {
-      position: absolute;
-      z-index: 1;
-      top: clamp(0.7rem, 1.5vh, 1.15rem);
-      right: auto;
-      left: 4.4rem;
-      width: min(38vw, 39rem);
-      margin: 0;
-      color: #faf9f7;
-      font-family: Arial, sans-serif;
-      font-size: clamp(0.76rem, 0.8vw, 0.9rem);
-      line-height: 1.65;
-      text-align: left;
-    }
-
-    .hero-intro-mobile {
-      display: none;
     }
 
     .hero-copy {
@@ -366,4 +392,10 @@
     .helper {
       color: #91878e;
       font-weight: 500;
+    }
+
+    /* El canvas líquido calcula su propio fundido: la máscara CSS queda para el vídeo de respaldo. */
+    .hero-liquid {
+      -webkit-mask: none;
+      mask: none;
     }

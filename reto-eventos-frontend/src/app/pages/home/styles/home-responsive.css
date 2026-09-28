@@ -226,16 +226,6 @@
     }
 
     @media (min-width: 901px) {
-      .hero-intro-desktop {
-        top: clamp(2rem, 3vh, 3rem);
-        right: 4.4rem;
-        left: auto;
-        width: min(35vw, 36rem);
-        color: #1f2430;
-        font-size: clamp(0.72rem, 0.75vw, 0.86rem);
-        text-align: right;
-      }
-
       .hero {
         min-height: calc(100vh - (2 * var(--topbar-height)));
         min-height: calc(100dvh - (2 * var(--topbar-height)));
@@ -415,25 +405,6 @@
         top: calc(100% + 0.5rem);
         right: 0;
         transform: none;
-      }
-
-      .hero-intro-desktop {
-        display: none;
-      }
-
-      .hero-intro-mobile {
-        display: block;
-        position: static;
-        width: var(--mobile-brand-width);
-        max-width: 100%;
-        margin: -0.95rem auto 0;
-        color: #151217;
-        font-size: 1.15rem;
-        line-height: 1.55;
-        text-align: justify;
-        hyphens: auto;
-        -webkit-hyphens: auto;
-        transform: translateY(-3.75rem);
       }
 
       .hero {

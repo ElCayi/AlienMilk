@@ -84,11 +84,6 @@
     display: none;
   }
 
-  .locations-chart {
-    scale: 1;
-    transform: none;
-  }
-
   .locations-chart-viewport {
     width: 100%;
     height: auto;

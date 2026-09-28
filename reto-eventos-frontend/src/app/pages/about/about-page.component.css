@@ -1,284 +1,329 @@
+/* Tokens de la programación de sesiones: misma tinta, mismo coral, mismas esquinas. */
 :host {
+  --ink: #211e24;
+  --muted: #68727d;
+  --line: rgba(55, 66, 78, 0.17);
+  --coral: #ff7f7f;
+  --light: #f7f8f9;
+  --light-muted: rgba(247, 248, 249, 0.68);
+  --light-line: rgba(247, 248, 249, 0.2);
+  --light-rule: rgba(247, 248, 249, 0.42);
+  --night: #0d151e;
+  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --corner: clamp(2rem, 4vw, 3.5rem);
+  --inset: clamp(1.5rem, 4vw, 4rem);
   display: block;
-  color: #f4f0ed;
-  background: #11141a;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
 }
 
-.us-page {
-  overflow: hidden;
+/* La misma textura a sangre que Sesiones; los bloques ocupan solo el ancho del contenido. */
+.us {
+  position: relative;
+  isolation: isolate;
 }
 
-.us-inner {
-  width: min(1320px, calc(100% - clamp(2rem, 8vw, 8rem)));
-  margin-inline: auto;
+.us::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background:
+    linear-gradient(rgba(63, 73, 87, 0.9), rgba(63, 73, 87, 0.9)),
+    url('/alienmilk-showcase-texture.webp') center / cover fixed;
 }
 
-.us-hero {
-  background: radial-gradient(circle at 76% 40%, rgba(62, 87, 104, 0.3), transparent 35%), #11141a;
-}
-
-.us-hero-inner {
-  display: flex;
-  flex-direction: column;
-  min-height: max(44rem, calc(100svh - var(--topbar-height)));
-}
-
-.us-topline,
-.us-hero-bottom,
-.us-section-label,
+/* Rótulos: la versalita en Nunito de todo el sitio. */
+.breadcrumb,
+.eyebrow,
+.us-label,
 .us-kicker,
-.us-hero-visual figcaption,
-.us-practice-visual p,
-.us-unit-top {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.13em;
+.us-hero-bottom,
+.us-functions dt,
+.us-unit-top,
+figcaption {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.us-topline {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 1.5rem;
-  border-bottom: 1px solid rgba(244, 240, 237, 0.2);
-  color: #bbb8ba;
+/* Títulos: condensada gruesa y aplastada, como «Programación de experiencias». */
+h1,
+h2 {
+  margin: 0;
+  font-family: var(--condensed);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 0.85;
+  transform: scaleY(0.78);
+  transform-origin: left center;
 }
 
+/* Cabecera */
+.us-hero {
+  color: var(--light);
+}
+
+.breadcrumb {
+  position: relative;
+  display: flex;
+  gap: 0.6rem;
+  /* Mismo escalón que Sesiones hasta la regla de la cabecera. */
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  padding: 1.3rem 0;
+  color: var(--light-muted);
+}
+
+.breadcrumb::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: rgba(17, 21, 29, 0.42);
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb [aria-current='page'] {
+  color: var(--coral);
+}
+
+/* La regla de la cabecera recorre todo el ancho del contenido, no solo la columna del texto. */
 .us-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  align-items: center;
-  flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
   gap: 2rem;
+  min-height: clamp(30rem, 70svh, 44rem);
+  padding-top: 0.4rem;
+  border-top: 2px solid var(--light-rule);
 }
 
-.us-hero-copy {
-  position: relative;
-  z-index: 1;
-  padding-block: 5rem 6rem;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 clamp(1.75rem, 2.5vw, 2.5rem);
+  color: var(--light-muted);
 }
 
-.us-kicker {
-  margin: 0;
-  color: #ff9f9b;
+.eyebrow-icon {
+  width: 1.2em;
+  height: 1.2em;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
-.us-hero h1,
-.us-practice h2,
-.us-invitation h2 {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-weight: 300;
-  letter-spacing: -0.025em;
+h1 {
+  max-width: 11ch;
+  font-size: clamp(4rem, 8vw, 8.5rem);
 }
 
-.us-hero h1 {
-  margin: 1.6rem 0 2rem;
-  font-size: clamp(5.2rem, 10.5vw, 10.5rem);
-  line-height: 0.8;
-}
-
-.us-hero h1 em {
-  color: #ff9f9b;
+h1 em,
+h2 em {
+  color: var(--coral);
   font-style: normal;
 }
 
 .us-hero-lead {
-  max-width: 35rem;
-  margin: 0;
-  color: #d5d0d0;
-  font-size: clamp(1rem, 1.35vw, 1.18rem);
-  line-height: 1.72;
+  max-width: 34rem;
+  margin: 0.5rem 0 0;
+  color: var(--light-muted);
+  font:
+    clamp(1.05rem, 1vw, 1.1rem) / 1.6 Arial,
+    sans-serif;
 }
 
-.us-text-link,
-.us-invitation-link {
+.us-text-link {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
   gap: 3rem;
-  min-width: 15rem;
-  margin-top: 2.5rem;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid #ff9f9b;
-  color: #f4f0ed;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  margin-top: 2.25rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 2px solid var(--coral);
+  color: var(--light);
+  font: 700 1rem var(--condensed);
+  letter-spacing: 0.1em;
   text-decoration: none;
+  text-transform: uppercase;
 }
 
-.us-text-link span,
-.us-invitation-link span,
-.us-unit a span {
-  font-family: 'Nunito', sans-serif;
-  font-size: 1.25rem;
+.us-text-link:hover {
+  color: var(--coral);
 }
 
-.us-text-link:hover,
-.us-text-link:focus-visible,
-.us-invitation-link:hover,
-.us-invitation-link:focus-visible {
-  color: #ff9f9b;
-}
-
+/* Cultivo: pompas unidas y esporas sueltas (ver app-specimen-culture). La columna solo le da
+   sitio: la portada no crece por él. */
 .us-hero-visual {
   position: relative;
   align-self: stretch;
-  min-height: 37rem;
   margin: 0;
-  border-left: 1px solid rgba(244, 240, 237, 0.13);
-  background: radial-gradient(ellipse at 60% 48%, rgba(104, 137, 153, 0.2), transparent 65%);
 }
 
-.us-hero-visual::before {
+/* Desborda su columna: se acerca al texto, sube sobre la regla y las migas hasta la barra del
+   sitio, baja un poco sobre la regla de abajo y llega al borde de la pantalla. La sombra va en el
+   contenedor: así sigue la silueta de las pompas, no la del lienzo. */
+.us-culture {
   position: absolute;
-  top: 14%;
-  right: -4%;
-  width: 80%;
-  aspect-ratio: 1;
-  border: 1px solid rgba(244, 240, 237, 0.13);
-  border-radius: 50%;
-  content: '';
-}
-
-.us-hero-visual img {
-  position: absolute;
-  right: -20%;
-  bottom: 1rem;
-  width: 130%;
-  max-width: none;
-  height: auto;
-  filter: drop-shadow(0 1.5rem 3rem rgba(0, 0, 0, 0.32));
-}
-
-.us-hero-visual figcaption {
-  position: absolute;
-  right: 0;
-  bottom: 1.75rem;
-  z-index: 1;
-  color: #c9c5c7;
-  text-align: right;
+  inset: -6rem -12vw -2.5rem -6rem;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 30px rgba(13, 21, 30, 0.4));
 }
 
 .us-hero-bottom {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding-block: 1.3rem;
-  border-top: 1px solid rgba(244, 240, 237, 0.2);
-  color: #8d9296;
+  padding: 1.1rem 0 clamp(1.75rem, 3.5vw, 3rem);
+  border-top: 2px solid var(--light-rule);
+  color: var(--light-muted);
 }
 
+/* Bloques del cuerpo */
 .us-definition,
 .us-ecosystem {
-  color: #252127;
-  background: #eeeae5;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--inset);
+  background: var(--page-canvas);
 }
 
+/* Primera esquina grande hacia la textura, como el carrusel de Sesiones. */
 .us-definition {
-  padding-block: clamp(5rem, 10vw, 9rem);
+  border-radius: var(--corner) 1rem 0 0;
 }
 
-.us-section-label {
+.us-label {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 1.2rem;
-  border-bottom: 1px solid rgba(37, 33, 39, 0.28);
-  color: #846a6b;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
 }
 
-.us-definition-grid {
+.us-label span:first-child,
+.us-kicker {
+  color: var(--coral);
+}
+
+.us-definition-grid,
+.us-ecosystem-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.75fr);
-  gap: clamp(2rem, 9vw, 9rem);
-  padding-top: clamp(3rem, 6vw, 6rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  align-items: end;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-top: clamp(2.5rem, 5vw, 4rem);
 }
 
 .us-definition h2,
 .us-ecosystem h2 {
-  margin: 0;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(3.7rem, 7vw, 7rem);
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 0.94;
+  font-size: clamp(3rem, 5.4vw, 5.6rem);
 }
 
-.us-definition-copy {
-  align-self: end;
+.us-definition-copy p,
+.us-ecosystem-heading p {
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font:
+    clamp(1.05rem, 1vw, 1.1rem) / 1.6 Arial,
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
 }
 
-.us-definition-copy p {
-  margin: 0 0 1.25rem;
-  font-size: clamp(1rem, 1.25vw, 1.16rem);
-  line-height: 1.78;
-}
-
-.us-definition-copy p:last-child {
-  margin-bottom: 0;
-  color: #675e63;
+.us-definition-copy p:first-child {
+  margin-top: 0;
+  color: var(--ink);
+  font:
+    600 clamp(1.15rem, 1.5vw, 1.35rem) / 1.35 'Nunito',
+    sans-serif;
+  text-align: left;
 }
 
 .us-functions {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: clamp(4rem, 7vw, 7rem);
-  border-top: 1px solid rgba(37, 33, 39, 0.25);
+  gap: 1.5rem;
+  margin: clamp(3rem, 5vw, 4.5rem) 0 0;
 }
 
-.us-functions span {
-  padding: 1.1rem 1rem 0 0;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(1.25rem, 2vw, 1.7rem);
-  font-weight: 500;
+.us-functions div {
+  padding-top: 0.6rem;
+  border-top: 2px solid var(--ink);
 }
 
+.us-functions dt {
+  color: var(--coral);
+}
+
+.us-functions dd {
+  margin: 0.3rem 0 0;
+  font: 400 clamp(1.5rem, 2.2vw, 2rem) / 1 var(--condensed);
+}
+
+/* Trabajo: banda oscura con la imagen recortada en la esquina, como la portada del expediente. */
 .us-practice {
-  padding-block: clamp(5rem, 9vw, 9rem);
-  background: #1b1d24;
-}
-
-.us-practice-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-  align-items: start;
-  gap: clamp(3rem, 8vw, 8rem);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  padding: 0 var(--inset) clamp(2.5rem, 5vw, 4.5rem) 0;
+  color: var(--light);
+  background: var(--night);
 }
 
 .us-practice-visual {
-  margin-top: 0.4rem;
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0 0 var(--corner) 0;
 }
 
 .us-practice-visual img {
-  display: block;
   width: 100%;
-  aspect-ratio: 0.86;
+  height: 100%;
+  min-height: 28rem;
+  display: block;
   object-fit: cover;
-  object-position: center;
 }
 
-.us-practice-visual p {
+.us-practice-visual figcaption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0.6rem calc(var(--corner) + 1rem) 0.7rem 1.5rem;
+  color: rgba(250, 249, 247, 0.78);
+  background: var(--night);
+}
+
+.us-practice-copy {
+  padding-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.us-kicker {
   margin: 0;
-  padding-top: 1rem;
-  color: #9b999c;
 }
 
 .us-practice h2 {
-  margin: 1.4rem 0 1.6rem;
-  font-size: clamp(4.5rem, 7.5vw, 8rem);
-  line-height: 0.88;
+  margin-top: 1.2rem;
+  font-size: clamp(3rem, 5.4vw, 5.6rem);
 }
 
 .us-practice-intro {
-  max-width: 35rem;
-  margin: 0 0 2.8rem;
-  color: #c8c3c5;
-  font-size: 1.06rem;
-  line-height: 1.72;
+  max-width: 34rem;
+  margin: 0.5rem 0 2rem;
+  color: var(--light-muted);
+  line-height: 1.6;
 }
 
 .us-steps {
@@ -289,81 +334,76 @@
 
 .us-steps li {
   display: grid;
-  grid-template-columns: 2.5rem 1fr;
-  gap: 1.25rem;
-  padding-block: 1.4rem;
-  border-top: 1px solid rgba(244, 240, 237, 0.2);
+  grid-template-columns: 3rem 1fr;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--light-line);
 }
 
 .us-steps li > span {
-  color: #ff9f9b;
-  font:
-    600 0.9rem 'Barlow Condensed',
-    'Arial Narrow',
-    sans-serif;
-  letter-spacing: 0.1em;
+  color: var(--coral);
+  font: 700 1.05rem var(--condensed);
+  letter-spacing: 0.06em;
 }
 
 .us-steps h3 {
-  margin: -0.25rem 0 0.5rem;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: 1.65rem;
-  font-weight: 500;
+  margin: 0 0 0.35rem;
+  font:
+    700 0.98rem 'Nunito',
+    sans-serif;
 }
 
 .us-steps p {
-  max-width: 35rem;
   margin: 0;
-  color: #b7b3b6;
-  line-height: 1.65;
+  color: var(--light-muted);
+  font:
+    0.92rem / 1.55 Arial,
+    sans-serif;
 }
 
-.us-ecosystem {
-  padding-block: clamp(5rem, 9vw, 9rem);
-}
-
+/* Ecosistema */
 .us-ecosystem-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.65fr);
-  align-items: end;
-  gap: 3rem;
-  padding-block: clamp(3rem, 6vw, 6rem);
-}
-
-.us-ecosystem-heading p {
-  max-width: 27rem;
-  margin: 0;
-  color: #625b60;
-  font-size: 1.05rem;
-  line-height: 1.75;
+  padding-bottom: clamp(2rem, 4vw, 3rem);
 }
 
 .us-unit-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .us-unit {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 31rem;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  color: #fff;
+  min-height: 26rem;
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+  border-radius: 0.45rem;
+  color: var(--light);
   background-position: center;
   background-size: cover;
+  box-shadow: 0 18px 40px rgba(33, 30, 36, 0.14);
 }
 
 .us-unit--sessions {
   background-image:
-    linear-gradient(180deg, rgba(13, 22, 32, 0.38), rgba(10, 17, 27, 0.88)),
+    linear-gradient(
+      180deg,
+      rgba(13, 21, 30, 0.75),
+      rgba(13, 21, 30, 0.2) 40%,
+      rgba(13, 21, 30, 0.9)
+    ),
     url('/alienmilk-showcase-texture.webp');
 }
 
 .us-unit--collaborators {
   background-image:
-    linear-gradient(180deg, rgba(22, 25, 34, 0.42), rgba(16, 24, 31, 0.9)),
+    linear-gradient(
+      180deg,
+      rgba(13, 21, 30, 0.75),
+      rgba(13, 21, 30, 0.2) 40%,
+      rgba(13, 21, 30, 0.9)
+    ),
     url('/alienmilk-collaborators-texture.webp');
 }
 
@@ -371,132 +411,151 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--light-muted);
+  color: var(--coral);
 }
 
 .us-unit h3 {
-  margin: 0 0 1rem;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(3.6rem, 5vw, 5.8rem);
-  font-weight: 400;
-  line-height: 0.95;
+  margin: 0 0 0.8rem;
+  font: 400 clamp(2.8rem, 4vw, 4.2rem) / 0.95 var(--condensed);
 }
 
 .us-unit p {
   max-width: 26rem;
   margin: 0;
-  font-size: 1.03rem;
-  line-height: 1.65;
+  color: rgba(247, 248, 249, 0.82);
+  font:
+    0.95rem / 1.55 Arial,
+    sans-serif;
 }
 
 .us-unit a {
   display: inline-flex;
-  align-items: center;
-  gap: 2rem;
-  margin-top: 1.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
-  color: #fff;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 600;
+  gap: 1.5rem;
+  margin-top: 1.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid currentColor;
+  color: var(--light);
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
   text-decoration: none;
+  text-transform: uppercase;
 }
 
-.us-unit a:hover,
-.us-unit a:focus-visible {
-  color: #ffd2cd;
-  border-color: #ffd2cd;
+.us-unit a:hover {
+  color: var(--coral);
 }
 
+/* El lienzo se cierra con la esquina grande opuesta a la de arriba. */
+.us-ecosystem {
+  border-radius: 0 0 var(--corner) 1rem;
+}
+
+/* Invitación: tarjeta oscura flotando sobre la textura, fuera del lienzo. */
 .us-invitation {
-  padding-block: clamp(5rem, 8vw, 8rem);
-  border-top: 1px solid rgba(255, 159, 155, 0.45);
-  background: #252027;
+  padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(3rem, 6vw, 5rem);
 }
 
-.us-invitation-grid {
+.us-invitation-card {
   display: grid;
   grid-template-columns: minmax(0, 0.3fr) minmax(0, 0.7fr);
   gap: 2rem;
+  padding: clamp(2.5rem, 5vw, 4.5rem);
+  border-radius: 1.25rem;
+  color: #f1ecef;
+  background: rgba(5, 13, 22, 0.9);
+  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
 }
 
 .us-invitation h2 {
-  margin: 0;
-  font-size: clamp(4.2rem, 8vw, 8rem);
-  line-height: 0.92;
+  font-size: clamp(3rem, 5.4vw, 5.6rem);
 }
 
-.us-invitation-grid > div > p {
+.us-invitation-card p:not(.us-kicker) {
   max-width: 30rem;
-  margin: 1.4rem 0 0;
-  color: #c8bfc5;
-  font-size: 1.08rem;
-  line-height: 1.65;
+  margin: 0.5rem 0 0;
+  color: rgba(241, 236, 239, 0.78);
+  line-height: 1.6;
 }
 
-@media (max-width: 900px) {
+.us-pill {
+  display: inline-block;
+  margin-top: 1.75rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  color: #151217;
+  background: #faf9f7;
+  font: 700 0.95rem var(--condensed);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.us-pill:hover {
+  color: #fff;
+  background: var(--coral);
+}
+
+:is(a):focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1000px) {
   .us-hero-grid,
   .us-definition-grid,
-  .us-practice-grid,
   .us-ecosystem-heading,
-  .us-invitation-grid {
+  .us-practice,
+  .us-invitation-card {
     grid-template-columns: 1fr;
   }
 
-  .us-hero-copy {
-    padding-block: 4.5rem 1rem;
+  .us-hero-grid {
+    min-height: 0;
   }
 
   .us-hero-visual {
-    min-height: clamp(23rem, 65vw, 35rem);
-    border-left: 0;
+    margin-bottom: 1.5rem;
   }
 
-  .us-hero-visual img {
-    right: -7%;
-    width: min(115%, 46rem);
+  /* En columna el cultivo vuelve al flujo, apaisado y a sangre hasta el borde derecho. */
+  .us-culture {
+    position: static;
+    width: calc(100% + clamp(1rem, 6vw, 3.75rem));
+    aspect-ratio: 5 / 4;
+  }
+
+  .us-practice {
+    padding-left: var(--inset);
+  }
+
+  .us-practice-visual {
+    margin-inline: calc(-1 * var(--inset));
   }
 
   .us-practice-visual img {
-    max-height: 34rem;
-    aspect-ratio: 1.3;
+    min-height: 0;
+    max-height: 26rem;
   }
 
-  .us-ecosystem-heading {
-    gap: 1.75rem;
+  .us-practice-copy {
+    padding-top: 0;
   }
 }
 
-@media (max-width: 620px) {
-  .us-topline span:last-child,
-  .us-section-label span:last-child,
-  .us-hero-bottom {
+@media (max-width: 600px) {
+  .us-label span:last-child,
+  .us-hero-bottom span:nth-child(2) {
     display: none;
   }
 
-  .us-hero h1 {
-    font-size: clamp(5rem, 17vw, 7rem);
-  }
-
-  .us-hero-visual {
-    min-height: 21rem;
-  }
-
-  .us-hero-visual figcaption {
-    right: 0;
-    bottom: 1rem;
-    max-width: 10rem;
-    font-size: 0.68rem;
-  }
-
-  .us-definition h2,
-  .us-ecosystem h2 {
-    font-size: clamp(3.4rem, 13vw, 5rem);
-  }
-
-  .us-functions {
+  .us-functions,
+  .us-unit-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 1.5rem;
   }
 
   .us-unit-grid {
@@ -504,11 +563,6 @@
   }
 
   .us-unit {
-    min-height: 27rem;
-  }
-
-  .us-practice h2,
-  .us-invitation h2 {
-    font-size: clamp(4rem, 15vw, 6rem);
+    min-height: 22rem;
   }
 }

@@ -16,9 +16,6 @@
       --gallery-orbit-strong: rgba(57, 70, 84, 0.74);
       --gallery-halo: rgba(92, 106, 120, 0.2);
       --gallery-shadow: rgba(33, 30, 36, 0.2);
-      /* Las piezas del escaparate son recortes de papel suspendidos: una sombra nítida y cercana
-         se lee sobre la textura líquida mejor que una difusa. */
-      --paper-shadow: drop-shadow(0.35rem 0.5rem 0.1rem rgba(33, 30, 36, 0.3));
       --gallery-showcase: #dbe5eb;
       --gallery-showcase-texture: url('/alienmilk-showcase-texture.webp');
       --gallery-showcase-veil: rgba(219, 229, 235, 0.8);
@@ -111,9 +108,9 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
-      gap: 1.15rem;
+      gap: 1.4rem;
       padding: 0 3.98rem;
-      transform: translateY(-0.40rem);
+      transform: translateY(-1.3rem);
     }
 
     .hero-mobile-actions {
@@ -149,6 +146,8 @@
 
     .hero-divider .hero-icon-actions button {
       color: var(--gallery-ink);
+      width: 2.5rem;
+      height: 2.5rem;
     }
 
     .hero-icon-actions svg {
@@ -160,6 +159,15 @@
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    .hero-divider .hero-icon-actions svg {
+      width: 2.05rem;
+      height: 2.05rem;
+    }
+
+    .hero-divider .hero-action-feedback {
+      right: 11.2rem;
     }
 
 .hero-icon-actions button:hover,

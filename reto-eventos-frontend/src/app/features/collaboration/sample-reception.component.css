@@ -176,7 +176,6 @@
   width: min(calc(100% - clamp(6rem, 10vw, 8rem)), 42rem);
   z-index: 0;
   background: #536473;
-  filter: var(--paper-shadow);
   transform: translateX(-50%);
   pointer-events: none;
 }

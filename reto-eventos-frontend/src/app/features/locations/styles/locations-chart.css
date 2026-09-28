@@ -339,8 +339,9 @@
     --orbit: min(9rem, 10vw, calc((var(--home-showcase-height, 46rem) - 4rem) / 3.7));
     /* Un mismo aire separa la órbita de su tarjeta y la tarjeta del borde del panel. */
     --station-air: calc(var(--orbit) * 0.5);
-    place-items: center;
-    padding: 0 var(--station-air);
+    --chart-air: clamp(1.5rem, 4vw, 4.5rem);
+    place-items: center end;
+    padding: 0 var(--station-air) 0 var(--chart-air);
   }
 
   .locations-chart {
@@ -381,14 +382,5 @@
 
   .location-data-details {
     margin-right: 1.25rem;
-  }
-}
-
-/* En la portada, la ficha lateral y las tarjetas de estación son recortes de papel suspendidos
-   sobre el escaparate (--paper-shadow solo existe allí). */
-@media (min-width: 901px) {
-  .locations-brief,
-  .location-data {
-    filter: var(--paper-shadow);
   }
 }

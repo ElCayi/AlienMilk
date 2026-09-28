@@ -263,7 +263,7 @@
   box-sizing: border-box;
   width: var(--home-section-width, 100%);
   margin: 0 auto;
-  padding-block: clamp(7rem, 24vh, 15rem);
+  padding-block: clamp(7rem, 24vh, 15rem) clamp(8rem, 27vh, 17rem);
 }
 
 .home-intro-note {

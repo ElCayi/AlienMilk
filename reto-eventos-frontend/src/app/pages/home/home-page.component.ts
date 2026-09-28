@@ -8,7 +8,6 @@ import { EventService } from '../../core/services/event.service';
 import { CursorCompanionComponent } from '../../features/ambient/cursor-companion.component';
 import { LiquidVideoDirective } from '../../features/ambient/liquid-video.directive';
 import { LiquidBackdropComponent } from '../../features/ambient/liquid-backdrop.component';
-import { ShowcaseStageComponent } from '../../features/ambient/showcase-stage.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
 import { SessionsProgramComponent } from '../../features/sessions/sessions-program.component';
 
@@ -21,7 +20,6 @@ import { SessionsProgramComponent } from '../../features/sessions/sessions-progr
     CursorCompanionComponent,
     LiquidBackdropComponent,
     LiquidVideoDirective,
-    ShowcaseStageComponent,
     SessionsProgramComponent,
     LocationsAtlasComponent,
   ],
@@ -32,7 +30,6 @@ import { SessionsProgramComponent } from '../../features/sessions/sessions-progr
 export class HomePageComponent implements OnInit {
   private readonly eventService = inject(EventService);
 
-  readonly showcaseChapters = ['Próximas sesiones', 'Localizaciones', 'AlienMilk Collaborators'];
   readonly sessions = signal<EventoListado[]>([]);
   readonly sessionLocations = signal<EventoDetalle[]>([]);
   readonly loadingLocations = signal(true);

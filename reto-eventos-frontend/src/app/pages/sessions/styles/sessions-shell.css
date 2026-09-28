@@ -67,8 +67,7 @@ button {
 .station dt,
 .station-code,
 .program-filter > span,
-.pager-link span,
-figcaption {
+.pager-link span {
   font-family: 'Nunito', sans-serif;
   font-size: 0.66rem;
   font-weight: 800;

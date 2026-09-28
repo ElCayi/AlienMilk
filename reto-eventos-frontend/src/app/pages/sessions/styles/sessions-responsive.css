@@ -84,6 +84,12 @@
   }
 }
 
+@media (max-width: 380px) {
+  .dossier-facts {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* El lienzo termina donde empieza la textura: el texto necesita aire propio. */
 .dossier-main {
   padding-right: var(--inset);
@@ -130,18 +136,23 @@
 }
 
 @media (max-width: 600px) {
-  figcaption {
-    padding: 0.5rem calc(var(--corner) + 0.5rem) 0.65rem 1.25rem;
+  .dossier-heading {
+    display: block;
+    padding: 0.55rem calc(var(--corner) + 0.5rem) 0.6rem 1.25rem;
   }
 
-  figcaption strong {
-    font-size: 1.65rem;
+  .dossier-heading h2 {
+    display: inline;
+    max-width: none;
+    margin-right: 0.6rem;
   }
-}
 
-/* Título, fecha, sala y horario ya van en la banda de la imagen: la ficha no los repite. */
-.dossier-aside h2,
-.dossier-date,
-.dossier-place {
-  display: none;
+  .dossier-heading-meta {
+    display: contents;
+  }
+
+  .dossier-hero-details {
+    display: block;
+    margin-top: 0.4rem;
+  }
 }

@@ -19,6 +19,10 @@ pie: sus estilos ya no pertenecen al componente raíz. Los conflictos del login
 se resolvieron con la versión más reciente de `main`, sin restaurar el diseño
 anterior ni perder sus ajustes de tipografía y distribución.
 
+La revisión visual detectó otro cruce entre ramas: el fondo líquido fijo de
+portada se pintaba encima del pie extraído. El host de `site-footer` establece
+ahora su propio contexto de apilamiento para que su contenido quede visible.
+
 ## Comprobaciones
 
 - `pnpm check`: lint, 22 pruebas y build de producción correctos.

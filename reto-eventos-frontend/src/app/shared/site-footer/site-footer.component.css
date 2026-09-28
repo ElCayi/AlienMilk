@@ -11,6 +11,9 @@
   --footer-card-gap: 1rem;
   --footer-gutter: clamp(1.75rem, 3.5vw, 3.5rem);
   display: block;
+  /* Mantiene el pie por encima de los fondos fijos de las páginas anteriores. */
+  position: relative;
+  isolation: isolate;
 }
 
 .site-footer {

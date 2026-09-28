@@ -49,7 +49,7 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
 - La portada, las ubicaciones y las sesiones reparten su CSS en hojas por sección (`styles/`),
   que el `.component.css` importa **en el orden de la cascada**. Al mover reglas, respetar ese orden.
 - Presupuesto de `anyComponentStyle` (`angular.json`): aviso desde 20 kB, error a partir de 48 kB.
-  Separar en hojas **no** reduce el total del componente. `home-foundation.css` ronda los 43 kB,
+  Separar en hojas **no** reduce el total del componente. El CSS combinado de portada ronda los 45,26 kB,
   cerca del límite de error.
 - El ancho de cada página se ajusta en `app.css` con `.page-container:has(app-<pagina>-page)`;
   al crear una página nueva, mirar esas reglas antes de inventar otra.

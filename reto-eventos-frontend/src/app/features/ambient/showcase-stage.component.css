@@ -20,15 +20,18 @@ app-showcase-stage.is-staged {
   /* Recorrido de scroll entre dos paradas. */
   --stage-step: 40svh;
   /* El escaparate deja aire alrededor: entre el índice, el recorte y su enlace. */
-  --stage-air: clamp(1rem, 3.2vh, 2.25rem);
+  --stage-air: clamp(0.9rem, 2.6vh, 1.9rem);
   --stage-frame-height: clamp(
     24rem,
-    calc(100svh - var(--topbar-height, 4rem) - 9rem - 3 * var(--stage-air)),
-    42rem
+    calc(100svh - var(--topbar-height, 4rem) - 7.5rem - 3 * var(--stage-air)),
+    56rem
   );
   --stage-link-gap: var(--stage-air);
   position: relative;
   display: block;
+  /* El escaparate sobresale de la columna de la página: es la pieza principal de la portada. */
+  width: min(86vw, 122rem);
+  justify-self: center;
   height: calc(var(--stage-pin) + var(--stage-rests, 5) * var(--stage-step));
 }
 
@@ -158,14 +161,14 @@ app-showcase-stage.is-staged .showcase-rail {
 
 .showcase-rail-number {
   font-family: 'Nunito', sans-serif;
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.2em;
 }
 
 .showcase-rail-label {
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(1.1rem, 1.35vw, 1.4rem);
+  font-size: clamp(1.3rem, 1.65vw, 1.8rem);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: 0.03em;
@@ -311,9 +314,9 @@ app-showcase-stage.is-staged .sessions-tools {
   transform: none;
 }
 
-/* ---- Libro desplegable -------------------------------------------------------------------- */
+/* ---- Origami ------------------------------------------------------------------------------ */
 
-/* El recorte en pleno pase de página: dos páginas quietas y una hoja que gira sobre el lomo. */
+/* El recorte en pleno pliegue: las caras se colocan desde el script sobre la mesa. */
 app-showcase-stage.is-staged .showcase-fold {
   position: relative;
   z-index: 4;
@@ -322,88 +325,57 @@ app-showcase-stage.is-staged .showcase-fold {
   height: var(--stage-frame-height);
   display: none;
   pointer-events: none;
-  perspective: 2600px;
-  perspective-origin: 50% 40%;
+  perspective: 3200px;
+  perspective-origin: 50% 45%;
 }
 
 app-showcase-stage.is-staged .showcase-fold.is-folding {
   display: block;
 }
 
-.showcase-fold-piece {
+.showcase-fold-packet {
   position: absolute;
-  isolation: isolate;
-  overflow: hidden;
-  background: #f6f1ea;
-  backface-visibility: hidden;
-}
-
-.showcase-fold-left,
-.showcase-fold-under {
-  top: 0;
-  width: 50%;
-  height: 100%;
-}
-
-.showcase-fold-left {
-  left: 0;
-}
-
-.showcase-fold-under {
-  left: 50%;
+  inset: 0 auto auto 0;
+  transform-style: preserve-3d;
 }
 
 .showcase-fold-flap {
   position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 50%;
-  width: 50%;
-  height: 100%;
-  transform-origin: left center;
   transform-style: preserve-3d;
+}
+
+/* Papel: por delante la sala impresa; por detrás, el dorso liso del recorte. */
+.showcase-fold-piece {
+  position: absolute;
+  overflow: hidden;
+  background-color: #f6f1ea;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.26  0 0 0 0.07 0'/></filter><rect width='160' height='160' filter='url(%23g)'/></svg>"),
+    linear-gradient(135deg, #fcf9f5, #eee7df);
+  box-shadow:
+    0 0 0 0.5px rgba(33, 30, 36, 0.12),
+    0 calc(0.5rem + var(--lift, 0) * 2.4rem) calc(1.2rem + var(--lift, 0) * 3rem)
+      calc(-0.4rem - var(--lift, 0) * 0.6rem) rgba(33, 30, 36, 0.38);
+  backface-visibility: hidden;
+}
+
+/* La tarjeta plegada da la vuelta entera en el aire: su dorso también es papel. */
+.showcase-fold-base {
+  backface-visibility: visible;
 }
 
 .showcase-fold-flap .showcase-fold-piece {
   inset: 0;
+  box-shadow: 0 0 0 0.5px rgba(33, 30, 36, 0.12);
 }
 
-.showcase-fold-back {
-  transform: rotateY(180deg);
-}
-
-/* Sombra de la hoja: oscurece lo que tapa y la propia hoja al ponerse de canto. */
+/* Sombra del pliegue: se oscurece la cara que gira y la que va a quedar debajo. */
 .showcase-fold-shade {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(90deg, rgba(33, 30, 36, 0.5), rgba(33, 30, 36, 0.15));
+  background: linear-gradient(90deg, rgba(33, 30, 36, 0.55), rgba(33, 30, 36, 0.2));
   opacity: var(--shade, 0);
-  pointer-events: none;
-}
-
-.showcase-fold-left .showcase-fold-shade,
-.showcase-fold-back .showcase-fold-shade {
-  background: linear-gradient(270deg, rgba(33, 30, 36, 0.5), rgba(33, 30, 36, 0.15));
-}
-
-/* El lomo: un valle en el centro del recorte, marcado mientras gira la hoja. */
-.showcase-fold-crease {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(50% - 1.5rem);
-  z-index: 2;
-  width: 3rem;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(33, 30, 36, 0.12) 48%,
-    rgba(255, 255, 255, 0.45) 52%,
-    transparent
-  );
-  opacity: 0;
-  pointer-events: none;
 }
 
 .showcase-fold-sheet {
@@ -416,34 +388,24 @@ app-showcase-stage.is-staged .showcase-fold.is-folding {
   display: block;
 }
 
-/* Relieve de libro desplegable: mientras gira la hoja, las piezas impresas se separan del papel
-   según su profundidad, como capas, y dejan sombra debajo. */
-.showcase-fold-sheet :is(.session-visual, .location-orbit, .sample-reception-marks) {
-  --depth: 1.2;
+/* La marca del pliegue sobre el papel recién abierto: un valle oscuro y su filo de luz en el
+   centro del recorte. */
+app-showcase-stage.is-staged .showcase-fold-creases {
+  position: relative;
+  z-index: 3;
+  grid-area: 2 / 1;
+  align-self: start;
+  height: var(--stage-frame-height);
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(90deg, rgba(33, 30, 36, 0.13) 1px, rgba(255, 255, 255, 0.5) 1px 2px, transparent 2px)
+      -1px 0 / 50% 100%;
+  mix-blend-mode: multiply;
 }
 
-.showcase-fold-sheet :is(.session-secondary, .location-data, .sample-reception h2) {
-  --depth: 0.9;
-}
-
-.showcase-fold-sheet :is(.session-featured-info, .locations-brief, .sample-reception-copy) {
-  --depth: 0.55;
-}
-
-.showcase-fold-sheet
-  :is(
-    .session-visual,
-    .session-secondary,
-    .session-featured-info,
-    .location-orbit,
-    .location-data,
-    .locations-brief,
-    .sample-reception-marks,
-    .sample-reception h2,
-    .sample-reception-copy
-  ) {
-  translate: 0 calc(var(--lift, 0) * var(--depth) * -1.4rem);
-  scale: calc(1 + var(--lift, 0) * var(--depth) * 0.035);
+app-showcase-stage.is-staged .showcase-fold-creases.is-fading {
+  transition: opacity 1.8s ease 0.2s;
 }
 
 /* ---- Secciones dentro de la vitrina -------------------------------------------------------- */
@@ -509,12 +471,65 @@ app-showcase-stage.is-staged .sessions-block {
   transform: none;
 }
 
-/* Cada exposición conserva la composición de su tamaño de diseño y se escala entera para caber
-   en el recorte, en vez de apretarse. */
+/* Cada sala tiene un formato de diseño propio, en rem (--room-width × --room-height): el escenario
+   la escala entera (--room-zoom) hasta llenar el recorte por el lado que antes toque, como un
+   cartel, en vez de apretarla. Su lienzo mide lo que el recorte a esa escala, para que la textura
+   lo cubra entero, y las piezas de dentro que se miden con --home-showcase-height lo siguen. */
+app-showcase-stage.is-staged app-sessions-program {
+  --room-width: 94;
+  --room-height: 40;
+}
+
+app-showcase-stage.is-staged app-locations-atlas {
+  --room-width: 76;
+  --room-height: 46;
+}
+
+app-showcase-stage.is-staged app-locations-atlas:has(.locations-layout-collaboration) {
+  --room-width: 60;
+  --room-height: 41;
+}
+
+app-showcase-stage.is-staged :is(app-sessions-program, app-locations-atlas) {
+  --home-showcase-height: calc(var(--stage-frame-height) / var(--room-zoom, 1));
+}
+
 app-showcase-stage.is-staged :is(.sessions-carousel, .locations-layout) {
-  height: var(--home-showcase-height, 46rem);
+  height: var(--home-showcase-height);
   min-height: 0;
-  zoom: var(--stage-zoom, 1);
+  zoom: var(--room-zoom, 1);
+}
+
+/* Las sesiones se componen a tamaño fijo, centradas: el círculo principal lo marca la altura de
+   la sala, no el ancho de una columna. */
+app-showcase-stage.is-staged .sessions-program {
+  grid-template-columns: 51rem 30rem;
+  justify-content: center;
+  column-gap: 5rem;
+  /* La ficha de las sesiones secundarias sobresale de su columna: se compensa el centro. */
+  transform: translateX(-1rem);
+}
+
+app-showcase-stage.is-staged .session-featured {
+  grid-template-columns: 33rem 15rem;
+  gap: 3rem;
+}
+
+app-showcase-stage.is-staged .session-image-link {
+  width: 33rem;
+}
+
+app-showcase-stage.is-staged .session-featured-info::before {
+  width: 24rem;
+}
+
+app-showcase-stage.is-staged .session-secondary {
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: 2.5rem;
+}
+
+app-showcase-stage.is-staged .session-secondary > div::before {
+  width: 8rem;
 }
 
 app-showcase-stage.is-staged .locations-atlas.locations-atlas {
@@ -526,16 +541,23 @@ app-showcase-stage.is-staged .locations-atlas.locations-atlas {
   border-top: 0;
 }
 
-/* Sonda invisible con la altura de diseño del escaparate, para calcular la escala. */
-.showcase-stage-probe {
-  position: absolute;
-  width: 0;
-  height: var(--home-showcase-height, 46rem);
-  visibility: hidden;
+/* Localizaciones: la ficha lateral necesita su altura, así que lo que aprovecha el ancho es el
+   planetario, con órbitas y tarjetas más grandes. */
+app-showcase-stage.is-staged .locations-chart-viewport {
+  --orbit: min(12rem, calc((var(--home-showcase-height) - 4rem) / 3.5));
 }
 
-/* Las tarjetas levantadas proyectan sombra mientras gira la hoja; fija, para no repintar. */
-.showcase-fold-sheet
-  :is(.session-secondary, .session-featured-info, .location-data, .locations-brief) {
-  box-shadow: 0 1.1rem 1.5rem -0.7rem rgba(33, 30, 36, 0.32);
+app-showcase-stage.is-staged .locations-chart {
+  width: min(100%, 62rem);
+}
+
+/* Collaborators: el panel aprieta su aire vertical para que la sala pueda crecer más. */
+app-showcase-stage.is-staged .sample-reception.is-panel-only .sample-reception-layout {
+  --sample-panel-padding: 2.25rem;
+  gap: 1.75rem;
+}
+
+app-showcase-stage.is-staged .sample-reception.is-panel-only .sample-reception-copy {
+  gap: 1.35rem;
+  padding-block: 0.5rem;
 }

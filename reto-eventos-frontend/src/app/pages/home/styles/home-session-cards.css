@@ -62,9 +62,7 @@
   border: 1px solid var(--gallery-orbit-strong);
   border-radius: 50%;
   background: var(--gallery-surface);
-  box-shadow:
-    0 0 0 0.8rem var(--gallery-halo),
-    0 1.25rem 3.25rem var(--gallery-shadow);
+  box-shadow: 0 0 0 0.8rem var(--gallery-halo);
   transform: scale(1);
   transform-origin: center;
   transition:
@@ -314,5 +312,13 @@
 
   .session-secondary {
     grid-template-columns: 12rem minmax(0, 1fr);
+  }
+}
+
+/* Cada sesión es un solo recorte, círculo y ficha juntos, y proyecta una sola sombra. */
+@media (min-width: 901px) {
+  .session-featured,
+  .session-secondary {
+    filter: var(--paper-shadow);
   }
 }

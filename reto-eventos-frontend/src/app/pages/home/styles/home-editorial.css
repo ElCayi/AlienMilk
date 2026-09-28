@@ -256,46 +256,47 @@
   cursor: pointer;
 }
 
-/* Intro: una sala pequeña antes del escaparate, solo con la presentación del programa. */
+/* Intro: la presentación del programa, del ancho del escaparate que viene detrás y con mucho aire
+   arriba y abajo. El texto flota solo en una columna centrada, como una nota firmada: unas
+   comillas colgadas al margen y la firma de quien la escribe. */
 .home-intro {
-  display: grid;
   box-sizing: border-box;
   width: var(--home-section-width, 100%);
-  margin: 0 auto var(--home-section-gap, 4rem);
-  grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr);
-  align-items: baseline;
-  gap: clamp(1.5rem, 5vw, 5rem);
-  padding: clamp(3rem, 9vh, 6rem) 0 clamp(2.5rem, 7vh, 5rem);
-  border-top: 2px solid var(--gallery-muted);
+  margin: 0 auto;
+  padding-block: clamp(7rem, 24vh, 15rem);
 }
 
-.home-intro-eyebrow {
-  display: flex;
-  align-items: baseline;
-  gap: 0.7rem;
-  margin: 0;
-  color: var(--gallery-ink);
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(1.1rem, 1.35vw, 1.4rem);
-  font-weight: 800;
-  letter-spacing: 0.03em;
+.home-intro-note {
+  position: relative;
+  max-width: 56rem;
+  margin: 0 auto;
 }
 
-.home-intro-number {
-  color: var(--gallery-muted);
+/* Las comillas cuelgan fuera de la columna para que el texto siga alineado. */
+.home-intro-note::before {
+  content: '“';
+  position: absolute;
+  top: -0.12em;
+  right: calc(100% + 0.12em);
+  color: #ff7f7f;
   font-family: 'Nunito', sans-serif;
-  font-size: 0.66rem;
-  letter-spacing: 0.2em;
+  font-size: clamp(5rem, 8vw, 9rem);
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .home-intro-copy {
-  max-width: 50rem;
   margin: 0;
   color: var(--gallery-ink);
   font-family: 'Nunito', sans-serif;
-  font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+  font-size: clamp(1.2rem, 1.6vw, 1.85rem);
   font-weight: 500;
-  line-height: 1.55;
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 .home-intro-copy strong {
@@ -303,10 +304,53 @@
   font-weight: 800;
 }
 
+.home-intro-copy b {
+  font-weight: 800;
+}
+
+/* La firma: pequeña, a la derecha y precedida de un trazo. */
+.home-intro-signature {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.9rem;
+  margin-top: clamp(1.5rem, 3vh, 2.25rem);
+  color: var(--gallery-muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.home-intro-signature::before {
+  content: '';
+  width: 2.5rem;
+  border-top: 1px solid currentColor;
+}
+
+/* Con escaparate, la intro sobresale de la columna de la página igual que él. */
+@media (min-width: 1001px) {
+  .home-intro {
+    width: min(86vw, 122rem);
+    margin-inline: calc(50% - min(86vw, 122rem) / 2);
+  }
+}
+
 @media (max-width: 900px) {
   .home-intro {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.25rem;
-    padding-inline: 1.4rem;
+    padding: 5rem 1.4rem;
+  }
+
+  .home-intro-note {
+    max-width: none;
+  }
+
+  /* En móvil no hay margen donde colgarlas: las comillas van encima del texto. */
+  .home-intro-note::before {
+    position: static;
+    display: block;
+    height: 0.55em;
+    font-size: 5rem;
   }
 }

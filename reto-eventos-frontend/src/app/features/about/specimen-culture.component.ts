@@ -53,6 +53,8 @@ interface Source {
 
 const POSTER = 'alienmilk-about-ferrofluid-poster.webp';
 const TAU = Math.PI * 2;
+/** Tamaño de la composición respecto al mayor que cabe en el lienzo. */
+const SCALE = 0.85;
 
 const BLOBS: Blob[] = [
   // La pareja: la célula y la que se le está separando.
@@ -277,13 +279,13 @@ export class SpecimenCultureComponent {
       return;
     }
 
-    // La composición entera cabe en el lienzo, centrada a lo ancho y algo subida: así la pareja
+    // La composición cabe entera en el lienzo, algo apartada del texto y subida: así la pareja
     // monta sobre las migas.
     const boxWidth = EXTENT.right - EXTENT.left;
     const boxHeight = EXTENT.bottom - EXTENT.top;
-    const side = Math.min(width / boxWidth, height / boxHeight);
-    const originX = (width - boxWidth * side) * 0.5 - EXTENT.left * side;
-    const originY = (height - boxHeight * side) * 0.2 - EXTENT.top * side;
+    const side = Math.min(width / boxWidth, height / boxHeight) * SCALE;
+    const originX = (width - boxWidth * side) * 0.6 - EXTENT.left * side;
+    const originY = (height - boxHeight * side) * 0.1 - EXTENT.top * side;
 
     // Cada forma deriva a su ritmo. Las unidas se alejan y se acercan de su madre, y el cuello
     // adelgaza y engorda con ellas, como un líquido espeso.

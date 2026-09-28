@@ -1,0 +1,21 @@
+/* El tamaño lo decide la página; el lienzo lo ocupa entero. */
+:host {
+  position: relative;
+  display: block;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* El vídeo solo alimenta el lienzo. */
+video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}

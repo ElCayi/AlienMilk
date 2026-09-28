@@ -1,0 +1,724 @@
+:host {
+  --footer-bg: #0c141d;
+  --footer-ink: #f1ecef;
+  --footer-muted: rgba(241, 236, 239, 0.66);
+  --footer-faint: rgba(241, 236, 239, 0.45);
+  --footer-line: rgba(241, 236, 239, 0.12);
+  --footer-coral: #ff7f7f;
+  --footer-inline: 3.75rem;
+  --footer-block: clamp(3.5rem, 6vw, 5rem);
+  --footer-card: #070d13;
+  --footer-card-gap: 1rem;
+  --footer-gutter: clamp(1.75rem, 3.5vw, 3.5rem);
+  display: block;
+}
+
+.site-footer {
+  padding: clamp(5rem, 9vw, 7.5rem) var(--footer-inline) 2.5rem;
+  border-top: 1px solid var(--footer-line);
+  color: var(--footer-ink);
+  background: var(--footer-bg);
+  /* La altura de la página casi nunca es un número entero de píxeles: bajo el pie quedaba una
+     fracción de píxel del fondo claro, visible como una raya en pantallas de alta densidad. Esta
+     sombra sólida prolonga el pie hacia abajo y la tapa, sin cambiar la altura del documento. */
+  box-shadow: 0 2rem 0 var(--footer-bg);
+  font-family: 'Nunito', sans-serif;
+}
+
+.footer-top,
+.footer-ecosystem,
+.footer-legal,
+.footer-credit {
+  /* El mismo ancho máximo que la portada, sesiones y contacto. */
+  width: min(1480px, 100%);
+  margin: 0 auto;
+}
+
+p {
+  margin: 0;
+  color: var(--footer-muted);
+  line-height: 1.8;
+}
+
+strong {
+  color: var(--footer-ink);
+}
+
+a {
+  color: var(--footer-ink);
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Tres columnas separadas por filetes verticales en el color de acento. */
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1.1fr;
+}
+
+.footer-top > * {
+  min-width: 0;
+  padding-inline: var(--footer-gutter);
+}
+
+.footer-top > :first-child {
+  padding-left: 0;
+}
+
+.footer-top > :last-child {
+  padding-right: 0;
+}
+
+.footer-top > * + * {
+  border-left: 1px solid var(--footer-coral);
+}
+
+/* Recuadros oscuros: cada dato de contacto y cada tarjeta del ecosistema. */
+.footer-contact > div,
+.footer-unit {
+  min-width: 0;
+  border: 1px solid rgba(241, 236, 239, 0.06);
+  border-radius: 0.9rem;
+  background: var(--footer-card);
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Fila de títulos de altura fija en las tres columnas, para que el contenido de todas empiece a la
+   misma altura aunque el título escale con la ventana. */
+.footer-col > h3,
+.footer-brand {
+  height: 2.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.footer-col > h3 {
+  line-height: 2.2rem;
+}
+
+/* Firma de marca, igual que en la cabecera: AlienMilk en Nunito y la unidad en Barlow, más
+   pequeña y sobre la misma línea base. */
+.lockup {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22em;
+  font-family: 'Nunito', sans-serif;
+}
+
+.lockup-unit {
+  font:
+    600 0.72em 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.06em;
+}
+
+h3 {
+  margin: 0;
+  /* Escala con la ventana para que "Explora AlienMilk Sessions" quepa en una línea. */
+  font-size: clamp(1rem, 1.5vw, 1.45rem);
+  line-height: 1.2;
+}
+
+/* Presentación: la misma firma que la cabecera, en el color de acento. */
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  align-self: start;
+  gap: 0.7rem;
+  color: var(--footer-coral);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.footer-brand-mark {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.footer-brand:hover,
+.footer-brand:focus-visible {
+  color: var(--footer-ink);
+}
+
+.footer-intro p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.footer-access {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* La misma pareja que la cabecera: Entrar con contorno, Regístrate en sólido. */
+.footer-button {
+  min-width: 8.5rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid #faf9f7;
+  border-radius: 999px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.footer-button.is-outline {
+  border-color: rgba(241, 236, 239, 0.72);
+  color: var(--footer-ink);
+}
+
+.footer-button.is-solid {
+  color: #211e24;
+  background: #faf9f7;
+}
+
+.footer-button:hover,
+.footer-button:focus-visible {
+  border-color: var(--footer-coral);
+  color: white;
+  background: var(--footer-coral);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.footer-social {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--footer-line);
+  border-radius: 50%;
+  color: var(--footer-muted);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Se iluminan al pasar por encima, enlacen ya a algún sitio o no. */
+.footer-social:hover,
+.footer-social:focus-visible {
+  border-color: var(--footer-coral);
+  color: var(--footer-coral);
+  box-shadow:
+    0 0 0 0.25rem rgba(255, 127, 127, 0.12),
+    0 0 1.25rem rgba(255, 127, 127, 0.35);
+}
+
+.footer-social svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.footer-social .is-filled {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Navegación */
+.footer-menu {
+  display: grid;
+}
+
+.footer-menu a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--footer-line);
+}
+
+.footer-menu a:first-child {
+  padding-top: 0.2rem;
+}
+
+.footer-menu a span {
+  color: var(--footer-faint);
+  transition: color 0.2s ease;
+}
+
+.footer-menu a:hover,
+.footer-menu a:focus-visible,
+.footer-menu a:hover span,
+.footer-contact a:hover,
+.footer-contact a:focus-visible {
+  color: var(--footer-coral);
+}
+
+/* Contacto: etiqueta a la izquierda, dato a la derecha. */
+.footer-status {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--footer-ink);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.footer-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--footer-faint);
+}
+
+.footer-status.is-open .footer-status-dot {
+  background: #9fe3b5;
+  box-shadow: 0 0 0 0.22rem rgba(159, 227, 181, 0.18);
+}
+
+.footer-contact {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.footer-contact > div {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.8rem 1rem;
+}
+
+/* Iconos en lugar de etiquetas; el nombre del dato queda para lectores de pantalla. */
+.footer-contact dt {
+  padding-top: 0.2rem;
+  color: var(--footer-coral);
+}
+
+.footer-contact dt svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.footer-contact dd {
+  margin: 0;
+  color: var(--footer-muted);
+  line-height: 1.6;
+}
+
+.footer-contact a {
+  color: var(--footer-ink);
+}
+
+/* Ecosistema: tres tarjetas oscuras a todo el ancho del pie. */
+.footer-ecosystem {
+  margin-top: var(--footer-block);
+}
+
+.footer-unit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--footer-card-gap);
+}
+
+.footer-eyebrow {
+  margin: 0 0 1.25rem;
+  color: var(--footer-faint);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.footer-unit {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.9rem;
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+}
+
+/* La unidad en la que está el visitante lleva el borde en el color de acento. */
+.footer-unit.is-current {
+  border-color: rgba(255, 127, 127, 0.45);
+}
+
+.footer-unit strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
+  font-size: 1.25rem;
+}
+
+.footer-unit p {
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.footer-unit-here {
+  color: var(--footer-coral);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Mismo enlace que "Acceder a AlienMilk Collaborators" en la portada, en tinta clara. */
+.footer-unit-action {
+  position: relative;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.25rem;
+  font:
+    800 0.72rem 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.footer-unit-action::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.62;
+  transition: transform 180ms ease;
+}
+
+.footer-unit-action > span:first-child,
+.footer-unit-arrow {
+  transition: transform 180ms ease;
+}
+
+.footer-unit-arrow {
+  width: 0.85rem;
+  height: 0.85rem;
+  display: inline-flex;
+}
+
+.footer-unit-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.footer-unit-action:hover,
+.footer-unit-action:focus-visible {
+  color: var(--footer-coral);
+}
+
+.footer-unit-action:hover::after,
+.footer-unit-action:focus-visible::after {
+  transform: scaleX(1.08);
+}
+
+.footer-unit-action:hover > span:first-child,
+.footer-unit-action:focus-visible > span:first-child {
+  transform: translateX(-0.18rem);
+}
+
+/* Franja legal */
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--footer-line);
+  font-size: 0.92rem;
+}
+
+.footer-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+}
+
+.footer-legal-links a {
+  color: var(--footer-muted);
+  font-weight: 700;
+}
+
+.footer-legal-links a:hover,
+.footer-legal-links a:focus-visible {
+  color: var(--footer-coral);
+}
+
+/* Créditos: la capa real del portfolio, en un registro más neutro. */
+.footer-credit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem 3rem;
+  padding-top: 2rem;
+  font-size: 0.86rem;
+}
+
+.footer-author {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  max-width: 44rem;
+}
+
+.footer-author img {
+  width: 6rem;
+  height: 6rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.footer-author-text {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.footer-author-text p {
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.footer-author-text .footer-author-signature {
+  color: var(--footer-ink);
+}
+
+.footer-author-meta {
+  display: grid;
+  justify-items: end;
+  gap: 0.6rem;
+  flex: 0 0 auto;
+}
+
+.footer-author-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+}
+
+.footer-author-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--footer-muted);
+  font-weight: 700;
+}
+
+.footer-author-links a:hover,
+.footer-author-links a:focus-visible {
+  color: var(--footer-coral);
+}
+
+.footer-external {
+  width: 0.7rem;
+  height: 0.7rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.footer-copyright {
+  color: var(--footer-faint);
+  font-size: 0.82rem;
+}
+
+/* Barritas de los carruseles; solo se muestran en móvil. */
+.footer-swipe {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.footer-swipe-bars {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.footer-swipe-bars button {
+  width: 1.1rem;
+  height: 1.5rem;
+  padding: 0.6rem 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(241, 236, 239, 0.3) content-box;
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.footer-swipe-bars button.is-active {
+  width: 2.2rem;
+  background-color: var(--footer-coral);
+}
+
+.footer-swipe-hint {
+  color: var(--footer-faint);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.footer-swipe-hint span {
+  display: inline-block;
+  margin-left: 0.3rem;
+  animation: footer-swipe-nudge 1.6s ease-in-out infinite;
+}
+
+@keyframes footer-swipe-nudge {
+  50% {
+    transform: translateX(0.3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-swipe-hint span {
+    animation: none;
+  }
+}
+
+/* Portátil estrecho: los créditos se apilan antes de apretarse. */
+@media (max-width: 1200px) {
+  :host {
+    --footer-gutter: 1.5rem;
+  }
+
+  /* Recuadros de contacto más ceñidos para que cada dato siga cabiendo en una línea. */
+  .footer-contact > div {
+    gap: 0.65rem;
+    padding: 0.7rem 0.75rem;
+  }
+
+  .footer-contact dd {
+    font-size: 0.88rem;
+  }
+
+  .footer-credit {
+    display: grid;
+    justify-items: start;
+  }
+
+  .footer-author-meta {
+    justify-items: start;
+  }
+}
+
+/* Móvil: una columna; los filetes pasan a ser horizontales. */
+@media (max-width: 1000px) {
+  :host {
+    --footer-inline: clamp(1rem, 6vw, 3.75rem);
+    --footer-gutter: 2.25rem;
+  }
+
+  h3 {
+    font-size: 1.45rem;
+  }
+
+  .site-footer {
+    padding-top: 3.5rem;
+  }
+
+  /* Las columnas se apilan; los filetes pasan a ser horizontales. */
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-top > * {
+    padding-inline: 0;
+  }
+
+  .footer-top > * + * {
+    margin-top: var(--footer-gutter);
+    padding-top: var(--footer-gutter);
+    border-left: 0;
+    border-top: 1px solid var(--footer-coral);
+  }
+
+  /* El ecosistema es un carrusel: cada tarjeta ocupa casi todo el ancho y deja asomar la
+     siguiente, para que se note que se puede deslizar. */
+  .footer-unit-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 86%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .footer-unit-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .footer-unit {
+    scroll-snap-align: center;
+  }
+
+  .footer-swipe {
+    display: flex;
+  }
+
+  .footer-access {
+    flex-wrap: nowrap;
+  }
+
+  .footer-button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 0.75rem;
+  }
+}

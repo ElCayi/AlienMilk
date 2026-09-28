@@ -27,10 +27,24 @@ export const routes: Routes = [
         ({ ContactPageComponent }) => ContactPageComponent,
       ),
   },
+  ...[
+    ['aviso-legal', 'Aviso legal'],
+    ['privacidad', 'Política de privacidad'],
+    ['cookies', 'Política de cookies'],
+  ].map(([path, title]) => ({
+    path,
+    data: { title },
+    loadComponent: () =>
+      import('./pages/legal/legal-page.component').then(
+        ({ LegalPageComponent }) => LegalPageComponent,
+      ),
+  })),
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login/login-page.component').then(({ LoginPageComponent }) => LoginPageComponent),
+      import('./pages/login/login-page.component').then(
+        ({ LoginPageComponent }) => LoginPageComponent,
+      ),
   },
   {
     path: 'registro',
@@ -57,7 +71,9 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () =>
-      import('./pages/admin/admin-page.component').then(({ AdminPageComponent }) => AdminPageComponent),
+      import('./pages/admin/admin-page.component').then(
+        ({ AdminPageComponent }) => AdminPageComponent,
+      ),
     canActivate: [adminGuard],
   },
   {

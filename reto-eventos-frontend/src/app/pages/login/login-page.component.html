@@ -6,11 +6,24 @@
   <div class="login-shell">
     <div class="login-copy">
       <p class="eyebrow">
-        <span class="ufo" aria-hidden="true"></span> Área de participantes / AlienMilk Sessions
+        <span class="ufo" aria-hidden="true"></span> Área personal / AlienMilk Sessions 2026
       </p>
-      <h1>Tu próxima<br />sesión empieza<br /><span>aquí.</span></h1>
+      <h1>
+        Te damos la bienvenida<br />a <span>AlienMilk<wbr />Sessions.</span>
+      </h1>
+      <div class="welcome-mark" aria-hidden="true">
+        @for (
+          mark of [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+          ];
+          track mark
+        ) {
+          <span></span>
+        }
+      </div>
       <p class="lead">
-        Entra, reserva tu plaza y sigue explorando.<br />Tenemos mucho que compartir contigo.
+        Accede para reservar sesiones, explorar el laboratorio y moverte por el universo AlienMilk
+        con tu perfil.
       </p>
       <aside class="demo-box" aria-labelledby="demo-title">
         <div class="demo-heading">
@@ -56,12 +69,13 @@
       </aside>
     </div>
     <div class="login-card">
-      <div class="card-top">
-        <span class="eyebrow">Acceso personal</span><span class="ufo" aria-hidden="true"></span>
-      </div>
-      <h2>Bienvenido<br />de nuevo.</h2>
+      <h2>Tu universo te espera.</h2>
       <p class="card-intro">Tu lugar en el universo AlienMilk.</p>
-      <form #loginForm="ngForm" (ngSubmit)="submit()" [attr.aria-busy]="loading()">
+      <form
+        #loginForm="ngForm"
+        (ngSubmit)="loginForm.valid && submit()"
+        [attr.aria-busy]="loading()"
+      >
         <label for="username">Usuario</label>
         <input
           id="username"
@@ -96,12 +110,11 @@
         @if (errorMessage()) {
           <p class="error" role="alert">{{ errorMessage() }}</p>
         }
-        <button type="submit" class="submit-btn" [disabled]="loading() || loginForm.invalid">
-          <span>{{ loading() ? 'Entrando…' : 'Entrar' }}</span
-          ><span aria-hidden="true">↗</span>
+        <button type="submit" class="ghost-btn submit-btn" [disabled]="loading()">
+          {{ loading() ? 'Entrando…' : 'Entrar' }}
         </button>
       </form>
-      <p class="signup-copy">¿Tu primera visita? <a routerLink="/registro">Crea tu cuenta</a></p>
+      <p class="signup-copy">¿No tienes cuenta? <a routerLink="/registro">Regístrate gratis</a></p>
     </div>
   </div>
   <footer class="login-footnote">

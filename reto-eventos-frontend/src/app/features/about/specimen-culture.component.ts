@@ -43,6 +43,8 @@ interface Blob {
 interface Placed extends Circle {
   blob: Blob;
   home: Point;
+  /** Parte del desplazamiento que viene del temblor. */
+  shake: Point;
 }
 
 interface Source {
@@ -57,6 +59,35 @@ const TAU = Math.PI * 2;
 const SCALE = 0.98;
 /** La muestra se ve algo más alejada dentro de las formas, sin cambiar su tamaño. */
 const SOURCE_ZOOM = 0.88;
+/**
+ * Sombra: una copia de la silueta del cultivo en gris oscuro, sin muestra, algo menor y desplazada
+ * hacia abajo a la derecha. Desplazamiento y desenfoque en unidades de composición; la caja le
+ * reserva sitio, así la copia tampoco se sale del lienzo.
+ */
+const SHADOW = {
+  color: '#0d151e',
+  opacity: 0.55,
+  scale: 0.84,
+  x: 0.22,
+  y: 0.08,
+  blur: 0.002,
+  /** Fracción del temblor del cultivo que llega a la sombra. */
+  tremor: 0.35,
+};
+/**
+ * Brillo del fluido en trama de puntos coral: la luz llega desde arriba a la izquierda, al lado
+ * contrario de la sombra, y los puntos crecen donde la masa se acaba hacia ella. Se calcula sobre
+ * la silueta entera, con cuellos, para que el grupo se lea como un solo líquido y no como bolas
+ * pegadas. Medidas en unidades de composición; el campo se calcula a un tercio de resolución.
+ */
+const TONE = {
+  // El coral de la marca.
+  color: 'rgba(255, 127, 127, 0.85)',
+  spacing: 0.0055,
+  reach: 0.045,
+  blur: 0.03,
+  field: 1 / 3,
+};
 const TREMOR_DURATION = 0.55;
 const TREMOR_INTERVAL = 12;
 
@@ -182,6 +213,9 @@ export class SpecimenCultureComponent {
   private context: CanvasRenderingContext2D | null = null;
   /** Lienzo aparte donde cada grupo unido recorta la muestra con su silueta. */
   private scratch: CanvasRenderingContext2D | null = null;
+  /** Silueta y sombra del fluido a baja resolución, para leer la trama. */
+  private mask: CanvasRenderingContext2D | null = null;
+  private field: CanvasRenderingContext2D | null = null;
   private width = 0;
   private height = 0;
   private frameId = 0;
@@ -202,6 +236,8 @@ export class SpecimenCultureComponent {
     const video = this.video().nativeElement;
     this.context = canvas.getContext('2d');
     this.scratch = document.createElement('canvas').getContext('2d');
+    this.mask = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    this.field = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
 
     // El póster pinta el cultivo mientras llega el vídeo, y para siempre si se pide menos
     // movimiento.
@@ -306,6 +342,13 @@ export class SpecimenCultureComponent {
         context.setTransform(ratio, 0, 0, ratio, 0, 0);
       }
     }
+    for (const context of [this.mask, this.field]) {
+      if (context) {
+        context.canvas.width = Math.ceil(this.width * TONE.field);
+        context.canvas.height = Math.ceil(this.height * TONE.field);
+        context.setTransform(TONE.field, 0, 0, TONE.field, 0, 0);
+      }
+    }
   }
 
   private source(): Source | null {
@@ -336,9 +379,12 @@ export class SpecimenCultureComponent {
     // monta sobre las migas.
     const boxWidth = EXTENT.right - EXTENT.left;
     const boxHeight = EXTENT.bottom - EXTENT.top;
-    const side = Math.min(width / boxWidth, height / boxHeight) * SCALE;
-    const originX = (width - boxWidth * side) * 0.6 - EXTENT.left * side;
-    const originY = (height - boxHeight * side) * 0.1 - EXTENT.top * side;
+    // La copia encoge hacia el centro: solo hay que reservar lo que el desplazamiento la saca.
+    const fitWidth = boxWidth + Math.max(0, SHADOW.x - ((1 - SHADOW.scale) * boxWidth) / 2);
+    const fitHeight = boxHeight + Math.max(0, SHADOW.y - ((1 - SHADOW.scale) * boxHeight) / 2);
+    const side = Math.min(width / fitWidth, height / fitHeight) * SCALE;
+    const originX = (width - fitWidth * side) * 0.6 - EXTENT.left * side;
+    const originY = (height - fitHeight * side) * 0.1 - EXTENT.top * side;
 
     // El temblor afecta a cada grupo entero para que sus cuellos no se separen.
     const hoverElapsed = time - this.hoverStartedAt;
@@ -354,12 +400,14 @@ export class SpecimenCultureComponent {
       const angle = (time * TAU) / blob.period + blob.phase;
       const home = { x: originX + blob.x * side, y: originY + blob.y * side };
       const direction = ROOTS[index] * 2.4;
-      const shake = vibration * 0.008 * side;
+      const amount = vibration * 0.008 * side;
+      const shake = { x: Math.cos(direction) * amount, y: Math.sin(direction) * amount };
       return {
         blob,
         home,
-        x: home.x + Math.cos(angle) * blob.drift * side + Math.cos(direction) * shake,
-        y: home.y + Math.sin(angle * 1.3) * blob.drift * side + Math.sin(direction) * shake,
+        shake,
+        x: home.x + Math.cos(angle) * blob.drift * side + shake.x,
+        y: home.y + Math.sin(angle * 1.3) * blob.drift * side + shake.y,
         r: blob.r * side * (1 + Math.sin(angle * 0.8) * 0.015),
       };
     });
@@ -375,6 +423,30 @@ export class SpecimenCultureComponent {
     const offsetY = boxY + (boxHeight * side - source.height * scale) / 2;
 
     context.clearRect(0, 0, width, height);
+
+    // La sombra va debajo de todo el cultivo: la misma figura entera, encogida sobre su centro y
+    // desplazada. Está apoyada más abajo: tiembla menos que el cultivo.
+    const centerX = originX + ((EXTENT.left + EXTENT.right) / 2) * side;
+    const centerY = originY + ((EXTENT.top + EXTENT.bottom) / 2) * side;
+    const shadows = placed.map((shape) => {
+      const x = shape.x - shape.shake.x * (1 - SHADOW.tremor);
+      const y = shape.y - shape.shake.y * (1 - SHADOW.tremor);
+      return {
+        ...shape,
+        x: centerX + (x - centerX) * SHADOW.scale + SHADOW.x * side,
+        y: centerY + (y - centerY) * SHADOW.scale + SHADOW.y * side,
+        r: shape.r * SHADOW.scale,
+      };
+    });
+    scratch.clearRect(0, 0, width, height);
+    scratch.fillStyle = SHADOW.color;
+    fillSilhouette(scratch, shadows, shadows, side * SHADOW.scale, time);
+    context.save();
+    context.globalAlpha = SHADOW.opacity;
+    context.filter = `blur(${SHADOW.blur * side}px)`;
+    context.drawImage(scratch.canvas, 0, 0, width, height);
+    context.restore();
+
     placed.forEach((root, index) => {
       if (ROOTS[index] !== index) {
         return;
@@ -413,20 +485,94 @@ export class SpecimenCultureComponent {
       // Un grupo unido se recorta con su silueta completa en el lienzo aparte.
       scratch.clearRect(0, 0, width, height);
       scratch.fillStyle = '#000';
-      members.forEach((member) => {
-        traceRippleCircle(scratch, member, time);
-        scratch.fill();
-        if (member.blob.join) {
-          const mother = placed[member.blob.join.to];
-          fillNeck(scratch, mother, member, member.blob.join.neck * side);
-        }
-      });
+      fillSilhouette(scratch, members, placed, side, time);
       scratch.globalCompositeOperation = 'source-in';
       scratch.drawImage(source.image, imageX, imageY, imageWidth, imageHeight);
       scratch.globalCompositeOperation = 'source-over';
       context.drawImage(scratch.canvas, 0, 0, width, height);
     });
+
+    this.drawTone(placed, side, time);
   }
+
+  /** Trama de puntos sobre el fluido; ver TONE. */
+  private drawTone(placed: Placed[], side: number, time: number): void {
+    const { context, scratch, mask, field, width, height } = this;
+    if (!context || !scratch || !mask || !field) {
+      return;
+    }
+
+    // Silueta del fluido y, aparte, la misma silueta difuminada y llevada hacia la sombra: donde
+    // la masa se acaba en el lado de la luz, la copia ya no la cubre.
+    mask.clearRect(0, 0, width, height);
+    mask.fillStyle = '#fff';
+    fillSilhouette(mask, placed, placed, side, time);
+    field.clearRect(0, 0, width, height);
+    field.save();
+    field.setTransform(1, 0, 0, 1, 0, 0);
+    field.filter = `blur(${TONE.blur * side * TONE.field}px)`;
+    const reach = TONE.reach * side * TONE.field;
+    field.drawImage(mask.canvas, reach, reach * 1.15);
+    field.restore();
+
+    const columns = mask.canvas.width;
+    const rows = mask.canvas.height;
+    const inside = mask.getImageData(0, 0, columns, rows).data;
+    const lit = field.getImageData(0, 0, columns, rows).data;
+
+    // Rejilla al tresbolillo, como una trama de imprenta. Se pinta dentro de la silueta: así los
+    // puntos del borde no se salen.
+    const spacing = Math.max(3, TONE.spacing * side);
+    scratch.clearRect(0, 0, width, height);
+    scratch.fillStyle = '#000';
+    fillSilhouette(scratch, placed, placed, side, time);
+    scratch.globalCompositeOperation = 'source-in';
+    scratch.fillStyle = TONE.color;
+    scratch.beginPath();
+    for (let row = 0, y = spacing / 2; y < height; row++, y += spacing * 0.866) {
+      for (let x = row % 2 ? spacing : spacing / 2; x < width; x += spacing) {
+        const cell =
+          (Math.min(rows - 1, Math.floor(y * TONE.field)) * columns +
+            Math.min(columns - 1, Math.floor(x * TONE.field))) *
+            4 +
+          3;
+        if (inside[cell] < 128) {
+          continue;
+        }
+
+        // Por debajo de un umbral no hay punto: el lado de la sombra queda limpio.
+        const shade = Math.max(0, 1 - lit[cell] / 255 - 0.2) / 0.8;
+        const radius = spacing * 0.5 * shade ** 0.7;
+        if (radius < 0.35) {
+          continue;
+        }
+
+        scratch.moveTo(x + radius, y);
+        scratch.arc(x, y, radius, 0, TAU);
+      }
+    }
+    scratch.fill();
+    scratch.globalCompositeOperation = 'source-over';
+    context.drawImage(scratch.canvas, 0, 0, width, height);
+  }
+}
+
+/** Rellena las formas y los cuellos que las unen a sus madres. */
+function fillSilhouette(
+  context: CanvasRenderingContext2D,
+  members: Placed[],
+  placed: Placed[],
+  side: number,
+  time: number,
+): void {
+  members.forEach((member) => {
+    traceRippleCircle(context, member, time);
+    context.fill();
+    if (member.blob.join) {
+      const mother = placed[member.blob.join.to];
+      fillNeck(context, mother, member, member.blob.join.neck * side);
+    }
+  });
 }
 
 /** El borde del recorte ondula despacio sin deformar el contenido del vídeo. */

@@ -99,12 +99,6 @@ h1 {
 h1 span {
   color: var(--coral);
 }
-.lead {
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 1.15rem;
-  margin: 0 0 2rem;
-}
 .demo-box {
   padding: 1.3rem;
   border: 1px solid var(--line);
@@ -332,7 +326,7 @@ button:disabled {
 h1 {
   font-weight: 700;
   letter-spacing: 0.025em;
-  line-height: 1.2;
+  line-height: 1.13;
   transform: scaleY(0.78);
   transform-origin: left center;
 }
@@ -372,10 +366,6 @@ h1 {
     font-size: clamp(2.8rem, 4.4vw, 4.8rem);
     margin: 2.35rem 0 1rem;
   }
-  .lead {
-    margin-bottom: 1.25rem;
-    line-height: 1.5;
-  }
   .login-card {
     padding: clamp(1.5rem, 2.5vh, 2.5rem) clamp(1.5rem, 2.5vw, 3rem);
   }
@@ -394,9 +384,6 @@ h1 {
   }
 }
 @media (min-width: 1001px) and (max-height: 850px) {
-  .lead {
-    font-size: 1rem;
-  }
   .demo-box {
     padding: 1rem;
   }
@@ -524,7 +511,7 @@ h1 {
   transform: scaleY(1.2821);
 }
 .lockup-unit {
-  font: 600 0.72em 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font: 400 0.72em 'Barlow Condensed', 'Arial Narrow', sans-serif;
   letter-spacing: 0.06em;
   margin-left: 0.22em;
 }
@@ -533,7 +520,7 @@ h1 {
    other pages; the 22% it frees (3 lines × 1.2em) is taken back below. */
 h1 {
   transform-origin: left top;
-  margin-bottom: calc(0.6rem - 0.792em);
+  margin-bottom: calc(0.6rem - 0.746em);
 }
 
 /* Same arrow as the landing's "Explorar" links. */
@@ -596,9 +583,6 @@ h1 {
   .login-shell {
     flex: 1 0 auto;
   }
-  .lead {
-    margin-bottom: clamp(0.75rem, 2.5vh, 2rem);
-  }
   .login-card .card-intro {
     margin-bottom: clamp(0.75rem, 2vh, 1.25rem);
   }
@@ -609,5 +593,114 @@ h1 {
 @media (max-width: 1000px) {
   .milk-row {
     margin-bottom: 2rem;
+  }
+}
+
+/* No imagery on this page: the title carries it. It grows with the width but
+   also with the height, so short screens keep the boxes in view. */
+@media (min-width: 1001px) {
+  h1 {
+    font-size: min(13.4cqi, 16svh);
+    margin-bottom: calc(clamp(1.5rem, 4svh, 2.75rem) - 0.746em);
+  }
+  .login-shell {
+    padding-bottom: clamp(1.5rem, 5svh, 3.5rem);
+  }
+}
+/* Short screens: pull the heading block up so both boxes clear the bottom. */
+@media (min-width: 1001px) and (max-height: 820px) {
+  .login-copy > .eyebrow {
+    margin-bottom: 1rem;
+  }
+  h1 {
+    margin-top: 1.5rem;
+  }
+  .login-card {
+    margin-top: 1rem;
+  }
+}
+.signup-copy {
+  text-align: center;
+}
+@media (min-width: 1001px) and (max-height: 680px) {
+  h1 {
+    font-size: min(13.4cqi, 9.5svh);
+    margin-top: 1rem;
+    margin-bottom: calc(1rem - 0.746em);
+  }
+  .demo-box {
+    padding: 0.85rem 1rem;
+  }
+  .demo-box p {
+    margin: 0.4rem 0 0.6rem;
+  }
+  .login-card {
+    margin-top: 0.5rem;
+    padding-block: 1.1rem;
+  }
+  .milk-row {
+    margin-bottom: 0.9rem;
+  }
+  .login-card h2 {
+    font-size: 2.1rem;
+    margin-bottom: 0.4rem;
+  }
+  .login-card .card-intro {
+    margin-bottom: 0.75rem;
+  }
+  .login-card form {
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  input {
+    padding-block: 0.6rem;
+  }
+  .submit-btn {
+    margin-top: 0.5rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 0.75rem;
+  }
+}
+
+/* The unsquashed Nunito rises above the line; give the lockup line the same
+   gap from the line above as the other two lines have. */
+.lockup {
+  display: inline-block;
+  margin-top: 0.24em;
+}
+@media (min-width: 1001px) and (max-height: 620px) {
+  h1 {
+    font-size: min(13.4cqi, 8svh);
+    margin-top: 0.75rem;
+    margin-bottom: calc(1rem - 0.746em);
+  }
+}
+@media (max-width: 1000px) {
+  h1 {
+    margin-bottom: calc(1.75rem - 0.746em);
+  }
+}
+@media (min-width: 1001px) and (max-height: 620px) {
+  .login-card {
+    margin-top: 0;
+    padding-block: 0.85rem;
+  }
+  .login-card h2 {
+    font-size: 1.9rem;
+  }
+  .login-card .card-intro,
+  .milk-row {
+    margin-bottom: 0.6rem;
+  }
+  .login-card form {
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+  .password-label {
+    margin-top: 0.3rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 0.5rem;
   }
 }

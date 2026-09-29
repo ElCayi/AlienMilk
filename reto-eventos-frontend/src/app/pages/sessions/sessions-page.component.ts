@@ -27,7 +27,16 @@ import {
   sessionPrice,
   shortSessionDate,
 } from '../../features/sessions/session-dossier';
-import { archiveCode, compatibility, sampleCode, sessionImage } from '../../features/sessions/session.presenter';
+import {
+  archiveCode,
+  compatibility,
+  sampleCode,
+  sessionImage,
+} from '../../features/sessions/session.presenter';
+import {
+  CategoryOption,
+  CategorySelectComponent,
+} from '../../features/sessions/category-select.component';
 import { filterSessions } from '../../features/sessions/session-search';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { SessionDossier } from '../../models/session-dossier.models';
@@ -42,7 +51,7 @@ interface OpenedSession {
 @Component({
   selector: 'app-sessions-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, CategorySelectComponent],
   templateUrl: './sessions-page.component.html',
   styleUrl: './sessions-page.component.css',
 })
@@ -58,6 +67,7 @@ export class SessionsPageComponent implements OnInit {
   private pendingReveal = false;
   private readonly indexTrack = viewChild<ElementRef<HTMLElement>>('indexTrack');
   private readonly fileAnchor = viewChild<ElementRef<HTMLElement>>('fileAnchor');
+  private readonly dossierMedia = viewChild<ElementRef<HTMLElement>>('dossierMedia');
   readonly authService = inject(AuthService);
 
   readonly sessions = signal<EventoListado[]>([]);
@@ -75,13 +85,19 @@ export class SessionsPageComponent implements OnInit {
   readonly reservationFeedback = signal('');
   readonly shareFeedback = signal('');
   readonly indexOverflows = signal(false);
+  /** La guía de navegación se retira en cuanto se usa. */
+  readonly browseHint = signal(true);
+  private swipe: { x: number; dx: number } | null = null;
 
   cantidad = 1;
   observaciones = '';
 
-  readonly categories = computed(() =>
-    [...new Set(this.sessions().map((session) => session.tipoEvento))].sort(),
-  );
+  readonly categoryOptions = computed<CategoryOption[]>(() => [
+    { value: 'todas', label: 'Todas las sesiones' },
+    ...[...new Set(this.sessions().map((session) => session.tipoEvento))]
+      .sort()
+      .map((type) => ({ value: type, label: humanizeSessionType(type) })),
+  ]);
 
   readonly filteredSessions = computed(() =>
     filterSessions(this.sessions(), this.query(), this.category()),
@@ -159,7 +175,30 @@ export class SessionsPageComponent implements OnInit {
     });
   }
 
+  /** La barra del texto del expediente solo aparece mientras se desplaza. */
+  private watchSectionScroll(): void {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    // El scroll de un elemento no burbujea: se escucha en captura.
+    const onScroll = (event: Event) => {
+      const section = event.target as HTMLElement;
+      if (!section.classList?.contains('dossier-section')) {
+        return;
+      }
+
+      section.classList.add('is-scrolling');
+      clearTimeout(timer);
+      timer = setTimeout(() => section.classList.remove('is-scrolling'), 900);
+    };
+
+    this.document.addEventListener('scroll', onScroll, true);
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(timer);
+      this.document.removeEventListener('scroll', onScroll, true);
+    });
+  }
+
   ngOnInit(): void {
+    this.watchSectionScroll();
     this.requestedSession
       .pipe(
         switchMap((idEvento) =>
@@ -175,7 +214,9 @@ export class SessionsPageComponent implements OnInit {
       .subscribe((opened) => {
         this.loadingDetail.set(false);
         if (!opened) {
-          this.detailError.set('El expediente solicitado no está disponible para consulta pública.');
+          this.detailError.set(
+            'El expediente solicitado no está disponible para consulta pública.',
+          );
           return;
         }
 
@@ -230,10 +271,6 @@ export class SessionsPageComponent implements OnInit {
     this.updateUrl({ q: query || null }, true);
   }
 
-  updateCategory(event: Event): void {
-    this.category.set((event.target as HTMLSelectElement).value);
-  }
-
   selectSession(session: EventoListado): void {
     if (session.idEvento !== this.selectedId()) {
       this.updateUrl({ sesion: session.idEvento });
@@ -243,6 +280,72 @@ export class SessionsPageComponent implements OnInit {
     }
 
     this.revealFile();
+  }
+
+  /** Pasar a la sesión vecina desde la propia imagen: flechas, teclado o gesto. */
+  browseTo(session: EventoListado | null): void {
+    if (!session) {
+      return;
+    }
+
+    this.browseHint.set(false);
+    this.selectSession(session);
+  }
+
+  /** ← y → cambian de sesión mientras la imagen está a la vista y el foco no está en un control. */
+  @HostListener('document:keydown', ['$event'])
+  browseWithKeys(event: KeyboardEvent): void {
+    const offset = { ArrowLeft: -1, ArrowRight: 1 }[event.key] as -1 | 1 | undefined;
+    const target = event.target as HTMLElement | null;
+    const media = this.dossierMedia()?.nativeElement.getBoundingClientRect();
+    const window = this.document.defaultView;
+    if (
+      !offset ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      !media ||
+      !window ||
+      media.bottom <= 0 ||
+      media.top >= window.innerHeight ||
+      target?.closest(
+        'input, textarea, select, [contenteditable], [role="tablist"], [role="listbox"]',
+      )
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    this.browseTo(this.neighbour(offset));
+  }
+
+  // Gesto táctil sobre la imagen: la imagen sigue al dedo y, pasado el umbral, cambia la sesión.
+  // El desplazamiento vertical sigue siendo del navegador (touch-action: pan-y).
+  swipeStart(event: PointerEvent): void {
+    if (event.pointerType !== 'mouse') {
+      this.swipe = { x: event.clientX, dx: 0 };
+    }
+  }
+
+  swipeMove(event: PointerEvent, image: HTMLElement): void {
+    if (!this.swipe) {
+      return;
+    }
+
+    this.swipe.dx = event.clientX - this.swipe.x;
+    image.style.transition = 'none';
+    image.style.translate = `${this.swipe.dx * 0.35}px`;
+  }
+
+  swipeEnd(image: HTMLElement): void {
+    const dx = this.swipe?.dx ?? 0;
+    this.swipe = null;
+    image.style.transition = '';
+    image.style.translate = '';
+    if (Math.abs(dx) > 60) {
+      this.browseTo(this.neighbour(dx < 0 ? 1 : -1));
+    }
   }
 
   scrollIndex(direction: -1 | 1): void {
@@ -362,10 +465,14 @@ export class SessionsPageComponent implements OnInit {
       return;
     }
 
-    // Elegir una sesión siempre encuadra su imagen de portada bajo la barra superior, se esté donde
-    // se esté de la página.
+    // Elegir una sesión siempre encuadra su imagen de portada, se esté donde se esté de la página:
+    // imagen y título quedan centrados en el hueco bajo la barra superior. Si no caben, arriba.
     const offset = parseFloat(window.getComputedStyle(anchor).scrollMarginTop) || 0;
-    const target = window.scrollY + anchor.getBoundingClientRect().top - offset;
+    const media = this.dossierMedia()?.nativeElement.getBoundingClientRect();
+    const room = window.innerHeight - offset;
+    const target = media
+      ? window.scrollY + media.top - offset - Math.max(0, (room - media.height) / 2)
+      : window.scrollY + anchor.getBoundingClientRect().top - offset;
     if (Math.abs(target - window.scrollY) > 2) {
       window.scrollTo({ top: target, behavior: 'smooth' });
     }

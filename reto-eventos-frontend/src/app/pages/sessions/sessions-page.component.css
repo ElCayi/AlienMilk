@@ -2,6 +2,8 @@
 @import './styles/sessions-shell.css';
 @import './styles/sessions-index.css';
 @import './styles/sessions-dossier.css';
+@import './styles/sessions-browse.css';
 @import './styles/sessions-details.css';
 @import './styles/sessions-responsive.css';
+@import './styles/sessions-file-text.css';
 @import './styles/sessions-closing.css';

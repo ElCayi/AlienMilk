@@ -160,6 +160,8 @@
 /* La textura atraviesa la ficha; el lienzo claro pertenece solo al expediente. */
 .dossier-main {
   padding-left: clamp(1.5rem, 2.4vw, 2.25rem);
+  /* Abajo, la misma esquina discreta que el índice de sesiones. */
+  border-radius: 0 var(--corner) 1rem 0;
   background: var(--page-canvas);
 }
 
@@ -175,9 +177,13 @@
 }
 
 @media (min-width: 1001px) {
+  .dossier-body {
+    /* El mismo aire sobre ambas columnas y entre ellas. */
+    padding-top: calc(var(--dossier-column-gap) + 0.65rem + 1px);
+  }
+
   .dossier-aside {
-    /* El hueco sobre el marco iguala el que lo separa del expediente. */
-    margin-top: calc(var(--dossier-column-gap) + 0.65rem + 1px);
+    margin-top: 0;
   }
 }
 
@@ -240,8 +246,10 @@
 
 .dossier-share {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-top: 1.4rem;
 }
 
@@ -267,6 +275,10 @@
 .dossier-share span {
   color: var(--coral);
   font-size: 0.78rem;
+}
+
+.dossier-share span:empty {
+  display: none;
 }
 
 /* Reserva */

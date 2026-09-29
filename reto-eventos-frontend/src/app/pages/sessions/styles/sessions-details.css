@@ -10,15 +10,39 @@
 }
 
 @media (min-width: 1001px) {
+  .dossier-main {
+    display: flex;
+    flex-direction: column;
+    /* La ficha izquierda fija la altura; el texto se desplaza dentro del panel. */
+    contain: size;
+    min-height: 0;
+    align-self: stretch;
+    overflow: hidden;
+  }
+
+  /* Siempre en una fila: si no caben, se desplazan en horizontal en vez de partirse en dos. La
+     raya va como sombra interior para que el desbordamiento no recorte el subrayado activo. */
   .dossier-tabs {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 1.35rem;
-    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+    gap: 1.5rem;
+    overflow-x: auto;
+    box-shadow: inset 0 -1px 0 var(--line);
+    scrollbar-width: none;
+  }
+
+  /* Mientras quedan pestañas a la derecha, el borde se desvanece; al llegar al final, nítido. Sin
+     desbordamiento la línea de tiempo está inactiva y no hay degradado. */
+  @supports (animation-timeline: scroll()) {
+    .dossier-tabs {
+      mask-image: linear-gradient(to right, #000 calc(100% - var(--tabs-fade)), transparent);
+      animation: tabs-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
   }
 
   .dossier-tabs button {
-    margin-bottom: -1px;
+    flex: 0 0 auto;
     padding: 0.2rem 0 0.8rem;
     border: 0;
     border-bottom: 2px solid transparent;
@@ -48,8 +72,19 @@
 
   .dossier-section.is-active {
     display: block;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    /* La barra solo se ve mientras se desplaza el texto (clase is-scrolling, desde el componente). */
+    scrollbar-color: transparent transparent;
+    padding-right: 0.75rem;
     margin-top: 2rem;
     animation: rise 360ms ease both;
+  }
+
+  .dossier-section.is-active.is-scrolling {
+    scrollbar-color: rgba(33, 30, 36, 0.3) transparent;
   }
 
   .dossier-section h3 {
@@ -318,4 +353,22 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+}
+
+@property --tabs-fade {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes tabs-fade {
+  from {
+    --tabs-fade: 3rem;
+  }
+  92% {
+    --tabs-fade: 3rem;
+  }
+  to {
+    --tabs-fade: 0px;
+  }
 }

@@ -1,0 +1,43 @@
+<span class="select-label" [id]="id + '-label'">{{ label() }}</span>
+<button
+  #trigger
+  class="select-trigger"
+  type="button"
+  aria-haspopup="listbox"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="id + '-list'"
+  [attr.aria-labelledby]="id + '-label ' + id + '-value'"
+  (click)="toggle()"
+  (keydown)="onTriggerKey($event)"
+>
+  <span [id]="id + '-value'">{{ current().label }}</span>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+</button>
+
+@if (open()) {
+  <ul
+    #list
+    class="select-list"
+    role="listbox"
+    tabindex="-1"
+    [id]="id + '-list'"
+    [attr.aria-labelledby]="id + '-label'"
+    [attr.aria-activedescendant]="id + '-option-' + active()"
+    (keydown)="onListKey($event)"
+  >
+    @for (option of options(); track option.value; let index = $index) {
+      <!-- El teclado lo atiende la lista vía aria-activedescendant; las opciones no toman foco. -->
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+      <li
+        role="option"
+        [id]="id + '-option-' + index"
+        [attr.aria-selected]="option.value === value()"
+        [class.is-active]="index === active()"
+        (pointerenter)="active.set(index)"
+        (click)="choose(option)"
+      >
+        {{ option.label }}
+      </li>
+    }
+  </ul>
+}

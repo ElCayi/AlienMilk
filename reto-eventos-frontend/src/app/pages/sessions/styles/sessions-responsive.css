@@ -93,7 +93,7 @@
 /* El lienzo termina donde empieza la textura: el texto necesita aire propio. */
 .dossier-main {
   padding-right: var(--inset);
-  padding-bottom: clamp(3rem, 6vw, 5rem);
+  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
 }
 
 @media (max-width: 1000px) {

@@ -62,7 +62,9 @@
   gap: 0.6rem;
   padding: 0.58rem 1.5rem;
   border: 0;
-  font: 700 0.82rem 'Nunito', sans-serif;
+  font:
+    700 0.82rem 'Nunito',
+    sans-serif;
   cursor: pointer;
 }
 
@@ -113,8 +115,11 @@
 }
 
 .dossier-hero-details {
+  min-width: 0;
   color: rgba(250, 249, 247, 0.64);
-  font: 800 clamp(0.78rem, 0.9vw, 0.9rem) / 1.35 'Nunito', sans-serif;
+  font:
+    800 clamp(0.78rem, 0.9vw, 0.9rem) / 1.35 'Nunito',
+    sans-serif;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -281,32 +286,145 @@
   display: none;
 }
 
-/* Reserva */
+/* Reserva: una entrada. La matriz lleva el precio; el resguardo, la reserva; un troquel las separa. */
 .booking {
+  --notch: 0.7rem;
+  --notch-edge: calc(var(--notch) + 1px);
   display: grid;
-  gap: 0.9rem;
   margin-top: 1.6rem;
-  padding: 1.4rem;
-  border-radius: 0.45rem;
-  border: 1px solid var(--light-line);
   color: var(--light);
-  background: var(--dossier-tile);
+  /* La sombra sigue el recorte de las muescas. */
+  filter: drop-shadow(0 1.1rem 1.6rem rgba(5, 9, 14, 0.38));
+}
+
+.booking-price,
+.booking-stub {
+  position: relative;
+  border: 1px solid var(--light-line);
+  background-origin: border-box;
 }
 
 .booking-price {
+  display: grid;
+  justify-items: start;
+  gap: 0.55rem;
+  padding: 1.35rem 1.4rem 1.5rem;
+  border-bottom: 0;
+  border-radius: 0.45rem 0.45rem 0 0;
+  background:
+    radial-gradient(
+      circle at 0 100%,
+      #0000 var(--notch),
+      var(--light-line) 0 var(--notch-edge),
+      #0000 0
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      #0000 var(--notch),
+      var(--light-line) 0 var(--notch-edge),
+      #0000 0
+    ),
+    radial-gradient(120% 110% at 100% 0, rgba(255, 127, 127, 0.24), #0000 62%), var(--dossier-tile);
+  mask:
+    radial-gradient(circle at 0 100%, #0000 var(--notch), #000 0) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 100%, #0000 var(--notch), #000 0) right / 51% 100% no-repeat;
+}
+
+/* Cabecera de la matriz: qué se compra y, discreta, para qué día. */
+.booking-label {
+  white-space: nowrap;
+}
+
+.booking-head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 1rem;
+  gap: 0.35rem 0.75rem;
+  justify-self: stretch;
+  margin: 0;
 }
 
-.booking-price span,
+.booking-date {
+  color: var(--light-muted);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.booking-amount {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.15rem;
+  font-family: var(--condensed);
+  font-weight: 500;
+  line-height: 0.85;
+}
+
+.booking-whole {
+  font-size: 4.2rem;
+  letter-spacing: -0.01em;
+}
+
+.booking-cents,
+.booking-currency {
+  margin-top: 0.3rem;
+  font-size: 1.55rem;
+}
+
+.booking-currency {
+  margin-left: 0.3rem;
+  color: var(--coral);
+}
+
+.booking-unit {
+  color: var(--light-muted);
+  font-size: 0.78rem;
+}
+
+.booking-stub {
+  display: grid;
+  margin-top: -1px;
+  gap: 0.9rem;
+  padding: 1.5rem 1.4rem 1.4rem;
+  border-top: 0;
+  border-radius: 0 0 0.45rem 0.45rem;
+  background:
+    radial-gradient(
+      circle at 0 0,
+      #0000 var(--notch),
+      var(--light-line) 0 var(--notch-edge),
+      #0000 0
+    ),
+    radial-gradient(
+      circle at 100% 0,
+      #0000 var(--notch),
+      var(--light-line) 0 var(--notch-edge),
+      #0000 0
+    ),
+    var(--dossier-tile);
+  mask:
+    radial-gradient(circle at 0 0, #0000 var(--notch), #000 0) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 0, #0000 var(--notch), #000 0) right / 51% 100% no-repeat;
+}
+
+/* El troquel: puntos entre muesca y muesca. */
+.booking-stub::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: calc(var(--notch) + 0.45rem);
+  left: calc(var(--notch) + 0.45rem);
+  height: 2px;
+  background: radial-gradient(circle, var(--light-rule) 0.9px, #0000 1.3px) 0 50% / 0.55rem 2px
+    repeat-x;
+}
+
 .booking-fields span {
   color: rgba(247, 248, 249, 0.82);
-}
-
-.booking-price strong {
-  font: 400 2rem var(--condensed);
 }
 
 .booking-fields {
@@ -327,7 +445,9 @@
   border-radius: 0.3rem;
   color: #faf9f7;
   background: transparent;
-  font: 0.85rem Arial, sans-serif;
+  font:
+    0.85rem Arial,
+    sans-serif;
 }
 
 .booking-note {
@@ -340,12 +460,15 @@
 .booking-button {
   display: flex;
   justify-content: center;
+  text-align: center;
   padding: 0.85rem 1rem;
   border: 0;
   border-radius: 999px;
   color: #151217;
-  background: #faf9f7;
-  font: 800 0.8rem 'Nunito', sans-serif;
+  background: var(--coral);
+  font:
+    800 0.8rem 'Nunito',
+    sans-serif;
   letter-spacing: 0.08em;
   text-decoration: none;
   text-transform: uppercase;
@@ -356,8 +479,12 @@
 }
 
 .booking-button:hover {
-  color: white;
-  background: var(--coral);
+  background: #faf9f7;
+}
+
+.booking-button:focus-visible {
+  outline: 2px solid var(--light);
+  outline-offset: 3px;
 }
 
 .booking-button:disabled {
@@ -367,8 +494,14 @@
 
 .booking-link {
   justify-self: center;
-  color: var(--light);
+  color: var(--light-muted);
   font-size: 0.8rem;
+  text-underline-offset: 0.2em;
+  transition: color 180ms ease;
+}
+
+.booking-link:hover {
+  color: var(--coral);
 }
 
 .booking-error {

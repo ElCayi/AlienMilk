@@ -156,3 +156,11 @@
     margin-top: 0.4rem;
   }
 }
+
+/* En móvil el ticket gana ancho interior para que la cabecera quepa en una línea. */
+@media (max-width: 600px) {
+  .booking-price,
+  .booking-stub {
+    padding-inline: 1.15rem;
+  }
+}

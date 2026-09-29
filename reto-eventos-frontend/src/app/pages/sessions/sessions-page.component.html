@@ -206,7 +206,7 @@
               <h2 id="dossier-title">{{ data.nombre }}</h2>
               <div class="dossier-heading-meta">
                 <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
-                <span class="dossier-hero-details">
+                <span class="dossier-hero-details" appFitLine>
                   {{ data.direccion }} · {{ longDate(data.fechaInicio)
                   }}<ng-container *ngIf="current.dossier.horario">
                     · {{ current.dossier.horario }}</ng-container
@@ -231,14 +231,6 @@
                   <dt>Aforo</dt>
                   <dd>{{ data.aforoMaximo }} plazas</dd>
                 </div>
-                <div>
-                  <dt>Procedencia</dt>
-                  <dd>{{ current.dossier.procedencia }}</dd>
-                </div>
-                <div>
-                  <dt>Compatibilidad</dt>
-                  <dd>{{ compatibility(data) }}</dd>
-                </div>
               </dl>
 
               <div class="dossier-share">
@@ -255,59 +247,72 @@
               </div>
 
               <div class="booking">
-                <div class="booking-price">
-                  <span>Acceso individual</span>
-                  <strong>{{ price(data.precio) }}</strong>
+                <!-- Una entrada: el precio en la matriz y la reserva en el resguardo, con troquel entre ambos. -->
+                <div class="booking-price" *ngIf="priceParts(data.precio) as amount">
+                  <p class="booking-head">
+                    <span class="booking-label">Acceso individual</span>
+                    <time class="booking-date" [attr.datetime]="data.fechaInicio">{{
+                      ticketDate(data.fechaInicio)
+                    }}</time>
+                  </p>
+                  <strong class="booking-amount" [attr.aria-label]="price(data.precio)"
+                    ><span class="booking-whole">{{ amount.whole }}</span
+                    ><span class="booking-cents">{{ amount.fraction }}</span
+                    ><span class="booking-currency">{{ amount.currency }}</span></strong
+                  >
+                  <span class="booking-unit">Por persona · impuestos incluidos</span>
                 </div>
 
-                <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
-                  <div class="booking-fields">
-                    <label>
-                      <span>Plazas</span>
-                      <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
-                    </label>
-                    <label>
-                      <span>Observaciones</span>
-                      <input
-                        [(ngModel)]="observaciones"
-                        placeholder="Intolerancias, accesibilidad..."
-                      />
-                    </label>
-                  </div>
-                  <button
-                    type="button"
-                    class="booking-button"
-                    (click)="reservar()"
-                    [disabled]="loadingReservation()"
-                  >
-                    {{
-                      loadingReservation()
-                        ? 'Procesando acceso...'
-                        : 'Reservar plaza · ' + price(totalReserva())
-                    }}
-                  </button>
-                </ng-container>
+                <div class="booking-stub">
+                  <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
+                    <div class="booking-fields">
+                      <label>
+                        <span>Plazas</span>
+                        <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
+                      </label>
+                      <label>
+                        <span>Observaciones</span>
+                        <input
+                          [(ngModel)]="observaciones"
+                          placeholder="Intolerancias, accesibilidad..."
+                        />
+                      </label>
+                    </div>
+                    <button
+                      type="button"
+                      class="booking-button"
+                      (click)="reservar()"
+                      [disabled]="loadingReservation()"
+                    >
+                      {{
+                        loadingReservation()
+                          ? 'Procesando acceso...'
+                          : 'Reservar plaza · ' + price(totalReserva())
+                      }}
+                    </button>
+                  </ng-container>
 
-                <ng-template #accessPrompt>
-                  <p class="booking-note">
-                    La consulta del programa es pública. Para reservar plaza es necesario
-                    identificarse como participante.
+                  <ng-template #accessPrompt>
+                    <p class="booking-note">
+                      La consulta del programa es pública. Para reservar plaza es necesario
+                      identificarse como participante.
+                    </p>
+                    <a
+                      class="booking-button"
+                      routerLink="/login"
+                      [queryParams]="{ redirectTo: currentUrl() }"
+                    >
+                      Identificarse para reservar
+                    </a>
+                    <a class="booking-link" routerLink="/registro"
+                      >Solicitar acceso de participante</a
+                    >
+                  </ng-template>
+
+                  <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
+                    {{ reservationFeedback() }}
                   </p>
-                  <a
-                    class="booking-button"
-                    routerLink="/login"
-                    [queryParams]="{ redirectTo: currentUrl() }"
-                  >
-                    Identificarse para reservar
-                  </a>
-                  <a class="booking-link" routerLink="/registro"
-                    >Solicitar acceso de participante</a
-                  >
-                </ng-template>
-
-                <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
-                  {{ reservationFeedback() }}
-                </p>
+                </div>
               </div>
             </aside>
 
@@ -450,18 +455,18 @@
             <dl class="station-data">
               <div>
                 <dt>Fecha</dt>
-                <dd>{{ longDate(data.fechaInicio) }}</dd>
+                <dd appFitLine>{{ longDate(data.fechaInicio) }}</dd>
               </div>
               <div>
                 <dt>Franja</dt>
-                <dd>
+                <dd appFitLine>
                   {{ current.dossier.horario || 'Por confirmar' }} ·
                   {{ current.dossier.estacion.franja }}
                 </dd>
               </div>
               <div *ngFor="let operator of current.dossier.estacion.operadores">
                 <dt>{{ operator.etiqueta }}</dt>
-                <dd>{{ operator.valor }}</dd>
+                <dd appFitLine>{{ operator.valor }}</dd>
               </div>
             </dl>
             <p class="station-disclaimer">

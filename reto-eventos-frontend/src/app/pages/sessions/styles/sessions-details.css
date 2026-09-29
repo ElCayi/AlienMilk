@@ -249,13 +249,17 @@
   text-transform: uppercase;
 }
 
-/* Estación */
+/* Estación: recuadro de trazo blanco como la ficha, con el mismo aire que separa ficha y expediente. */
 .station {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.8fr);
   gap: clamp(1.5rem, 4vw, 4rem);
-  padding: clamp(2rem, 4vw, 3.25rem) var(--inset);
+  margin-block: calc(1.25rem + 0.65rem);
+  padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1.5rem, 2.4vw, 2.25rem);
+  border: 2px solid var(--light);
+  border-radius: 0 0 0 var(--corner);
   color: #faf9f7;
+  background: transparent;
 }
 
 .station-code {
@@ -294,6 +298,7 @@
 
 .station dd {
   margin: 0;
+  min-width: 0;
   font-size: 0.88rem;
 }
 

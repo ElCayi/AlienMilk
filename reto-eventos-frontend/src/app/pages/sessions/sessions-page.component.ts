@@ -25,18 +25,16 @@ import {
   longSessionDate,
   sessionDuration,
   sessionPrice,
+  sessionPriceParts,
+  ticketSessionDate,
   shortSessionDate,
 } from '../../features/sessions/session-dossier';
-import {
-  archiveCode,
-  compatibility,
-  sampleCode,
-  sessionImage,
-} from '../../features/sessions/session.presenter';
+import { archiveCode, sampleCode, sessionImage } from '../../features/sessions/session.presenter';
 import {
   CategoryOption,
   CategorySelectComponent,
 } from '../../features/sessions/category-select.component';
+import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { filterSessions } from '../../features/sessions/session-search';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { SessionDossier } from '../../models/session-dossier.models';
@@ -51,7 +49,7 @@ interface OpenedSession {
 @Component({
   selector: 'app-sessions-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, CategorySelectComponent],
+  imports: [CommonModule, FormsModule, RouterLink, CategorySelectComponent, FitLineDirective],
   templateUrl: './sessions-page.component.html',
   styleUrl: './sessions-page.component.css',
 })
@@ -147,10 +145,11 @@ export class SessionsPageComponent implements OnInit {
   readonly sessionImage = sessionImage;
   readonly archiveCode = archiveCode;
   readonly sampleCode = sampleCode;
-  readonly compatibility = compatibility;
   readonly longDate = longSessionDate;
   readonly shortDate = shortSessionDate;
   readonly price = sessionPrice;
+  readonly priceParts = sessionPriceParts;
+  readonly ticketDate = ticketSessionDate;
   readonly duration = sessionDuration;
   readonly typeLabel = humanizeSessionType;
 

@@ -54,7 +54,11 @@ interface Source {
 const POSTER = 'alienmilk-about-ferrofluid-poster.webp';
 const TAU = Math.PI * 2;
 /** Tamaño de la composición respecto al mayor que cabe en el lienzo. */
-const SCALE = 0.85;
+const SCALE = 0.98;
+/** La muestra se ve algo más alejada dentro de las formas, sin cambiar su tamaño. */
+const SOURCE_ZOOM = 0.88;
+const TREMOR_DURATION = 0.55;
+const TREMOR_INTERVAL = 12;
 
 const BLOBS: Blob[] = [
   // La pareja: la célula y la que se le está separando.
@@ -130,6 +134,16 @@ const ROOTS = BLOBS.map((_, index) => {
   return root;
 });
 
+/** Una oscilación corta que se apaga suavemente. */
+function tremor(elapsed: number): number {
+  if (!Number.isFinite(elapsed) || elapsed < 0 || elapsed >= TREMOR_DURATION) {
+    return 0;
+  }
+
+  const fade = 1 - elapsed / TREMOR_DURATION;
+  return Math.sin(elapsed * TAU * 9) * fade * fade;
+}
+
 /** Caja que ocupa la composición, con aire para la deriva: así nada roza el borde del lienzo. */
 const EXTENT = BLOBS.reduce(
   (box, { x, y, r }) => ({
@@ -172,6 +186,11 @@ export class SpecimenCultureComponent {
   private height = 0;
   private frameId = 0;
   private lastFrame = 0;
+  private placed: Placed[] = [];
+  private hoveredRoot: number | null = null;
+  private hoverStartedAt = -Infinity;
+  private idleStartsAt = Infinity;
+  private visible = false;
 
   constructor() {
     const destroyRef = inject(DestroyRef);
@@ -202,21 +221,55 @@ export class SpecimenCultureComponent {
       return () => resize.disconnect();
     }
 
+    this.idleStartsAt = performance.now() / 1000 + 8;
+    window.addEventListener('pointermove', this.onPointerMove, { passive: true });
+
     // El atributo muted no basta cuando Angular crea el elemento: sin la propiedad, el navegador
     // no permite la reproducción automática.
     video.muted = true;
     // Fuera de la vista no se decodifica ni se pinta.
-    const visibility = new IntersectionObserver(([entry]) =>
-      entry.isIntersecting ? this.play(video) : this.pause(video),
-    );
+    const visibility = new IntersectionObserver(([entry]) => {
+      this.visible = entry.isIntersecting;
+      if (entry.isIntersecting) {
+        this.play(video);
+      } else {
+        this.pause(video);
+      }
+    });
     visibility.observe(canvas);
 
     return () => {
       resize.disconnect();
       visibility.disconnect();
+      window.removeEventListener('pointermove', this.onPointerMove);
       this.pause(video);
     };
   }
+
+  private readonly onPointerMove = (event: PointerEvent): void => {
+    if (!this.visible || (event.pointerType !== 'mouse' && event.pointerType !== 'pen')) {
+      return;
+    }
+
+    const rect = this.canvas().nativeElement.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    let hovered: number | null = null;
+    for (let index = this.placed.length - 1; index >= 0; index--) {
+      const { x: blobX, y: blobY, r } = this.placed[index];
+      if (Math.hypot(x - blobX, y - blobY) <= r) {
+        hovered = ROOTS[index];
+        break;
+      }
+    }
+
+    if (hovered !== this.hoveredRoot) {
+      this.hoveredRoot = hovered;
+      if (hovered !== null) {
+        this.hoverStartedAt = performance.now() / 1000;
+      }
+    }
+  };
 
   private play(video: HTMLVideoElement): void {
     video.play().catch(() => undefined);
@@ -287,25 +340,37 @@ export class SpecimenCultureComponent {
     const originX = (width - boxWidth * side) * 0.6 - EXTENT.left * side;
     const originY = (height - boxHeight * side) * 0.1 - EXTENT.top * side;
 
+    // El temblor afecta a cada grupo entero para que sus cuellos no se separen.
+    const hoverElapsed = time - this.hoverStartedAt;
+    const idleElapsed = time - this.idleStartsAt;
+    const vibration =
+      hoverElapsed >= 0 && hoverElapsed < TREMOR_DURATION
+        ? tremor(hoverElapsed)
+        : 0.42 * tremor(idleElapsed % TREMOR_INTERVAL);
+
     // Cada forma deriva a su ritmo. Las unidas se alejan y se acercan de su madre, y el cuello
     // adelgaza y engorda con ellas, como un líquido espeso.
-    const placed: Placed[] = BLOBS.map((blob) => {
+    const placed: Placed[] = BLOBS.map((blob, index) => {
       const angle = (time * TAU) / blob.period + blob.phase;
       const home = { x: originX + blob.x * side, y: originY + blob.y * side };
+      const direction = ROOTS[index] * 2.4;
+      const shake = vibration * 0.008 * side;
       return {
         blob,
         home,
-        x: home.x + Math.cos(angle) * blob.drift * side,
-        y: home.y + Math.sin(angle * 1.3) * blob.drift * side,
+        x: home.x + Math.cos(angle) * blob.drift * side + Math.cos(direction) * shake,
+        y: home.y + Math.sin(angle * 1.3) * blob.drift * side + Math.sin(direction) * shake,
         r: blob.r * side * (1 + Math.sin(angle * 0.8) * 0.015),
       };
     });
+    this.placed = placed;
 
-    // La muestra cubre justo la caja de la composición, como en un object-fit: cover. Cuanto más
-    // ajustada la caja, más menudo se ve el ferrofluido.
+    // El encuadre parte de la caja de la composición, pero muestra algo más de la muestra dentro
+    // de cada forma. Los grupos de los bordes ajustan su encuadre para no dejar zonas vacías.
     const boxX = originX + EXTENT.left * side;
     const boxY = originY + EXTENT.top * side;
-    const scale = Math.max((boxWidth * side) / source.width, (boxHeight * side) / source.height);
+    const scale =
+      Math.max((boxWidth * side) / source.width, (boxHeight * side) / source.height) * SOURCE_ZOOM;
     const offsetX = boxX + (boxWidth * side - source.width * scale) / 2;
     const offsetY = boxY + (boxHeight * side - source.height * scale) / 2;
 
@@ -321,17 +386,24 @@ export class SpecimenCultureComponent {
       const { zoom, focus } = root.blob;
       const imageWidth = source.width * scale * zoom;
       const imageHeight = source.height * scale * zoom;
-      const imageX = focus
+      let imageX = focus
         ? root.x - focus.x * imageWidth
         : root.x - (root.home.x - offsetX) * zoom;
-      const imageY = focus
+      let imageY = focus
         ? root.y - focus.y * imageHeight
         : root.y - (root.home.y - offsetY) * zoom;
 
+      const padding = 0.04 * side;
+      const left = Math.min(...members.map((member) => member.x - member.r)) - padding;
+      const right = Math.max(...members.map((member) => member.x + member.r)) + padding;
+      const top = Math.min(...members.map((member) => member.y - member.r)) - padding;
+      const bottom = Math.max(...members.map((member) => member.y + member.r)) + padding;
+      imageX = Math.min(left, Math.max(right - imageWidth, imageX));
+      imageY = Math.min(top, Math.max(bottom - imageHeight, imageY));
+
       if (members.length === 1) {
         context.save();
-        context.beginPath();
-        context.arc(root.x, root.y, root.r, 0, TAU);
+        traceRippleCircle(context, root, time);
         context.clip();
         context.drawImage(source.image, imageX, imageY, imageWidth, imageHeight);
         context.restore();
@@ -342,7 +414,8 @@ export class SpecimenCultureComponent {
       scratch.clearRect(0, 0, width, height);
       scratch.fillStyle = '#000';
       members.forEach((member) => {
-        fillCircle(scratch, member);
+        traceRippleCircle(scratch, member, time);
+        scratch.fill();
         if (member.blob.join) {
           const mother = placed[member.blob.join.to];
           fillNeck(scratch, mother, member, member.blob.join.neck * side);
@@ -356,10 +429,28 @@ export class SpecimenCultureComponent {
   }
 }
 
-function fillCircle(context: CanvasRenderingContext2D, { x, y, r }: Circle): void {
+/** El borde del recorte ondula despacio sin deformar el contenido del vídeo. */
+function traceRippleCircle(
+  context: CanvasRenderingContext2D,
+  { x, y, r, blob }: Placed,
+  time: number,
+): void {
+  const steps = Math.max(48, Math.ceil(r / 2));
   context.beginPath();
-  context.arc(x, y, r, 0, TAU);
-  context.fill();
+  for (let index = 0; index < steps; index++) {
+    const angle = (index * TAU) / steps;
+    const ripple =
+      0.006 * Math.sin(angle * 6 - time * 1.8 + blob.phase) +
+      0.002 * Math.sin(angle * 9 + time * 1.3 - blob.phase);
+    const edgeX = x + Math.cos(angle) * r * (1 + ripple);
+    const edgeY = y + Math.sin(angle) * r * (1 + ripple);
+    if (index === 0) {
+      context.moveTo(edgeX, edgeY);
+    } else {
+      context.lineTo(edgeX, edgeY);
+    }
+  }
+  context.closePath();
 }
 
 /**

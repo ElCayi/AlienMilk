@@ -1,0 +1,385 @@
+/* Próximas sesiones en escritorio: sin escaparate, las sesiones flotan sobre el fondo líquido con
+   fichas al estilo del expediente de Sesiones (marco gris oscuro, datos en placas oscuras).
+   Hoja aparte del resto de la home para no pasar el presupuesto de tamaño por hoja; se carga la
+   última porque sobrescribe a home-session-cards.css. */
+
+@media (min-width: 901px) {
+  .sessions-block::before,
+  .sessions-carousel::before {
+    content: none;
+  }
+
+  /* Etiquetas: placa oscura, tinta coral y filo claro. */
+  .session-file-heading {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .session-file-heading span,
+  .session-secondary > div > p,
+  .session-image-link > span,
+  .session-secondary-image > span {
+    justify-self: start;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid rgba(247, 248, 249, 0.2);
+    border-radius: 0.35rem;
+    color: #ff7f7f;
+    background: rgba(13, 22, 31, 0.86);
+    backdrop-filter: none;
+    font: 800 clamp(0.66rem, 0.66vw, 0.8rem) / 1 'Nunito', sans-serif;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Las dos placas de la ficha destacada no se parten por dentro: si no caben, bajan de línea. */
+  .session-file-heading span {
+    padding-inline: 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* Fichas: marco sin relleno con la esquina de abajo a la izquierda redondeada. */
+  .session-featured-info,
+  .session-secondary > div {
+    height: auto;
+    min-height: 0;
+    gap: 0.65rem;
+    border: 2px solid #394654;
+    border-left: 0;
+    border-radius: 0 0.35rem 0.35rem 0;
+    background: transparent;
+  }
+
+  .session-featured-info::before,
+  .session-secondary > div::before {
+    top: -2px;
+    bottom: -2px;
+    border: 2px solid #394654;
+    border-right: 0;
+    border-radius: 0.35rem 0 0 clamp(2rem, 4vw, 3.5rem);
+    background: transparent;
+  }
+
+  .session-featured-info::after,
+  .session-secondary > div::after {
+    content: none;
+  }
+
+  /* Cada bloque de datos en su placa. */
+  .session-featured-info h3,
+  .session-secondary > div h3,
+  .session-featured .session-file-data,
+  .session-featured .session-featured-footer,
+  .session-secondary > div footer {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0.8rem 0.85rem;
+    border: 1px solid rgba(247, 248, 249, 0.2);
+    border-radius: 0.35rem;
+    background: rgba(13, 22, 31, 0.86);
+  }
+
+  .session-featured .session-file-data {
+    gap: 0;
+  }
+
+  .session-featured-info .session-file-data div:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .session-featured-info h3 {
+    font-size: clamp(1.45rem, 2.15vw, 2.6rem);
+  }
+
+  /* Tarjetas pequeñas: el marco no pasa del borde y las placas no lo ensanchan. */
+  .session-secondary {
+    grid-template-columns: clamp(8rem, 10.8vw, 13rem) minmax(0, 1fr);
+    gap: clamp(1.25rem, 2.2vw, 3rem);
+  }
+
+  .session-secondary > div {
+    /* +2rem: llega al margen derecho de la página (la rejilla va corrida 0,75rem). */
+    width: calc(100% + 2rem);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: clamp(0.85rem, 1.2vw, 1.15rem);
+  }
+
+  .session-secondary > div h3,
+  .session-secondary > div footer {
+    padding: clamp(0.55rem, 0.8vw, 0.8rem) clamp(0.6rem, 0.85vw, 0.85rem);
+  }
+
+  .session-secondary > div h3 {
+    font-size: clamp(1.1rem, 1.75vw, 2.1rem);
+  }
+}
+
+/* Escala a partir de portátil. A 1920: datos a ~17 px, rótulos y etiquetas a ~13 px, títulos
+   grandes; todo baja con el ancho. El marco de la destacada es de la tarjeta entera: abraza la
+   foto, sobresale arriba y abajo y arranca en el margen del texto de la sección. */
+@media (min-width: 1001px) {
+  /* Columna de las sesiones pequeñas y su hueco: los comparten la composición y la cabecera, que
+     así mide lo mismo que el marco de la destacada. */
+  .sessions-block {
+    --sessions-aside-width: clamp(19rem, 26.5vw, 32rem);
+    --sessions-aside-gap: clamp(2rem, 3vw, 3.5rem);
+  }
+
+  .sessions-program {
+    grid-template-columns: minmax(0, 1fr) var(--sessions-aside-width);
+    gap: var(--sessions-aside-gap);
+  }
+
+  /* +0,75rem: la rejilla de sesiones va corrida 0,75rem a la izquierda, así que su marco acaba antes. */
+  .sessions-editorial {
+    grid-template-columns: minmax(0, 1fr) var(--sessions-aside-width);
+    column-gap: calc(var(--sessions-aside-gap) + 0.75rem);
+  }
+
+  .sessions-editorial-main {
+    max-width: none;
+  }
+
+  /* El texto llega hasta el borde del marco: la caja se ensancha lo que mide su relleno derecho. */
+  .sessions-copy {
+    width: calc(100% + 2 * var(--sessions-copy-gutter));
+  }
+
+  .session-featured {
+    --featured-frame-overhang: clamp(-4rem, -3.5vw, -2rem);
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) clamp(16rem, 19vw, 23rem);
+    align-items: stretch;
+    gap: clamp(1.25rem, 1.8vw, 2.25rem);
+  }
+
+  .session-featured::before {
+    content: '';
+    position: absolute;
+    top: var(--featured-frame-overhang);
+    right: 0;
+    bottom: var(--featured-frame-overhang);
+    /* +0,75rem: la rejilla de sesiones va corrida 0,75rem a la izquierda. */
+    left: calc(0.75rem - var(--featured-shift, 0px));
+    z-index: 0;
+    border: 2px solid #394654;
+    /* Esquinas opuestas redondeadas: arriba a la derecha y abajo a la izquierda; las otras dos con
+       el mismo radio pequeño que las placas. */
+    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
+    pointer-events: none;
+  }
+
+  /* La foto crece hasta casi el alto que tenía el escaparate. */
+  .session-featured .session-image-link {
+    width: min(
+      100%,
+      calc(var(--home-showcase-height) - 2 * var(--sessions-showcase-inset) - 2.5rem)
+    );
+  }
+
+  .session-featured-info {
+    width: 100%;
+    align-self: stretch;
+    align-content: center;
+    grid-template-rows: none;
+    margin-block: var(--featured-frame-overhang);
+    border: 0;
+  }
+
+  .session-featured-info::before {
+    content: none;
+  }
+
+  .session-featured-info .session-file-data dt {
+    font-size: clamp(0.7rem, 0.66vw, 0.8rem);
+  }
+
+  .session-featured-info .session-file-data dd {
+    font-size: clamp(0.9rem, 0.86vw, 1.05rem);
+  }
+
+  .session-featured-info .session-featured-footer > span {
+    font-size: clamp(1.35rem, 1.45vw, 1.75rem);
+  }
+
+  .session-featured-info .session-featured-footer a {
+    font-size: clamp(0.85rem, 0.83vw, 1rem);
+  }
+
+  .session-secondary > div footer > span {
+    font-size: clamp(0.78rem, 0.78vw, 0.95rem);
+  }
+}
+
+/* La destacada se abre hacia el margen izquierdo (gana ese ancho, no solo se desplaza): recorre
+   la mitad del hueco hasta el borde de la pantalla, con tope para las muy anchas. Por debajo de
+   1500 px ya roza el margen de la barra. */
+@media (min-width: 1500px) {
+  .sessions-carousel {
+    container-type: inline-size;
+  }
+
+  .session-featured {
+    --featured-shift: max(-8rem, calc((100cqw - 100vw) / 4));
+    margin-left: var(--featured-shift);
+  }
+}
+
+/* La composición arranca pegada al texto (mismo aire que en Localizaciones y Collaborators) y mide
+   lo que su contenido: el marco de la destacada sobresale, así que se le reserva ese hueco. */
+@media (min-width: 1001px) {
+  .sessions-carousel {
+    min-height: 0;
+    margin-bottom: 0;
+    padding-block: 0;
+  }
+
+  /* Destacada y columna de la derecha ocupan el mismo alto: la primera tarjeta pequeña arranca
+     en el borde de arriba del marco y la última acaba en el de abajo. */
+  .sessions-program {
+    align-items: stretch;
+  }
+
+  .session-featured {
+    margin-block: calc(-1 * var(--featured-frame-overhang));
+  }
+
+  .session-secondary-list {
+    grid-template-rows: repeat(3, auto);
+    align-content: space-between;
+    /* Hueco mínimo: lo que sobre del alto de la destacada se reparte a partes iguales. */
+    gap: clamp(1.25rem, 2vw, 2.5rem);
+  }
+
+  /* El enlace asienta su texto en la última línea del texto de la cabecera. */
+  .sessions-tools {
+    transform: translateY(-2.3rem);
+  }
+
+  /* La composición cierra la sección: mismo aire hasta la siguiente que en el resto. El bloque va
+     subido 0,9rem + 1vh (ver home-responsive.css), así que se descuenta con su relleno. */
+  .sessions-block {
+    padding-bottom: 0;
+    margin-bottom: calc(-0.9rem - 1vh);
+  }
+}
+
+/* El enlace a toda la programación ocupa el sitio del antiguo buscador, al pie de la cabecera. */
+.sessions-tools .sessions-explore {
+  margin: 0 0 0 auto;
+  /* Su tamaño de siempre: la regla de enlaces de la cabecera (0,78rem) no le aplica. */
+  font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  .sessions-tools .sessions-explore {
+    font-size: 1.15rem;
+  }
+}
+
+/* La primera tarjeta pequeña lleva el marco en espejo vertical: la curva grande arriba. */
+@media (min-width: 901px) {
+  .session-secondary:first-child > div::before {
+    border-radius: clamp(2rem, 4vw, 3.5rem) 0 0 0.35rem;
+  }
+}
+
+/* «Explorar todas las sesiones» va en un marco entre las dos sesiones pequeñas (misma geometría
+   que sus fichas); en móvil, sin esa columna, sigue bajo el texto de la cabecera. */
+.session-secondary-cta {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .sessions-tools .sessions-explore {
+    display: none;
+  }
+
+  .session-secondary-cta {
+    display: grid;
+  }
+
+  /* Una sola pieza a todo lo ancho: cubre también la extensión que las fichas tienen tras la foto
+     (1,25rem de sangría + el ancho de esa extensión, ver home-session-cards.css). */
+  .session-secondary-cta > div {
+    --cta-extension: calc(1.25rem + clamp(5rem, 8vw, 9rem));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% + 2rem + clamp(5rem, 8vw, 9rem));
+    margin-left: calc(-1 * var(--cta-extension));
+    padding: clamp(1rem, 1.8vw, 2rem) 1rem;
+    border-left: 2px solid #394654;
+    border-radius: 0.35rem;
+  }
+
+  .session-secondary-cta > div::before {
+    content: none;
+  }
+
+  .session-secondary-cta .sessions-explore {
+    margin: 0;
+    color: var(--gallery-ink);
+    white-space: nowrap;
+    font-size: clamp(1.05rem, 1.15vw, 1.6rem);
+  }
+
+  .session-secondary-cta .sessions-explore-arrow {
+    width: 1.35em;
+    height: 1.35em;
+  }
+
+  .session-secondary-cta .sessions-explore:hover,
+  .session-secondary-cta .sessions-explore:focus-visible {
+    color: #ff7f7f;
+  }
+}
+
+/* Al cambiar la destacada los marcos laten como un muelle: se encogen, rebotan una pizca por
+   encima y se asientan, en cascada de la destacada a la última sesión pequeña. */
+@keyframes session-frame-bounce {
+  0% {
+    transform: scale(1);
+  }
+
+  28% {
+    transform: scale(0.965);
+  }
+
+  58% {
+    transform: scale(1.012);
+  }
+
+  80% {
+    transform: scale(0.997);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  .is-swapping .session-featured::before,
+  .is-swapping .session-secondary > div {
+    animation: session-frame-bounce 640ms cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  .is-swapping .session-secondary:nth-child(1) > div {
+    animation-delay: 70ms;
+  }
+
+  .is-swapping .session-secondary-cta > div {
+    animation-delay: 140ms;
+  }
+
+  .is-swapping .session-secondary:nth-child(3) > div {
+    animation-delay: 210ms;
+  }
+}

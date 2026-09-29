@@ -18,24 +18,14 @@
     </div>
 
     <div class="sessions-tools">
-      <form class="sessions-search" (submit)="$event.preventDefault(); openProgram()">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="6.5"></circle>
-          <path d="m16 16 4 4"></path>
-        </svg>
-        <span class="visually-hidden">Buscar en la programación</span>
-        <input
-          type="search"
-          [value]="query()"
-          (input)="updateQuery($event)"
-          placeholder="¿Buscas algo?"
-        />
-        <button type="submit" aria-label="Buscar en toda la programación">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <a class="sessions-explore" routerLink="/sesiones">
+        <span class="sessions-explore-label">Explorar todas las sesiones</span>
+        <span class="sessions-explore-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
-        </button>
-      </form>
+        </span>
+      </a>
     </div>
   </header>
 
@@ -96,7 +86,7 @@
         <div class="session-featured-info">
           <div class="session-file-heading">
             <span>{{ archiveCode(featured) }}</span>
-            <span>{{ featured.tipoEvento }}</span>
+            <span>{{ typeLabel(featured.tipoEvento) }}</span>
           </div>
           <h3 class="session-title-compact">
             {{ featured.nombre }}
@@ -155,56 +145,61 @@
       </article>
 
       <div class="session-secondary-list">
-        <article
-          class="session-secondary"
-          *ngFor="let session of secondarySessions; trackBy: trackSession"
-        >
-          <button
-            class="session-secondary-image"
-            type="button"
-            [attr.aria-label]="'Mostrar ' + session.nombre + ' como sesión destacada'"
-            [style.view-transition-name]="'session-sample-' + session.idEvento"
-            (click)="goToSession(session)"
-          >
-            <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
-            <span>{{ archiveCode(session) }}</span>
-          </button>
-          <div>
-            <p>{{ session.tipoEvento }}</p>
-            <h3>{{ session.nombre }}</h3>
-            <span class="session-anomaly">{{ anomaly(session) }}</span>
-            <footer>
-              <span
-                >{{ session.fechaInicio | date: 'dd.MM.yy' }} ·
-                {{ session.precio | currency: 'EUR' }}</span
-              >
-              <a
-                class="session-action session-action-icon-only"
-                routerLink="/sesiones"
-                [queryParams]="{ sesion: session.idEvento }"
-                [attr.aria-label]="'Examinar ' + session.nombre"
-              >
-                <span class="session-action-arrow" aria-hidden="true">
+        <ng-container *ngFor="let session of secondarySessions; let first = first; trackBy: trackSession">
+          <article class="session-secondary">
+            <button
+              class="session-secondary-image"
+              type="button"
+              [attr.aria-label]="'Mostrar ' + session.nombre + ' como sesión destacada'"
+              [style.view-transition-name]="'session-sample-' + session.idEvento"
+              (click)="goToSession(session)"
+            >
+              <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
+              <span>{{ archiveCode(session) }}</span>
+            </button>
+            <div>
+              <p>{{ typeLabel(session.tipoEvento) }}</p>
+              <h3>{{ session.nombre }}</h3>
+              <span class="session-anomaly">{{ anomaly(session) }}</span>
+              <footer>
+                <span
+                  >{{ session.fechaInicio | date: 'dd.MM.yy' }} ·
+                  {{ session.precio | currency: 'EUR' }}</span
+                >
+                <a
+                  class="session-action session-action-icon-only"
+                  routerLink="/sesiones"
+                  [queryParams]="{ sesion: session.idEvento }"
+                  [attr.aria-label]="'Examinar ' + session.nombre"
+                >
+                  <span class="session-action-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </span>
+                </a>
+              </footer>
+            </div>
+          </article>
+
+          <!-- Entre la primera y la segunda sesión pequeña, en un marco con su misma geometría. -->
+          <div class="session-secondary session-secondary-cta" *ngIf="first">
+            <span aria-hidden="true"></span>
+            <div>
+              <a class="sessions-explore" routerLink="/sesiones">
+                <span class="sessions-explore-label">Explorar todas las sesiones</span>
+                <span class="sessions-explore-arrow" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </span>
               </a>
-            </footer>
+            </div>
           </div>
-        </article>
+        </ng-container>
       </div>
     </div>
 
   </div>
 
 </section>
-
-<a class="sessions-explore" routerLink="/sesiones">
-    <span class="sessions-explore-label">Explorar todas las sesiones</span>
-    <span class="sessions-explore-arrow" aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path d="M5 12h14M13 6l6 6-6 6" />
-      </svg>
-    </span>
-</a>

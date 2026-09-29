@@ -11,7 +11,7 @@
   padding: clamp(1.5rem, 3vw, 2.5rem);
   border: 1px solid rgba(201, 210, 217, 0.28);
   border-top-color: rgba(255, 127, 127, 0.72);
-  background: #536473;
+  background: var(--showcase-card, #536473);
   text-align: justify;
   text-align-last: left;
   hyphens: auto;

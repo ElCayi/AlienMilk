@@ -1,5 +1,6 @@
 package retotransversal.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +51,10 @@ public class SecurityConfig {
 						.hasAnyRole("CLIENTE", "ADMON")
 						.anyRequest()
 						.authenticated())
-				.httpBasic(Customizer.withDefaults());
+				// Plain 401 without WWW-Authenticate: the SPA handles failures itself and
+				// the browser must not pop up its native Basic Auth dialog.
+				.httpBasic(basic -> basic.authenticationEntryPoint(
+						(request, response, exception) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)));
 
 		return http.build();
 	}

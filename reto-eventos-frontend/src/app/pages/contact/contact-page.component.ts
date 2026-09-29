@@ -21,6 +21,44 @@ export class ContactPageComponent implements OnInit {
   readonly contacto = this.contactService.contacto;
   readonly error = this.contactService.error;
 
+  readonly areas = [
+    {
+      number: '01',
+      title: 'Reservas y sesiones',
+      description: 'Una plaza, un cambio de planes o una duda sobre la experiencia que ha elegido.',
+      preparation:
+        'Indique la sesión, la fecha y la referencia de su reserva, si ya dispone de ella.',
+      subject: 'Sessions · Consulta sobre una reserva',
+    },
+    {
+      number: '02',
+      title: 'Visitas y accesibilidad',
+      description:
+        'Prepare su llegada, consulte las condiciones del recorrido o solicite acompañamiento.',
+      preparation:
+        'Cuéntenos qué necesita y cuándo desea visitarnos. No adjunte documentación médica.',
+      subject: 'Atención a visitantes · Preparación de la visita',
+    },
+    {
+      number: '03',
+      title: 'Grupos e instituciones',
+      description:
+        'Visitas de estudio, encuentros profesionales y propuestas para compartir una sesión.',
+      preparation:
+        'Incluya el número de participantes, las fechas previstas y el motivo de la visita.',
+      subject: 'Relaciones institucionales · Visita de grupo',
+    },
+    {
+      number: '04',
+      title: 'Prensa, archivo e investigación',
+      description:
+        'Información editorial, consultas al catálogo y solicitudes de documentación o imágenes.',
+      preparation:
+        'Indique su medio o proyecto, el material que necesita y la fecha de publicación prevista.',
+      subject: 'Comunicación y archivo · Solicitud de información',
+    },
+  ];
+
   readonly status = computed(() => {
     const contacto = this.contacto();
     return contacto ? siteStatus(contacto, this.now()) : null;
@@ -41,13 +79,6 @@ export class ContactPageComponent implements OnInit {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
   });
 
-  /** Permite partir el correo en la arroba y no a mitad de palabra. */
-  readonly emailParts = computed(() => {
-    const email = this.contacto()?.email ?? '';
-    const arroba = email.lastIndexOf('@');
-    return [email.slice(0, arroba), email.slice(arroba + 1)];
-  });
-
   readonly phoneHref = computed(
     () => `tel:${this.contacto()?.telefono?.replace(/[^\d+]/g, '') ?? ''}`,
   );
@@ -62,5 +93,19 @@ export class ContactPageComponent implements OnInit {
 
   retry(): void {
     this.contactService.load(true);
+  }
+
+  inquiryHref(subject: string): string {
+    return `mailto:${this.contacto()?.email ?? ''}?subject=${encodeURIComponent(subject)}`;
+  }
+
+  goToSection(event: MouseEvent, section: HTMLElement): void {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return;
+    }
+    // El router tiene desactivado el desplazamiento a fragmentos; esta navegación es local.
+    event.preventDefault();
+    section.scrollIntoView({ behavior: 'instant', block: 'start' });
+    section.focus({ preventScroll: true });
   }
 }

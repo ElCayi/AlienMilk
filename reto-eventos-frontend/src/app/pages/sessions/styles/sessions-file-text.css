@@ -1,0 +1,86 @@
+/* Eyebrow del expediente: el nombre de la sesión sigue presente en todas las pestañas, discreto. */
+.dossier-eyebrow {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  margin: 0 0 1.1rem;
+  font-size: 0.62rem;
+}
+
+.dossier-eyebrow-code {
+  color: var(--coral);
+}
+
+/* En móvil las secciones se leen seguidas: la eyebrow acompaña bajo la barra superior. */
+@media (max-width: 1000px) {
+  .dossier-eyebrow {
+    position: sticky;
+    top: var(--topbar-height, 4.5rem);
+    z-index: 2;
+    display: flex;
+    /* A sangre dentro del lienzo: anula el relleno lateral de .dossier-main. */
+    margin-inline: calc(-1 * var(--inset));
+    padding: 0.75rem var(--inset);
+    background: var(--page-canvas);
+    box-shadow: 0 1px 0 var(--line);
+  }
+}
+
+/* Pestaña Expediente: la entradilla es casi un título, justificada como el resto del texto. */
+.dossier-main .dossier-text .dossier-lead {
+  margin-bottom: 1.8rem;
+  color: var(--ink);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* Los créditos cierran el expediente como una firma. */
+.dossier-text .dossier-credits {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+
+.dossier-text .dossier-credits::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+/* Más margen lateral en la hoja blanca, igual a ambos lados. A la derecha, el texto ya tiene el hueco
+   reservado de su barra de scroll (unos 15 px); las pestañas y la eyebrow lo reciben como margen para
+   acabar donde acaba el texto. */
+@media (min-width: 1001px) {
+  .dossier-main {
+    --sheet-margin: clamp(2.25rem, 4vw, 4rem);
+    --sheet-gutter: 15px;
+    padding-inline: var(--sheet-margin) calc(var(--sheet-margin) - var(--sheet-gutter));
+  }
+
+  .dossier-main .dossier-section.is-active {
+    padding-right: 0;
+  }
+
+  .dossier-main .dossier-tabs,
+  .dossier-main .dossier-eyebrow {
+    margin-right: var(--sheet-gutter);
+  }
+}
+
+/* Compartir ocupa el ancho de la ficha, como los datos y la reserva que tiene encima y debajo. */
+.dossier-share {
+  align-items: stretch;
+}
+
+.dossier-share button,
+.dossier-share span {
+  justify-content: center;
+  text-align: center;
+}

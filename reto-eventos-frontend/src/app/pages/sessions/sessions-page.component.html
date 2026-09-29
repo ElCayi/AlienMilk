@@ -27,13 +27,12 @@
       </div>
 
       <div class="program-tools">
-        <label class="program-filter">
-          <span>Clasificación</span>
-          <select [value]="category()" (change)="updateCategory($event)">
-            <option value="todas">Todas las sesiones</option>
-            <option *ngFor="let item of categories()" [value]="item">{{ typeLabel(item) }}</option>
-          </select>
-        </label>
+        <app-category-select
+          class="program-filter"
+          label="Clasificación"
+          [options]="categoryOptions()"
+          [(value)]="category"
+        />
 
         <label class="program-search">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -84,11 +83,19 @@
       </div>
     </div>
 
-    <p class="program-status" *ngIf="!filteredSessions().length">
-      Ningún expediente coincide con estos parámetros.
-    </p>
-
     <ol class="index-track" #indexTrack>
+      <!-- Sin resultados, una ficha invisible guarda el alto del índice y el aviso ocupa su sitio. -->
+      <li class="index-empty" *ngIf="!filteredSessions().length">
+        <span class="index-card" aria-hidden="true">
+          <span class="index-orb"></span>
+          <span class="index-card-copy">
+            <span class="index-code">&nbsp;</span>
+            <strong>&nbsp;</strong>
+            <span class="index-meta">&nbsp;</span>
+          </span>
+        </span>
+        <p class="program-status">Ningún expediente coincide con estos parámetros.</p>
+      </li>
       <li *ngFor="let session of filteredSessions(); trackBy: trackSession">
         <button
           class="index-card"
@@ -98,7 +105,9 @@
           (click)="selectSession(session)"
         >
           <span class="index-orb">
-            <img [src]="sessionImage(session)" alt="" loading="lazy" />
+            <span class="index-lens">
+              <img [src]="sessionImage(session)" alt="" loading="lazy" />
+            </span>
             <span class="index-tag">{{ archiveCode(session) }}</span>
           </span>
           <span class="index-card-copy">
@@ -131,12 +140,53 @@
         aria-labelledby="dossier-title"
       >
         <ng-container *ngIf="current.detail as data">
-          <div class="dossier-media">
-            <figure class="dossier-hero" [class.is-expanded]="imageExpanded()">
+          <div class="dossier-media" #dossierMedia>
+            <figure
+              class="dossier-hero"
+              [class.is-expanded]="imageExpanded()"
+              [class.is-browsable]="browseHint() && previousSession()"
+              (pointerdown)="swipeStart($event)"
+              (pointermove)="swipeMove($event, heroImage)"
+              (pointerup)="swipeEnd(heroImage)"
+              (pointercancel)="swipeEnd(heroImage)"
+            >
               <img
+                #heroImage
                 [src]="sessionImage(data)"
                 [alt]="'Registro visual de la sesión ' + data.nombre"
               />
+
+              <!-- Guía para cambiar de sesión: teclas en ordenador, gesto en pantallas táctiles. -->
+              <p class="browse-hint" *ngIf="browseHint() && previousSession()" aria-hidden="true">
+                <span class="browse-keys"><kbd>←</kbd><kbd>→</kbd></span>
+                <svg class="browse-swipe" viewBox="0 0 28 16">
+                  <path d="M2 8h7M2 8l3-3M2 8l3 3M26 8h-7M26 8l-3-3M26 8l-3 3" />
+                  <circle class="browse-finger" cx="14" cy="8" r="3" />
+                </svg>
+                <span class="browse-label browse-label--keys">Cambiar de sesión</span>
+                <span class="browse-label browse-label--swipe">Desliza</span>
+              </p>
+
+              <button
+                type="button"
+                class="browse-step browse-step--prev"
+                *ngIf="previousSession() as previous"
+                [attr.aria-label]="'Sesión anterior: ' + previous.nombre"
+                (click)="browseTo(previous)"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
+                <span aria-hidden="true">{{ previous.nombre }}</span>
+              </button>
+              <button
+                type="button"
+                class="browse-step browse-step--next"
+                *ngIf="nextSession() as next"
+                [attr.aria-label]="'Sesión siguiente: ' + next.nombre"
+                (click)="browseTo(next)"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6" /></svg>
+                <span aria-hidden="true">{{ next.nombre }}</span>
+              </button>
               <button
                 type="button"
                 class="dossier-hero-toggle"
@@ -262,6 +312,13 @@
             </aside>
 
             <div class="dossier-main">
+              <!-- Recuerda de qué sesión se habla cuando la banda del título ya no está a la vista. -->
+              <p class="eyebrow dossier-eyebrow" aria-hidden="true">
+                <span class="eyebrow-icon"></span>
+                <span class="dossier-eyebrow-code">{{ archiveCode(data) }}</span>
+                <span>{{ data.nombre }}</span>
+              </p>
+
               <!-- En escritorio las secciones son pestañas; en móvil se leen seguidas. -->
               <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
                 <button

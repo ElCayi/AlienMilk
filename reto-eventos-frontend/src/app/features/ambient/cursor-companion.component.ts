@@ -10,6 +10,8 @@ import {
   inject,
 } from '@angular/core';
 
+// Minimilks que siguen al ratón. Retiradas de la landing el 2026-09-29 porque la recargaban; se guardan
+// como recurso. Para usarlas: importar CursorCompanionComponent y poner <app-cursor-companion />.
 @Component({
   selector: 'app-cursor-companion',
   standalone: true,

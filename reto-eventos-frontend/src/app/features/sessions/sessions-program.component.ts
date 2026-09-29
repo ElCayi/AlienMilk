@@ -3,15 +3,17 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   inject,
   Input,
   Output,
   signal,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 import { EventoListado } from '../../models/api.models';
+import { humanizeSessionType } from './session-dossier';
 import { anomaly, archiveCode, compatibility, sampleCode, sessionImage } from './session.presenter';
 
 interface ViewTransitionDocument {
@@ -26,14 +28,13 @@ interface ViewTransitionDocument {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionsProgramComponent {
-  private readonly router = inject(Router);
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private activeTransition: ViewTransition | null = null;
   @Input({ required: true }) sessions: EventoListado[] = [];
   @Input() loading = false;
   @Input() error = '';
   @Output() readonly retry = new EventEmitter<void>();
-  readonly query = signal('');
   readonly featuredSessionIndex = signal(0);
 
   readonly sessionImage = sessionImage;
@@ -41,6 +42,7 @@ export class SessionsProgramComponent {
   readonly sampleCode = sampleCode;
   readonly compatibility = compatibility;
   readonly anomaly = anomaly;
+  readonly typeLabel = humanizeSessionType;
 
   get featuredSession(): EventoListado | null {
     if (!this.sessions.length) {
@@ -90,6 +92,7 @@ export class SessionsProgramComponent {
     const updateFeaturedSession = () => {
       this.featuredSessionIndex.set(index);
       this.changeDetector.detectChanges();
+      this.bounceFrames();
     };
 
     const transitionDocument = document as unknown as ViewTransitionDocument;
@@ -116,14 +119,13 @@ export class SessionsProgramComponent {
     }
   }
 
-  updateQuery(event: Event): void {
-    this.query.set((event.target as HTMLInputElement).value);
-  }
-
-  openProgram(): void {
-    this.router.navigate(['/sesiones'], {
-      queryParams: { q: this.query().trim() || null },
-    });
+  // Los marcos laten al cambiar la destacada (animación en home-session-dossier.css). Quitar la
+  // clase y forzar un reflow reinicia la animación aunque se pulse otra vez a mitad.
+  private bounceFrames(): void {
+    const element = this.host.nativeElement;
+    element.classList.remove('is-swapping');
+    void element.offsetWidth;
+    element.classList.add('is-swapping');
   }
 
   trackSession(_index: number, session: EventoListado): number {

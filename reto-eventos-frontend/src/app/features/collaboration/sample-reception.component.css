@@ -175,7 +175,7 @@
   left: 50%;
   width: min(calc(100% - clamp(6rem, 10vw, 8rem)), 42rem);
   z-index: 0;
-  background: #536473;
+  background: var(--showcase-card, #536473);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -211,7 +211,7 @@
   bottom: calc(var(--sample-panel-padding) - 2.5rem);
   left: var(--sample-portal-neck-inset);
   z-index: 0;
-  background: #394654;
+  background: var(--showcase-card-deep, #394654);
   pointer-events: none;
 }
 
@@ -232,7 +232,7 @@
   height: calc(
     (var(--home-showcase-height, 46rem) - 100%) / 2 + 1.25rem
   );
-  background: #394654;
+  background: var(--showcase-card-deep, #394654);
   clip-path: polygon(
     var(--sample-portal-spread) 0,
     calc(100% - var(--sample-portal-spread)) 0,
@@ -254,7 +254,7 @@
   height: calc(
     (var(--home-showcase-height, 46rem) - 100%) / 2 + 1.25rem
   );
-  background: #394654;
+  background: var(--showcase-card-deep, #394654);
   clip-path: polygon(
     0 0,
     100% 0,

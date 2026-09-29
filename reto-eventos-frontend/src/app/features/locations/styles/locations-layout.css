@@ -44,7 +44,7 @@
 
 .locations-editorial-main {
   width: 100%;
-  max-width: 48rem;
+  max-width: var(--home-section-copy-width, 48rem);
   display: grid;
   justify-items: start;
 }
@@ -118,7 +118,7 @@
   margin: 0;
   color: var(--gallery-ink, #211e24);
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-size: clamp(2.8rem, 4.4vw, 4.8rem);
+  font-size: var(--home-section-title-size, clamp(2.8rem, 4.4vw, 4.8rem));
   font-weight: 800;
   line-height: 0.85;
   letter-spacing: 0.025em;
@@ -152,7 +152,7 @@
   margin: 0.9rem 0 0;
   color: #ff7f7f;
   font-family: 'Nunito', sans-serif;
-  font-size: clamp(1.05rem, 1.55vw, 1.3rem);
+  font-size: var(--home-section-subtitle-size, clamp(1.05rem, 1.55vw, 1.3rem));
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: 0.025em;
@@ -173,7 +173,7 @@
   max-width: 140ch;
   margin: 1rem 0 0;
   color: var(--gallery-muted, #6f686d);
-  font-size: var(--home-editorial-copy-size, 1.1rem);
+  font-size: var(--home-section-copy-size, var(--home-editorial-copy-size, 1.1rem));
   line-height: var(--home-editorial-copy-leading, 1.6);
   text-align: justify;
   text-align-last: left;

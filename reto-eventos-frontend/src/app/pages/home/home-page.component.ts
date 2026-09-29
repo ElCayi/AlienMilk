@@ -5,7 +5,6 @@ import { catchError, forkJoin, of } from 'rxjs';
 
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { EventService } from '../../core/services/event.service';
-import { CursorCompanionComponent } from '../../features/ambient/cursor-companion.component';
 import { LiquidVideoDirective } from '../../features/ambient/liquid-video.directive';
 import { LiquidBackdropComponent } from '../../features/ambient/liquid-backdrop.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
@@ -17,14 +16,13 @@ import { SessionsProgramComponent } from '../../features/sessions/sessions-progr
   imports: [
     CommonModule,
     RouterLink,
-    CursorCompanionComponent,
     LiquidBackdropComponent,
     LiquidVideoDirective,
     SessionsProgramComponent,
     LocationsAtlasComponent,
   ],
   templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.css',
+  styleUrls: ['./home-page.component.css', './styles/home-session-dossier.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class HomePageComponent implements OnInit {

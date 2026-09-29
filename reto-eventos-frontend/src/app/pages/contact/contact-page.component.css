@@ -41,8 +41,6 @@
 /* Tipografía compartida */
 .breadcrumb,
 .eyebrow,
-.block-label,
-.hours dt,
 .site-signal,
 .site-clock,
 .contact-footnote {
@@ -54,12 +52,24 @@
 }
 
 .breadcrumb {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  padding: 1.3rem 0;
   margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
   color: var(--muted);
+}
+
+.breadcrumb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: rgba(17, 21, 29, 0.42);
 }
 
 .breadcrumb a {
@@ -104,7 +114,7 @@
 h1 {
   margin: clamp(2rem, 4vw, 3.5rem) 0 0;
   font-family: var(--condensed);
-  font-size: clamp(3.2rem, 6vw, 6.4rem);
+  font-size: clamp(2.8rem, 4.4vw, 4.8rem);
   font-weight: 700;
   line-height: 0.85;
   letter-spacing: 0.025em;
@@ -163,7 +173,7 @@ h1 {
 .site-state {
   display: grid;
   justify-items: center;
-  gap: 0.45rem;
+  gap: 1rem;
 }
 
 .site-state p {
@@ -208,209 +218,429 @@ h1 {
 
 .site-clock {
   color: var(--muted);
+  transform: translateY(-0.25rem);
 }
 
 .site-clock time {
   color: var(--ink);
 }
 
-/* Cuerpo: lienzo oscuro con la esquina grande hacia la textura. */
-.contact-body {
-  padding: clamp(1.75rem, 3.5vw, 3.25rem) clamp(1.5rem, 3.5vw, 3.5rem) clamp(1.25rem, 2.5vw, 2rem);
-  border-radius: var(--corner) 1rem 1rem 1rem;
-  background: var(--canvas);
-}
-
-.contact-grid {
+/* Atención: directorio editorial y preparación de la visita. */
+.contact-index {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-areas:
-    'site site mail hours'
-    'route route access access';
-  gap: clamp(1.75rem, 3vw, 3rem) clamp(1.5rem, 3vw, 3rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  margin: 0 0 2.5rem;
+  border-top: 1px solid var(--rule);
 }
-
-.block-site {
-  grid-area: site;
-}
-
-.block-mail {
-  grid-area: mail;
-}
-
-.block-hours {
-  grid-area: hours;
-}
-
-.block-route {
-  grid-area: route;
-}
-
-.block-access {
-  grid-area: access;
-}
-
-.contact-block {
-  min-width: 0;
-  display: grid;
-  align-content: start;
+.contact-index a {
+  display: flex;
+  align-items: center;
   gap: 0.85rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
+  min-height: 4.25rem;
+  color: var(--ink);
+  font:
+    700 0.85rem 'Nunito',
+    sans-serif;
+  text-decoration: none;
 }
-
-.block-label {
+.contact-index a span:first-child {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+.contact-index a svg {
+  margin-left: auto;
+}
+.contact-directory,
+.contact-visit,
+.contact-faq {
+  scroll-margin-top: 6rem;
+}
+.section-label {
   margin: 0;
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.contact-directory h2,
+.contact-visit h2,
+.collaborators-contact h2,
+.contact-faq h2 {
+  margin: 1.5rem 0;
+  font: 400 clamp(2.5rem, 3.7vw, 4rem) / 1.05 var(--condensed);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.section-copy {
+  max-width: 36rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 2.75rem;
+  width: fit-content;
+  max-width: 100%;
+  border-bottom: 1px solid currentColor;
+  color: inherit;
+  font:
+    800 0.85rem / 1.45 'Nunito',
+    sans-serif;
+  text-decoration: none;
+}
+.text-link svg,
+.contact-index a svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.contact a,
+.contact summary {
+  transition: color 180ms ease;
+}
+.contact a:hover {
   color: var(--coral);
 }
-
-.contact-block p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.95rem;
+.contact :is(a, summary, button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+.contact-directory {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  padding: clamp(2rem, 4.5vw, 5rem);
+  border-radius: clamp(3rem, 6vw, 6rem) 1rem 1rem 1rem;
+  color: #28333a;
+  background: #f8f6f2;
+}
+.contact-directory a:hover {
+  color: #934545;
+}
+.directory-intro .section-label {
+  color: #58636a;
+}
+.directory-intro > .section-copy {
+  color: #58636a;
+}
+.direct-contact {
+  display: grid;
+  gap: 0.6rem;
+  margin: 2.5rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #c9cdca;
+}
+.directory-email,
+.directory-phone {
+  width: fit-content;
+  max-width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+.directory-email {
+  overflow-wrap: anywhere;
+  font:
+    800 clamp(1rem, 1.3vw, 1.2rem) / 1.5 'Nunito',
+    sans-serif;
+}
+.directory-phone {
+  font:
+    600 1rem / 1.5 'Nunito',
+    sans-serif;
+}
+.direct-contact > p:last-child,
+.channel-note {
+  color: #58636a;
+  font-size: 0.8rem;
   line-height: 1.65;
 }
-
-address {
+.channel-note {
+  margin-top: 1.5rem;
+}
+.directory-area {
   display: grid;
-  gap: 0.35rem;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.75rem 0;
+  border-top: 1px solid #c9cdca;
+}
+.directory-area:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.directory-area:last-child {
+  padding-bottom: 0;
+}
+.area-number {
+  padding-top: 0.5rem;
+  color: #747b7d;
+  font:
+    800 0.65rem 'Nunito',
+    sans-serif;
+}
+.directory-area h3 {
+  margin: 0;
+  font: 500 clamp(1.65rem, 2.2vw, 2.2rem) / 1.15 var(--condensed);
+}
+.directory-area p {
+  margin: 0.65rem 0;
+  color: #515d64;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+.directory-area .area-preparation {
+  font-size: 0.8rem;
+  color: #687176;
+}
+.directory-area .text-link {
+  margin-top: 0.3rem;
+}
+.contact-visit {
+  margin-top: 1.25rem;
+  padding: clamp(2rem, 4.5vw, 5rem);
+  background: var(--canvas);
+  border-radius: 1rem 1rem clamp(3rem, 6vw, 6rem) 1rem;
+}
+.section-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.contact-visit .section-label {
+  color: var(--coral);
+}
+.section-aside {
+  margin: 0;
+  max-width: 24rem;
+  color: var(--muted);
+  font:
+    400 0.85rem / 1.5 'Nunito',
+    sans-serif;
+}
+.visit-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  padding: clamp(2.5rem, 4vw, 4rem) 0;
+}
+.visit-address h2 {
+  margin-top: 1rem;
+  max-width: 30rem;
+}
+.visit-address address {
+  font:
+    700 1rem 'Nunito',
+    sans-serif;
   font-style: normal;
 }
-
-.site-address {
-  font-family: var(--condensed);
-  font-size: clamp(2rem, 3.2vw, 3.1rem);
-  font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: 0.02em;
-}
-
-.site-city {
+.visit-address .section-copy {
   color: var(--muted);
+  margin: 1.5rem 0;
+}
+.visit-hours {
+  padding-left: clamp(1.5rem, 3vw, 3rem);
+  border-left: 1px solid var(--line);
+}
+.hours-days {
+  margin: 1.5rem 0 0.5rem;
   font:
     700 1rem 'Nunito',
     sans-serif;
 }
-
-.block-link,
-.mail-link,
-.phone-link {
-  color: var(--ink);
-  text-decoration: none;
-  transition: color 180ms ease;
+.hours-time {
+  margin: 0;
+  font: 400 clamp(2rem, 3vw, 3rem) / 1.15 var(--condensed);
 }
-
-.block-link {
-  justify-self: start;
+.hours-zone {
+  margin: 0.8rem 0 1.75rem;
+  color: var(--muted);
   font:
-    700 0.85rem 'Nunito',
+    700 0.65rem / 1.6 'Nunito',
+    sans-serif;
+  letter-spacing: 0.06em;
+}
+.hours-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.visit-practical {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+}
+.visit-practical article {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.practical-number {
+  color: var(--coral);
+  font:
+    700 0.65rem 'Nunito',
     sans-serif;
 }
-
-.mail-link {
-  overflow-wrap: anywhere;
-  font:
-    700 clamp(1.05rem, 1.35vw, 1.25rem) / 1.3 'Nunito',
-    sans-serif;
+.visit-practical h3 {
+  margin: 1rem 0;
+  font: 400 1.8rem var(--condensed);
 }
-
-.phone-link {
-  font:
-    1rem 'Nunito',
-    sans-serif;
-  letter-spacing: 0.04em;
+.visit-practical p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
-
-.block-link:hover,
-.mail-link:hover,
-.phone-link:hover,
-.block-link:focus-visible,
-.mail-link:focus-visible,
-.phone-link:focus-visible {
+.collaborators-contact {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  padding: clamp(2rem, 4.5vw, 5rem);
+  margin: clamp(3rem, 6vw, 6rem) 0;
+  color: #28333a;
+  background: #eae7e4;
+  border-radius: 1rem clamp(3rem, 7vw, 7rem) 1rem 1rem;
+}
+.collaborators-art {
+  display: grid;
+  justify-items: center;
+  gap: 1.75rem;
+}
+.collaborators-cell {
+  width: min(100%, 18rem);
+  aspect-ratio: 1;
+  border-radius: 48% 52% 60% 40% / 42% 40% 60% 58%;
+  background: url('/alienmilk-collaborators-texture.webp') center / cover;
+  box-shadow:
+    inset 0 0 2rem #fff6,
+    0 0 0 0.7rem #fff3,
+    0 0 0 0.75rem #6c696924;
+}
+.cell-caption {
+  color: #616866;
+  text-align: center;
+  font:
+    800 0.6rem / 1.7 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.collaborators-copy > p:not(.section-label) {
+  color: #515b61;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.collaborators-copy .collaborators-note {
+  font-size: 0.85rem;
+}
+.collaborators-contact a:hover {
+  color: #934545;
+}
+.contact-faq {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 5vw, 5rem);
+}
+.contact-faq .section-copy {
+  color: var(--muted);
+}
+.faq-list details {
+  border-top: 1px solid var(--rule);
+}
+.faq-list details:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.faq-list summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 4.5rem;
+  padding: 1.2rem 0;
+  font:
+    700 0.98rem / 1.5 'Nunito',
+    sans-serif;
+  list-style: none;
+  cursor: pointer;
+}
+.faq-list summary::-webkit-details-marker {
+  display: none;
+}
+.faq-list summary::after {
+  content: '+';
+  font:
+    400 1.5rem 'Nunito',
+    sans-serif;
   color: var(--coral);
 }
-
-.contact-block .block-note {
-  color: var(--faint);
-  font-size: 0.82rem;
+.faq-list details[open] summary::after {
+  content: '−';
 }
-
-.hours {
-  display: grid;
-  gap: 0.6rem;
+.faq-list summary:hover {
+  color: var(--coral);
+}
+.faq-answer {
+  padding-bottom: 1.5rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+.faq-answer p {
   margin: 0;
 }
-
-.hours div {
-  display: grid;
-  gap: 0.2rem;
+.faq-answer a {
+  color: var(--ink);
+  text-underline-offset: 0.2em;
 }
-
-.hours dt {
-  color: var(--faint);
-  font-size: 0.6rem;
-}
-
-.hours dd {
-  margin: 0;
-  font:
-    700 0.98rem 'Nunito',
-    sans-serif;
-}
-
 .contact-footnote {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 0.75rem 2rem;
-  margin-top: clamp(2rem, 4vw, 3.25rem);
-  padding-top: 1rem;
+  gap: 1rem 2rem;
+  margin-top: clamp(3rem, 5vw, 5rem);
+  padding-top: 1.5rem;
   border-top: 1px solid var(--line);
-  color: var(--faint);
+  color: var(--muted);
   font-size: 0.6rem;
+  line-height: 1.8;
 }
-
 .contact-footnote p {
   margin: 0;
 }
-
+.contact-footnote a {
+  color: inherit;
+  text-underline-offset: 0.25em;
+}
 .contact-status {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  margin: 0;
-  padding: 3rem 0;
+  padding: 4rem 2rem;
   color: var(--muted);
-  text-align: center;
+  background: var(--canvas);
+  border-radius: 1rem;
 }
-
 .contact-status button {
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1.5rem;
   border: 0;
-  border-radius: 999px;
-  color: #151217;
+  border-radius: 2rem;
   background: var(--ink);
+  color: var(--canvas);
   font:
-    700 0.8rem 'Nunito',
+    700 0.9rem 'Nunito',
     sans-serif;
   cursor: pointer;
-}
-
-.contact-status button:hover {
-  color: white;
-  background: var(--coral);
-}
-
-/* Portátil y pantallas cuadradas: la sede ocupa toda la fila. */
-@media (max-width: 1400px) {
-  .contact-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      'site site'
-      'mail hours'
-      'route access';
-  }
 }
 
 @media (max-width: 1000px) {
@@ -418,19 +648,26 @@ address {
     grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.55fr);
     gap: 2rem;
   }
-
   .site-orb {
     width: min(100%, 10rem);
   }
+  .contact-directory {
+    gap: 2rem;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+  .directory-area {
+    grid-template-columns: 1.2rem minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+  .visit-practical {
+    gap: 1.5rem;
+  }
 }
-
-/* Móvil: una columna; el orbe y el estado quedan en fila bajo el titular. */
 @media (max-width: 700px) {
   .contact-header {
     grid-template-columns: 1fr;
     gap: 1.75rem;
   }
-
   .site-card {
     grid-template-columns: 5.5rem minmax(0, 1fr);
     justify-items: start;
@@ -438,39 +675,86 @@ address {
     gap: 1.1rem;
     text-align: left;
   }
-
   .site-orb {
     width: 5.5rem;
     box-shadow: 0 0 0 0.35rem rgba(247, 248, 249, 0.08);
   }
-
   .site-state {
     justify-items: start;
   }
-
-  .contact-body {
-    padding: 1.5rem 1.25rem 1.25rem;
-    border-radius: 1.75rem 0.75rem 0.75rem 0.75rem;
-  }
-
-  .contact-grid {
+  .contact-index {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      'site'
-      'mail'
-      'hours'
-      'route'
-      'access';
-    gap: 1.75rem;
+    gap: 0;
+    margin-bottom: 1.5rem;
   }
-
-  .contact-footnote {
+  .contact-index a {
+    min-height: 3.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .contact-directory,
+  .contact-faq,
+  .visit-overview,
+  .collaborators-contact {
+    grid-template-columns: 1fr;
+  }
+  .contact-directory,
+  .contact-visit,
+  .collaborators-contact {
+    padding: 2rem 1.5rem;
+  }
+  .contact-directory {
+    gap: 2rem;
+    border-radius: 2.5rem 0.75rem 0.75rem 0.75rem;
+  }
+  .directory-area:first-child {
+    border-top: 1px solid #c9cdca;
+    padding-top: 1.75rem;
+  }
+  .contact-visit {
+    border-radius: 0.75rem 0.75rem 2.5rem 0.75rem;
+  }
+  .section-heading {
     display: grid;
+    gap: 0.65rem;
+  }
+  .visit-overview {
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+  .visit-hours {
+    padding: 1.5rem 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .visit-practical {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .collaborators-contact {
+    gap: 2rem;
+    border-radius: 0.75rem 3.5rem 0.75rem 0.75rem;
+  }
+  .collaborators-art {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 1.5rem;
+    justify-items: start;
+  }
+  .cell-caption {
+    text-align: left;
+  }
+  .contact-faq {
+    gap: 2rem;
+  }
+  .faq-list summary {
+    font-size: 0.92rem;
   }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .site-signal.is-open .site-dot {
     animation: none;
+  }
+  .contact a,
+  .contact summary {
+    transition: none;
   }
 }

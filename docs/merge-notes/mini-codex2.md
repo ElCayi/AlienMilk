@@ -43,3 +43,23 @@ ediciones:
 El carrusel conserva `.session-visual`, los botones de paginación y las reglas de
 interacción; Localizaciones conserva el ancho móvil completo, el chevron desplegable
 y el espaciado interior ampliado de `.location-data`.
+
+## Contacto — ampliación editorial, 2026-09-29
+
+- Cambian los tres archivos de `pages/contact/contact-page.component.*`. Se conservan la
+  franja oscura de las migas, el tamaño de título compartido con Sesiones, el estado horario
+  y el ajuste óptico de la hora local.
+- La ficha compacta pasa a un directorio con cuatro motivos de consulta, información ampliada
+  para visitantes, una entrada propia a Collaborators y preguntas desplegables nativas.
+- Dirección, ciudad, teléfono, correo, horarios, acceso y transporte siguen leyendo
+  `ContactService`: no se cambia la base compartida ni el contrato del backend/admin.
+  Las áreas de consulta son contenido editorial del componente, no nuevos campos del admin.
+- Los enlaces de consulta abren el correo configurado con un asunto específico. No hay un
+  endpoint de mensajes, envío automático ni buzones nuevos. Collaborators conserva el flujo
+  de primera consulta por correo y se presenta como unidad hermana de Sessions.
+- `anchorScrolling` está desactivado globalmente. El índice de Contacto desplaza y enfoca
+  sus secciones localmente con `goToSection`; no cambiar el router global para este ajuste.
+  Evitar enlaces desnudos `#id`: el `base href` los resuelve contra la portada.
+- Al fusionar, conservar los estados de carga/error/reintento y revisar 320, 390, 768 y
+  1440 px, los enlaces con asunto y las FAQ por teclado. El mapa sigue siendo una búsqueda
+  de la dirección configurada, no una ubicación verificada.

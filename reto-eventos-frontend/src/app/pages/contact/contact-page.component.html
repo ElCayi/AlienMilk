@@ -23,11 +23,16 @@
 
       @if (contacto()) {
         <aside class="site-card" aria-label="Estado de la sede">
-          <div class="site-orb" aria-hidden="true">
-            <video autoplay muted loop playsinline preload="metadata">
-              <source src="alienmilk-planet-loop.webm" type="video/webm" />
-              <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
-            </video>
+          <div class="site-orbit" aria-hidden="true">
+            <div class="site-orb">
+              <video autoplay muted loop playsinline preload="metadata">
+                <source src="alienmilk-planet-loop.webm" type="video/webm" />
+                <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <span class="site-minimilk"
+              ><span><span></span></span
+            ></span>
           </div>
 
           <div class="site-state">
@@ -52,17 +57,17 @@
   @if (contacto(); as sede) {
     <nav class="contact-index" aria-label="En esta página">
       <a href="contacto#atencion" (click)="goToSection($event, directory)"
-        ><span>01</span> Atención y consultas
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
-      ></a>
+        ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+        ><span>01</span> Atención y consultas</a
+      >
       <a href="contacto#visita" (click)="goToSection($event, visit)"
-        ><span>02</span> Visitar la sede
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
-      ></a>
+        ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+        ><span>02</span> Visitar la sede</a
+      >
       <a href="contacto#preguntas" (click)="goToSection($event, questions)"
-        ><span>03</span> Antes de escribir
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
-      ></a>
+        ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+        ><span>03</span> Antes de escribir</a
+      >
     </nav>
 
     <section

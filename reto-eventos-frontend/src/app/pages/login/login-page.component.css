@@ -99,14 +99,6 @@ h1 {
 h1 span {
   color: var(--coral);
 }
-.welcome-mark {
-  display: block;
-  width: 2.75rem;
-  height: 2.75rem;
-  margin: 0 0 1.5rem;
-  background: var(--ink);
-  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
-}
 .lead {
   color: var(--muted);
   line-height: 1.7;
@@ -340,14 +332,9 @@ button:disabled {
 h1 {
   font-weight: 700;
   letter-spacing: 0.025em;
-  line-height: 0.85;
+  line-height: 1.2;
   transform: scaleY(0.78);
   transform-origin: left center;
-}
-.welcome-mark {
-  width: 100%;
-  height: 2rem;
-  mask: url('/alienmilk-ufo.svg') left center / 2rem 2rem space no-repeat;
 }
 .login-shell {
   align-items: stretch;
@@ -384,9 +371,6 @@ h1 {
   h1 {
     font-size: clamp(2.8rem, 4.4vw, 4.8rem);
     margin: 2.35rem 0 1rem;
-  }
-  .welcome-mark {
-    margin-bottom: 1rem;
   }
   .lead {
     margin-bottom: 1.25rem;
@@ -461,18 +445,6 @@ h1 {
 .login-copy {
   container-type: inline-size;
 }
-.welcome-mark {
-  display: flex;
-  justify-content: space-between;
-  background: none;
-  mask: none;
-}
-.welcome-mark span {
-  flex: 0 0 2rem;
-  height: 2rem;
-  background: var(--ink);
-  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
-}
 
 /* Compact card: breathing room belongs above the fields, not below the button. */
 .login-card {
@@ -489,17 +461,153 @@ h1 {
   margin-top: 0;
   padding-top: 1.25rem;
 }
-.welcome-mark {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
-  grid-auto-rows: 2rem;
-  gap: 0.75rem;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.welcome-mark span {
-  width: 2rem;
-  justify-self: center;
-}
 
 .login-card h2 { margin-top: 0; }
+
+/* Side by side, the card stretches to the bottom of the demo box; the form
+   stays where it is and the sign-up line settles at the bottom edge. */
+@media (min-width: 1001px) {
+  .login-card {
+    align-self: stretch;
+  }
+  .login-card .signup-copy {
+    margin-top: auto;
+  }
+}
+
+.password-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  margin-top: 0.6rem;
+}
+.password-label a {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.password-label a:hover {
+  color: var(--coral);
+}
+
+/* Heading on top, a pause, then the form sits on the bottom of the card. */
+.login-card .card-intro {
+  margin-bottom: 2.5rem;
+}
+.login-card form {
+  margin-top: auto;
+}
+.login-card .signup-copy {
+  margin-top: 0;
+}
+@media (min-width: 1001px) {
+  .login-card {
+    margin-top: clamp(1.5rem, 3vh, 2.75rem);
+  }
+}
+
+/* Brand lockup, as in the footer: AlienMilk in Nunito, Sessions smaller in
+   Barlow Condensed. Nunito undoes the title's vertical squash so the wordmark
+   keeps its real proportions. */
+.lockup-name,
+.lockup-unit {
+  display: inline-block;
+  transform-origin: left bottom;
+}
+.lockup-name {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0;
+  transform: scaleY(1.2821);
+}
+.lockup-unit {
+  font: 600 0.72em 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.06em;
+  margin-left: 0.22em;
+}
+
+/* The squash anchors to the top, so the title starts where it does on the
+   other pages; the 22% it frees (3 lines × 1.2em) is taken back below. */
+h1 {
+  transform-origin: left top;
+  margin-bottom: calc(0.6rem - 0.792em);
+}
+
+/* Same arrow as the landing's "Explorar" links. */
+.arrow {
+  display: inline-block;
+  width: 1.05rem;
+  height: 1.05rem;
+  vertical-align: -0.15em;
+  color: var(--coral);
+  transition: transform 180ms ease;
+}
+.arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.account-top .arrow {
+  align-self: center;
+}
+:is(.demo-account, .retry, .login-footnote a):is(:hover, :focus-visible) .arrow {
+  transform: translateX(0.3rem);
+}
+.login-footnote a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.login-footnote .arrow {
+  width: 1.35em;
+  height: 1.35em;
+}
+
+/* A short row of minimilks under the card copy. The coral one is the visitor. */
+.milk-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+.milk-row span {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--ink);
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+.milk-row .you {
+  background: var(--coral);
+}
+.login-card .card-intro {
+  margin-bottom: 1.25rem;
+}
+
+/* Two columns: the boxes grow down to the bottom bar on tall screens, and the
+   vertical rhythm tightens on short ones so both boxes stay in view. */
+@media (min-width: 1001px) {
+  .login-shell {
+    flex: 1 0 auto;
+  }
+  .lead {
+    margin-bottom: clamp(0.75rem, 2.5vh, 2rem);
+  }
+  .login-card .card-intro {
+    margin-bottom: clamp(0.75rem, 2vh, 1.25rem);
+  }
+  .milk-row {
+    margin-bottom: clamp(1rem, 4vh, 2.5rem);
+  }
+}
+@media (max-width: 1000px) {
+  .milk-row {
+    margin-bottom: 2rem;
+  }
+}

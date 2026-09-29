@@ -10,10 +10,22 @@
 }
 
 @media (min-width: 1001px) {
+  .dossier-main {
+    display: flex;
+    flex-direction: column;
+    /* La ficha izquierda fija la altura; el texto se desplaza dentro del panel. */
+    contain: size;
+    min-height: 0;
+    align-self: stretch;
+    overflow: hidden;
+  }
+
   .dossier-tabs {
     display: flex;
+    flex-shrink: 0;
     flex-wrap: wrap;
-    gap: 0.35rem 1.35rem;
+    justify-content: space-between;
+    gap: 0.9rem 2rem;
     border-bottom: 1px solid var(--line);
   }
 
@@ -48,6 +60,11 @@
 
   .dossier-section.is-active {
     display: block;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    padding-right: 0.75rem;
     margin-top: 2rem;
     animation: rise 360ms ease both;
   }

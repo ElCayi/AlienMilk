@@ -1,0 +1,327 @@
+/* Localizaciones como segunda parte de Próximas sesiones: sin eyebrow ni raya de sección. */
+@media (min-width: 901px) {
+  :host(:not(.locations-collaboration-section)) .locations-atlas {
+    border-top: 0;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-kicker {
+    display: none;
+  }
+}
+
+/* Planetario en horizontal: las tres órbitas en fila sobre un eje que va de margen a margen. Bajo
+   el eje se abre un cajón con el marco del expediente, cada planeta baja un cable y las estaciones
+   salen en paralelo. Al final, la ficha del asistente a todo el ancho. */
+@media (min-width: 1001px) {
+  .locations-layout:not(.locations-layout-collaboration) {
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(3rem, 5vw, 5.5rem);
+  }
+
+  .locations-chart-viewport {
+    --orbit: clamp(10rem, 12vw, 17rem);
+    /* Cable del planeta al cajón y relleno del cajón. */
+    --drop: clamp(1.75rem, 2.6vw, 3rem);
+    --drawer-pad: clamp(1rem, 1.5vw, 1.75rem);
+    height: auto;
+    min-height: 0;
+    display: block;
+    padding: 0;
+  }
+
+  .locations-chart {
+    width: 100%;
+    box-sizing: border-box;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 0 var(--drawer-pad);
+    padding: 0 var(--drawer-pad) var(--drawer-pad);
+  }
+
+  /* El eje: una línea horizontal que atraviesa las tres órbitas por el centro. */
+  .locations-chart::before {
+    top: calc(var(--orbit) / 2);
+    right: 0;
+    bottom: auto;
+    left: 0;
+    border-top: 2px solid #394654;
+    border-left: 0;
+    transform: translateY(-50%);
+  }
+
+  /* El cajón: marco con las esquinas opuestas redondeadas, desde el final de los cables. */
+  .locations-chart::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--orbit) + var(--drop));
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 2px solid #394654;
+    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
+    pointer-events: none;
+  }
+
+  .location-node {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--orbit) auto;
+    justify-items: center;
+    gap: calc(var(--drop) + var(--drawer-pad));
+    min-height: 0;
+  }
+
+  /* Cable del planeta a su estación: cruza el marco del cajón y llega a la placa. */
+  .location-node::before {
+    content: '';
+    position: absolute;
+    /* La órbita dibuja su anillo al 92 %: el cable arranca en el borde del anillo. */
+    top: calc(var(--orbit) * 0.96);
+    left: 50%;
+    height: calc(var(--orbit) * 0.04 + var(--drop) + var(--drawer-pad));
+    border-left: 2px solid #394654;
+    transform: translateX(-50%);
+    transform-origin: top;
+  }
+
+  .location-orbit {
+    width: var(--orbit);
+  }
+
+  /* Dentro del cajón la estación es solo su placa: el marco ya lo pone el cajón. */
+  .location-data {
+    justify-self: stretch;
+    padding: 0;
+  }
+
+  .location-data::before {
+    content: none;
+  }
+
+  .location-data summary,
+  .location-data-details {
+    margin-inline: 0;
+  }
+
+  .location-data strong {
+    font-size: clamp(1.7rem, 1.95vw, 2.6rem);
+    line-height: 1.05;
+    white-space: normal;
+  }
+
+  /* Ficha del asistente a todo el ancho, con rótulo y título arriba y tres columnas debajo:
+     aviso, texto de acceso y operadores. */
+  .locations-brief {
+    order: 2;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 0.9fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      'code code code'
+      'title title title'
+      'notice access operators';
+    align-content: start;
+    gap: clamp(0.6rem, 1vw, 0.9rem) clamp(0.9rem, 1.3vw, 1.6rem);
+    padding: clamp(1.5rem, 2.5vw, 2.75rem);
+  }
+
+  .locations-brief > .locations-brief-code {
+    grid-area: code;
+  }
+
+  .locations-brief h3 {
+    grid-area: title;
+    align-self: start;
+    justify-self: start;
+    text-align: left;
+  }
+
+  .locations-brief-disclaimer {
+    grid-area: notice;
+    align-self: stretch;
+  }
+
+  .locations-brief > p:not(.locations-brief-disclaimer) {
+    grid-area: access;
+    align-self: stretch;
+  }
+
+  .locations-brief dl {
+    grid-area: operators;
+    text-align: left;
+    align-self: stretch;
+    align-content: center;
+  }
+}
+
+/* El despliegue: el cajón se abre de arriba abajo, bajan los cables y las estaciones caen con el
+   mismo latido elástico que los marcos de Próximas sesiones. Todo espera en pausa (y en su
+   primer fotograma) hasta que el componente marca el planetario como desplegado. */
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+  .locations-chart.is-armed::after {
+    animation: locations-drawer-open 560ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
+  }
+
+  .locations-chart.is-armed .location-node::before {
+    animation: locations-cable-drop 280ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
+    animation-delay: calc(360ms + var(--station-delay, 0ms));
+  }
+
+  .locations-chart.is-armed .location-data {
+    animation: locations-station-drop 680ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
+    animation-delay: calc(520ms + var(--station-delay, 0ms));
+  }
+
+  .locations-chart.is-armed .location-node-secondary {
+    --station-delay: 110ms;
+  }
+
+  .locations-chart.is-armed .location-node-tertiary {
+    --station-delay: 220ms;
+  }
+
+  .locations-chart.is-deployed::after,
+  .locations-chart.is-deployed .location-node::before,
+  .locations-chart.is-deployed .location-data {
+    animation-play-state: running;
+  }
+}
+
+@keyframes locations-drawer-open {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes locations-cable-drop {
+  from {
+    transform: translateX(-50%) scaleY(0);
+  }
+
+  to {
+    transform: translateX(-50%) scaleY(1);
+  }
+}
+
+@keyframes locations-station-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-1.5rem) scale(0.965);
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  58% {
+    transform: translateY(0.2rem) scale(1.012);
+  }
+
+  80% {
+    transform: translateY(0) scale(0.997);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* En horizontal las placas de estación son estrechas: el botón sube a la esquina, a la altura del
+   rótulo, y solo esa línea le deja sitio. Los operadores, si su columna no da para rótulo y
+   nombre en una línea, ponen el nombre debajo. */
+@media (min-width: 1001px) {
+  .location-data summary {
+    padding-right: clamp(0.8rem, 1.1vw, 1.05rem);
+  }
+
+  .location-data summary > span {
+    padding-right: calc(clamp(2rem, 2.2vw, 2.75rem) + 0.5rem);
+  }
+
+  .location-data summary::after {
+    top: clamp(0.55rem, 0.8vw, 0.8rem);
+    transform: none;
+  }
+
+  .location-data summary:hover::after,
+  .location-data summary:focus-visible::after {
+    transform: scale(1.04);
+  }
+
+  .locations-brief dl {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 21rem) {
+    .locations-brief dl div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.3rem;
+    }
+
+    .locations-brief dd {
+      justify-content: flex-start;
+    }
+  }
+}
+
+/* Cabecera de subsección: no compite con el h2 de Próximas sesiones. Va en horizontal, como el
+   planetario: a la izquierda el título a escala de ficha, con su subtítulo; a la derecha el texto,
+   ocupando el resto del ancho hasta el margen. */
+@media (min-width: 1001px) {
+  :host(:not(.locations-collaboration-section)) .locations-editorial-main {
+    max-width: none;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+    /* Dos mitades iguales: el título se asienta en la de arriba y el subtítulo cuelga en la de
+       abajo, así la línea que los separa cae justo en el centro del filete del texto. */
+    --subsection-gap: clamp(2.5rem, 5vw, 6rem);
+    --subsection-air: clamp(0.85rem, 1.1vw, 1.35rem);
+    grid-template-areas:
+      'title intro'
+      'subtitle intro';
+    grid-template-rows: 1fr 1fr;
+    column-gap: var(--subsection-gap);
+    width: calc(100% + 2 * var(--locations-copy-gutter));
+  }
+
+  .locations-editorial .locations-subsection-title {
+    grid-area: title;
+    align-self: end;
+    /* La línea sale del inicio del título y llega al filete: cruza el hueco entre columnas y
+       baja 1 px para que su centro (no su borde) quede en la mitad exacta. */
+    margin-right: calc(-1 * var(--subsection-gap));
+    padding-bottom: var(--subsection-air);
+    border-bottom: 2px solid #394654;
+    translate: 0 1px;
+    font-size: clamp(2.6rem, 3.4vw, 4.2rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    transform: none;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-subtitle {
+    grid-area: subtitle;
+    align-self: start;
+    margin-top: var(--subsection-air);
+    font-size: clamp(1.05rem, 1.15vw, 1.35rem);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-intro {
+    grid-area: intro;
+    align-self: stretch;
+    max-width: none;
+    margin: 0;
+    border-left: 2px solid #394654;
+    padding-left: clamp(1.25rem, 2vw, 2.25rem);
+  }
+}

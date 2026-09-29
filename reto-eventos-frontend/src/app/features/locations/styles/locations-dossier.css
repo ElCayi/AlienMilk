@@ -1,0 +1,250 @@
+/* Localizaciones en escritorio con el lenguaje de Próximas sesiones: sin escaparate, todo flota
+   sobre el fondo líquido; marcos gris oscuro sin relleno y los datos en placas oscuras. Se carga
+   la última porque sobrescribe al resto de hojas de la sección. Collaborators conserva su panel. */
+@media (min-width: 901px) {
+  .locations-layout:not(.locations-layout-collaboration)::before {
+    content: none;
+  }
+
+  /* Ficha del asistente: marco con las esquinas opuestas redondeadas, como la sesión destacada. */
+  .locations-brief {
+    /* Las placas suman relleno: el marco crece con ellas si no caben en el alto del antiguo escaparate. */
+    height: auto;
+    min-height: var(--home-showcase-height, 46rem);
+    gap: clamp(0.6rem, 1vw, 0.9rem);
+    align-content: space-between;
+    border: 2px solid #394654;
+    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
+    background: transparent;
+  }
+
+  .locations-brief > .locations-brief-code {
+    justify-self: start;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid rgba(247, 248, 249, 0.2);
+    border-radius: 0.35rem;
+    background: rgba(13, 22, 31, 0.86);
+    font: 800 clamp(0.66rem, 0.66vw, 0.8rem) / 1 'Nunito', sans-serif;
+    letter-spacing: 0.1em;
+    opacity: 1;
+  }
+
+  .locations-brief h3,
+  .locations-brief > p,
+  .locations-brief dl {
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 0;
+    padding: clamp(0.7rem, 1vw, 0.95rem) clamp(0.8rem, 1.1vw, 1.05rem);
+    border: 1px solid rgba(247, 248, 249, 0.2);
+    border-radius: 0.35rem;
+    background: rgba(13, 22, 31, 0.86);
+  }
+
+  .locations-brief-disclaimer {
+    border-left: 2px solid #ff7f7f;
+  }
+
+  /* Los operadores, como los datos de la ficha de sesión: filas separadas por una línea. */
+  .locations-brief dl {
+    gap: 0;
+  }
+
+  .locations-brief dl div {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 0.55rem 0;
+    border-top: 1px solid rgba(247, 248, 249, 0.2);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .locations-brief dl div:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .locations-brief dl div:last-child {
+    padding-bottom: 0;
+  }
+
+  /* Estaciones: marco como el de las sesiones pequeñas (esquina de abajo a la izquierda grande) y
+     el rótulo y los datos en placas. */
+  .location-orbit-ring,
+  .location-orbit-ring::before,
+  .locations-chart::before {
+    border-width: 2px;
+  }
+
+  /* Sin escaparate no hay borde del que separarse: las estaciones llegan al margen de la página. */
+  .locations-chart-viewport {
+    padding-right: 0;
+  }
+
+  .location-data {
+    padding:clamp(0.85rem, 1.2vw, 1.15rem) 0;
+  }
+
+  .location-data::before {
+    inset: 0;
+    border: 2px solid #394654;
+    border-radius: 0.35rem 0.35rem 0.35rem clamp(2rem, 4vw, 3.5rem);
+    background: transparent;
+  }
+
+  .location-data summary,
+  .location-data-details {
+    box-sizing: border-box;
+    margin-inline: clamp(0.85rem, 1.2vw, 1.15rem);
+    padding: clamp(0.7rem, 1vw, 0.95rem) calc(clamp(0.8rem, 1.1vw, 1.05rem) + 2.75rem)
+      clamp(0.7rem, 1vw, 0.95rem) clamp(0.8rem, 1.1vw, 1.05rem);
+    border: 1px solid rgba(247, 248, 249, 0.2);
+    border-radius: 0.35rem;
+    background: rgba(13, 22, 31, 0.86);
+  }
+
+  .location-data-details {
+    margin-top: 0.5rem;
+    padding-right: clamp(0.8rem, 1.1vw, 1.05rem);
+  }
+
+  .location-data summary > span {
+    color: #ff7f7f;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  .location-data strong {
+    color: #f7f8f9;
+  }
+
+  .location-data small,
+  .location-data-details p,
+  .location-data-details dt {
+    color: #c9d2d9;
+  }
+
+  .location-data-details dd {
+    color: #f7f8f9;
+  }
+
+  .location-data summary::after {
+    right: clamp(0.8rem, 1.1vw, 1.05rem);
+    color: #f7f8f9;
+    border-color: rgba(247, 248, 249, 0.45);
+  }
+
+  /* Enlaces de pie: raya del mismo color que el texto. */
+  .locations-brief-cta-external::after,
+  .locations-collaboration-action::after {
+    opacity: 1;
+  }
+}
+
+/* Escala a partir de portátil, con la de Próximas sesiones: a 1920, texto a ~19 px y rótulos a
+   ~14 px, con suelos altos para que en portátil pequeño sigan leyéndose (~17 y ~13 px). La ficha
+   se ensancha para que quepa el texto y las órbitas crecen con la pantalla, no con el alto del antiguo escaparate. */
+@media (min-width: 1001px) {
+  .locations-layout:not(.locations-layout-collaboration) {
+    grid-template-columns: clamp(23rem, 28vw, 34rem) minmax(0, 1fr);
+  }
+
+  .locations-brief > .locations-brief-code {
+    font-size: clamp(0.8rem, 0.75vw, 0.95rem);
+  }
+
+  .locations-brief h3 {
+    font-size: clamp(2.2rem, 2.4vw, 3rem);
+  }
+
+  .locations-brief > p {
+    font-size: clamp(1.08rem, 1.02vw, 1.3rem);
+    line-height: 1.55;
+  }
+
+  .locations-brief-disclaimer {
+    font-size: clamp(0.98rem, 0.92vw, 1.15rem) !important;
+  }
+
+  .locations-brief dt,
+  .locations-brief dd {
+    font-size: clamp(1.05rem, 1vw, 1.25rem);
+  }
+
+  .locations-operator-link svg {
+    width: 1.2em;
+    height: 1.2em;
+  }
+
+  .locations-chart-viewport {
+    --orbit: clamp(7rem, 8.5vw, 13rem);
+    --chart-air: clamp(0.5rem, 3vw, 4.5rem);
+    height: auto;
+    min-height: var(--home-showcase-height, 46rem);
+  }
+
+  .locations-chart {
+    /* En pantallas anchas el gráfico se estira hacia la ficha para no dejar un hueco en medio. */
+    width: min(100%, 74rem);
+  }
+
+  .location-data summary > span {
+    font-size: clamp(0.8rem, 0.75vw, 0.95rem);
+  }
+
+  .location-data strong {
+    font-size: clamp(2rem, 2.35vw, 3rem);
+  }
+
+  .location-data small {
+    font-size: clamp(0.88rem, 0.85vw, 1.05rem);
+    letter-spacing: 0.06em;
+  }
+
+  .location-data-details p {
+    font-size: clamp(1.05rem, 1vw, 1.25rem);
+  }
+
+  .location-data-details dt {
+    font-size: clamp(0.8rem, 0.72vw, 0.92rem);
+  }
+
+  .location-data-details dd {
+    font-size: clamp(1.15rem, 1.1vw, 1.35rem);
+  }
+
+  .location-data summary {
+    padding-right: calc(clamp(0.8rem, 1.1vw, 1.05rem) + clamp(2rem, 2.2vw, 2.75rem) + 0.75rem);
+  }
+
+  .location-data summary::after {
+    width: clamp(2rem, 2.2vw, 2.75rem);
+    height: clamp(2rem, 2.2vw, 2.75rem);
+    background-size: 36% 1.5px, 1.5px 36%;
+  }
+
+  .location-data[open] summary::after {
+    background-size: 36% 1.5px, 0 36%;
+  }
+
+  .locations-brief-cta-external {
+    font-size: clamp(1.1rem, 1.1vw, 1.35rem);
+  }
+
+  .locations-brief-cta-external svg {
+    width: 1.35em;
+    height: 1.35em;
+  }
+}
+
+/* La línea de fecha se parte, si hace falta, entre la fecha y la duración, nunca a mitad. */
+.location-data small > span {
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+}

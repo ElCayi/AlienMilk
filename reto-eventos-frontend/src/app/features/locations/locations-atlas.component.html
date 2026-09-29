@@ -8,7 +8,7 @@
         <span *ngIf="collaborationMode">Programa de colaboradores · 2026</span>
       </p>
       <div class="locations-copy">
-        <h2 id="locations-title" *ngIf="!collaborationMode">Localizaciones</h2>
+        <h3 id="locations-title" class="locations-subsection-title" *ngIf="!collaborationMode">Localizaciones</h3>
         <h2 class="locations-collaborators-title" *ngIf="collaborationMode">
           <span class="locations-collaborators-brand">AlienMilk</span>
           <span class="locations-collaborators-label">Collaborators</span>
@@ -104,8 +104,8 @@
               <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
               <strong>{{ location.direccion }}</strong>
               <small>
-                {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
-                {{ location.aforoMaximo }}
+                <span>{{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }}</span> ·
+                <span>{{ location.duracion }} MIN · AFORO {{ location.aforoMaximo }}</span>
               </small>
             </summary>
             <div class="location-data-details">

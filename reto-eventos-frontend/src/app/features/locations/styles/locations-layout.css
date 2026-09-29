@@ -113,7 +113,7 @@
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
-.locations-editorial h2 {
+.locations-editorial :is(h2, h3) {
   max-width: none;
   margin: 0;
   color: var(--gallery-ink, #211e24);

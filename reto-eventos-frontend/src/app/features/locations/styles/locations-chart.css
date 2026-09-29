@@ -303,7 +303,7 @@
 }
 
 @media (min-width: 1001px) {
-  .locations-editorial h2 {
+  .locations-editorial :is(h2, h3) {
     font-size: var(--home-section-title-size, clamp(2.8rem, min(4.4vw, 7vh), 4.8rem));
   }
 }

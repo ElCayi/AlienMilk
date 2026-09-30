@@ -90,10 +90,25 @@
           [class.location-node-tertiary]="index === 2"
         >
           <div class="location-orbit" aria-hidden="true">
+            <svg class="location-dial" viewBox="-50 -50 100 100" focusable="false">
+              <circle class="location-dial-minutes" r="50" pathLength="360" />
+              <circle class="location-dial-hours" r="50.75" pathLength="360" />
+              <path class="location-dial-index" d="M0 -54.2 L-1.9 -57.6 H1.9 Z" />
+            </svg>
             <span class="location-orbit-ring">
               <span class="location-marker"><span></span></span>
             </span>
-            <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
+            <!-- [muted] fija la propiedad: el atributo solo no basta en vídeos creados desde JS y Chrome
+                 bloquearía la reproducción automática. -->
+            <video
+              class="location-planet location-planet-video"
+              *ngIf="index === 0"
+              autoplay
+              muted
+              [muted]="true"
+              loop
+              playsinline
+            >
               <source src="alienmilk-planet-loop.webm" type="video/webm" />
               <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
             </video>
@@ -101,11 +116,11 @@
           </div>
           <details class="location-data" name="location-stations">
             <summary>
-              <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
+              <span appFitLine>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
               <strong>{{ location.direccion }}</strong>
-              <small>
-                <span>{{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }}</span> ·
-                <span>{{ location.duracion }} MIN · AFORO {{ location.aforoMaximo }}</span>
+              <small appFitLine>
+                {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
+                {{ location.aforoMaximo }}
               </small>
             </summary>
             <div class="location-data-details">

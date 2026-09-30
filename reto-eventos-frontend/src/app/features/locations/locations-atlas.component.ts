@@ -10,12 +10,13 @@ import {
 } from '@angular/core';
 
 import { EventoDetalle } from '../../models/api.models';
+import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { SampleReceptionComponent } from '../collaboration/sample-reception.component';
 
 @Component({
   selector: 'app-locations-atlas',
   standalone: true,
-  imports: [CommonModule, SampleReceptionComponent],
+  imports: [CommonModule, FitLineDirective, SampleReceptionComponent],
   templateUrl: './locations-atlas.component.html',
   styleUrl: './locations-atlas.component.css',
   host: { '[class.locations-collaboration-section]': 'collaborationMode' },

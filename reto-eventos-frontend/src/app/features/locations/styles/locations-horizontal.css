@@ -40,14 +40,17 @@
     padding: 0 var(--drawer-pad) var(--drawer-pad);
   }
 
-  /* El eje: una línea horizontal que atraviesa las tres órbitas por el centro. */
+  /* Remates del eje: una marca vertical en cada margen, como las cotas de un plano. El eje en sí lo
+     dibuja cada estación con su tramo (más abajo), para detenerse en su esfera. */
   .locations-chart::before {
     top: calc(var(--orbit) / 2);
     right: 0;
     bottom: auto;
     left: 0;
-    border-top: 2px solid #394654;
-    border-left: 0;
+    height: calc(var(--orbit) * 0.09);
+    border-top: 0;
+    border-right: 2px solid #394654;
+    border-left: 2px solid #394654;
     transform: translateY(-50%);
   }
 
@@ -76,10 +79,11 @@
   .location-node::before {
     content: '';
     position: absolute;
-    /* La órbita dibuja su anillo al 92 %: el cable arranca en el borde del anillo. */
-    top: calc(var(--orbit) * 0.96);
+    /* Arranca en el borde interior de la esfera graduada (48,5 % de la órbita), tapando la marca de
+       las 6, igual que el eje tapa las de las 3 y las 9. */
+    top: calc(var(--orbit) * 0.985);
     left: 50%;
-    height: calc(var(--orbit) * 0.04 + var(--drop) + var(--drawer-pad));
+    height: calc(var(--orbit) * 0.015 + var(--drop) + var(--drawer-pad));
     border-left: 2px solid #394654;
     transform: translateX(-50%);
     transform-origin: top;
@@ -240,8 +244,9 @@
     padding-right: clamp(0.8rem, 1.1vw, 1.05rem);
   }
 
+  /* Margen y no relleno: appFitLine mide el ancho útil sin el hueco del botón. */
   .location-data summary > span {
-    padding-right: calc(clamp(2rem, 2.2vw, 2.75rem) + 0.5rem);
+    margin-right: calc(clamp(2rem, 2.2vw, 2.75rem) + 0.5rem);
   }
 
   .location-data summary::after {
@@ -291,6 +296,8 @@
     grid-template-rows: 1fr 1fr;
     column-gap: var(--subsection-gap);
     width: calc(100% + 2 * var(--locations-copy-gutter));
+    /* Más aire hasta el planetario. */
+    padding-bottom: calc(2.55rem + clamp(1.25rem, 2vw, 2.5rem));
   }
 
   .locations-editorial .locations-subsection-title {
@@ -319,9 +326,290 @@
   :host(:not(.locations-collaboration-section)) .locations-intro {
     grid-area: intro;
     align-self: stretch;
+    /* El filete mide lo que la cabecera; el texto se centra en él, con el mismo sobrante arriba y
+       abajo. */
+    display: grid;
+    align-content: center;
     max-width: none;
     margin: 0;
     border-left: 2px solid #394654;
     padding-left: clamp(1.25rem, 2vw, 2.25rem);
   }
+}
+
+/* El planetario como instrumento: cada órbita lleva una esfera graduada (60 marcas finas y 12
+   largas, como un reloj) con un índice coral al norte. El eje y el cable entran hasta la esfera y
+   tapan las marcas de las 3, las 6 y las 9, así que la estación queda anclada por tres lados y
+   orientada por el cuarto. Sin las diagonales de antes. La minimilk recorre el anillo: cada estación
+   la tiene a su rumbo (45°, 135° y 225°, un cuarto de vuelta más en cada una), llega hasta él al
+   desplegarse el cajón y avanza un poco al pasar por encima. Medidas en fracciones de la órbita:
+   anillo al 46 %, esfera del 48,5 % hacia fuera. */
+.location-dial {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  /* La esfera sobresale un poco por arriba: se le devuelve ese hueco al aire con la cabecera. */
+  .locations-chart {
+    margin-top: calc(var(--orbit) * 0.08);
+  }
+
+  .location-dial {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .location-dial circle {
+    fill: none;
+    stroke: #394654;
+  }
+
+  /* pathLength="360": las rayas y huecos se miden en grados, centrados en cada marca. */
+  .location-dial-minutes {
+    stroke-width: 3;
+    stroke-dasharray: 0.6 5.4;
+    stroke-dashoffset: 0.3;
+    opacity: 0.45;
+  }
+
+  /* Las marcas largas de las 3, las 6 y las 9 no se dibujan: ahí entran el eje y el cable. El trazo
+     del círculo empieza a las 3 y va en el sentido del reloj; el 0 inicial abre con hueco. */
+  .location-dial-hours {
+    stroke-width: 4.5;
+    stroke-dasharray: 0 29.5 1 29 1 59 1 29 1 59 1 29 1 29 1 29 1 29 1 29.5;
+  }
+
+  .location-dial-index {
+    fill: #ff7f7f;
+  }
+
+  .location-orbit-ring::before {
+    content: none;
+  }
+
+  /* El tramo de eje de cada estación: entra hasta la esfera y por los lados llega a la mitad del
+     hueco con la vecina, o al margen en las de los extremos. */
+  .location-node {
+    --axis-left: calc(var(--drawer-pad) / 2);
+    --axis-right: calc(var(--drawer-pad) / 2);
+    --bearing: 45deg;
+  }
+
+  .location-node:first-of-type {
+    --axis-left: var(--drawer-pad);
+  }
+
+  .location-node:last-of-type {
+    --axis-right: var(--drawer-pad);
+  }
+
+  .location-node-secondary {
+    --bearing: 135deg;
+  }
+
+  .location-node-tertiary {
+    --bearing: 225deg;
+  }
+
+  .location-node::after {
+    --axis-center: calc(50% + (var(--axis-left) - var(--axis-right)) / 2);
+    content: '';
+    position: absolute;
+    top: calc(var(--orbit) / 2);
+    right: calc(-1 * var(--axis-right));
+    left: calc(-1 * var(--axis-left));
+    height: 2px;
+    background: #394654;
+    -webkit-mask: linear-gradient(
+      to right,
+      #000 calc(var(--axis-center) - var(--orbit) * 0.485),
+      transparent 0 calc(var(--axis-center) + var(--orbit) * 0.485),
+      #000 0
+    );
+    mask: linear-gradient(
+      to right,
+      #000 calc(var(--axis-center) - var(--orbit) * 0.485),
+      transparent 0 calc(var(--axis-center) + var(--orbit) * 0.485),
+      #000 0
+    );
+    pointer-events: none;
+    translate: 0 -50%;
+  }
+
+  /* Al pasar por encima ya no hay halo ni giro del anillo (chocarían con la esfera): avanza la
+     saluda la minimilk y el planeta respira. */
+  .location-node:hover .location-orbit-ring,
+  .location-node:focus-within .location-orbit-ring {
+    border-color: #394654;
+    box-shadow: none;
+    transform: scale(0.92);
+  }
+
+  .location-planet {
+    transition: scale 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .location-node:hover .location-planet,
+  .location-node:focus-within .location-planet {
+    scale: 1.04;
+  }
+
+  /* Minimilks. El portador ocupa todo el anillo y gira; la minimilk va arriba, sobre la línea, y
+     gira al revés para mantenerse derecha. Tres capas que se suman sin pisarse: `transform` para la
+     órbita, `rotate` para el arranque al desplegarse y `scale` para el saludo. El anillo pasa por
+     delante del planeta para que la minimilk no quede nunca tapada si lo roza. */
+  .location-orbit-ring {
+    z-index: 2;
+  }
+
+  .location-node .location-marker {
+    inset: 0;
+    width: auto;
+    height: auto;
+    display: block;
+    border-radius: 0;
+    transform: rotate(var(--bearing));
+  }
+
+  .location-node .location-marker > span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: calc(var(--orbit) * 0.15);
+    height: calc(var(--orbit) * 0.15);
+    transform: rotate(calc(-1 * var(--bearing)));
+    translate: -50% -50%;
+  }
+
+  /* El saludo: con el cursor sobre la estación (o su tarjeta), su minimilk crece. */
+  .location-node:hover .location-marker > span,
+  .location-node:focus-within .location-marker > span {
+    scale: 1.35;
+  }
+}
+
+/* Cada minimilk da vueltas a su órbita, a su ritmo y sin acompasarse nunca con las demás, desde
+   su rumbo. Al desplegarse el cajón salen del norte: un arranque que se suma a la órbita y las
+   lleva hasta ella con un pequeño rebote; hasta entonces esperan quietas en el norte. Con el cursor
+   encima, la de esa estación se detiene y saluda con un saltito; las demás siguen a lo suyo. */
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+  .location-node {
+    --orbit-period: 32s;
+  }
+
+  .location-node-secondary {
+    --orbit-period: 44s;
+  }
+
+  .location-node-tertiary {
+    --orbit-period: 26s;
+  }
+
+  .location-node .location-marker {
+    animation: location-marker-orbit var(--orbit-period) linear infinite;
+  }
+
+  .location-node .location-marker > span {
+    animation: location-marker-upright var(--orbit-period) linear infinite;
+    transition: scale 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .locations-chart.is-armed .location-marker {
+    animation:
+      location-marker-orbit var(--orbit-period) linear infinite,
+      location-marker-launch 1150ms cubic-bezier(0.33, 0, 0.2, 1)
+        calc(160ms + var(--station-delay, 0ms)) backwards;
+    animation-play-state: paused;
+  }
+
+  .locations-chart.is-armed .location-marker > span {
+    animation:
+      location-marker-upright var(--orbit-period) linear infinite,
+      location-marker-launch-upright 1150ms cubic-bezier(0.33, 0, 0.2, 1)
+        calc(160ms + var(--station-delay, 0ms)) backwards;
+    animation-play-state: paused;
+  }
+
+  .locations-chart.is-deployed .location-marker,
+  .locations-chart.is-deployed .location-marker > span {
+    animation-play-state: running;
+  }
+
+  .locations-chart .location-node:hover .location-marker,
+  .locations-chart .location-node:hover .location-marker > span,
+  .locations-chart .location-node:focus-within .location-marker,
+  .locations-chart .location-node:focus-within .location-marker > span {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes location-marker-orbit {
+  from {
+    transform: rotate(var(--bearing));
+  }
+
+  to {
+    transform: rotate(calc(var(--bearing) + 360deg));
+  }
+}
+
+@keyframes location-marker-upright {
+  from {
+    transform: rotate(calc(-1 * var(--bearing)));
+  }
+
+  to {
+    transform: rotate(calc(-1 * var(--bearing) - 360deg));
+  }
+}
+
+/* El arranque va en `rotate`, que se aplica antes que `transform`: resta el rumbo (la minimilk
+   aparece al norte) y se desvanece a 0 con un rebote, dejándola en su órbita. */
+@keyframes location-marker-launch {
+  0% {
+    rotate: calc(-1 * var(--bearing));
+  }
+
+  72% {
+    rotate: 6deg;
+  }
+
+  88% {
+    rotate: -1.5deg;
+  }
+
+  100% {
+    rotate: 0deg;
+  }
+}
+
+@keyframes location-marker-launch-upright {
+  0% {
+    rotate: var(--bearing);
+  }
+
+  72% {
+    rotate: -6deg;
+  }
+
+  88% {
+    rotate: 1.5deg;
+  }
+
+  100% {
+    rotate: 0deg;
+  }
+}
+
+/* Líneas de datos de las estaciones (appFitLine): nunca en dos líneas, encogen hasta caber. Como
+   hijas de la rejilla del resumen necesitan poder estrecharse, en todos los anchos. */
+.location-data summary > span,
+.location-data small {
+  min-width: 0;
 }

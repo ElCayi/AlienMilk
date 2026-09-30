@@ -84,7 +84,7 @@
   }
 
   .location-data {
-    padding:clamp(0.85rem, 1.2vw, 1.15rem) 0;
+    padding: clamp(0.85rem, 1.2vw, 1.15rem) 0;
   }
 
   .location-data::before {
@@ -238,13 +238,4 @@
     width: 1.35em;
     height: 1.35em;
   }
-}
-
-/* La línea de fecha se parte, si hace falta, entre la fecha y la duración, nunca a mitad. */
-.location-data small > span {
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  white-space: nowrap;
 }

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { catchError, forkJoin, of } from 'rxjs';
 
-import { EventoDetalle, EventoListado } from '../../models/api.models';
+import { EventoListado } from '../../models/api.models';
+import { Estacion } from '../../models/station.models';
 import { EventService } from '../../core/services/event.service';
+import { StationService } from '../../core/services/station.service';
 import { LiquidVideoDirective } from '../../features/ambient/liquid-video.directive';
 import { LiquidBackdropComponent } from '../../features/ambient/liquid-backdrop.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
@@ -27,10 +28,11 @@ import { SessionsProgramComponent } from '../../features/sessions/sessions-progr
 })
 export class HomePageComponent implements OnInit {
   private readonly eventService = inject(EventService);
+  private readonly stationService = inject(StationService);
 
   readonly sessions = signal<EventoListado[]>([]);
-  readonly sessionLocations = signal<EventoDetalle[]>([]);
-  readonly loadingLocations = signal(true);
+  readonly stations = signal<Estacion[]>([]);
+  readonly loadingStations = signal(true);
   readonly loadingSessions = signal(true);
   readonly sessionsError = signal('');
   readonly isFavorite = signal(localStorage.getItem('alienmilk-favorite') === 'true');
@@ -39,6 +41,7 @@ export class HomePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSessions();
+    this.loadStations();
   }
 
   loadSessions(): void {
@@ -52,33 +55,26 @@ export class HomePageComponent implements OnInit {
         );
         this.sessions.set(upcomingSessions);
         this.loadingSessions.set(false);
-        this.loadLocations(upcomingSessions);
       },
       error: () => {
         this.sessions.set([]);
-        this.sessionLocations.set([]);
         this.sessionsError.set('No hemos podido cargar las sesiones disponibles.');
         this.loadingSessions.set(false);
-        this.loadingLocations.set(false);
       },
     });
   }
 
-  private loadLocations(sessions: EventoListado[]): void {
-    const requests = sessions.slice(0, 3).map((session) =>
-      this.eventService.getDetalle(session.idEvento).pipe(catchError(() => of(null))),
-    );
-
-    if (!requests.length) {
-      this.sessionLocations.set([]);
-      this.loadingLocations.set(false);
-      return;
-    }
-
-    this.loadingLocations.set(true);
-    forkJoin(requests).subscribe((locations) => {
-      this.sessionLocations.set(locations.filter((location): location is EventoDetalle => location !== null));
-      this.loadingLocations.set(false);
+  // Las estaciones describen los espacios de la red, no las sesiones: se cargan aparte de ellas.
+  private loadStations(): void {
+    this.stationService.getEstaciones().subscribe({
+      next: (stations) => {
+        this.stations.set(stations);
+        this.loadingStations.set(false);
+      },
+      error: () => {
+        this.stations.set([]);
+        this.loadingStations.set(false);
+      },
     });
   }
 

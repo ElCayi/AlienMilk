@@ -9,9 +9,8 @@
   }
 }
 
-/* Planetario en horizontal: las tres órbitas en fila sobre un eje que va de margen a margen. Bajo
-   el eje se abre un cajón con el marco del expediente, cada planeta baja un cable y las estaciones
-   salen en paralelo. Al final, la ficha del asistente a todo el ancho. */
+/* Planetario en horizontal: las tres órbitas en fila, unidas por un eje, y bajo cada una su
+   etiqueta, que cae al llegar. Al final, la ficha del asistente a todo el ancho. */
 @media (min-width: 1001px) {
   .locations-layout:not(.locations-layout-collaboration) {
     min-height: 0;
@@ -22,8 +21,8 @@
 
   .locations-chart-viewport {
     --orbit: clamp(10rem, 12vw, 17rem);
-    /* Cable del planeta al cajón y relleno del cajón. */
-    --drop: clamp(1.75rem, 2.6vw, 3rem);
+    /* Cable del planeta a su placa, corto: la placa es el pie del planetario. */
+    --drop: clamp(0.9rem, 1.3vw, 1.6rem);
     --drawer-pad: clamp(1rem, 1.5vw, 1.75rem);
     height: auto;
     min-height: 0;
@@ -37,56 +36,30 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
     gap: 0 var(--drawer-pad);
-    padding: 0 var(--drawer-pad) var(--drawer-pad);
+    padding: 0;
   }
 
-  /* Remates del eje: una marca vertical en cada margen, como las cotas de un plano. El eje en sí lo
-     dibuja cada estación con su tramo (más abajo), para detenerse en su esfera. */
+  /* El eje lo dibuja cada estación con su tramo (más abajo): solo une estaciones vecinas. */
   .locations-chart::before {
-    top: calc(var(--orbit) / 2);
-    right: 0;
-    bottom: auto;
-    left: 0;
-    height: calc(var(--orbit) * 0.09);
-    border-top: 0;
-    border-right: 2px solid #394654;
-    border-left: 2px solid #394654;
-    transform: translateY(-50%);
+    content: none;
   }
 
-  /* El cajón: marco con las esquinas opuestas redondeadas, desde el final de los cables. */
+  /* Sin cajón: las estaciones cuelgan de sus planetas. */
   .locations-chart::after {
-    content: '';
-    position: absolute;
-    top: calc(var(--orbit) + var(--drop));
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border: 2px solid #394654;
-    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
-    pointer-events: none;
+    content: none;
   }
 
   .location-node {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: var(--orbit) auto;
     justify-items: center;
-    gap: calc(var(--drop) + var(--drawer-pad));
+    gap: var(--drop);
     min-height: 0;
   }
 
-  /* Cable del planeta a su estación: cruza el marco del cajón y llega a la placa. */
+  /* Sin cables: la etiqueta es el pie del planetario. */
   .location-node::before {
-    content: '';
-    position: absolute;
-    /* Arranca en el borde interior de la esfera graduada (48,5 % de la órbita), tapando la marca de
-       las 6, igual que el eje tapa las de las 3 y las 9. */
-    top: calc(var(--orbit) * 0.985);
-    left: 50%;
-    height: calc(var(--orbit) * 0.015 + var(--drop) + var(--drawer-pad));
-    border-left: 2px solid #394654;
-    transform: translateX(-50%);
-    transform-origin: top;
+    content: none;
   }
 
   .location-orbit {
@@ -159,19 +132,10 @@
   }
 }
 
-/* El despliegue: el cajón se abre de arriba abajo, bajan los cables y las estaciones caen con el
+/* El despliegue: las estaciones caen con el
    mismo latido elástico que los marcos de Próximas sesiones. Todo espera en pausa (y en su
    primer fotograma) hasta que el componente marca el planetario como desplegado. */
 @media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
-  .locations-chart.is-armed::after {
-    animation: locations-drawer-open 560ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
-  }
-
-  .locations-chart.is-armed .location-node::before {
-    animation: locations-cable-drop 280ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
-    animation-delay: calc(360ms + var(--station-delay, 0ms));
-  }
-
   .locations-chart.is-armed .location-data {
     animation: locations-station-drop 680ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
     animation-delay: calc(520ms + var(--station-delay, 0ms));
@@ -185,30 +149,8 @@
     --station-delay: 220ms;
   }
 
-  .locations-chart.is-deployed::after,
-  .locations-chart.is-deployed .location-node::before,
   .locations-chart.is-deployed .location-data {
     animation-play-state: running;
-  }
-}
-
-@keyframes locations-drawer-open {
-  from {
-    clip-path: inset(0 0 100% 0);
-  }
-
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-@keyframes locations-cable-drop {
-  from {
-    transform: translateX(-50%) scaleY(0);
-  }
-
-  to {
-    transform: translateX(-50%) scaleY(1);
   }
 }
 
@@ -296,8 +238,9 @@
     grid-template-rows: 1fr 1fr;
     column-gap: var(--subsection-gap);
     width: calc(100% + 2 * var(--locations-copy-gutter));
-    /* Más aire hasta el planetario. */
-    padding-bottom: calc(2.55rem + clamp(1.25rem, 2vw, 2.5rem));
+    /* Mismo aire bajo la cabecera que sobre ella (el hueco entre secciones de la home, que depende
+       del alto de pantalla, más lo que la cabecera deja de relleno arriba). */
+    padding-bottom: calc(var(--home-section-gap, 6rem) + 2.15rem);
   }
 
   .locations-editorial .locations-subsection-title {
@@ -338,12 +281,9 @@
 }
 
 /* El planetario como instrumento: cada órbita lleva una esfera graduada (60 marcas finas y 12
-   largas, como un reloj) con un índice coral al norte. El eje y el cable entran hasta la esfera y
-   tapan las marcas de las 3, las 6 y las 9, así que la estación queda anclada por tres lados y
-   orientada por el cuarto. Sin las diagonales de antes. La minimilk recorre el anillo: cada estación
-   la tiene a su rumbo (45°, 135° y 225°, un cuarto de vuelta más en cada una), llega hasta él al
-   desplegarse el cajón y avanza un poco al pasar por encima. Medidas en fracciones de la órbita:
-   anillo al 46 %, esfera del 48,5 % hacia fuera. */
+   largas, como un reloj) con un índice coral al norte; el eje llega hasta el borde de la esfera.
+   Cada minimilk recorre su anillo desde su rumbo (45°, 135° y 225°, un cuarto de vuelta más en
+   cada estación). Medidas en fracciones de la órbita: anillo al 46 %, esfera del 48,5 % al 53 %. */
 .location-dial {
   display: none;
 }
@@ -378,11 +318,11 @@
     opacity: 0.45;
   }
 
-  /* Las marcas largas de las 3, las 6 y las 9 no se dibujan: ahí entran el eje y el cable. El trazo
-     del círculo empieza a las 3 y va en el sentido del reloj; el 0 inicial abre con hueco. */
+  /* Las 12 marcas largas; el eje se detiene en su extremo exterior, sin montarse sobre ellas. */
   .location-dial-hours {
     stroke-width: 4.5;
-    stroke-dasharray: 0 29.5 1 29 1 59 1 29 1 59 1 29 1 29 1 29 1 29 1 29.5;
+    stroke-dasharray: 1 29;
+    stroke-dashoffset: 0.5;
   }
 
   .location-dial-index {
@@ -394,20 +334,14 @@
   }
 
   /* El tramo de eje de cada estación: entra hasta la esfera y por los lados llega a la mitad del
-     hueco con la vecina, o al margen en las de los extremos. */
+     hueco con la vecina. Las de los extremos no lo prolongan hacia fuera: el eje solo une
+     estaciones. */
   .location-node {
     --axis-left: calc(var(--drawer-pad) / 2);
     --axis-right: calc(var(--drawer-pad) / 2);
     --bearing: 45deg;
   }
 
-  .location-node:first-of-type {
-    --axis-left: var(--drawer-pad);
-  }
-
-  .location-node:last-of-type {
-    --axis-right: var(--drawer-pad);
-  }
 
   .location-node-secondary {
     --bearing: 135deg;
@@ -428,14 +362,14 @@
     background: #394654;
     -webkit-mask: linear-gradient(
       to right,
-      #000 calc(var(--axis-center) - var(--orbit) * 0.485),
-      transparent 0 calc(var(--axis-center) + var(--orbit) * 0.485),
+      #000 calc(var(--axis-center) - var(--orbit) * 0.53),
+      transparent 0 calc(var(--axis-center) + var(--orbit) * 0.53),
       #000 0
     );
     mask: linear-gradient(
       to right,
-      #000 calc(var(--axis-center) - var(--orbit) * 0.485),
-      transparent 0 calc(var(--axis-center) + var(--orbit) * 0.485),
+      #000 calc(var(--axis-center) - var(--orbit) * 0.53),
+      transparent 0 calc(var(--axis-center) + var(--orbit) * 0.53),
       #000 0
     );
     pointer-events: none;
@@ -497,7 +431,7 @@
 /* Cada minimilk da vueltas a su órbita, a su ritmo y sin acompasarse nunca con las demás, desde
    su rumbo. Al desplegarse el cajón salen del norte: un arranque que se suma a la órbita y las
    lleva hasta ella con un pequeño rebote; hasta entonces esperan quietas en el norte. Con el cursor
-   encima, la de esa estación se detiene y saluda con un saltito; las demás siguen a lo suyo. */
+   encima, la de esa estación saluda creciendo con un saltito, sin dejar de orbitar. */
 @media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
   .location-node {
     --orbit-period: 32s;
@@ -539,13 +473,6 @@
   .locations-chart.is-deployed .location-marker,
   .locations-chart.is-deployed .location-marker > span {
     animation-play-state: running;
-  }
-
-  .locations-chart .location-node:hover .location-marker,
-  .locations-chart .location-node:hover .location-marker > span,
-  .locations-chart .location-node:focus-within .location-marker,
-  .locations-chart .location-node:focus-within .location-marker > span {
-    animation-play-state: paused;
   }
 }
 
@@ -612,4 +539,179 @@
 .location-data summary > span,
 .location-data small {
   min-width: 0;
+}
+
+/* Tramos exteriores fuera: la primera estación solo tiene eje hacia la derecha y la última hacia la
+   izquierda. Minimilks en tinta oscura, como las líneas del planetario. */
+@media (min-width: 1001px) {
+  .location-node:first-of-type::after {
+    -webkit-mask: linear-gradient(
+      to right,
+      transparent calc(var(--axis-center) + var(--orbit) * 0.53),
+      #000 0
+    );
+    mask: linear-gradient(
+      to right,
+      transparent calc(var(--axis-center) + var(--orbit) * 0.53),
+      #000 0
+    );
+  }
+
+  .location-node:last-of-type::after {
+    -webkit-mask: linear-gradient(
+      to right,
+      #000 calc(var(--axis-center) - var(--orbit) * 0.53),
+      transparent 0
+    );
+    mask: linear-gradient(
+      to right,
+      #000 calc(var(--axis-center) - var(--orbit) * 0.53),
+      transparent 0
+    );
+  }
+
+  .location-node .location-marker > span {
+    background: #1d232c;
+  }
+}
+
+/* En las placas estrechas del cajón los datos de la estación van en filas (etiqueta a la izquierda,
+   valor a la derecha, separadas por una línea), como en la ficha de sesión: cada valor tiene todo
+   el ancho y no hace falta encogerlo. */
+@media (min-width: 1001px) {
+  .location-data-details dl {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .location-data-details dl div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid rgba(247, 248, 249, 0.2);
+  }
+
+  .location-data-details dl div:last-child {
+    padding-bottom: 0;
+  }
+
+  .location-data-details dt {
+    flex: none;
+  }
+
+  .location-data-details dd {
+    min-width: 0;
+    flex: 1;
+    margin: 0;
+    text-align: right;
+  }
+}
+
+/* Coordenadas de cada estación, centradas sobre el índice del norte de su esfera: un pie técnico
+   mínimo, en el gris de las líneas. Solo en el planetario horizontal. */
+.location-coordinates {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  .locations-chart {
+    margin-top: calc(var(--orbit) * 0.08 + 1.75rem);
+  }
+
+  .location-coordinates {
+    position: absolute;
+    top: calc(var(--orbit) * -0.076 - 0.55rem);
+    left: 50%;
+    display: block;
+    color: #394654;
+    font: 700 clamp(0.66rem, 0.62vw, 0.78rem) / 1 'Nunito', sans-serif;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+    translate: -50% -100%;
+  }
+}
+
+/* Etiquetas de estación: recuadro claro con el marco gris del planetario, para que no pesen más
+   que él; el nombre va en una chip oscura. Al desplegarse, los datos salen en la placa oscura de
+   siempre. */
+@media (min-width: 1001px) {
+  .location-data summary {
+    gap: 0.55rem;
+    border: 2px solid #394654;
+    background: rgba(247, 248, 249, 0.86);
+  }
+
+  .location-data summary > span {
+    color: #394654;
+  }
+
+  .location-data strong {
+    justify-self: start;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem 0.65rem 0.45rem;
+    border-radius: 0.35rem;
+    color: #f7f8f9;
+    background: rgba(13, 22, 31, 0.86);
+    font-size: clamp(1.45rem, 1.6vw, 2.2rem);
+  }
+
+  .location-data small {
+    color: #394654;
+  }
+
+  .location-data summary::after {
+    color: #394654;
+    border-color: rgba(57, 70, 84, 0.55);
+  }
+
+  .location-data-details {
+    margin-top: 0.4rem;
+  }
+}
+
+/* Etiquetas sin chip: el nombre, grande y en tinta, y todo centrado en el recuadro claro (el botón
+   reserva su hueco a los dos lados para que el centro sea el del recuadro). El desplegable no se
+   centra, pero su texto va justificado. */
+@media (min-width: 1001px) {
+  .location-data summary {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .location-data summary > span {
+    margin-inline: calc(clamp(2rem, 2.2vw, 2.75rem) + 0.5rem);
+  }
+
+  .location-data strong {
+    justify-self: center;
+    padding: 0;
+    border-radius: 0;
+    color: var(--gallery-ink, #211e24);
+    background: none;
+    font-size: clamp(2rem, 2.35vw, 3rem);
+  }
+
+  .location-data-details p {
+    text-align: justify;
+    hyphens: auto;
+  }
+}
+
+/* La ficha del asistente, entera en oscuro: el marco se rellena con la placa y los bloques de dentro
+   quedan como zonas separadas por un filo claro. */
+@media (min-width: 901px) {
+  .locations-brief {
+    border-color: rgba(13, 22, 31, 0.9);
+    background: rgba(13, 22, 31, 0.9);
+  }
+
+  .locations-brief h3,
+  .locations-brief > p,
+  .locations-brief dl {
+    border-color: rgba(247, 248, 249, 0.14);
+    background: rgba(247, 248, 249, 0.04);
+  }
 }

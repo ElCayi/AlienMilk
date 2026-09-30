@@ -9,7 +9,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 
-import { EventoDetalle } from '../../models/api.models';
+import { Estacion } from '../../models/station.models';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { SampleReceptionComponent } from '../collaboration/sample-reception.component';
 
@@ -25,7 +25,7 @@ import { SampleReceptionComponent } from '../collaboration/sample-reception.comp
 export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private deployObserver?: IntersectionObserver;
-  @Input() locations: EventoDetalle[] = [];
+  @Input() stations: Estacion[] = [];
   @Input() loading = false;
   @Input() collaborationMode = false;
 
@@ -60,7 +60,7 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
     this.deployObserver?.disconnect();
   }
 
-  trackLocation(_index: number, location: EventoDetalle): number {
-    return location.idEvento;
+  trackStation(_index: number, station: Estacion): string {
+    return station.codigo;
   }
 }

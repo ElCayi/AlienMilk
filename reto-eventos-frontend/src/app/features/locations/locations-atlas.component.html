@@ -20,10 +20,10 @@
           <strong>AlienMilk</strong> está hecho por personas como usted. <em>Literalmente.</em>
         </p>
         <p class="locations-intro" *ngIf="!collaborationMode">
-          Las sesiones se programan de acuerdo con la disponibilidad de cada estación y las
-          condiciones locales de tránsito, presión, aislamiento y acceso. Antes de confirmar una
-          apertura, AlienMilk verifica que el espacio pueda conservar las muestras y sostener el
-          protocolo completo de la experiencia.
+          AlienMilk opera a escala interplanetaria a través de una red de estaciones y puntos de
+          colaboración. Estos espacios permiten conservar las muestras, preparar cada experiencia y
+          acoger las sesiones en distintos lugares del universo. La disponibilidad de cada sede depende
+          de sus condiciones locales y de su capacidad para cumplir el protocolo de AlienMilk.
         </p>
         <p class="locations-intro" *ngIf="collaborationMode">
           AlienMilk Collaborators es la división del ecosistema AlienMilk dedicada a la captación y
@@ -85,10 +85,11 @@
       <div class="locations-chart" [class.is-loading]="loading">
         <article
           class="location-node"
-          *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
+          *ngFor="let station of stations | slice: 0 : 3; let index = index; trackBy: trackStation"
           [class.location-node-secondary]="index === 1"
           [class.location-node-tertiary]="index === 2"
         >
+          <span class="location-coordinates">{{ station.coordenadas }}</span>
           <div class="location-orbit" aria-hidden="true">
             <svg class="location-dial" viewBox="-50 -50 100 100" focusable="false">
               <circle class="location-dial-minutes" r="50" pathLength="360" />
@@ -116,19 +117,16 @@
           </div>
           <details class="location-data" name="location-stations">
             <summary>
-              <span appFitLine>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
-              <strong>{{ location.direccion }}</strong>
-              <small appFitLine>
-                {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
-                {{ location.aforoMaximo }}
-              </small>
+              <span appFitLine>{{ station.codigo }} / {{ station.tipo }}</span>
+              <strong>{{ station.sitio }}</strong>
+              <small appFitLine>{{ station.sistema }} · {{ station.planeta }}</small>
             </summary>
             <div class="location-data-details">
-              <p>{{ location.descripcion }}</p>
+              <p>{{ station.descripcion }}</p>
               <dl>
-                <div><dt>Estado</dt><dd>{{ location.estado }}</dd></div>
-                <div><dt>Asistencia mínima</dt><dd>{{ location.minimoAsistencia }}</dd></div>
-                <div><dt>Tarifa</dt><dd>{{ location.precio | currency: 'EUR' }}</dd></div>
+                <div><dt>Dirección</dt><dd appFitLine>{{ station.direccion }}</dd></div>
+                <div><dt>Hora local</dt><dd appFitLine>{{ station.horaLocal }}</dd></div>
+                <div><dt>Acceso</dt><dd appFitLine>{{ station.acceso }}</dd></div>
               </dl>
             </div>
           </details>

@@ -326,7 +326,7 @@ button:disabled {
 h1 {
   font-weight: 700;
   letter-spacing: 0.025em;
-  line-height: 1.13;
+  line-height: 1.25;
   transform: scaleY(0.78);
   transform-origin: left center;
 }
@@ -520,7 +520,7 @@ h1 {
    other pages; the 22% it frees (3 lines × 1.2em) is taken back below. */
 h1 {
   transform-origin: left top;
-  margin-bottom: calc(0.6rem - 0.746em);
+  margin-bottom: calc(0.6rem - 0.825em);
 }
 
 /* Same arrow as the landing's "Explorar" links. */
@@ -600,8 +600,8 @@ h1 {
    also with the height, so short screens keep the boxes in view. */
 @media (min-width: 1001px) {
   h1 {
-    font-size: min(13.4cqi, 16svh);
-    margin-bottom: calc(clamp(1.5rem, 4svh, 2.75rem) - 0.746em);
+    font-size: min(14.2cqi, 16svh);
+    margin-bottom: calc(clamp(1rem, 3svh, 2.25rem) - 0.825em);
   }
   .login-shell {
     padding-bottom: clamp(1.5rem, 5svh, 3.5rem);
@@ -609,11 +609,8 @@ h1 {
 }
 /* Short screens: pull the heading block up so both boxes clear the bottom. */
 @media (min-width: 1001px) and (max-height: 820px) {
-  .login-copy > .eyebrow {
-    margin-bottom: 1rem;
-  }
   h1 {
-    margin-top: 1.5rem;
+    font-size: min(14.2cqi, 10.5svh);
   }
   .login-card {
     margin-top: 1rem;
@@ -624,9 +621,8 @@ h1 {
 }
 @media (min-width: 1001px) and (max-height: 680px) {
   h1 {
-    font-size: min(13.4cqi, 9.5svh);
-    margin-top: 1rem;
-    margin-bottom: calc(1rem - 0.746em);
+    font-size: min(14.2cqi, 9.5svh);
+    margin-bottom: calc(1rem - 0.825em);
   }
   .demo-box {
     padding: 0.85rem 1rem;
@@ -667,18 +663,18 @@ h1 {
    gap from the line above as the other two lines have. */
 .lockup {
   display: inline-block;
+  white-space: nowrap;
   margin-top: 0.24em;
 }
 @media (min-width: 1001px) and (max-height: 620px) {
   h1 {
-    font-size: min(13.4cqi, 8svh);
-    margin-top: 0.75rem;
-    margin-bottom: calc(1rem - 0.746em);
+    font-size: min(14.2cqi, 6.6svh);
+    margin-bottom: calc(1rem - 0.825em);
   }
 }
 @media (max-width: 1000px) {
   h1 {
-    margin-bottom: calc(1.75rem - 0.746em);
+    margin-bottom: calc(1.75rem - 0.825em);
   }
 }
 @media (min-width: 1001px) and (max-height: 620px) {
@@ -702,5 +698,18 @@ h1 {
   }
   .login-card .signup-copy {
     padding-top: 0.5rem;
+  }
+}
+
+/* Wider title column so the title can grow; the extra leading is taken off
+   the top margin so the eyebrow keeps the same gap as on the other pages. */
+@media (min-width: 1200px) {
+  .login-shell {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+  }
+}
+@media (min-width: 1001px) {
+  h1 {
+    margin-top: calc(2.35rem - 0.12em);
   }
 }

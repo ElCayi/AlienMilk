@@ -6,11 +6,12 @@
 # the worktree name and recorded in .env.worktree, so a worktree keeps the same
 # URL for its whole life and it can be bookmarked.
 FRONTEND_PORT = 0
+# Used by a private backend with `wt svc up --standalone`.
 BACKEND_PORT = 1
 DB_PORT = 2
 
 [services]
 supervisor = "script"
-# The main worktree hosts the database. Applications remain isolated per
-# worktree. This is the only place where that split is declared.
-commons = ["mariadb"]
+# The main worktree hosts the database and API; each worktree has its own frontend.
+# This is the only place where that split is declared.
+commons = ["mariadb", "backend"]

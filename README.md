@@ -53,26 +53,30 @@ dependencias es idéntico en todas las máquinas.
 La parada es idempotente y verifica que cada proceso y su puerto hayan desaparecido;
 se puede ejecutar aunque no haya nada corriendo.
 
-El frontend reenvía `/api` al Spring Boot del mismo worktree. Si se usan las
-credenciales del perfil `prod`, `DB_USER` y `DB_PASS` deben estar ya disponibles
+El frontend reenvía `/api` al Spring Boot local. Si se usan las credenciales del
+perfil `prod`, `DB_USER` y `DB_PASS` deben estar ya disponibles
 en el entorno antes de ejecutar el script (ver `.env.local.example`).
 
 ## Varias copias a la vez (worktrees)
 
-Se pueden tener varias copias del proyecto corriendo en paralelo, una por worktree,
-para compararlas en pantalla. Cada worktree usa sus propios puertos, así que no
-chocan entre sí.
+Se pueden tener varias copias del frontend corriendo en paralelo, una por worktree,
+para compararlas en pantalla. Cada una usa su propio puerto.
 
-En nuestro entorno local, `wt` aplica la topología declarada en `worktree.toml`:
-MariaDB vive en el worktree principal y cada worktree tiene su frontend y backend.
-Al abrir un worktree con workmux, `.workmux.yaml` ejecuta automáticamente:
+En nuestro entorno local, `wt session up` crea o abre la sesión del proyecto: arranca
+los servicios compartidos en el worktree principal y abre una ventana por worktree.
+Si la sesión ya existe, vuelve a ella sin reiniciar los servicios. La topología se
+declara en `worktree.toml`: MariaDB y Spring Boot viven en el worktree principal;
+cada worktree tiene su frontend, que reenvía `/api` al backend compartido del puerto 8081.
+
+En cada ventana, `.workmux.yaml` ejecuta automáticamente:
 
 ```bash
 wt svc up
 ```
 
 La base local se conserva en `.dev-state/` y no entra en Git. `wt svc down` para
-este worktree; `wt svc down --project` para todo el proyecto.
+el frontend de este worktree; los servicios compartidos siguen mientras otro
+worktree los use. `wt session down` para todos los servicios y la sesión completa.
 
 `worktree.toml` declara qué variables cambian de un worktree a otro. Los valores
 concretos van en un `.env.worktree` que **no está en git** y que `dev.sh` lee solo si
@@ -91,9 +95,8 @@ arranca sin saber que esto existe.
 En nuestras máquinas ese fichero lo escribe una herramienta al crear el worktree; en
 cualquier otra se escribe a mano leyendo `worktree.toml`.
 
-Cada worktree arranca su propio backend en `$BACKEND_PORT`; comparten la base de
-datos del worktree principal. `wt svc up --standalone` levanta también una base
-privada usando el `$DB_PORT` asignado.
+En el modo normal, `$BACKEND_PORT` queda reservado para `wt svc up --standalone`.
+Ese modo levanta un backend y una base privados usando los puertos asignados.
 
 ## Comprobar antes de subir
 

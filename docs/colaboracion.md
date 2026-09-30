@@ -35,12 +35,15 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
 
 ## Servicios de desarrollo
 
-- Arrancar y reiniciar con `wt svc up`, no con `scripts/services/up.sh` a mano: sin `wt`, el
-  backend del worktree busca una base propia que no existe y falla con `Communications link failure`.
-- Tras un merge que toca el backend, cada worktree tiene que reiniciar el suyo.
-- El backend acepta por CORS el origen del frontend de su worktree (`up.sh` exporta
-  `CORS_ALLOWED_ORIGINS`). Si los guardados del admin devuelven 403 `Invalid CORS request`, es que
-  el backend se arrancó sin eso.
+- `wt session up` crea o abre la sesión del proyecto; si ya existe, no reinicia servicios.
+  `wt svc up` arranca los servicios de un worktree. MariaDB y backend corren en `main`, y cada
+  worktree arranca solo su frontend. `wt svc up --standalone` crea una copia privada de los tres.
+- Tras un merge que toca el backend, `wt svc restart backend` reinicia el backend compartido en
+  `main`; los demás worktrees usan esa misma versión.
+- El backend de desarrollo acepta por CORS los orígenes `localhost` y `127.0.0.1` de cualquier
+  puerto (`up.sh` exporta `CORS_ALLOWED_ORIGIN_PATTERNS`). Producción conserva sus orígenes
+  explícitos. Si los guardados del admin devuelven 403 `Invalid CORS request`, comprobar esa
+  configuración en el backend de `main`.
 - `curl` no envía `Origin`, así que no detecta fallos de CORS. Probar las escrituras desde el
   navegador, o con `curl -H 'Origin: http://127.0.0.1:<puerto-frontend>'`.
 

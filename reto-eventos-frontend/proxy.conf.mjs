@@ -1,9 +1,8 @@
 // Backend target for /api during development.
 //
-// Read from the environment so several worktrees can run side by side, each
-// against its own Spring Boot when it needs one. The fallback is the shared
-// instance on 8081, which is how this repo has always worked and what a plain
-// clone gets with no configuration at all.
+// Read from the environment: normal worktrees use Spring Boot on the main
+// worktree's port 8081; a standalone worktree can use its own backend port.
+// A plain clone also uses 8081 without extra configuration.
 //
 // See worktree.toml at the repo root for how BACKEND_URL is meant to be set.
 export default {

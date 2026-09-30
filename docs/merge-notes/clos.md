@@ -49,3 +49,15 @@ navegador: `clos` no tocó esos archivos en esta tanda, así que no deberían ch
    límite de error de 48 kB.
 2. `/sesiones` a 390, 1100, 1440 y 1920 px: desplegable, buscador, orbes, cambiar de sesión desde
    la imagen (ratón, teclado y gesto táctil) y el scroll de la parte blanca.
+
+## Tanda del 30 de septiembre
+
+- **Ticket de reserva:** precio compuesto, troquel con muescas, botón coral y fecha discreta. La
+  ficha pierde Procedencia y Compatibilidad.
+- **Directiva `appFitLine`** (`shared/fit-line/`): las líneas de datos se encogen en vez de partirse.
+- **Guía «Cambiar de sesión» retirada:** quedan las flechas, las teclas y el gesto.
+- **«Información al asistente» pasa a ser «Hacen posible esta sesión»** (créditos de colaboración).
+  Cambia el contrato de expedientes: **`estacion` desaparece y entra `colaboradores`**
+  (`{ rol, nombre, detalle }`) en `session-dossier.models.ts`, `session-dossier.ts` y
+  `public/data/session-dossiers.json`. Si otra rama toca `estacion` en esos archivos, manda la de
+  `clos`; lo demás del JSON no se ha reformateado.

@@ -16,7 +16,7 @@ const EMPTY_DOSSIER: SessionDossier = {
   acceso: [],
   recomendaciones: [],
   preguntas: [],
-  estacion: { complemento: '', franja: '', operadores: [] },
+  colaboradores: [],
   creditos: '',
 };
 

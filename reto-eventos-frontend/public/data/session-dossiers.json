@@ -33,15 +33,12 @@
         "respuesta": "AlienMilk trabaja con una red estable de proveedores y colaboradores. Por respeto a los acuerdos que hacen posible cada extracción, no revelamos el origen biológico ni el método de obtención."
       }
     ],
-    "estacion": {
-      "complemento": "Instalación AlienMilk",
-      "franja": "Hora local de la estación",
-      "operadores": [
-        { "etiqueta": "Transporte", "valor": "AM Transit" },
-        { "etiqueta": "Equipaje", "valor": "Helix Transfer" },
-        { "etiqueta": "Coordinación", "valor": "Kepler Liaison" }
-      ]
-    },
+    "colaboradores": [
+      { "rol": "Programa", "nombre": "AlienMilk Sessions · Ciclo 2026", "detalle": "Programación pública del archivo" },
+      { "rol": "Tránsito", "nombre": "AM Transit", "detalle": "Traslados desde los intercambiadores" },
+      { "rol": "Custodia", "nombre": "Helix Transfer", "detalle": "Custodia durante la sesión" },
+      { "rol": "Coordinación", "nombre": "Kepler Liaison", "detalle": "Enlace con los organismos visitantes" }
+    ],
     "equipo": [
       { "etiqueta": "Acompañamiento", "valor": "Personal acreditado AlienMilk" }
     ],
@@ -141,14 +138,12 @@
         { "etiqueta": "Conservación", "valor": "Unidad Técnica del Hangar 7" },
         { "etiqueta": "Acompañamiento", "valor": "Personal acreditado AlienMilk" }
       ],
-      "estacion": {
-        "complemento": "Cúpula Central · Madrid",
-        "franja": "Hora peninsular (UTC+2)",
-        "operadores": [
-          { "etiqueta": "Transporte", "valor": "AM Transit" },
-          { "etiqueta": "Equipaje", "valor": "Helix Transfer" }
-        ]
-      },
+      "colaboradores": [
+        { "rol": "Sede", "nombre": "Fundación Cúpula Central", "detalle": "Sala de catas en régimen de convenio" },
+        { "rol": "Financiación", "nombre": "Agencia Marciana de Cooperación Cultural", "detalle": "Programa Ares 2026 · Intercambio gastronómico" },
+        { "rol": "Tránsito", "nombre": "AM Transit", "detalle": "Traslados desde el intercambiador" },
+        { "rol": "Custodia", "nombre": "Helix Transfer", "detalle": "Custodia de envases" }
+      ],
       "creditos": "Con la colaboración de los proveedores del ciclo 2026, que han preferido no ser mencionados."
     },
     "2": {
@@ -185,11 +180,11 @@
         { "etiqueta": "Edad mínima", "valor": "16 años acompañados de una persona adulta." },
         { "etiqueta": "Salud", "valor": "No recomendada para personas con fotosensibilidad." }
       ],
-      "estacion": {
-        "complemento": "Recinto de cúpulas · Madrid",
-        "franja": "Hora peninsular (UTC+2)",
-        "operadores": [{ "etiqueta": "Transporte", "valor": "AM Transit" }]
-      }
+      "colaboradores": [
+        { "rol": "Sede", "nombre": "Recinto Ferial de Cúpulas de Madrid", "detalle": "Cúpula 3, acondicionada para primeras experiencias" },
+        { "rol": "Acompañamiento", "nombre": "Observatorio de Primeros Contactos", "detalle": "Asesora a participantes sin experiencia previa" },
+        { "rol": "Tránsito", "nombre": "AM Transit", "detalle": "Regreso garantizado al punto de partida" }
+      ]
     },
     "3": {
       "entradilla": "Taller práctico de preparación. Cada participante trabaja con su propia base y se lleva a casa lo que consiga estabilizar.",
@@ -222,14 +217,12 @@
         { "etiqueta": "Seguridad alimentaria", "valor": "Departamento de Conservación" }
       ],
       "acceso": [{ "etiqueta": "Grupos", "valor": "Seis participantes por puesto." }],
-      "estacion": {
-        "complemento": "Área de laboratorios · Madrid",
-        "franja": "Hora peninsular (UTC+2)",
-        "operadores": [
-          { "etiqueta": "Transporte", "valor": "AM Transit" },
-          { "etiqueta": "Envases", "valor": "Helix Transfer" }
-        ]
-      }
+      "colaboradores": [
+        { "rol": "Sede", "nombre": "Laboratorios Compartidos de Vallecas", "detalle": "Laboratorio húmedo B" },
+        { "rol": "Suministro", "nombre": "Vidriería Orbital Hermanos Sanz", "detalle": "Cristalería del taller" },
+        { "rol": "Financiación", "nombre": "Agencia Marciana de Cooperación Cultural", "detalle": "Programa Ares 2026 · Oficios sensoriales" },
+        { "rol": "Envasado", "nombre": "Helix Transfer", "detalle": "Envases homologados para llevar" }
+      ]
     },
     "4": {
       "entradilla": "Recorrido narrado por las zonas de conservación donde descansa el primer lote de leche abducida. Se camina a oscuras y en silencio.",
@@ -264,11 +257,11 @@
         { "etiqueta": "Distancia", "valor": "1,4 km a pie." },
         { "etiqueta": "Fotografía", "valor": "No se permite el uso de flash." }
       ],
-      "estacion": {
-        "complemento": "Hangar 7 · Madrid",
-        "franja": "Hora peninsular (UTC+2)",
-        "operadores": [{ "etiqueta": "Transporte nocturno", "valor": "AM Transit" }]
-      }
+      "colaboradores": [
+        { "rol": "Sede", "nombre": "Consorcio Aeroportuario Norte", "detalle": "Titular del Hangar 7 desde 1987" },
+        { "rol": "Conservación", "nombre": "Instituto de Frío Patrimonial", "detalle": "Mantiene las cámaras del primer lote" },
+        { "rol": "Tránsito", "nombre": "AM Transit", "detalle": "Última salida a las 00:40" }
+      ]
     },
     "5": {
       "entradilla": "Cata nocturna bajo la cúpula de ordeño lunar, sincronizada con el paso de la sombra. Tres tiempos, tres muestras, tres temperaturas.",
@@ -299,14 +292,12 @@
         { "etiqueta": "Observación", "valor": "Oficina Astronómica AlienMilk" },
         { "etiqueta": "Sumillería", "valor": "Tomás Aguirre-Nnadi" }
       ],
-      "estacion": {
-        "complemento": "Recinto de cúpulas · Madrid",
-        "franja": "Hora peninsular (UTC+2)",
-        "operadores": [
-          { "etiqueta": "Transporte", "valor": "AM Transit" },
-          { "etiqueta": "Coordinación", "valor": "Kepler Liaison" }
-        ]
-      },
+      "colaboradores": [
+        { "rol": "Sede", "nombre": "Recinto Ferial de Cúpulas de Madrid", "detalle": "Cúpula de observación" },
+        { "rol": "Asesoría", "nombre": "Asociación de Residentes Lunares en Madrid", "detalle": "Calendario y costumbres del eclipse" },
+        { "rol": "Financiación", "nombre": "Fondo Kepler para la Convivencia", "detalle": "Convocatoria de encuentros nocturnos" },
+        { "rol": "Coordinación", "nombre": "Kepler Liaison", "detalle": "Enlace con los organismos visitantes" }
+      ],
       "creditos": "Con el asesoramiento de la Oficina Astronómica AlienMilk."
     }
   }

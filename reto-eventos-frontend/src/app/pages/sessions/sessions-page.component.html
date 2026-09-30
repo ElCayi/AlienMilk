@@ -156,17 +156,6 @@
                 [alt]="'Registro visual de la sesión ' + data.nombre"
               />
 
-              <!-- Guía para cambiar de sesión: teclas en ordenador, gesto en pantallas táctiles. -->
-              <p class="browse-hint" *ngIf="browseHint() && previousSession()" aria-hidden="true">
-                <span class="browse-keys"><kbd>←</kbd><kbd>→</kbd></span>
-                <svg class="browse-swipe" viewBox="0 0 28 16">
-                  <path d="M2 8h7M2 8l3-3M2 8l3 3M26 8h-7M26 8l-3-3M26 8l-3 3" />
-                  <circle class="browse-finger" cx="14" cy="8" r="3" />
-                </svg>
-                <span class="browse-label browse-label--keys">Cambiar de sesión</span>
-                <span class="browse-label browse-label--swipe">Desliza</span>
-              </p>
-
               <button
                 type="button"
                 class="browse-step browse-step--prev"
@@ -446,34 +435,37 @@
             </div>
           </div>
 
-          <section class="station" aria-labelledby="station-title">
+          <!-- Créditos de colaboración: lo que hace posible la sesión sin hacer falta para asistir. -->
+          <section
+            class="station"
+            *ngIf="current.dossier.colaboradores.length"
+            aria-labelledby="station-title"
+          >
             <div class="station-copy">
-              <p class="station-code">AM / Información al asistente</p>
-              <h3 id="station-title">{{ data.direccion }}</h3>
-              <p>{{ current.dossier.estacion.complemento }}</p>
+              <p class="station-code">AM / Colaboraciones</p>
+              <h3 id="station-title">Hacen posible esta sesión</h3>
+              <p>
+                Una sesión interplanetaria depende de muchas manos. Estos son los espacios, medios y
+                operadores que han intervenido en esta apertura.
+              </p>
             </div>
             <dl class="station-data">
-              <div>
-                <dt>Fecha</dt>
-                <dd appFitLine>{{ longDate(data.fechaInicio) }}</dd>
-              </div>
-              <div>
-                <dt>Franja</dt>
-                <dd appFitLine>
-                  {{ current.dossier.horario || 'Por confirmar' }} ·
-                  {{ current.dossier.estacion.franja }}
+              <div *ngFor="let partner of current.dossier.colaboradores">
+                <dt>{{ partner.rol }}</dt>
+                <dd>
+                  <strong>{{ partner.nombre }}</strong>
+                  <span *ngIf="partner.detalle">{{ partner.detalle }}</span>
                 </dd>
               </div>
-              <div *ngFor="let operator of current.dossier.estacion.operadores">
-                <dt>{{ operator.etiqueta }}</dt>
-                <dd appFitLine>{{ operator.valor }}</dd>
-              </div>
             </dl>
-            <p class="station-disclaimer">
-              AlienMilk responde exclusivamente de las actividades coordinadas por su personal
-              acreditado. La logística anterior y posterior al ingreso puede ser prestada por
-              operadores independientes.
-            </p>
+            <div class="station-disclaimer">
+              <p class="station-code">Alcance de la colaboración</p>
+              <p>
+                AlienMilk dirige y responde por el desarrollo de cada sesión. Las entidades
+                colaboradoras proporcionan infraestructura y apoyo logístico, pero no intervienen en
+                la experiencia ni en su contenido.
+              </p>
+            </div>
           </section>
 
           <nav class="pager" aria-label="Otras sesiones">

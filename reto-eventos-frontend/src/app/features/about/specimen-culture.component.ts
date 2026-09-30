@@ -67,9 +67,9 @@ const SOURCE_ZOOM = 0.88;
 const SHADOW = {
   color: '#0d151e',
   opacity: 0.55,
-  scale: 0.84,
+  scale: 0.78,
   x: 0.22,
-  y: 0.08,
+  y: 0.11,
   blur: 0.002,
   /** Fracción del temblor del cultivo que llega a la sombra. */
   tremor: 0.35,

@@ -443,6 +443,17 @@ h1 {
 .directory-intro .section-label {
   color: #58636a;
 }
+
+.directory-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.directory-kicker .eyebrow-icon {
+  flex: none;
+}
+
 .directory-intro > .section-copy {
   color: #58636a;
 }

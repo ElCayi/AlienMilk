@@ -9,8 +9,22 @@
   overflow: hidden;
   border-radius: 1.25rem;
   color: #f1ecef;
-  background: rgba(5, 13, 22, 0.9);
+  background: #050d16;
   box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+}
+
+/* El astronauta, en espejo, a la derecha: la imagen se funde por su borde con el fondo de la tarjeta,
+   así no hay corte sea cual sea el ancho. */
+.closing-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  aspect-ratio: 626 / 351;
+  background: url('/alienmilk-closing-astronaut.webp') center / cover no-repeat;
+  mask: linear-gradient(90deg, transparent 0%, #000 55%);
+  pointer-events: none;
 }
 
 .closing-cta-copy {
@@ -81,29 +95,23 @@
   letter-spacing: 0.02em;
 }
 
-/* Volteada como en la home: el brazo, cortado en la imagen, entra por el borde derecho. */
-.closing-cta-image {
-  position: absolute;
-  right: 0;
-  bottom: 1rem;
-  width: min(60%, 44rem);
-  pointer-events: none;
-  transform: scaleX(-1);
-}
-
-/* Lienzo alrededor de la tarjeta, para que no flote sobre la textura. */
+/* La tarjeta va directa sobre la textura, al ancho del expediente, con aire amplio antes del pie. */
 .closing {
-  padding: clamp(1.5rem, 3vw, 2.5rem) var(--inset) clamp(3rem, 6vw, 5rem);
-  background: var(--page-canvas);
+  padding: clamp(4rem, 8vw, 7.2rem) 0 clamp(7.5rem, 15.5vw, 14.5rem);
 }
 
 @media (max-width: 800px) {
   .closing-cta {
     grid-template-columns: 1fr;
-    padding-bottom: 14rem;
+    padding-bottom: 19rem;
   }
 
-  .closing-cta-image {
-    width: min(90%, 24rem);
+  .closing-cta::before {
+    top: auto;
+    left: 0;
+    height: 22rem;
+    aspect-ratio: auto;
+    background-position: 80% bottom;
+    mask: linear-gradient(180deg, transparent 0%, #000 45%);
   }
 }

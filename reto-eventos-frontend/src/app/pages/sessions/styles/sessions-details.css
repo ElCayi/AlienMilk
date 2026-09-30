@@ -273,6 +273,12 @@
   color: var(--coral);
 }
 
+.station-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
 .station h3 {
   margin: 0.8rem 0 0;
   text-wrap: balance;
@@ -316,6 +322,7 @@
 }
 
 .station dd strong {
+  color: var(--coral);
   font-weight: 600;
 }
 
@@ -326,8 +333,7 @@
 }
 
 .station-disclaimer {
-  align-self: start;
-  margin-top: 0.6rem;
+  align-self: center;
   padding-left: 1rem;
   border-left: 1px solid rgba(250, 249, 247, 0.3);
 }
@@ -341,8 +347,8 @@
 .pager {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: clamp(0.5rem, 1.5vw, 1rem) var(--inset);
-  background: var(--page-canvas);
+  /* Sin lienzo: sobre la textura, con el mismo margen interior que los recuadros de encima. */
+  padding: clamp(0.5rem, 1.5vw, 1rem) clamp(1.5rem, 2.4vw, 2.25rem);
 }
 
 .pager-link {
@@ -350,7 +356,7 @@
   gap: 0.35rem;
   padding: 1.3rem 0;
   border: 0;
-  color: var(--ink);
+  color: var(--light);
   background: none;
   text-align: left;
   cursor: pointer;
@@ -362,7 +368,7 @@
 }
 
 .pager-link span {
-  color: var(--muted);
+  color: var(--light-muted);
 }
 
 .pager-link strong {

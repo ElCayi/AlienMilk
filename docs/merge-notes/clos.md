@@ -61,3 +61,7 @@ navegador: `clos` no tocó esos archivos en esta tanda, así que no deberían ch
   (`{ rol, nombre, detalle }`) en `session-dossier.models.ts`, `session-dossier.ts` y
   `public/data/session-dossiers.json`. Si otra rama toca `estacion` en esos archivos, manda la de
   `clos`; lo demás del JSON no se ha reformateado.
+- **Final de Sesiones sin lienzo blanco:** paginador y CTA final van sobre la textura; más aire
+  alrededor de la CTA. La tarjeta de la CTA lleva de fondo al astronauta
+  (`public/alienmilk-closing-astronaut.webp`) en lugar de la mano con leche, que sigue en la home.
+- **Colaboraciones:** minimilk en la eyebrow, nombres en coral y columnas centradas en vertical.

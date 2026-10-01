@@ -198,11 +198,6 @@ code {
   line-height: 1;
   margin: 2rem 0 0.85rem;
 }
-.card-intro {
-  color: var(--muted);
-  font-size: 1rem;
-  margin: 0 0 2rem;
-}
 form {
   display: grid;
   gap: 0.65rem;
@@ -351,7 +346,7 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login {
     min-height: calc(100svh - var(--topbar-height, 4rem));
     display: flex;
@@ -373,9 +368,6 @@ h1 {
     margin-top: 1.25rem;
     font-size: clamp(2.5rem, 4.5vh, 3.5rem);
   }
-  .card-intro {
-    margin-bottom: 1.25rem;
-  }
   .signup-copy {
     padding-top: 1rem;
   }
@@ -383,7 +375,7 @@ h1 {
     padding-top: 0.75rem;
   }
 }
-@media (min-width: 1001px) and (max-height: 850px) {
+@media (min-width: 1200px) and (max-height: 850px) {
   .demo-box {
     padding: 1rem;
   }
@@ -397,9 +389,6 @@ h1 {
   .login-card h2 {
     margin-top: 1rem;
   }
-  .card-intro {
-    margin-bottom: 1rem;
-  }
   input {
     padding-block: 0.7rem;
   }
@@ -410,7 +399,7 @@ h1 {
     margin-top: 0.6rem;
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 1199.98px) {
   .login-shell {
     grid-template-columns: 1fr;
   }
@@ -438,9 +427,6 @@ h1 {
   align-self: start;
   padding-block: 1.5rem;
 }
-.login-card .card-intro {
-  margin-bottom: 2rem;
-}
 .login-card form {
   margin-bottom: 1.25rem;
 }
@@ -453,7 +439,7 @@ h1 {
 
 /* Side by side, the card stretches to the bottom of the demo box; the form
    stays where it is and the sign-up line settles at the bottom edge. */
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-card {
     align-self: stretch;
   }
@@ -481,16 +467,13 @@ h1 {
 }
 
 /* Heading on top, a pause, then the form sits on the bottom of the card. */
-.login-card .card-intro {
-  margin-bottom: 2.5rem;
-}
 .login-card form {
   margin-top: auto;
 }
 .login-card .signup-copy {
   margin-top: 0;
 }
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-card {
     margin-top: clamp(1.5rem, 3vh, 2.75rem);
   }
@@ -573,24 +556,18 @@ h1 {
 .milk-row .you {
   background: var(--coral);
 }
-.login-card .card-intro {
-  margin-bottom: 1.25rem;
-}
 
 /* Two columns: the boxes grow down to the bottom bar on tall screens, and the
    vertical rhythm tightens on short ones so both boxes stay in view. */
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-shell {
     flex: 1 0 auto;
-  }
-  .login-card .card-intro {
-    margin-bottom: clamp(0.75rem, 2vh, 1.25rem);
   }
   .milk-row {
     margin-bottom: clamp(1rem, 4vh, 2.5rem);
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 1199.98px) {
   .milk-row {
     margin-bottom: 2rem;
   }
@@ -598,7 +575,7 @@ h1 {
 
 /* No imagery on this page: the title carries it. It grows with the width but
    also with the height, so short screens keep the boxes in view. */
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   h1 {
     font-size: min(14.2cqi, 16svh);
     margin-bottom: calc(clamp(1rem, 3svh, 2.25rem) - 0.825em);
@@ -608,7 +585,7 @@ h1 {
   }
 }
 /* Short screens: pull the heading block up so both boxes clear the bottom. */
-@media (min-width: 1001px) and (max-height: 820px) {
+@media (min-width: 1200px) and (max-height: 820px) {
   h1 {
     font-size: min(14.2cqi, 10.5svh);
   }
@@ -619,7 +596,7 @@ h1 {
 .signup-copy {
   text-align: center;
 }
-@media (min-width: 1001px) and (max-height: 680px) {
+@media (min-width: 1200px) and (max-height: 680px) {
   h1 {
     font-size: min(14.2cqi, 9.5svh);
     margin-bottom: calc(1rem - 0.825em);
@@ -640,9 +617,6 @@ h1 {
   .login-card h2 {
     font-size: 2.1rem;
     margin-bottom: 0.4rem;
-  }
-  .login-card .card-intro {
-    margin-bottom: 0.75rem;
   }
   .login-card form {
     gap: 0.4rem;
@@ -666,18 +640,18 @@ h1 {
   white-space: nowrap;
   margin-top: 0.24em;
 }
-@media (min-width: 1001px) and (max-height: 620px) {
+@media (min-width: 1200px) and (max-height: 620px) {
   h1 {
     font-size: min(14.2cqi, 6.6svh);
     margin-bottom: calc(1rem - 0.825em);
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 1199.98px) {
   h1 {
     margin-bottom: calc(1.75rem - 0.825em);
   }
 }
-@media (min-width: 1001px) and (max-height: 620px) {
+@media (min-width: 1200px) and (max-height: 620px) {
   .login-card {
     margin-top: 0;
     padding-block: 0.85rem;
@@ -685,7 +659,6 @@ h1 {
   .login-card h2 {
     font-size: 1.9rem;
   }
-  .login-card .card-intro,
   .milk-row {
     margin-bottom: 0.6rem;
   }
@@ -708,7 +681,7 @@ h1 {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
   }
 }
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   h1 {
     margin-top: calc(2.35rem - 0.12em);
   }
@@ -721,12 +694,12 @@ h1 {
 }
 
 /* The card reaches further up; its bottom stays level with the demo box. */
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-card {
     margin-top: clamp(0.5rem, 1.5vh, 1.25rem);
   }
 }
-@media (min-width: 1001px) and (max-height: 820px) {
+@media (min-width: 1200px) and (max-height: 820px) {
   .login-card {
     margin-top: 0.5rem;
   }
@@ -741,7 +714,7 @@ h1 {
 .login {
   padding-bottom: clamp(2.5rem, 6vh, 4.5rem);
 }
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login {
     padding-bottom: clamp(2.5rem, 6vh, 4.5rem);
   }
@@ -753,4 +726,99 @@ h1 {
 .milk-row span {
   width: min(1.5rem, 7.6cqi);
   height: min(1.5rem, 7.6cqi);
+}
+
+.login-card h2 {
+  margin-top: clamp(0.75rem, 3vh, 2rem);
+  margin-bottom: clamp(1.25rem, 3.5vh, 2.25rem);
+  text-align: center;
+}
+@media (min-width: 1200px) and (max-height: 620px) {
+  .login-card h2 {
+    margin-top: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+}
+/* One column (tablets, narrow laptops): the title still fills its width. */
+@media (max-width: 1199.98px) {
+  h1 {
+    font-size: min(13.2cqi, 6rem);
+  }
+}
+
+/* The demo box comes after the form in the markup, so on one column the form
+   is reached first. Two columns put it back under the title; the card spans
+   both rows, so their bottoms meet. */
+@media (min-width: 1200px) {
+  .login-shell {
+    grid-template-areas:
+      'copy card'
+      'demo card';
+    grid-template-rows: 1fr auto;
+    row-gap: 0;
+  }
+  .login-copy {
+    grid-area: copy;
+  }
+  .login-card {
+    grid-area: card;
+  }
+  .demo-box {
+    grid-area: demo;
+  }
+}
+
+/* One column: the form stands alone under the eyebrow. The title stays for
+   screen readers only. */
+@media (max-width: 1199.98px) {
+  h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .login-shell {
+    row-gap: 2rem;
+  }
+  .login-copy > .eyebrow {
+    margin-bottom: 0;
+  }
+  .login-card {
+    padding: clamp(2.5rem, 7vw, 3.5rem) clamp(1.5rem, 6vw, 3rem);
+  }
+  .login-card h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .milk-row {
+    margin-bottom: 2.5rem;
+  }
+  .login-card form {
+    gap: 0.7rem;
+    margin-bottom: 1.75rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 1.5rem;
+  }
+}
+/* One column: the form settles toward the bottom of the card and the sign-up
+   line takes less room. */
+@media (max-width: 1199.98px) {
+  .login-card {
+    padding-bottom: 1.4rem;
+  }
+  .milk-row {
+    margin-bottom: 3.25rem;
+  }
+  .login-card form {
+    margin-bottom: 1rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 0.9rem;
+    line-height: 1.5;
+    border-top: 0;
+  }
 }

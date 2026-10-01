@@ -54,14 +54,6 @@ export const routes: Routes = [
       ),
   },
   {
-    // Sketch of the new registration page, to compare with /registro.
-    path: 'registro-sketch',
-    loadComponent: () =>
-      import('./pages/register-sketch/register-sketch-page.component').then(
-        ({ RegisterSketchPageComponent }) => RegisterSketchPageComponent,
-      ),
-  },
-  {
     path: 'eventos/:id',
     loadComponent: () =>
       import('./pages/event-detail/event-detail-page.component').then(

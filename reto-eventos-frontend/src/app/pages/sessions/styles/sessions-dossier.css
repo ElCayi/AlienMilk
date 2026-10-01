@@ -509,3 +509,37 @@
   color: #fecaca;
   font-size: 0.8rem;
 }
+
+/* En escritorio, ficha y hoja blanca caben siempre juntas en la pantalla, con el mismo aire arriba y
+   abajo, y ocupan la misma proporción en cualquier tamaño: la ficha escala su contenido entero
+   (appFitBox) y la hoja blanca desplaza el texto dentro. */
+@media (min-width: 1001px) {
+  .dossier-body {
+    --dossier-frame: max(
+      30rem,
+      calc(100svh - var(--topbar-height, 3.75rem) - 2 * (var(--dossier-column-gap) + 0.65rem))
+    );
+  }
+
+  .dossier-aside {
+    align-self: stretch;
+    height: var(--dossier-frame);
+    /* El tamaño lo dan la rejilla y el marco, nunca el contenido escalado: sin esto, cambiar la escala
+       ensancharía la columna y volvería a disparar el ajuste. */
+    contain: size;
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 1001px) {
+  /* Lo que sobra al escalar se reparte entre los bloques de la ficha, no queda abajo. */
+  .dossier-aside-fit {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .dossier-aside-fit > * {
+    flex-shrink: 0;
+  }
+}

@@ -69,3 +69,13 @@ navegador: `clos` no tocó esos archivos en esta tanda, así que no deberían ch
   minimilk estampada en la taza del astronauta. `index.html` carga ahora la cursiva 400 de Barlow
   Condensed.
 - **Paginador** con la flecha y el subrayado de «Explorar todas las sesiones» de la home.
+
+## Tanda del 1 de octubre
+
+- **Ficha y hoja blanca caben siempre en la pantalla** (escritorio): la ficha escala entera con la
+  directiva nueva `appFitBox` (`shared/fit-box/`); la hoja blanca desplaza el texto dentro.
+- **Tarjeta final** escala en pantallas grandes con `appScaleWidth` (tope ×1,08, centrada).
+- **Pestañas:** al tocarlas, el bloque se centra en la pantalla. En móvil, cabecera fija con la
+  eyebrow y las pestañas, y una sección cada vez.
+- **Móvil:** índice e imagen a sangre, paginador en dos columnas, ajustes de aire.
+- Minimilk de la eyebrow del expediente en coral.

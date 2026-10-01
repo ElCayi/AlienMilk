@@ -207,127 +207,132 @@
 
           <div class="dossier-body">
             <aside class="dossier-aside">
-              <p class="dossier-kicker">
-                <span>{{ typeLabel(data.tipoEvento) }}</span>
-                <span>{{ archiveCode(data) }}</span>
-              </p>
-              <dl class="dossier-facts">
-                <div>
-                  <dt>Duración</dt>
-                  <dd>{{ duration(data.duracion) }}</dd>
-                </div>
-                <div>
-                  <dt>Aforo</dt>
-                  <dd>{{ data.aforoMaximo }} plazas</dd>
-                </div>
-              </dl>
+              <div class="dossier-aside-fit" appFitBox>
+                <p class="dossier-kicker">
+                  <span>{{ typeLabel(data.tipoEvento) }}</span>
+                  <span>{{ archiveCode(data) }}</span>
+                </p>
+                <dl class="dossier-facts">
+                  <div>
+                    <dt>Duración</dt>
+                    <dd>{{ duration(data.duracion) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Aforo</dt>
+                    <dd>{{ data.aforoMaximo }} plazas</dd>
+                  </div>
+                </dl>
 
-              <div class="dossier-share">
-                <button type="button" (click)="share(data)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="18" cy="5" r="2.5" />
-                    <circle cx="6" cy="12" r="2.5" />
-                    <circle cx="18" cy="19" r="2.5" />
-                    <path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" />
-                  </svg>
-                  Compartir expediente
-                </button>
-                <span role="status">{{ shareFeedback() }}</span>
-              </div>
-
-              <div class="booking">
-                <!-- Una entrada: el precio en la matriz y la reserva en el resguardo, con troquel entre ambos. -->
-                <div class="booking-price" *ngIf="priceParts(data.precio) as amount">
-                  <p class="booking-head">
-                    <span class="booking-label">Acceso individual</span>
-                    <time class="booking-date" [attr.datetime]="data.fechaInicio">{{
-                      ticketDate(data.fechaInicio)
-                    }}</time>
-                  </p>
-                  <strong class="booking-amount" [attr.aria-label]="price(data.precio)"
-                    ><span class="booking-whole">{{ amount.whole }}</span
-                    ><span class="booking-cents">{{ amount.fraction }}</span
-                    ><span class="booking-currency">{{ amount.currency }}</span></strong
-                  >
-                  <span class="booking-unit">Por persona · impuestos incluidos</span>
+                <div class="dossier-share">
+                  <button type="button" (click)="share(data)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="18" cy="5" r="2.5" />
+                      <circle cx="6" cy="12" r="2.5" />
+                      <circle cx="18" cy="19" r="2.5" />
+                      <path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" />
+                    </svg>
+                    Compartir expediente
+                  </button>
+                  <span role="status">{{ shareFeedback() }}</span>
                 </div>
 
-                <div class="booking-stub">
-                  <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
-                    <div class="booking-fields">
-                      <label>
-                        <span>Plazas</span>
-                        <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
-                      </label>
-                      <label>
-                        <span>Observaciones</span>
-                        <input
-                          [(ngModel)]="observaciones"
-                          placeholder="Intolerancias, accesibilidad..."
-                        />
-                      </label>
-                    </div>
-                    <button
-                      type="button"
-                      class="booking-button"
-                      (click)="reservar()"
-                      [disabled]="loadingReservation()"
-                    >
-                      {{
-                        loadingReservation()
-                          ? 'Procesando acceso...'
-                          : 'Reservar plaza · ' + price(totalReserva())
-                      }}
-                    </button>
-                  </ng-container>
-
-                  <ng-template #accessPrompt>
-                    <p class="booking-note">
-                      La consulta del programa es pública. Para reservar plaza es necesario
-                      identificarse como participante.
+                <div class="booking">
+                  <!-- Una entrada: el precio en la matriz y la reserva en el resguardo, con troquel entre ambos. -->
+                  <div class="booking-price" *ngIf="priceParts(data.precio) as amount">
+                    <p class="booking-head">
+                      <span class="booking-label">Acceso individual</span>
+                      <time class="booking-date" [attr.datetime]="data.fechaInicio">{{
+                        ticketDate(data.fechaInicio)
+                      }}</time>
                     </p>
-                    <a
-                      class="booking-button"
-                      routerLink="/login"
-                      [queryParams]="{ redirectTo: currentUrl() }"
+                    <strong class="booking-amount" [attr.aria-label]="price(data.precio)"
+                      ><span class="booking-whole">{{ amount.whole }}</span
+                      ><span class="booking-cents">{{ amount.fraction }}</span
+                      ><span class="booking-currency">{{ amount.currency }}</span></strong
                     >
-                      Identificarse para reservar
-                    </a>
-                    <a class="booking-link" routerLink="/registro"
-                      >Solicitar acceso de participante</a
-                    >
-                  </ng-template>
+                    <span class="booking-unit">Por persona · impuestos incluidos</span>
+                  </div>
 
-                  <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
-                    {{ reservationFeedback() }}
-                  </p>
+                  <div class="booking-stub">
+                    <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
+                      <div class="booking-fields">
+                        <label>
+                          <span>Plazas</span>
+                          <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
+                        </label>
+                        <label>
+                          <span>Observaciones</span>
+                          <input
+                            [(ngModel)]="observaciones"
+                            placeholder="Intolerancias, accesibilidad..."
+                          />
+                        </label>
+                      </div>
+                      <button
+                        type="button"
+                        class="booking-button"
+                        (click)="reservar()"
+                        [disabled]="loadingReservation()"
+                      >
+                        {{
+                          loadingReservation()
+                            ? 'Procesando acceso...'
+                            : 'Reservar plaza · ' + price(totalReserva())
+                        }}
+                      </button>
+                    </ng-container>
+
+                    <ng-template #accessPrompt>
+                      <p class="booking-note">
+                        La consulta del programa es pública. Para reservar plaza es necesario
+                        identificarse como participante.
+                      </p>
+                      <a
+                        class="booking-button"
+                        routerLink="/login"
+                        [queryParams]="{ redirectTo: currentUrl() }"
+                      >
+                        Identificarse para reservar
+                      </a>
+                      <a class="booking-link" routerLink="/registro"
+                        >Solicitar acceso de participante</a
+                      >
+                    </ng-template>
+
+                    <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
+                      {{ reservationFeedback() }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </aside>
 
             <div class="dossier-main">
-              <!-- Recuerda de qué sesión se habla cuando la banda del título ya no está a la vista. -->
-              <p class="eyebrow dossier-eyebrow" aria-hidden="true">
-                <span class="eyebrow-icon"></span>
-                <span class="dossier-eyebrow-code">{{ archiveCode(data) }}</span>
-                <span>{{ data.nombre }}</span>
-              </p>
+              <!-- Cabecera del expediente: en móvil queda fija bajo la barra superior y sirve de índice. -->
+              <div class="dossier-head">
+                <!-- Recuerda de qué sesión se habla cuando la banda del título ya no está a la vista. -->
+                <p class="eyebrow dossier-eyebrow" aria-hidden="true">
+                  <span class="eyebrow-icon"></span>
+                  <span class="dossier-eyebrow-code">{{ archiveCode(data) }}</span>
+                  <span>{{ data.nombre }}</span>
+                </p>
 
-              <!-- En escritorio las secciones son pestañas; en móvil se leen seguidas. -->
-              <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
-                <button
-                  type="button"
-                  role="tab"
-                  *ngFor="let tab of tabs()"
-                  [id]="'tab-' + tab.id"
-                  [attr.aria-controls]="'panel-' + tab.id"
-                  [attr.aria-selected]="activeTab() === tab.id"
-                  [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
-                  (click)="activeTab.set(tab.id)"
-                  (keydown)="moveTab($event)"
-                >
-                  {{ tab.label }}
-                </button>
+                <!-- En escritorio, pestañas; en móvil las secciones se leen seguidas y esto salta entre ellas. -->
+                <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
+                  <button
+                    type="button"
+                    role="tab"
+                    *ngFor="let tab of tabs()"
+                    [id]="'tab-' + tab.id"
+                    [attr.aria-controls]="'panel-' + tab.id"
+                    [attr.aria-selected]="activeTab() === tab.id"
+                    [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
+                    (click)="openTab(tab.id)"
+                    (keydown)="moveTab($event)"
+                  >
+                    {{ tab.label }}
+                  </button>
+                </div>
               </div>
 
               <section
@@ -509,7 +514,7 @@
 
       <!-- Cierre para visitantes: la consulta es pública, la reserva requiere identificarse. -->
       <div class="closing" *ngIf="!authService.isAuthenticated()">
-        <section class="closing-cta" aria-labelledby="closing-cta-title">
+        <section class="closing-cta" aria-labelledby="closing-cta-title" [appScaleWidth]="1094">
           <div class="closing-cta-copy">
             <h2 id="closing-cta-title">Hay una plaza <br />esperando su nombre.</h2>
             <p>

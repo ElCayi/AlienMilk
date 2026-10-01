@@ -22,12 +22,21 @@
   bottom: 0;
   /* Misma escala que antes de agrandar el texto: si la tarjeta crece, la imagen no se amplía; queda
      abajo a la derecha y se funde también por arriba. */
-  height: min(100%, 33vw);
+  /* Hasta 1440 px sigue al viewport; por encima, la tarjeta entera escala (appScaleWidth) y la imagen
+     con ella, en la misma proporción. */
+  height: min(100%, 33vw, 475px);
   aspect-ratio: 626 / 351;
   background: url('/alienmilk-closing-astronaut.webp') center / cover no-repeat;
   mask:
-    linear-gradient(90deg, transparent 0%, #000 55%),
-    linear-gradient(180deg, transparent 0%, #000 22%);
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(0 0 0 / 0.08) 14%,
+      rgb(0 0 0 / 0.35) 30%,
+      rgb(0 0 0 / 0.75) 46%,
+      #000 60%
+    ),
+    linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.4) 10%, #000 24%);
   mask-composite: intersect;
   pointer-events: none;
 }
@@ -123,7 +132,12 @@
 @media (max-width: 800px) {
   .closing-cta {
     grid-template-columns: 1fr;
-    padding-bottom: 19rem;
+    padding-bottom: 21rem;
+  }
+
+  /* En una columna, el texto ocupa el ancho de la tarjeta en vez del del título. */
+  .closing-cta-copy {
+    width: auto;
   }
 
   .closing-cta::before {

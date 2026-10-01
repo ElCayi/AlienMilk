@@ -7,7 +7,7 @@
  * `public/data/stations.json` a través de `StationService`.
  */
 export interface Estacion {
-  /** Código de catálogo, p. ej. `EST-02`. */
+  /** Código de referencia, como una matrícula (p. ej. `EST-M1D·0007`): con él se busca la estación en la red. */
   codigo: string;
   /** Función del espacio en la red: sede central, estación de recepción, punto de colaboración… */
   tipo: string;

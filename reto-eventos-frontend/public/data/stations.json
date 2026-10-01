@@ -1,6 +1,6 @@
 [
   {
-    "codigo": "EST-01",
+    "codigo": "EST-N4K·0912",
     "tipo": "Estación de recepción",
     "sistema": "Theta¹ Orionis",
     "planeta": "Nair",
@@ -12,19 +12,19 @@
     "acceso": "Lanzadera AM Transit"
   },
   {
-    "codigo": "EST-02",
+    "codigo": "EST-M1D·0007",
     "tipo": "Sede central",
     "sistema": "Sistema Solar",
     "planeta": "Tierra",
-    "sitio": "Recinto de Madrid",
-    "coordenadas": "40° 25′ N · 3° 42′ O",
+    "sitio": "Recinto de A Coruña",
+    "coordenadas": "43° 22′ N · 8° 24′ O",
     "descripcion": "Acoge la programación pública del ciclo 2026 en el Hangar 7, las cúpulas Beta y Eclipse y el Módulo Lácteo 3. En sus cámaras se conserva el primer lote recibido por AlienMilk.",
-    "direccion": "Madrid, acceso norte",
+    "direccion": "Muelle de San Diego, nave 3",
     "horaLocal": "UTC+2",
-    "acceso": "Metro · AM Transit"
+    "acceso": "Bus urbano · AM Transit"
   },
   {
-    "codigo": "EST-03",
+    "codigo": "EST-T7H·3381",
     "tipo": "Punto de colaboración",
     "sistema": "TRAPPIST-1",
     "planeta": "TRAPPIST-1e",

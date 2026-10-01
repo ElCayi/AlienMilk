@@ -10,19 +10,19 @@
 }
 
 /* Planetario en horizontal: las tres órbitas en fila, unidas por un eje, y bajo cada una su
-   etiqueta, que cae al llegar. Al final, la ficha del asistente a todo el ancho. */
+   etiqueta. Al final, la ficha del asistente a todo el ancho. */
 @media (min-width: 1001px) {
   .locations-layout:not(.locations-layout-collaboration) {
     min-height: 0;
     grid-template-columns: minmax(0, 1fr);
     align-items: start;
-    gap: clamp(3rem, 5vw, 5.5rem);
+    gap: clamp(5rem, 8vw, 9.5rem);
   }
 
   .locations-chart-viewport {
     --orbit: clamp(10rem, 12vw, 17rem);
     /* Cable del planeta a su placa, corto: la placa es el pie del planetario. */
-    --drop: clamp(0.9rem, 1.3vw, 1.6rem);
+    --drop: clamp(1.5rem, 2.1vw, 2.5rem);
     --drawer-pad: clamp(1rem, 1.5vw, 1.75rem);
     height: auto;
     min-height: 0;
@@ -132,52 +132,6 @@
   }
 }
 
-/* El despliegue: las estaciones caen con el
-   mismo latido elástico que los marcos de Próximas sesiones. Todo espera en pausa (y en su
-   primer fotograma) hasta que el componente marca el planetario como desplegado. */
-@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
-  .locations-chart.is-armed .location-data {
-    animation: locations-station-drop 680ms cubic-bezier(0.33, 0, 0.2, 1) both paused;
-    animation-delay: calc(520ms + var(--station-delay, 0ms));
-  }
-
-  .locations-chart.is-armed .location-node-secondary {
-    --station-delay: 110ms;
-  }
-
-  .locations-chart.is-armed .location-node-tertiary {
-    --station-delay: 220ms;
-  }
-
-  .locations-chart.is-deployed .location-data {
-    animation-play-state: running;
-  }
-}
-
-@keyframes locations-station-drop {
-  0% {
-    opacity: 0;
-    transform: translateY(-1.5rem) scale(0.965);
-  }
-
-  45% {
-    opacity: 1;
-  }
-
-  58% {
-    transform: translateY(0.2rem) scale(1.012);
-  }
-
-  80% {
-    transform: translateY(0) scale(0.997);
-  }
-
-  100% {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* En horizontal las placas de estación son estrechas: el botón sube a la esquina, a la altura del
    rótulo, y solo esa línea le deja sitio. Los operadores, si su columna no da para rótulo y
    nombre en una línea, ponen el nombre debajo. */
@@ -205,7 +159,7 @@
     container-type: inline-size;
   }
 
-  @container (max-width: 21rem) {
+  @container (max-width: 16rem) {
     .locations-brief dl div {
       grid-template-columns: minmax(0, 1fr);
       gap: 0.3rem;
@@ -452,6 +406,14 @@
   .location-node .location-marker > span {
     animation: location-marker-upright var(--orbit-period) linear infinite;
     transition: scale 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .locations-chart.is-armed .location-node-secondary {
+    --station-delay: 110ms;
+  }
+
+  .locations-chart.is-armed .location-node-tertiary {
+    --station-delay: 220ms;
   }
 
   .locations-chart.is-armed .location-marker {
@@ -713,5 +675,436 @@
   .locations-brief dl {
     border-color: rgba(247, 248, 249, 0.14);
     background: rgba(247, 248, 249, 0.04);
+  }
+}
+
+/* Etiquetas flotando, sin recuadro: la matrícula de la estación en su chip, centrada; el
+   nombre del sitio, grande y centrado (appFitLine lo encoge si no cabe en una línea); sistema ·
+   planeta debajo y, al pie, el botón del desplegable centrado. */
+@media (min-width: 1001px) {
+  .location-data summary {
+    padding: 0;
+    border: 0;
+    background: none;
+    gap: clamp(0.5rem, 0.7vw, 0.8rem);
+  }
+
+  .location-data summary > .location-code {
+    justify-self: center;
+    margin: 0;
+    padding: 0.45rem 0.65rem;
+    border: 1.5px solid var(--gallery-ink, #211e24);
+    border-radius: 0.35rem;
+    color: var(--gallery-ink, #211e24);
+    background: none;
+    font: 800 clamp(0.72rem, 0.7vw, 0.88rem) / 1 'Nunito', sans-serif;
+    letter-spacing: 0.1em;
+  }
+
+  .location-data strong {
+    justify-self: stretch;
+    min-width: 0;
+    font-size: clamp(2.4rem, 2.9vw, 3.7rem);
+    line-height: 1;
+  }
+
+  .location-data summary::after {
+    position: static;
+    justify-self: center;
+    margin-top: 0.25rem;
+    transform: none;
+  }
+
+  .location-data-details {
+    margin-top: 0.75rem;
+  }
+}
+
+/* Botón del desplegable: al abrir, la barra vertical del «+» se recoge mientras el botón da media
+   vuelta, y queda el «−»; al cerrar, el camino inverso. Con el cursor encima se llena de coral. */
+@media (min-width: 1001px) {
+  .location-data summary::after {
+    transition:
+      color 220ms ease,
+      background-color 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease,
+      background-size 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      rotate 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      scale 220ms ease;
+  }
+
+  .location-data[open] summary::after {
+    rotate: 180deg;
+  }
+
+  .location-data summary:hover::after,
+  .location-data summary:focus-visible::after {
+    transform: none;
+    scale: 1.08;
+  }
+}
+
+/* Apertura del desplegable: el panel crece en altura (y con él baja suave todo lo de debajo) y su
+   contenido aparece un instante después, subiendo apenas. Al cerrar, el mismo camino al revés.
+   Donde el navegador no sabe animar <details> se abre como siempre, sin transición. */
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+  .locations-chart {
+    interpolate-size: allow-keywords;
+  }
+
+  .location-data::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 560ms cubic-bezier(0.22, 1, 0.36, 1),
+      content-visibility 560ms allow-discrete;
+  }
+
+  .location-data[open]::details-content {
+    block-size: auto;
+  }
+
+  .location-data-details {
+    opacity: 0;
+    translate: 0 -0.6rem;
+    transition:
+      opacity 280ms ease,
+      translate 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .location-data[open] .location-data-details {
+    opacity: 1;
+    translate: 0 0;
+    transition-delay: 120ms;
+  }
+}
+
+/* Ficha del asistente como página de expediente: sobre la placa oscura nada va encajonado. Rótulo
+   coral y título limpios, una línea fina que cierra la cabecera y tres columnas separadas solo por
+   filetes verticales: aviso (el texto menor, con su marca coral), acceso y operadores. */
+@media (min-width: 1001px) {
+  .locations-brief {
+    --brief-rule: rgba(247, 248, 249, 0.14);
+    --brief-column-gap: clamp(1.5rem, 2.6vw, 3.25rem);
+    row-gap: 0;
+    column-gap: 0;
+    padding: clamp(2rem, 3vw, 3.5rem) clamp(2rem, 3.2vw, 3.75rem);
+  }
+
+  .locations-brief > .locations-brief-code,
+  .locations-brief h3,
+  .locations-brief > p,
+  .locations-brief dl {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .locations-brief > .locations-brief-code {
+    margin-bottom: 0.9rem;
+    letter-spacing: 0.16em;
+  }
+
+  .locations-brief h3 {
+    justify-self: stretch;
+    margin-bottom: clamp(1.5rem, 2.4vw, 2.75rem);
+    padding-bottom: clamp(1.25rem, 2vw, 2.25rem);
+    border-bottom: 1px solid var(--brief-rule);
+    font-size: clamp(2.6rem, 3.4vw, 4.2rem);
+    line-height: 0.95;
+  }
+
+  .locations-brief > .locations-brief-disclaimer {
+    padding-right: var(--brief-column-gap);
+    color: #9aa6b1;
+  }
+
+  .locations-brief-disclaimer::before {
+    content: '';
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    margin-bottom: 1rem;
+    background: #ff7f7f;
+  }
+
+  .locations-brief > p:not(.locations-brief-disclaimer),
+  .locations-brief dl {
+    padding-inline: var(--brief-column-gap);
+    border-left: 1px solid var(--brief-rule);
+  }
+
+  .locations-brief dl {
+    padding-right: 0;
+    align-content: start;
+  }
+}
+
+/* La ficha aprovecha su alto: el rótulo, el título y el aviso forman la primera columna, y el
+   acceso y los operadores ocupan las otras dos desde arriba, separadas por filetes a toda altura.
+   Sin línea bajo el título: la marca coral del aviso hace de pausa. */
+@media (min-width: 1001px) {
+  .locations-brief {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 0.9fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      'code access operators'
+      'title access operators'
+      'notice access operators';
+  }
+
+  .locations-brief h3 {
+    margin-bottom: clamp(1.5rem, 2.4vw, 2.75rem);
+    padding-right: var(--brief-column-gap);
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .locations-brief > .locations-brief-code {
+    padding-right: var(--brief-column-gap);
+  }
+
+  .locations-brief > p:not(.locations-brief-disclaimer),
+  .locations-brief dl {
+    align-self: stretch;
+  }
+
+  .locations-brief > p:not(.locations-brief-disclaimer) {
+    align-content: start;
+  }
+}
+
+@media (min-width: 1001px) {
+  .locations-brief h3 {
+    justify-self: stretch;
+    min-width: 0;
+    font-size: clamp(2.4rem, 2.9vw, 3.7rem);
+  }
+
+  .locations-brief > p:not(.locations-brief-disclaimer),
+  .locations-brief dl {
+    align-content: center;
+  }
+}
+
+@media (min-width: 1001px) {
+  .locations-brief > .locations-brief-code {
+    justify-self: stretch;
+    min-width: 0;
+    text-align: left;
+  }
+}
+
+/* Los tres desplegables con el mismo alto (lo calcula el componente: el del contenido más largo).
+   La descripción queda arriba y los datos abajo, así las filas coinciden de un panel a otro. */
+@media (min-width: 1001px) {
+  .location-data-details {
+    min-height: var(--station-panel-height, 0);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .location-data-details p {
+    margin-bottom: 0.75rem;
+  }
+
+  .location-data-details dl {
+    margin-top: auto;
+  }
+}
+
+/* Las instrucciones como procedimiento con cuenta atrás: cada paso cuelga de una línea con su
+   punto, la hora arriba y, debajo, el número y lo que hay que hacer. En móvil la línea baja en
+   vertical; en escritorio corre a lo ancho y acaba en punta, hacia la sesión. */
+.locations-brief-steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  hyphens: manual;
+}
+
+.locations-brief-steps li {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0 0 1.35rem 1.4rem;
+  border-left: 1px solid rgba(247, 248, 249, 0.28);
+}
+
+.locations-brief-steps li:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+
+.locations-brief-steps li::before {
+  content: '';
+  position: absolute;
+  top: 0.3rem;
+  left: -0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #f7f8f9;
+}
+
+.locations-brief-step-time {
+  color: #f7f8f9;
+  font: 600 clamp(1.15rem, 1.3vw, 1.6rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.locations-brief-step-body {
+  color: #c9d2d9;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.locations-brief-step-number {
+  margin-right: 0.4rem;
+  color: #ff7f7f;
+  font: 800 0.8em / 1 'Nunito', sans-serif;
+  letter-spacing: 0.08em;
+}
+
+.locations-brief-steps strong {
+  color: #f7f8f9;
+  font-weight: 700;
+}
+
+/* Escritorio: rótulo, título y firma arriba; la cuenta atrás a lo ancho en medio; el aviso, como
+   letra pequeña, al pie. Los operadores ocupan la columna derecha a toda altura. */
+@media (min-width: 1001px) {
+  .locations-brief {
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'code code operators'
+      'title title operators'
+      'steps steps operators'
+      'notice notice operators';
+  }
+
+  .locations-brief-steps {
+    grid-area: steps;
+    align-self: center;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-block: clamp(0.5rem, 1.5vw, 2rem) clamp(1.75rem, 2.6vw, 3rem);
+  }
+
+  .locations-brief-steps li {
+    grid-template-rows: auto auto;
+    gap: 0;
+    padding: 0;
+    border-left: 0;
+  }
+
+  .locations-brief-step-time {
+    padding: 0 var(--brief-column-gap) 1rem 0;
+  }
+
+  /* La línea: cada paso pone su tramo y el último acaba en punta. */
+  .locations-brief-step-body {
+    position: relative;
+    padding: 1.25rem var(--brief-column-gap) 0 0;
+    border-top: 1px solid rgba(247, 248, 249, 0.28);
+    font-size: clamp(1.02rem, 0.98vw, 1.22rem);
+  }
+
+  .locations-brief-steps li::before {
+    content: none;
+  }
+
+  .locations-brief-step-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #f7f8f9;
+    translate: 0 calc(-50% - 0.5px);
+  }
+
+  .locations-brief-steps li:last-child .locations-brief-step-body {
+    margin-right: var(--brief-column-gap);
+    padding-right: 0;
+  }
+
+  .locations-brief-steps li:last-child .locations-brief-step-body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-top: 1px solid rgba(247, 248, 249, 0.28);
+    border-right: 1px solid rgba(247, 248, 249, 0.28);
+    translate: 0 calc(-50% - 0.5px);
+    rotate: 45deg;
+    transform-origin: center;
+  }
+
+  .locations-brief > .locations-brief-disclaimer {
+    align-self: end;
+    max-width: 62rem;
+    font-size: clamp(0.88rem, 0.8vw, 1rem) !important;
+  }
+}
+
+/* Una minimilk abre el rótulo de la ficha, en su mismo coral. */
+.locations-brief > .locations-brief-code::before {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.6em;
+  vertical-align: -0.45em;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+/* «Consultar documentación» vive dentro de la ficha, en claro sobre la placa: en escritorio,
+   abajo a la derecha, al pie de la columna de operadores. */
+.locations-brief > .locations-brief-cta-external {
+  margin: 0;
+  color: #f1ecef;
+}
+
+.locations-brief > .locations-brief-cta-external:hover,
+.locations-brief > .locations-brief-cta-external:focus-visible {
+  color: #ff7f7f;
+}
+
+@media (min-width: 1001px) {
+  .locations-brief > .locations-brief-cta-external {
+    grid-column: 3;
+    grid-row: 4;
+    justify-self: end;
+    align-self: end;
+  }
+
+  /* Operadores centrados en el alto de la ficha descontando el botón del pie, así quedan algo más
+     arriba que en el centro (el filete sigue a toda altura); con aire entre filas. */
+  .locations-brief dl {
+    align-content: center;
+    padding-bottom: clamp(3rem, 4vw, 4.5rem);
+  }
+
+  .locations-brief dl div {
+    padding-block: clamp(1.55rem, 2.05vw, 2.45rem);
+  }
+
+  .locations-brief dl div:first-child {
+    padding-top: 0;
+  }
+
+  .locations-brief dl div:last-child {
+    padding-bottom: 0;
   }
 }

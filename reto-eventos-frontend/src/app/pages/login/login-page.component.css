@@ -577,7 +577,7 @@ h1 {
    also with the height, so short screens keep the boxes in view. */
 @media (min-width: 1200px) {
   h1 {
-    font-size: min(14.2cqi, 16svh);
+    font-size: min(14.2cqi, 16svh, 5.25rem);
     margin-bottom: calc(clamp(1rem, 3svh, 2.25rem) - 0.825em);
   }
   .login-shell {
@@ -820,5 +820,161 @@ h1 {
     padding-top: 0.9rem;
     line-height: 1.5;
     border-top: 0;
+  }
+}
+
+/* "Regístrate gratis": the site's link hover (landing "Explorar", footer):
+   a hairline underline that stretches, and a small press. */
+.signup-copy a {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.signup-copy a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0.05em;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform-origin: center;
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+.signup-copy a:is(:hover, :focus-visible)::after {
+  transform: scaleX(1.08);
+  opacity: 1;
+}
+.signup-copy a:active {
+  transform: translateY(0.08rem) scale(0.94);
+}
+
+/* Two columns on tall screens: the form opens up gradually instead of leaving
+   a void under the heading. --air is 0 up to ~850px tall, so the compact
+   short-screen values above are untouched, and grows with the height. */
+@media (min-width: 1200px) and (min-height: 850.02px) {
+  .login-card {
+    --air: clamp(0px, calc((100svh - 850px) * 0.14), 64px);
+  }
+  .login-card form {
+    gap: calc(0.65rem + var(--air) * 0.3);
+  }
+  .password-label {
+    margin-top: calc(0.6rem + var(--air) * 0.75);
+  }
+  .login-card input {
+    padding-block: calc(0.95rem + var(--air) * 0.15);
+  }
+  .submit-btn {
+    margin-top: calc(1rem + var(--air) * 0.75);
+  }
+  .login-card .signup-copy {
+    padding-top: calc(1.25rem + var(--air) * 0.35);
+  }
+}
+
+/* One column: the form card keeps one width whatever the window does. */
+@media (max-width: 1199.98px) {
+  .login-card {
+    width: min(100%, 28rem);
+    box-sizing: border-box;
+    justify-self: center;
+  }
+}
+
+/* Two columns: the card's contents keep a fixed width, centred, so the card
+   itself can widen. On wide screens it grows towards the centre while its
+   right edge stays on the page margin. */
+@media (min-width: 1200px) {
+  .login-card > :is(form, .signup-copy) {
+    width: 100%;
+    max-width: 22rem;
+    margin-inline: auto;
+  }
+}
+@media (min-width: 1600px) {
+  .login-shell {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+/* Wide card: its contents line up on the left instead of floating centred. */
+@media (min-width: 1600px) {
+  .login-card > :is(form, .signup-copy) {
+    margin-inline: 0;
+  }
+  .login-card h2,
+  .login-card .signup-copy {
+    text-align: left;
+  }
+  .milk-row {
+    justify-content: flex-start;
+  }
+}
+
+/* Wide card: a few minimilks drift in the free dark area right of the form.
+   Square boxes like every minimilk on the site; never coral (that one is the
+   visitor). Still when the system asks for reduced motion. */
+.card-drift {
+  display: none;
+}
+@media (min-width: 1600px) {
+  .login-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .card-drift {
+    display: block;
+    position: absolute;
+    inset: 0 0 0 calc(clamp(1.5rem, 2.5vw, 3rem) + 22rem + 2rem);
+    pointer-events: none;
+  }
+  .card-drift span {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    background: var(--ink);
+    opacity: var(--o);
+    mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+    animation: drift var(--d) ease-in-out var(--delay) infinite alternate;
+  }
+  .card-drift span:nth-child(1) { --s: 2.6rem; --o: 0.16; --d: 11s; --delay: -2s; top: 14%; left: 30%; }
+  .card-drift span:nth-child(2) { --s: 1.5rem; --o: 0.22; --d: 9s; --delay: -6s; top: 30%; left: 68%; }
+  .card-drift span:nth-child(3) { --s: 3.4rem; --o: 0.1; --d: 14s; --delay: -4s; top: 48%; left: 18%; }
+  .card-drift span:nth-child(4) { --s: 1.2rem; --o: 0.26; --d: 8s; --delay: -1s; top: 62%; left: 62%; }
+  .card-drift span:nth-child(5) { --s: 2rem; --o: 0.14; --d: 12s; --delay: -8s; top: 78%; left: 36%; }
+  .card-drift span:nth-child(6) { --s: 1.6rem; --o: 0.18; --d: 10s; --delay: -3s; top: 88%; left: 74%; }
+}
+@keyframes drift {
+  from {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  to {
+    transform: translate(0.6rem, -1.4rem) rotate(6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-drift span {
+    animation: none;
+  }
+}
+/* Wide card: the row of minimilks under the heading becomes a short accent
+   line, and the visitor's coral minimilk moves into the drifting ones. */
+@media (min-width: 1600px) {
+  .milk-row {
+    width: 3rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--coral);
+  }
+  .milk-row span {
+    display: none;
+  }
+  .card-drift span:nth-child(5) {
+    background: var(--coral);
+    --o: 0.85;
   }
 }

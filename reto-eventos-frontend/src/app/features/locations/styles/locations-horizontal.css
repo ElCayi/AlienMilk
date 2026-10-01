@@ -997,6 +997,7 @@
 
   .locations-brief-steps li {
     grid-template-rows: auto auto;
+    align-content: start;
     gap: 0;
     padding: 0;
     border-left: 0;
@@ -1089,15 +1090,27 @@
     align-self: end;
   }
 
-  /* Operadores centrados en el alto de la ficha descontando el botón del pie, así quedan algo más
-     arriba que en el centro (el filete sigue a toda altura); con aire entre filas. */
-  .locations-brief dl {
-    align-content: center;
-    padding-bottom: clamp(3rem, 4vw, 4.5rem);
+  /* Operadores en un recuadro de solo trazo, sin fondo, con su título en coral; centrado en el alto
+     de la ficha sin contar la fila del botón y con aire entre filas. */
+  .locations-brief-operators {
+    grid-area: operators;
+    grid-row: 1 / 4;
+    align-self: center;
+    min-width: 0;
+    border-radius: 0.35rem;
+  }
+
+  .locations-brief .locations-brief-operators dl {
+    grid-area: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
   }
 
   .locations-brief dl div {
     padding-block: clamp(1.55rem, 2.05vw, 2.45rem);
+    align-items: baseline;
   }
 
   .locations-brief dl div:first-child {
@@ -1106,5 +1119,65 @@
 
   .locations-brief dl div:last-child {
     padding-bottom: 0;
+  }
+}
+
+/* Tras la ficha empieza otra sección: el mismo aire que hay sobre el título de Localizaciones
+   (~11.75rem en total, sumado al hueco entre secciones). */
+@media (min-width: 1001px) {
+  :host(:not(.locations-collaboration-section)) .locations-atlas {
+    padding-bottom: max(0px, calc(11.75rem - var(--home-section-gap, 6rem)));
+  }
+}
+
+/* El recuadro de operadores necesita algo más de ancho para que rótulo y enlace quepan en una línea. */
+@media (min-width: 1001px) {
+  .locations-brief {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1.05fr);
+  }
+}
+
+/* Recuadro de operadores: un fieldset, y su leyenda corta el trazo superior del recuadro, como un
+   título delineado por él. En móvil no hay recuadro y la leyenda queda como rótulo. */
+.locations-brief-operators {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.locations-brief-operators dt {
+  white-space: nowrap;
+}
+
+.locations-brief-operators legend {
+  margin: 0 0 1rem;
+  padding: 0;
+  color: #ff7f7f;
+  font: 800 0.7rem / 1 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1001px) {
+  .locations-brief .locations-brief-operators {
+    margin-top: clamp(2rem, 3vw, 3.5rem);
+    margin-left: var(--brief-column-gap);
+    padding: clamp(1.75rem, 2.3vw, 2.6rem) clamp(1.15rem, 1.5vw, 1.9rem) clamp(1.5rem, 2vw, 2.25rem);
+    border: 1px solid rgba(247, 248, 249, 0.24);
+  }
+
+  .locations-brief-operators legend {
+    margin: 0 0 0 -0.7em;
+    padding: 0 0.7em;
+    font-size: clamp(0.8rem, 0.75vw, 0.95rem);
+  }
+}
+
+/* Collaborators sin fondo de escaparate: la puerta se apoya directamente sobre el fondo líquido de
+   la página. */
+@media (min-width: 1001px) {
+  .locations-layout-collaboration::before {
+    content: none;
   }
 }

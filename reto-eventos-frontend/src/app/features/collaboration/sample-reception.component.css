@@ -835,3 +835,72 @@
     font-size: 1.42rem;
   }
 }
+
+/* Entrada de Collaborators (la dispara la portada, ver locations-collaboration-reveal.css): el
+   interior asoma entre las dos hojas de dentro de la puerta según se separan desde el centro
+   (--fold-near) y el techo y el suelo crecen con la raya exterior (--fold-far). */
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+  :host-context(.locations-layout-collaboration.is-armed) .sample-reception.is-panel-only {
+    --fold-clip: calc(
+      var(--fold-seam-end, calc(var(--collaboration-frame-half-width) - 3.6rem)) * var(--fold-near)
+    );
+  }
+
+  :host-context(.locations-layout-collaboration.is-armed) .sample-reception.is-panel-only::before,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout::before,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > h2,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-marks,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-copy {
+    clip-path: inset(0 calc(50% - var(--fold-clip)) 0 calc(50% - var(--fold-clip)));
+  }
+
+  /* Techo y suelo crecen como un trapecio entero: la esquina exterior viaja con la raya exterior (de
+     la boca al marco) y a la vez el borde de la boca baja (en el suelo, sube) hasta su sitio. El lado
+     inclinado mantiene su ángulo y va tapando por arriba y por abajo las rayas y las hojas. */
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-ceiling,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-surface {
+    --fold-wing: calc(var(--sample-portal-spread) * (1 - var(--fold-far)));
+    --fold-depth: calc(100% * var(--fold-far));
+  }
+
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-ceiling {
+    clip-path: polygon(
+      var(--fold-wing) 0,
+      calc(100% - var(--fold-wing)) 0,
+      calc(100% - var(--sample-portal-spread)) var(--fold-depth),
+      var(--sample-portal-spread) var(--fold-depth)
+    );
+  }
+
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-surface {
+    clip-path: polygon(
+      var(--sample-portal-spread) calc(100% - var(--fold-depth)),
+      calc(100% - var(--sample-portal-spread)) calc(100% - var(--fold-depth)),
+      calc(100% - var(--fold-wing)) 100%,
+      var(--fold-wing) 100%
+    );
+  }
+}

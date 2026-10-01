@@ -11,4 +11,14 @@ import { SpecimenCultureComponent } from '../../features/about/specimen-culture.
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.css',
 })
-export class AboutPageComponent {}
+export class AboutPageComponent {
+  goToSection(event: MouseEvent, section: HTMLElement): void {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return;
+    }
+    // El router tiene desactivado el desplazamiento a fragmentos; esta navegación es local.
+    event.preventDefault();
+    section.scrollIntoView({ behavior: 'instant', block: 'start' });
+    section.focus({ preventScroll: true });
+  }
+}

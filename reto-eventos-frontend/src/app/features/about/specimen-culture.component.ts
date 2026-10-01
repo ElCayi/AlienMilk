@@ -43,6 +43,8 @@ interface Blob {
 interface Placed extends Circle {
   blob: Blob;
   home: Point;
+  /** Parte del desplazamiento que viene del temblor. */
+  shake: Point;
 }
 
 interface Source {
@@ -57,6 +59,30 @@ const TAU = Math.PI * 2;
 const SCALE = 0.98;
 /** La muestra se ve algo más alejada dentro de las formas, sin cambiar su tamaño. */
 const SOURCE_ZOOM = 0.88;
+/**
+ * Sombra: una copia de la silueta del cultivo en gris oscuro, sin muestra, algo menor y desplazada
+ * hacia abajo a la derecha. Desplazamiento y desenfoque en unidades de composición; la caja le
+ * reserva sitio, así la copia tampoco se sale del lienzo.
+ */
+const SHADOW = {
+  color: '#0d151e',
+  opacity: 0.55,
+  scale: 0.78,
+  x: 0.22,
+  y: 0.11,
+  blur: 0.002,
+  /** Fracción del temblor del cultivo que llega a la sombra. */
+  tremor: 0.35,
+};
+/**
+ * Sombras interiores de cada forma, aplastadas contra los laterales: una marcada abajo a la
+ * derecha y otra suave en el lado contrario. Dirección, opacidad, distancia del centro y largo en
+ * fracciones del radio, y cuánto se aplastan contra el borde.
+ */
+const RIMS = [
+  { angle: Math.PI / 4, opacity: 0.72, distance: 0.78, length: 0.8, flatten: 0.36 },
+  { angle: (Math.PI * 5) / 4, opacity: 0.3, distance: 0.84, length: 0.6, flatten: 0.3 },
+];
 const TREMOR_DURATION = 0.55;
 const TREMOR_INTERVAL = 12;
 
@@ -336,9 +362,12 @@ export class SpecimenCultureComponent {
     // monta sobre las migas.
     const boxWidth = EXTENT.right - EXTENT.left;
     const boxHeight = EXTENT.bottom - EXTENT.top;
-    const side = Math.min(width / boxWidth, height / boxHeight) * SCALE;
-    const originX = (width - boxWidth * side) * 0.6 - EXTENT.left * side;
-    const originY = (height - boxHeight * side) * 0.1 - EXTENT.top * side;
+    // La copia encoge hacia el centro: solo hay que reservar lo que el desplazamiento la saca.
+    const fitWidth = boxWidth + Math.max(0, SHADOW.x - ((1 - SHADOW.scale) * boxWidth) / 2);
+    const fitHeight = boxHeight + Math.max(0, SHADOW.y - ((1 - SHADOW.scale) * boxHeight) / 2);
+    const side = Math.min(width / fitWidth, height / fitHeight) * SCALE;
+    const originX = (width - fitWidth * side) * 0.6 - EXTENT.left * side;
+    const originY = (height - fitHeight * side) * 0.1 - EXTENT.top * side;
 
     // El temblor afecta a cada grupo entero para que sus cuellos no se separen.
     const hoverElapsed = time - this.hoverStartedAt;
@@ -354,12 +383,14 @@ export class SpecimenCultureComponent {
       const angle = (time * TAU) / blob.period + blob.phase;
       const home = { x: originX + blob.x * side, y: originY + blob.y * side };
       const direction = ROOTS[index] * 2.4;
-      const shake = vibration * 0.008 * side;
+      const amount = vibration * 0.008 * side;
+      const shake = { x: Math.cos(direction) * amount, y: Math.sin(direction) * amount };
       return {
         blob,
         home,
-        x: home.x + Math.cos(angle) * blob.drift * side + Math.cos(direction) * shake,
-        y: home.y + Math.sin(angle * 1.3) * blob.drift * side + Math.sin(direction) * shake,
+        shake,
+        x: home.x + Math.cos(angle) * blob.drift * side + shake.x,
+        y: home.y + Math.sin(angle * 1.3) * blob.drift * side + shake.y,
         r: blob.r * side * (1 + Math.sin(angle * 0.8) * 0.015),
       };
     });
@@ -375,6 +406,30 @@ export class SpecimenCultureComponent {
     const offsetY = boxY + (boxHeight * side - source.height * scale) / 2;
 
     context.clearRect(0, 0, width, height);
+
+    // La sombra va debajo de todo el cultivo: la misma figura entera, encogida sobre su centro y
+    // desplazada. Está apoyada más abajo: tiembla menos que el cultivo.
+    const centerX = originX + ((EXTENT.left + EXTENT.right) / 2) * side;
+    const centerY = originY + ((EXTENT.top + EXTENT.bottom) / 2) * side;
+    const shadows = placed.map((shape) => {
+      const x = shape.x - shape.shake.x * (1 - SHADOW.tremor);
+      const y = shape.y - shape.shake.y * (1 - SHADOW.tremor);
+      return {
+        ...shape,
+        x: centerX + (x - centerX) * SHADOW.scale + SHADOW.x * side,
+        y: centerY + (y - centerY) * SHADOW.scale + SHADOW.y * side,
+        r: shape.r * SHADOW.scale,
+      };
+    });
+    scratch.clearRect(0, 0, width, height);
+    scratch.fillStyle = SHADOW.color;
+    fillSilhouette(scratch, shadows, shadows, side * SHADOW.scale, time);
+    context.save();
+    context.globalAlpha = SHADOW.opacity;
+    context.filter = `blur(${SHADOW.blur * side}px)`;
+    context.drawImage(scratch.canvas, 0, 0, width, height);
+    context.restore();
+
     placed.forEach((root, index) => {
       if (ROOTS[index] !== index) {
         return;
@@ -406,6 +461,7 @@ export class SpecimenCultureComponent {
         traceRippleCircle(context, root, time);
         context.clip();
         context.drawImage(source.image, imageX, imageY, imageWidth, imageHeight);
+        shadeRim(context, root);
         context.restore();
         return;
       }
@@ -413,20 +469,58 @@ export class SpecimenCultureComponent {
       // Un grupo unido se recorta con su silueta completa en el lienzo aparte.
       scratch.clearRect(0, 0, width, height);
       scratch.fillStyle = '#000';
-      members.forEach((member) => {
-        traceRippleCircle(scratch, member, time);
-        scratch.fill();
-        if (member.blob.join) {
-          const mother = placed[member.blob.join.to];
-          fillNeck(scratch, mother, member, member.blob.join.neck * side);
-        }
-      });
+      fillSilhouette(scratch, members, placed, side, time);
       scratch.globalCompositeOperation = 'source-in';
       scratch.drawImage(source.image, imageX, imageY, imageWidth, imageHeight);
+      scratch.globalCompositeOperation = 'source-atop';
+      members.forEach((member) => shadeRim(scratch, member));
       scratch.globalCompositeOperation = 'source-over';
       context.drawImage(scratch.canvas, 0, 0, width, height);
     });
   }
+}
+
+/**
+ * Sombras interiores: manchas oscuras aplastadas contra el borde, siguiendo su curva, como el
+ * grosor de una gota vista desde arriba. Se difuminan hacia dentro. Ver RIMS.
+ */
+function shadeRim(context: CanvasRenderingContext2D, { x, y, r }: Placed): void {
+  for (const rim of RIMS) {
+    context.save();
+    context.translate(
+      x + Math.cos(rim.angle) * r * rim.distance,
+      y + Math.sin(rim.angle) * r * rim.distance,
+    );
+    context.rotate(rim.angle);
+    context.scale(rim.flatten, 1);
+    const length = r * rim.length;
+    const shade = context.createRadialGradient(0, 0, 0, 0, 0, length);
+    shade.addColorStop(0, `rgba(13, 21, 30, ${rim.opacity})`);
+    shade.addColorStop(1, 'rgba(13, 21, 30, 0)');
+    context.fillStyle = shade;
+    context.beginPath();
+    context.arc(0, 0, length, 0, TAU);
+    context.fill();
+    context.restore();
+  }
+}
+
+/** Rellena las formas y los cuellos que las unen a sus madres. */
+function fillSilhouette(
+  context: CanvasRenderingContext2D,
+  members: Placed[],
+  placed: Placed[],
+  side: number,
+  time: number,
+): void {
+  members.forEach((member) => {
+    traceRippleCircle(context, member, time);
+    context.fill();
+    if (member.blob.join) {
+      const mother = placed[member.blob.join.to];
+      fillNeck(context, mother, member, member.blob.join.neck * side);
+    }
+  });
 }
 
 /** El borde del recorte ondula despacio sin deformar el contenido del vídeo. */

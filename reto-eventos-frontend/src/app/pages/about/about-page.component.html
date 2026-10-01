@@ -13,68 +13,122 @@
           <span class="eyebrow-icon" aria-hidden="true"></span>
           <span>Una institución dedicada a lo que nos une</span>
         </p>
-        <h1 id="us-title">Hay mucho más en la <em>leche.</em></h1>
-        <p class="us-hero-lead">
-          Estudiamos, conservamos y compartimos sustancias que permiten a unos organismos transmitir
-          algo esencial a otros. Algunas se degustan. Otras todavía nos enseñan cómo.
-        </p>
-        <a class="us-text-link" routerLink="/sesiones">
-          Descubrir las sesiones <span aria-hidden="true">↗</span>
+        <h1 id="us-title" class="visually-hidden">Nosotros</h1>
+        <!-- Nota firmada, como la presentación del programa en la portada. -->
+        <figure class="us-hero-note">
+          <p class="us-hero-lead">
+            <strong>AlienMilk</strong> es una firma interplanetaria dedicada a la búsqueda,
+            recolección y estudio de <b>leches extraordinarias</b>. Nuestra misión es reunir tantas
+            variedades, procedencias y experiencias sensoriales como sea posible, explorando cada
+            nueva muestra a través de la <b>investigación</b>, la <b>conservación</b> y la
+            <b>degustación</b>.
+          </p>
+          <figcaption class="us-hero-signature">Dirección general · AlienMilk</figcaption>
+        </figure>
+        <a class="us-explore" routerLink="/sesiones">
+          <span class="us-explore-label">Descubrir sesiones</span>
+          <span class="us-explore-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </span>
         </a>
       </div>
 
       <!-- Cultivo de la muestra: pompas unidas por cuellos viscosos y esporas sueltas. -->
       <figure class="us-hero-visual">
         <app-specimen-culture class="us-culture" />
+        <!-- Ficha de catálogo, como si el cultivo viniera del archivo. -->
+        <figcaption class="us-culture-tag">
+          <span class="us-culture-tag-id">Muestra AM-2291-F</span>
+          <span>Secreción láctea magnetorreactiva · Procedencia: Ceto IV</span>
+          <span>Conservar a 4 °C. No agitar en presencia del donante.</span>
+        </figcaption>
       </figure>
     </div>
 
-    <div class="us-hero-bottom" aria-hidden="true">
-      <span>Procedencia</span>
-      <span>Preparación</span>
-      <span>Encuentro</span>
-    </div>
+    <!-- Índice de la página, como el de Contacto: baja a cada sección sin pasar por el router. -->
+    <nav class="us-hero-bottom" aria-label="En esta página">
+      <a href="nosotros#campo" (click)="goToSection($event, campo)"
+        ><span>01</span> Nuestro campo
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+      ></a>
+      <a href="nosotros#trabajo" (click)="goToSection($event, trabajo)"
+        ><span>02</span> Nuestro trabajo
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+      ></a>
+      <a href="nosotros#ecosistema" (click)="goToSection($event, ecosistema)"
+        ><span>03</span> El ecosistema
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+      ></a>
+    </nav>
   </header>
 
   <!-- Lienzo claro al ancho del contenido: la textura queda a los lados. -->
-  <section class="us-definition" aria-labelledby="us-definition-title">
+  <section
+    class="us-definition"
+    id="campo"
+    #campo
+    tabindex="-1"
+    aria-labelledby="us-definition-title"
+  >
     <div class="us-label"><span>01 / Nuestro campo</span><span>Una definición funcional</span></div>
-    <div class="us-definition-grid">
-      <h2 id="us-definition-title">La función antes que la forma.</h2>
-      <div class="us-definition-copy">
-        <p>
-          En AlienMilk llamamos leche a los fluidos que un organismo produce para transferir algo a
-          otro: nutrición, señales, células o las condiciones para un nuevo desarrollo.
-        </p>
-        <p>
-          El color, la textura y el origen varían. También puede variar lo que sucede después. Por
-          eso cada muestra merece una clasificación propia y una forma adecuada de acercarla a
-          quienes desean conocerla.
-        </p>
+    <!-- La placa negra va detrás de la imagen y de las funciones, hasta el final del bloque. -->
+    <div class="us-definition-body">
+      <div class="us-definition-grid">
+        <!-- El titular va al fondo de la imagen: la salpicadura pasa por delante. -->
+        <figure class="us-definition-visual">
+          <h2 id="us-definition-title">La función antes que la forma.</h2>
+          <img
+            src="/alienmilk-about-hands.webp"
+            alt="Dos manos de piel azulada sostienen una leche blanca y espesa que salpica."
+            width="1320"
+            height="1125"
+            loading="lazy"
+          />
+          <figcaption>Archivo visual / Manipulación sin recipiente</figcaption>
+        </figure>
+        <div class="us-definition-copy">
+          <p>
+            En AlienMilk llamamos leche a los fluidos que un organismo produce para transferir algo
+            a otro: nutrición, señales, células o las condiciones para un nuevo desarrollo.
+          </p>
+          <p>
+            El color, la textura y el origen varían. También puede variar lo que sucede después. Por
+            eso cada muestra merece una clasificación propia y una forma adecuada de acercarla a
+            quienes desean conocerla.
+          </p>
+        </div>
       </div>
+      <dl class="us-functions" aria-label="Funciones que estudiamos">
+        <div>
+          <dt>F-01</dt>
+          <dd>Nutrición</dd>
+        </div>
+        <div>
+          <dt>F-02</dt>
+          <dd>Desarrollo</dd>
+        </div>
+        <div>
+          <dt>F-03</dt>
+          <dd>Señalización</dd>
+        </div>
+        <div>
+          <dt>F-04</dt>
+          <dd>Vínculo</dd>
+        </div>
+      </dl>
     </div>
-    <dl class="us-functions" aria-label="Funciones que estudiamos">
-      <div>
-        <dt>F-01</dt>
-        <dd>Nutrición</dd>
-      </div>
-      <div>
-        <dt>F-02</dt>
-        <dd>Desarrollo</dd>
-      </div>
-      <div>
-        <dt>F-03</dt>
-        <dd>Señalización</dd>
-      </div>
-      <div>
-        <dt>F-04</dt>
-        <dd>Vínculo</dd>
-      </div>
-    </dl>
   </section>
 
   <!-- Banda oscura, la misma tinta que la barra superior. -->
-  <section class="us-practice" aria-labelledby="us-practice-title">
+  <section
+    class="us-practice"
+    id="trabajo"
+    #trabajo
+    tabindex="-1"
+    aria-labelledby="us-practice-title"
+  >
     <figure class="us-practice-visual">
       <img
         src="/alienmilk-about-milk.png"
@@ -125,7 +179,13 @@
     </div>
   </section>
 
-  <section class="us-ecosystem" aria-labelledby="us-ecosystem-title">
+  <section
+    class="us-ecosystem"
+    id="ecosistema"
+    #ecosistema
+    tabindex="-1"
+    aria-labelledby="us-ecosystem-title"
+  >
     <div class="us-label"><span>03 / El ecosistema</span><span>Dos formas de participar</span></div>
     <div class="us-ecosystem-heading">
       <h2 id="us-ecosystem-title">El archivo crece cuando se comparte.</h2>

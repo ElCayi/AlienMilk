@@ -62,9 +62,9 @@ export interface RegisterPayload {
   username: string;
   password: string;
   email: string;
-  nombre: string;
-  apellidos: string;
-  direccion: string;
+  nombre?: string;
+  apellidos?: string;
+  direccion?: string;
 }
 
 export interface UsuarioPayload {

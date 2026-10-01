@@ -38,9 +38,9 @@
 
   .locations-layout-collaboration.is-revealed {
     animation:
-      collaboration-fold-far 1000ms cubic-bezier(0.65, 0, 0.35, 1) 650ms both,
-      collaboration-fold-mid 1000ms cubic-bezier(0.65, 0, 0.35, 1) 740ms both,
-      collaboration-fold-near 1000ms cubic-bezier(0.65, 0, 0.35, 1) 830ms both;
+      collaboration-fold-far 700ms cubic-bezier(0.65, 0, 0.35, 1) 450ms both,
+      collaboration-fold-mid 700ms cubic-bezier(0.65, 0, 0.35, 1) 510ms both,
+      collaboration-fold-near 700ms cubic-bezier(0.65, 0, 0.35, 1) 570ms both;
   }
 
   /* Rayas y hojas: cada una sale de la boca cerrada (a 1/4, 5/8 y 1 de la media boca) y
@@ -50,7 +50,7 @@
   .locations-layout-collaboration.is-armed .locations-collaboration-gate-fill {
     --fold-k: var(--fold-near);
     --fold-from: calc(var(--collaboration-frame-half-width) - 1.2rem - var(--fold-neck) * 0.25);
-    --fold-delay: 180ms;
+    --fold-delay: 120ms;
     --fold-start-width: calc(var(--fold-neck) * 0.25);
     --fold-end-width: 2.4rem;
     translate: calc(var(--fold-from) * (1 - var(--fold-k)) * var(--fold-direction, 1)) 0;
@@ -59,7 +59,7 @@
   .locations-layout-collaboration.is-armed .is-middle {
     --fold-k: var(--fold-mid);
     --fold-from: calc(var(--collaboration-frame-half-width) + 1.2rem - var(--fold-neck) * 0.625);
-    --fold-delay: 90ms;
+    --fold-delay: 60ms;
     --fold-start-width: calc(var(--fold-neck) * 0.375);
   }
 
@@ -86,7 +86,7 @@
   }
 
   .locations-layout-collaboration.is-revealed .locations-collaboration-gate-line {
-    animation: collaboration-fold-line 2300ms var(--fold-delay, 0ms) both;
+    animation: collaboration-fold-line 1600ms var(--fold-delay, 0ms) both;
   }
 
   /* La hoja se estrecha hasta su ancho final y se oscurece en cuanto empieza a plegarse. */

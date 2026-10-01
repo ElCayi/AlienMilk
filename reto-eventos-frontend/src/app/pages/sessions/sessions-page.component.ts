@@ -36,7 +36,7 @@ import {
 } from '../../features/sessions/category-select.component';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { FitBoxDirective } from '../../shared/fit-box/fit-box.directive';
-import { ScaleWidthDirective } from '../../shared/fit-box/scale-width.directive';
+import { ClosingCtaComponent } from '../../shared/closing-cta/closing-cta.component';
 import { filterSessions } from '../../features/sessions/session-search';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { SessionDossier } from '../../models/session-dossier.models';
@@ -58,7 +58,7 @@ interface OpenedSession {
     CategorySelectComponent,
     FitLineDirective,
     FitBoxDirective,
-    ScaleWidthDirective,
+    ClosingCtaComponent,
   ],
   templateUrl: './sessions-page.component.html',
   styleUrl: './sessions-page.component.css',

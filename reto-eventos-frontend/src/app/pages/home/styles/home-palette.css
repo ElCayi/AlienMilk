@@ -37,18 +37,3 @@
   color: var(--gallery-ink);
   border-color: rgba(33, 30, 36, 0.4);
 }
-
-.about-card {
-  background: transparent;
-}
-
-.about-content h2,
-.about-kicker,
-.about-copy {
-  color: var(--gallery-ink);
-}
-
-.about-kicker,
-.about-copy {
-  color: var(--gallery-muted);
-}

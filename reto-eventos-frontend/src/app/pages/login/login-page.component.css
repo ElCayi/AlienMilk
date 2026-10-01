@@ -99,12 +99,6 @@ h1 {
 h1 span {
   color: var(--coral);
 }
-.lead {
-  color: var(--muted);
-  line-height: 1.7;
-  font-size: 1.15rem;
-  margin: 0 0 2rem;
-}
 .demo-box {
   padding: 1.3rem;
   border: 1px solid var(--line);
@@ -203,11 +197,6 @@ code {
   font-size: clamp(2.6rem, 3.6vw, 4rem);
   line-height: 1;
   margin: 2rem 0 0.85rem;
-}
-.card-intro {
-  color: var(--muted);
-  font-size: 1rem;
-  margin: 0 0 2rem;
 }
 form {
   display: grid;
@@ -332,7 +321,7 @@ button:disabled {
 h1 {
   font-weight: 700;
   letter-spacing: 0.025em;
-  line-height: 1.2;
+  line-height: 1.25;
   transform: scaleY(0.78);
   transform-origin: left center;
 }
@@ -357,7 +346,7 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login {
     min-height: calc(100svh - var(--topbar-height, 4rem));
     display: flex;
@@ -372,19 +361,12 @@ h1 {
     font-size: clamp(2.8rem, 4.4vw, 4.8rem);
     margin: 2.35rem 0 1rem;
   }
-  .lead {
-    margin-bottom: 1.25rem;
-    line-height: 1.5;
-  }
   .login-card {
     padding: clamp(1.5rem, 2.5vh, 2.5rem) clamp(1.5rem, 2.5vw, 3rem);
   }
   .login-card h2 {
     margin-top: 1.25rem;
     font-size: clamp(2.5rem, 4.5vh, 3.5rem);
-  }
-  .card-intro {
-    margin-bottom: 1.25rem;
   }
   .signup-copy {
     padding-top: 1rem;
@@ -393,10 +375,7 @@ h1 {
     padding-top: 0.75rem;
   }
 }
-@media (min-width: 1001px) and (max-height: 850px) {
-  .lead {
-    font-size: 1rem;
-  }
+@media (min-width: 1200px) and (max-height: 850px) {
   .demo-box {
     padding: 1rem;
   }
@@ -410,9 +389,6 @@ h1 {
   .login-card h2 {
     margin-top: 1rem;
   }
-  .card-intro {
-    margin-bottom: 1rem;
-  }
   input {
     padding-block: 0.7rem;
   }
@@ -423,7 +399,7 @@ h1 {
     margin-top: 0.6rem;
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 1199.98px) {
   .login-shell {
     grid-template-columns: 1fr;
   }
@@ -451,9 +427,6 @@ h1 {
   align-self: start;
   padding-block: 1.5rem;
 }
-.login-card .card-intro {
-  margin-bottom: 2rem;
-}
 .login-card form {
   margin-bottom: 1.25rem;
 }
@@ -466,7 +439,7 @@ h1 {
 
 /* Side by side, the card stretches to the bottom of the demo box; the form
    stays where it is and the sign-up line settles at the bottom edge. */
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-card {
     align-self: stretch;
   }
@@ -494,16 +467,13 @@ h1 {
 }
 
 /* Heading on top, a pause, then the form sits on the bottom of the card. */
-.login-card .card-intro {
-  margin-bottom: 2.5rem;
-}
 .login-card form {
   margin-top: auto;
 }
 .login-card .signup-copy {
   margin-top: 0;
 }
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-card {
     margin-top: clamp(1.5rem, 3vh, 2.75rem);
   }
@@ -524,7 +494,7 @@ h1 {
   transform: scaleY(1.2821);
 }
 .lockup-unit {
-  font: 600 0.72em 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font: 400 0.72em 'Barlow Condensed', 'Arial Narrow', sans-serif;
   letter-spacing: 0.06em;
   margin-left: 0.22em;
 }
@@ -533,7 +503,7 @@ h1 {
    other pages; the 22% it frees (3 lines × 1.2em) is taken back below. */
 h1 {
   transform-origin: left top;
-  margin-bottom: calc(0.6rem - 0.792em);
+  margin-bottom: calc(0.6rem - 0.825em);
 }
 
 /* Same arrow as the landing's "Explorar" links. */
@@ -586,28 +556,425 @@ h1 {
 .milk-row .you {
   background: var(--coral);
 }
-.login-card .card-intro {
-  margin-bottom: 1.25rem;
-}
 
 /* Two columns: the boxes grow down to the bottom bar on tall screens, and the
    vertical rhythm tightens on short ones so both boxes stay in view. */
-@media (min-width: 1001px) {
+@media (min-width: 1200px) {
   .login-shell {
     flex: 1 0 auto;
-  }
-  .lead {
-    margin-bottom: clamp(0.75rem, 2.5vh, 2rem);
-  }
-  .login-card .card-intro {
-    margin-bottom: clamp(0.75rem, 2vh, 1.25rem);
   }
   .milk-row {
     margin-bottom: clamp(1rem, 4vh, 2.5rem);
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 1199.98px) {
   .milk-row {
     margin-bottom: 2rem;
+  }
+}
+
+/* No imagery on this page: the title carries it. It grows with the width but
+   also with the height, so short screens keep the boxes in view. */
+@media (min-width: 1200px) {
+  h1 {
+    font-size: min(14.2cqi, 16svh, 5.25rem);
+    margin-bottom: calc(clamp(1rem, 3svh, 2.25rem) - 0.825em);
+  }
+  .login-shell {
+    padding-bottom: clamp(1.5rem, 5svh, 3.5rem);
+  }
+}
+/* Short screens: pull the heading block up so both boxes clear the bottom. */
+@media (min-width: 1200px) and (max-height: 820px) {
+  h1 {
+    font-size: min(14.2cqi, 10.5svh);
+  }
+  .login-card {
+    margin-top: 1rem;
+  }
+}
+.signup-copy {
+  text-align: center;
+}
+@media (min-width: 1200px) and (max-height: 680px) {
+  h1 {
+    font-size: min(14.2cqi, 9.5svh);
+    margin-bottom: calc(1rem - 0.825em);
+  }
+  .demo-box {
+    padding: 0.85rem 1rem;
+  }
+  .demo-box p {
+    margin: 0.4rem 0 0.6rem;
+  }
+  .login-card {
+    margin-top: 0.5rem;
+    padding-block: 1.1rem;
+  }
+  .milk-row {
+    margin-bottom: 0.9rem;
+  }
+  .login-card h2 {
+    font-size: 2.1rem;
+    margin-bottom: 0.4rem;
+  }
+  .login-card form {
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  input {
+    padding-block: 0.6rem;
+  }
+  .submit-btn {
+    margin-top: 0.5rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 0.75rem;
+  }
+}
+
+/* The unsquashed Nunito rises above the line; give the lockup line the same
+   gap from the line above as the other two lines have. */
+.lockup {
+  display: inline-block;
+  white-space: nowrap;
+  margin-top: 0.24em;
+}
+@media (min-width: 1200px) and (max-height: 620px) {
+  h1 {
+    font-size: min(14.2cqi, 6.6svh);
+    margin-bottom: calc(1rem - 0.825em);
+  }
+}
+@media (max-width: 1199.98px) {
+  h1 {
+    margin-bottom: calc(1.75rem - 0.825em);
+  }
+}
+@media (min-width: 1200px) and (max-height: 620px) {
+  .login-card {
+    margin-top: 0;
+    padding-block: 0.85rem;
+  }
+  .login-card h2 {
+    font-size: 1.9rem;
+  }
+  .milk-row {
+    margin-bottom: 0.6rem;
+  }
+  .login-card form {
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+  .password-label {
+    margin-top: 0.3rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 0.5rem;
+  }
+}
+
+/* Wider title column so the title can grow; the extra leading is taken off
+   the top margin so the eyebrow keeps the same gap as on the other pages. */
+@media (min-width: 1200px) {
+  .login-shell {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+  }
+}
+@media (min-width: 1200px) {
+  h1 {
+    margin-top: calc(2.35rem - 0.12em);
+  }
+}
+
+/* Unsquash AlienMilk around its baseline (0.293em above the box bottom in
+   Nunito at this line-height), so it sits on the same line as Sessions. */
+.lockup-name {
+  transform-origin: left calc(100% - 0.293em);
+}
+
+/* The card reaches further up; its bottom stays level with the demo box. */
+@media (min-width: 1200px) {
+  .login-card {
+    margin-top: clamp(0.5rem, 1.5vh, 1.25rem);
+  }
+}
+@media (min-width: 1200px) and (max-height: 820px) {
+  .login-card {
+    margin-top: 0.5rem;
+  }
+}
+
+.milk-row {
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* Breathing room between the bottom bar and the site footer. */
+.login {
+  padding-bottom: clamp(2.5rem, 6vh, 4.5rem);
+}
+@media (min-width: 1200px) {
+  .login {
+    padding-bottom: clamp(2.5rem, 6vh, 4.5rem);
+  }
+}
+/* Minimilks shrink with a narrow card so the row never reaches its edges. */
+.login-card {
+  container-type: inline-size;
+}
+.milk-row span {
+  width: min(1.5rem, 7.6cqi);
+  height: min(1.5rem, 7.6cqi);
+}
+
+.login-card h2 {
+  margin-top: clamp(0.75rem, 3vh, 2rem);
+  margin-bottom: clamp(1.25rem, 3.5vh, 2.25rem);
+  text-align: center;
+}
+@media (min-width: 1200px) and (max-height: 620px) {
+  .login-card h2 {
+    margin-top: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+}
+/* One column (tablets, narrow laptops): the title still fills its width. */
+@media (max-width: 1199.98px) {
+  h1 {
+    font-size: min(13.2cqi, 6rem);
+  }
+}
+
+/* The demo box comes after the form in the markup, so on one column the form
+   is reached first. Two columns put it back under the title; the card spans
+   both rows, so their bottoms meet. */
+@media (min-width: 1200px) {
+  .login-shell {
+    grid-template-areas:
+      'copy card'
+      'demo card';
+    grid-template-rows: 1fr auto;
+    row-gap: 0;
+  }
+  .login-copy {
+    grid-area: copy;
+  }
+  .login-card {
+    grid-area: card;
+  }
+  .demo-box {
+    grid-area: demo;
+  }
+}
+
+/* One column: the form stands alone under the eyebrow. The title stays for
+   screen readers only. */
+@media (max-width: 1199.98px) {
+  h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .login-shell {
+    row-gap: 2rem;
+  }
+  .login-copy > .eyebrow {
+    margin-bottom: 0;
+  }
+  .login-card {
+    padding: clamp(2.5rem, 7vw, 3.5rem) clamp(1.5rem, 6vw, 3rem);
+  }
+  .login-card h2 {
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .milk-row {
+    margin-bottom: 2.5rem;
+  }
+  .login-card form {
+    gap: 0.7rem;
+    margin-bottom: 1.75rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 1.5rem;
+  }
+}
+/* One column: the form settles toward the bottom of the card and the sign-up
+   line takes less room. */
+@media (max-width: 1199.98px) {
+  .login-card {
+    padding-bottom: 1.4rem;
+  }
+  .milk-row {
+    margin-bottom: 3.25rem;
+  }
+  .login-card form {
+    margin-bottom: 1rem;
+  }
+  .login-card .signup-copy {
+    padding-top: 0.9rem;
+    line-height: 1.5;
+    border-top: 0;
+  }
+}
+
+/* "Regístrate gratis": the site's link hover (landing "Explorar", footer):
+   a hairline underline that stretches, and a small press. */
+.signup-copy a {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.signup-copy a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0.05em;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform-origin: center;
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+.signup-copy a:is(:hover, :focus-visible)::after {
+  transform: scaleX(1.08);
+  opacity: 1;
+}
+.signup-copy a:active {
+  transform: translateY(0.08rem) scale(0.94);
+}
+
+/* Two columns on tall screens: the form opens up gradually instead of leaving
+   a void under the heading. --air is 0 up to ~850px tall, so the compact
+   short-screen values above are untouched, and grows with the height. */
+@media (min-width: 1200px) and (min-height: 850.02px) {
+  .login-card {
+    --air: clamp(0px, calc((100svh - 850px) * 0.14), 64px);
+  }
+  .login-card form {
+    gap: calc(0.65rem + var(--air) * 0.3);
+  }
+  .password-label {
+    margin-top: calc(0.6rem + var(--air) * 0.75);
+  }
+  .login-card input {
+    padding-block: calc(0.95rem + var(--air) * 0.15);
+  }
+  .submit-btn {
+    margin-top: calc(1rem + var(--air) * 0.75);
+  }
+  .login-card .signup-copy {
+    padding-top: calc(1.25rem + var(--air) * 0.35);
+  }
+}
+
+/* One column: the form card keeps one width whatever the window does. */
+@media (max-width: 1199.98px) {
+  .login-card {
+    width: min(100%, 28rem);
+    box-sizing: border-box;
+    justify-self: center;
+  }
+}
+
+/* Two columns: the card's contents keep a fixed width, centred, so the card
+   itself can widen. On wide screens it grows towards the centre while its
+   right edge stays on the page margin. */
+@media (min-width: 1200px) {
+  .login-card > :is(form, .signup-copy) {
+    width: 100%;
+    max-width: 22rem;
+    margin-inline: auto;
+  }
+}
+@media (min-width: 1600px) {
+  .login-shell {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+/* Wide card: its contents line up on the left instead of floating centred. */
+@media (min-width: 1600px) {
+  .login-card > :is(form, .signup-copy) {
+    margin-inline: 0;
+  }
+  .login-card h2,
+  .login-card .signup-copy {
+    text-align: left;
+  }
+  .milk-row {
+    justify-content: flex-start;
+  }
+}
+
+/* Wide card: a few minimilks drift in the free dark area right of the form.
+   Square boxes like every minimilk on the site; never coral (that one is the
+   visitor). Still when the system asks for reduced motion. */
+.card-drift {
+  display: none;
+}
+@media (min-width: 1600px) {
+  .login-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .card-drift {
+    display: block;
+    position: absolute;
+    inset: 0 0 0 calc(clamp(1.5rem, 2.5vw, 3rem) + 22rem + 2rem);
+    pointer-events: none;
+  }
+  .card-drift span {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    background: var(--ink);
+    opacity: var(--o);
+    mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+    animation: drift var(--d) ease-in-out var(--delay) infinite alternate;
+  }
+  .card-drift span:nth-child(1) { --s: 2.6rem; --o: 0.16; --d: 11s; --delay: -2s; top: 14%; left: 30%; }
+  .card-drift span:nth-child(2) { --s: 1.5rem; --o: 0.22; --d: 9s; --delay: -6s; top: 30%; left: 68%; }
+  .card-drift span:nth-child(3) { --s: 3.4rem; --o: 0.1; --d: 14s; --delay: -4s; top: 48%; left: 18%; }
+  .card-drift span:nth-child(4) { --s: 1.2rem; --o: 0.26; --d: 8s; --delay: -1s; top: 62%; left: 62%; }
+  .card-drift span:nth-child(5) { --s: 2rem; --o: 0.14; --d: 12s; --delay: -8s; top: 78%; left: 36%; }
+  .card-drift span:nth-child(6) { --s: 1.6rem; --o: 0.18; --d: 10s; --delay: -3s; top: 88%; left: 74%; }
+}
+@keyframes drift {
+  from {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  to {
+    transform: translate(0.6rem, -1.4rem) rotate(6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-drift span {
+    animation: none;
+  }
+}
+/* Wide card: the row of minimilks under the heading becomes a short accent
+   line, and the visitor's coral minimilk moves into the drifting ones. */
+@media (min-width: 1600px) {
+  .milk-row {
+    width: 3rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--coral);
+  }
+  .milk-row span {
+    display: none;
+  }
+  .card-drift span:nth-child(5) {
+    background: var(--coral);
+    --o: 0.85;
   }
 }

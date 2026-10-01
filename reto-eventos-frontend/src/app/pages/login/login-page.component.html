@@ -11,54 +11,16 @@
       <h1>
         Te damos<br />la bienvenida a<br /><span class="lockup"><span class="lockup-name">AlienMilk</span><span class="lockup-unit">Sessions.</span></span>
       </h1>
-      <p class="lead">
-        Accede para reservar sesiones y explorar el universo AlienMilk.
-      </p>
-      <aside class="demo-box" aria-labelledby="demo-title">
-        <div class="demo-heading">
-          <h2 id="demo-title">Usuarios de prueba</h2>
-          <span class="demo-badge">Portfolio · Acceso libre</span>
-        </div>
-        <p>¿Vienes a curiosear? Elige un perfil y prueba la experiencia sin crear una cuenta.</p>
-        <div aria-live="polite" [attr.aria-busy]="demoLoading()">
-          @if (demoLoading()) {
-            <p>Consultando usuarios de prueba…</p>
-          } @else if (demoError()) {
-            <p>No hemos podido cargar los accesos de prueba.</p>
-            <button class="retry" type="button" (click)="loadDemoAccounts()">
-              Volver a intentar <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
-            </button>
-          } @else {
-            <div class="demo-accounts">
-              @for (account of demoAccounts(); track account.username) {
-                <button
-                  type="button"
-                  class="demo-account"
-                  (click)="selectDemo(account)"
-                  [disabled]="loading()"
-                  [attr.aria-label]="'Usar cuenta de prueba ' + account.username"
-                >
-                  <span class="account-top"
-                    ><strong>{{ account.username }}</strong
-                    ><span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></span
-                  >
-                  <span class="demo-password"
-                    >Contraseña: <code>{{ account.password }}</code></span
-                  >
-                </button>
-              } @empty {
-                <p>Ahora mismo no hay cuentas de prueba disponibles.</p>
-              }
-            </div>
-          }
-        </div>
-      </aside>
     </div>
     <div class="login-card">
+      <div class="card-drift" aria-hidden="true">
+        @for (drift of [1, 2, 3, 4, 5, 6]; track drift) {
+          <span></span>
+        }
+      </div>
       <h2>Tu universo te espera.</h2>
-      <p class="card-intro">Tu lugar en el universo AlienMilk.</p>
       <div class="milk-row" aria-hidden="true">
-        @for (milk of [1, 2, 3, 4, 5, 6, 7]; track milk) {
+        @for (milk of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track milk) {
           <span [class.you]="milk === 5"></span>
         }
       </div>
@@ -110,6 +72,45 @@
       </form>
       <p class="signup-copy">¿No tienes cuenta? <a routerLink="/registro">Regístrate gratis</a></p>
     </div>
+    <aside class="demo-box" aria-labelledby="demo-title">
+      <div class="demo-heading">
+        <h2 id="demo-title">Usuarios de prueba</h2>
+        <span class="demo-badge">Portfolio · Acceso libre</span>
+      </div>
+      <p>¿Vienes a curiosear? Elige un perfil y prueba la experiencia sin crear una cuenta.</p>
+      <div aria-live="polite" [attr.aria-busy]="demoLoading()">
+        @if (demoLoading()) {
+          <p>Consultando usuarios de prueba…</p>
+        } @else if (demoError()) {
+          <p>No hemos podido cargar los accesos de prueba.</p>
+          <button class="retry" type="button" (click)="loadDemoAccounts()">
+            Volver a intentar <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          </button>
+        } @else {
+          <div class="demo-accounts">
+            @for (account of demoAccounts(); track account.username) {
+              <button
+                type="button"
+                class="demo-account"
+                (click)="selectDemo(account)"
+                [disabled]="loading()"
+                [attr.aria-label]="'Usar cuenta de prueba ' + account.username"
+              >
+                <span class="account-top"
+                  ><strong>{{ account.username }}</strong
+                  ><span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span></span
+                >
+                <span class="demo-password"
+                  >Contraseña: <code>{{ account.password }}</code></span
+                >
+              </button>
+            } @empty {
+              <p>Ahora mismo no hay cuentas de prueba disponibles.</p>
+            }
+          </div>
+        }
+      </div>
+    </aside>
   </div>
   <footer class="login-footnote">
     <span>AlienMilk Sessions · Encuentros fuera de lo habitual</span

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.AuthUsuarioDto;
@@ -41,7 +42,9 @@ public class AuthRestController {
 				.username(dto.getUsername())
 				.password(dto.getPassword())
 				.email(dto.getEmail())
-				.nombre(dto.getNombre())
+				// The sign-up form only asks for user, email and password; the name
+				// column is required, so it starts as the username.
+				.nombre(StringUtils.hasText(dto.getNombre()) ? dto.getNombre() : nombreInicial(dto.getUsername()))
 				.apellidos(dto.getApellidos())
 				.direccion(dto.getDireccion())
 				.enabled(1)
@@ -50,6 +53,11 @@ public class AuthRestController {
 
 		return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
 				.body(UsuarioSalidaDto.fromEntity(usuarioService.insertOne(usuario)));
+	}
+
+	// "nombre" holds at most 30 characters; a username may be longer.
+	private static String nombreInicial(String username) {
+		return username == null ? null : username.substring(0, Math.min(30, username.length()));
 	}
 
 	@GetMapping("/me")

@@ -1122,10 +1122,11 @@
   }
 }
 
-/* Tras la ficha empieza otra sección: el mismo aire que hay sobre el título de Localizaciones
-   (~11.75rem en total, sumado al hueco entre secciones). */
+/* Tras la ficha de Localizaciones y tras el enlace de Collaborators empieza otra sección: el mismo
+   aire que hay sobre el título de Localizaciones (~11.75rem en total, sumado al hueco entre
+   secciones). */
 @media (min-width: 1001px) {
-  :host(:not(.locations-collaboration-section)) .locations-atlas {
+  .locations-atlas {
     padding-bottom: max(0px, calc(11.75rem - var(--home-section-gap, 6rem)));
   }
 }
@@ -1179,5 +1180,40 @@
 @media (min-width: 1001px) {
   .locations-layout-collaboration::before {
     content: none;
+  }
+}
+
+/* Cabecera de Collaborators centrada sobre la puerta, que es simétrica. El eyebrow se queda a la
+   izquierda, como en el resto de secciones, y el texto sigue justificado. */
+@media (min-width: 1001px) {
+  :host(.locations-collaboration-section) .locations-editorial-main {
+    max-width: none;
+  }
+
+  :host(.locations-collaboration-section) .locations-copy {
+    width: 100%;
+    max-width: var(--home-section-copy-width, 48rem);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .locations-editorial .locations-collaborators-title {
+    justify-content: center;
+  }
+}
+
+/* El enlace de debajo acaba en la esquina del trapecio del suelo, donde cae la raya exterior de la
+   puerta. Mide por dentro lo que el escaparate para compartir sus medidas. */
+@media (min-width: 1001px) {
+  .locations-collaboration-actions {
+    container-type: inline-size;
+    justify-self: stretch;
+    justify-content: flex-end;
+    margin-left: 0;
+    padding-inline: var(--collaboration-gutter);
+  }
+
+  .locations-collaboration-action {
+    margin-right: calc(50cqw - var(--collaboration-frame-half-width) - 5.75rem);
   }
 }

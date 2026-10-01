@@ -28,7 +28,7 @@
   inset: 0;
   z-index: -2;
   border-radius: inherit;
-  background: rgba(5, 13, 22, 0.9);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .about-card::after {
@@ -39,7 +39,9 @@
   transform: scaleX(-1);
   transform-origin: center;
   border-radius: inherit;
-  background: url('/alienmilk-final-cta-hand.png') left 0 bottom 1rem / auto 86% no-repeat;
+  /* Está volteada: «left -3rem» la empuja hacia el borde derecho, para que los dedos no lleguen al
+     texto. */
+  background: url('/alienmilk-final-cta-hand.png') left -3rem bottom 1rem / auto 86% no-repeat;
 }
 
 .about-layout {
@@ -179,9 +181,24 @@
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
 }
 
+/* Sobre la tarjeta clara, los botones van al revés que en el resto de la web: el lleno, oscuro, y
+   el de contorno, con trazo oscuro. Al pasar por encima, coral como siempre. */
+.about-actions .dark-btn.hero-button {
+  color: #faf9f7;
+  background: var(--gallery-ink);
+  border-color: var(--gallery-ink);
+}
+
+.about-actions .dark-btn.hero-button:hover,
+.about-actions .dark-btn.hero-button:focus-visible {
+  color: #fff;
+  background: #ff7f7f;
+  border-color: #ff7f7f;
+}
+
 .about-actions .ghost-btn.hero-button {
-  color: #f1ecef;
-  border-color: rgba(241, 236, 239, 0.72);
+  color: var(--gallery-ink);
+  border-color: rgba(33, 30, 36, 0.72);
 }
 
 .about-actions .ghost-btn.hero-button:hover,

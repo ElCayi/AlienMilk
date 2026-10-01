@@ -52,11 +52,3 @@
 .about-copy {
   color: var(--gallery-muted);
 }
-
-.about-card .about-content h2 {
-  color: #f1ecef;
-}
-
-.about-card .about-copy {
-  color: #d9d0d6;
-}

@@ -219,3 +219,18 @@
     padding-top: 1.25rem;
   }
 }
+
+/* Fecha de la banda: larga en pantallas amplias, corta en móvil para que la línea quepa entera. */
+.dossier-hero-details .date-short {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .dossier-hero-details .date-long {
+    display: none;
+  }
+
+  .dossier-hero-details .date-short {
+    display: inline;
+  }
+}

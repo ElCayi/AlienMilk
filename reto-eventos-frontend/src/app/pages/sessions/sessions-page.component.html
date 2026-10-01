@@ -196,8 +196,10 @@
               <div class="dossier-heading-meta">
                 <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
                 <span class="dossier-hero-details" appFitLine>
-                  {{ data.direccion }} · {{ longDate(data.fechaInicio)
-                  }}<ng-container *ngIf="current.dossier.horario">
+                  {{ data.direccion }} ·
+                  <span class="date-long">{{ longDate(data.fechaInicio) }}</span
+                  ><span class="date-short">{{ ticketDate(data.fechaInicio) }}</span
+                  ><ng-container *ngIf="current.dossier.horario">
                     · {{ current.dossier.horario }}</ng-container
                   >
                 </span>

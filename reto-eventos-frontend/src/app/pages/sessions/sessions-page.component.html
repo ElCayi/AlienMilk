@@ -477,8 +477,15 @@
               *ngIf="previousSession() as previous"
               (click)="selectSession(previous)"
             >
-              <span>← Sesión anterior</span>
-              <strong>{{ previous.nombre }}</strong>
+              <span class="pager-label">Sesión anterior</span>
+              <span class="pager-name">
+                <span class="pager-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M19 12H5M11 6l-6 6 6 6" />
+                  </svg>
+                </span>
+                <strong>{{ previous.nombre }}</strong>
+              </span>
             </button>
             <button
               type="button"
@@ -486,8 +493,15 @@
               *ngIf="nextSession() as next"
               (click)="selectSession(next)"
             >
-              <span>Sesión siguiente →</span>
-              <strong>{{ next.nombre }}</strong>
+              <span class="pager-label">Sesión siguiente</span>
+              <span class="pager-name">
+                <strong>{{ next.nombre }}</strong>
+                <span class="pager-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </span>
             </button>
           </nav>
         </ng-container>
@@ -497,10 +511,11 @@
       <div class="closing" *ngIf="!authService.isAuthenticated()">
         <section class="closing-cta" aria-labelledby="closing-cta-title">
           <div class="closing-cta-copy">
-            <h2 id="closing-cta-title">Hay una plaza esperando su nombre.</h2>
+            <h2 id="closing-cta-title">Hay una plaza <br />esperando su nombre.</h2>
             <p>
-              Identifíquese como participante para reservar sesiones, seguir el estado de sus
-              accesos y recibir cada convocatoria antes de que se publique.
+              No todas las experiencias requieren cruzar el universo. Algunas empiezan simplemente
+              aceptando una invitación. Si ha llegado hasta aquí, quizá la próxima plaza sea la
+              suya.
             </p>
             <div class="closing-cta-actions">
               <a class="closing-cta-primary" routerLink="/registro">Registrarse</a>
@@ -511,7 +526,10 @@
                 >Entrar</a
               >
             </div>
-            <p class="closing-cta-note">La consulta es pública. La degustación, no.</p>
+            <p class="closing-cta-note">
+              El universo es inmenso.<br />
+              Aun así, algunas cosas <em>siempre</em> terminan encontrándole.
+            </p>
           </div>
         </section>
       </div>

@@ -343,41 +343,112 @@
   color: rgba(250, 249, 247, 0.55);
 }
 
-/* Paginador */
+/* Paginador: dos enlaces como «Explorar todas las sesiones» de la home, con su flecha y su subrayado. */
 .pager {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
   /* Sin lienzo: sobre la textura, con el mismo margen interior que los recuadros de encima. */
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
   padding: clamp(0.5rem, 1.5vw, 1rem) clamp(1.5rem, 2.4vw, 2.25rem);
 }
 
 .pager-link {
   display: grid;
-  gap: 0.35rem;
+  justify-items: start;
+  gap: 0.6rem;
   padding: 1.3rem 0;
   border: 0;
   color: var(--light);
   background: none;
   text-align: left;
   cursor: pointer;
+  transition: color 160ms ease;
 }
 
 .pager-next {
   grid-column: 2;
+  justify-items: end;
   text-align: right;
 }
 
-.pager-link span {
+.pager-label {
   color: var(--light-muted);
 }
 
-.pager-link strong {
-  font: 400 clamp(1.3rem, 2vw, 1.8rem) var(--condensed);
-  transition: color 180ms ease;
+.pager-name {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: 100%;
+  padding-bottom: 0.45rem;
 }
 
-.pager-link:hover strong {
+.pager-name::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.62;
+  transition: transform 180ms ease;
+}
+
+.pager-link strong {
+  min-width: 0;
+  font: 400 clamp(1.3rem, 2vw, 1.8rem) var(--condensed);
+  transition: transform 180ms ease;
+}
+
+.pager-arrow {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  display: inline-flex;
+  transition: transform 180ms ease;
+}
+
+.pager-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pager-link:hover,
+.pager-link:focus-visible {
   color: var(--coral);
+}
+
+.pager-link:hover .pager-name::after,
+.pager-link:focus-visible .pager-name::after {
+  transform: scaleX(1.06);
+}
+
+.pager-next:hover strong,
+.pager-next:focus-visible strong {
+  transform: translateX(-0.18rem);
+}
+
+.pager-next:hover .pager-arrow,
+.pager-next:focus-visible .pager-arrow {
+  transform: translateX(0.35rem);
+}
+
+.pager-link:not(.pager-next):hover strong,
+.pager-link:not(.pager-next):focus-visible strong {
+  transform: translateX(0.18rem);
+}
+
+.pager-link:not(.pager-next):hover .pager-arrow,
+.pager-link:not(.pager-next):focus-visible .pager-arrow {
+  transform: translateX(-0.35rem);
 }
 
 :is(button, a, select, input, summary):focus-visible {

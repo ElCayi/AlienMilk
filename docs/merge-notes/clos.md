@@ -65,3 +65,7 @@ navegador: `clos` no tocó esos archivos en esta tanda, así que no deberían ch
   alrededor de la CTA. La tarjeta de la CTA lleva de fondo al astronauta
   (`public/alienmilk-closing-astronaut.webp`) en lugar de la mano con leche, que sigue en la home.
 - **Colaboraciones:** minimilk en la eyebrow, nombres en coral y columnas centradas en vertical.
+- **Tarjeta final:** textos y botones más grandes y alineados al ancho del título; nuevo copy;
+  minimilk estampada en la taza del astronauta. `index.html` carga ahora la cursiva 400 de Barlow
+  Condensed.
+- **Paginador** con la flecha y el subrayado de «Explorar todas las sesiones» de la home.

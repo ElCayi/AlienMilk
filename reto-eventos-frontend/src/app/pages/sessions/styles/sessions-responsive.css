@@ -80,7 +80,6 @@
 
   .pager-next {
     grid-column: 1;
-    border-top: 1px solid var(--light-line);
   }
 }
 

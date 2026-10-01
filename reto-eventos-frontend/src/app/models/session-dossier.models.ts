@@ -26,10 +26,11 @@ export interface SessionQuestion {
   respuesta: string;
 }
 
-export interface SessionStation {
-  complemento: string;
-  franja: string;
-  operadores: SessionField[];
+/** Entidad que hace posible la sesión sin formar parte de ella: cede el espacio, financia, transporta... */
+export interface SessionCollaborator {
+  rol: string;
+  nombre: string;
+  detalle?: string;
 }
 
 export interface SessionDossier {
@@ -43,7 +44,7 @@ export interface SessionDossier {
   acceso: SessionField[];
   recomendaciones: string[];
   preguntas: SessionQuestion[];
-  estacion: SessionStation;
+  colaboradores: SessionCollaborator[];
   creditos: string;
 }
 

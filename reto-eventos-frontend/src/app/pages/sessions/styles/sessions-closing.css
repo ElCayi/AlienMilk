@@ -2,51 +2,90 @@
 .closing-cta {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
   align-items: center;
   margin: 0;
-  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(1.75rem, 5vw, 4.5rem);
+  padding: clamp(3rem, 6vw, 5.5rem) clamp(1.75rem, 5.5vw, 5.5rem);
   overflow: hidden;
   border-radius: 1.25rem;
   color: #f1ecef;
-  background: rgba(5, 13, 22, 0.9);
+  background: #050d16;
   box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+}
+
+/* El astronauta, en espejo, a la derecha y entero: la imagen se funde por su borde con el fondo de la
+   tarjeta, así no hay corte sea cual sea el ancho. */
+.closing-cta::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  /* Misma escala que antes de agrandar el texto: si la tarjeta crece, la imagen no se amplía; queda
+     abajo a la derecha y se funde también por arriba. */
+  /* Hasta 1440 px sigue al viewport; por encima, la tarjeta entera escala (appScaleWidth) y la imagen
+     con ella, en la misma proporción. */
+  height: min(100%, 33vw, 475px);
+  aspect-ratio: 626 / 351;
+  background: url('/alienmilk-closing-astronaut.webp') center / cover no-repeat;
+  mask:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(0 0 0 / 0.08) 14%,
+      rgb(0 0 0 / 0.35) 30%,
+      rgb(0 0 0 / 0.75) 46%,
+      #000 60%
+    ),
+    linear-gradient(180deg, transparent 0%, rgb(0 0 0 / 0.4) 10%, #000 24%);
+  mask-composite: intersect;
+  pointer-events: none;
 }
 
 .closing-cta-copy {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 1.25rem;
-  max-width: 30rem;
+  gap: 1.5rem;
+  max-width: 100%;
+  /* El título marca el ancho: los párrafos se ajustan a él y acaban en el mismo margen derecho. */
+  width: fit-content;
+}
+
+.closing-cta-copy > p,
+.closing-cta-actions {
+  contain: inline-size;
 }
 
 .closing-cta h2 {
   margin: 0;
-  font: 700 clamp(2.2rem, 4vw, 3.6rem) / 1 var(--condensed);
+  font: 700 clamp(2.5rem, 4.2vw, 4rem) / 0.98 var(--condensed);
 }
 
 .closing-cta-copy > p:not(.closing-cta-note) {
   margin: 0;
+  text-align: justify;
+  hyphens: auto;
   color: rgba(241, 236, 239, 0.78);
-  font-size: 0.98rem;
+  font-size: clamp(1.05rem, 1.3vw, 1.2rem);
   line-height: 1.6;
 }
 
 .closing-cta-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 1.1rem;
   margin-top: 0.5rem;
 }
 
 .closing-cta-primary,
 .closing-cta-secondary {
-  min-width: 10rem;
-  padding: 0.85rem 1.4rem;
+  /* Entre los dos ocupan todo el ancho de la columna. */
+  flex: 1 1 0;
+  min-width: 9rem;
+  padding: 1rem 1.75rem;
   border: 1px solid #faf9f7;
   border-radius: 999px;
-  font: 700 0.95rem var(--condensed);
+  font: 700 clamp(1rem, 1.2vw, 1.12rem) var(--condensed);
   letter-spacing: 0.08em;
   text-align: center;
   text-decoration: none;
@@ -77,33 +116,37 @@
 .closing-cta-note {
   margin: 0.75rem 0 0;
   color: var(--coral);
-  font: 700 1.05rem var(--condensed);
+  font: 700 clamp(1.15rem, 1.5vw, 1.4rem) var(--condensed);
   letter-spacing: 0.02em;
 }
 
-/* Volteada como en la home: el brazo, cortado en la imagen, entra por el borde derecho. */
-.closing-cta-image {
-  position: absolute;
-  right: 0;
-  bottom: 1rem;
-  width: min(60%, 44rem);
-  pointer-events: none;
-  transform: scaleX(-1);
+.closing-cta-note em {
+  font-weight: 400;
 }
 
-/* Lienzo alrededor de la tarjeta, para que no flote sobre la textura. */
+/* La tarjeta va directa sobre la textura, al ancho del expediente, con aire amplio antes del pie. */
 .closing {
-  padding: clamp(1.5rem, 3vw, 2.5rem) var(--inset) clamp(3rem, 6vw, 5rem);
-  background: var(--page-canvas);
+  padding: clamp(4rem, 8vw, 7.2rem) 0 clamp(7.5rem, 15.5vw, 14.5rem);
 }
 
 @media (max-width: 800px) {
   .closing-cta {
     grid-template-columns: 1fr;
-    padding-bottom: 14rem;
+    padding-bottom: 21rem;
   }
 
-  .closing-cta-image {
-    width: min(90%, 24rem);
+  /* En una columna, el texto ocupa el ancho de la tarjeta en vez del del título. */
+  .closing-cta-copy {
+    width: auto;
+  }
+
+  .closing-cta::before {
+    top: auto;
+    left: 0;
+    height: 22rem;
+    aspect-ratio: auto;
+    background-position: 80% bottom;
+    mask: linear-gradient(180deg, transparent 0%, #000 45%);
+    mask-composite: add;
   }
 }

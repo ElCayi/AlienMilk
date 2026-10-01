@@ -249,13 +249,23 @@
   text-transform: uppercase;
 }
 
-/* Estación */
+/* Estación: recuadro de trazo blanco como la ficha, con el mismo aire que separa ficha y expediente. */
 .station {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.5fr) minmax(0, 0.75fr);
   gap: clamp(1.5rem, 4vw, 4rem);
-  padding: clamp(2rem, 4vw, 3.25rem) var(--inset);
+  margin-block: calc(1.25rem + 0.65rem);
+  padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1.5rem, 2.4vw, 2.25rem);
+  border: 2px solid var(--light);
+  /* La esquina amplia arriba, donde empieza; el resto, el redondeo discreto de la página. */
+  border-radius: var(--corner) 1rem 1rem 1rem;
   color: #faf9f7;
+  background: transparent;
+}
+
+.station-copy {
+  /* Columna estrecha: el título cae en dos líneas parejas y el texto no se alarga más que él. */
+  max-width: 17rem;
 }
 
 .station-code {
@@ -263,14 +273,23 @@
   color: var(--coral);
 }
 
+.station-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
 .station h3 {
   margin: 0.8rem 0 0;
+  text-wrap: balance;
   font: 400 clamp(1.8rem, 2.6vw, 2.6rem) / 1 var(--condensed);
 }
 
 .station-copy p:last-child,
-.station-disclaimer {
+.station-disclaimer p:last-child {
   margin: 0.6rem 0 0;
+  text-align: justify;
+  hyphens: auto;
   color: rgba(250, 249, 247, 0.7);
   font-size: 0.85rem;
   line-height: 1.55;
@@ -278,6 +297,8 @@
 
 .station-data {
   margin: 0;
+  /* La lista se centra en el alto del recuadro, entre el título y el alcance. */
+  align-self: center;
 }
 
 .station-data div {
@@ -293,51 +314,141 @@
 }
 
 .station dd {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
   margin: 0;
   font-size: 0.88rem;
 }
 
+.station dd strong {
+  color: var(--coral);
+  font-weight: 600;
+}
+
+.station dd span {
+  color: rgba(250, 249, 247, 0.6);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
 .station-disclaimer {
-  align-self: end;
+  align-self: center;
   padding-left: 1rem;
   border-left: 1px solid rgba(250, 249, 247, 0.3);
 }
 
-/* Paginador */
+/* El encabezado del alcance habla en voz de etiqueta, como las funciones de la lista. */
+.station-disclaimer .station-code {
+  color: rgba(250, 249, 247, 0.55);
+}
+
+/* Paginador: dos enlaces como «Explorar todas las sesiones» de la home, con su flecha y su subrayado. */
 .pager {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: clamp(0.5rem, 1.5vw, 1rem) var(--inset);
-  background: var(--page-canvas);
+  gap: 2rem;
+  /* Sin lienzo: sobre la textura, con el mismo margen interior que los recuadros de encima. */
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  padding: clamp(0.5rem, 1.5vw, 1rem) clamp(1.5rem, 2.4vw, 2.25rem);
 }
 
 .pager-link {
   display: grid;
-  gap: 0.35rem;
+  justify-items: start;
+  gap: 0.6rem;
   padding: 1.3rem 0;
   border: 0;
-  color: var(--ink);
+  color: var(--light);
   background: none;
   text-align: left;
   cursor: pointer;
+  transition: color 160ms ease;
 }
 
 .pager-next {
   grid-column: 2;
+  justify-items: end;
   text-align: right;
 }
 
-.pager-link span {
-  color: var(--muted);
+.pager-label {
+  color: var(--light-muted);
+}
+
+.pager-name {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: 100%;
+  padding-bottom: 0.45rem;
+}
+
+.pager-name::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.62;
+  transition: transform 180ms ease;
 }
 
 .pager-link strong {
+  min-width: 0;
   font: 400 clamp(1.3rem, 2vw, 1.8rem) var(--condensed);
-  transition: color 180ms ease;
+  transition: transform 180ms ease;
 }
 
-.pager-link:hover strong {
+.pager-arrow {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  display: inline-flex;
+  transition: transform 180ms ease;
+}
+
+.pager-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pager-link:hover,
+.pager-link:focus-visible {
   color: var(--coral);
+}
+
+.pager-link:hover .pager-name::after,
+.pager-link:focus-visible .pager-name::after {
+  transform: scaleX(1.06);
+}
+
+.pager-next:hover strong,
+.pager-next:focus-visible strong {
+  transform: translateX(-0.18rem);
+}
+
+.pager-next:hover .pager-arrow,
+.pager-next:focus-visible .pager-arrow {
+  transform: translateX(0.35rem);
+}
+
+.pager-link:not(.pager-next):hover strong,
+.pager-link:not(.pager-next):focus-visible strong {
+  transform: translateX(0.18rem);
+}
+
+.pager-link:not(.pager-next):hover .pager-arrow,
+.pager-link:not(.pager-next):focus-visible .pager-arrow {
+  transform: translateX(-0.35rem);
 }
 
 :is(button, a, select, input, summary):focus-visible {

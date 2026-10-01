@@ -16,7 +16,7 @@ const EMPTY_DOSSIER: SessionDossier = {
   acceso: [],
   recomendaciones: [],
   preguntas: [],
-  estacion: { complemento: '', franja: '', operadores: [] },
+  colaboradores: [],
   creditos: '',
 };
 
@@ -78,8 +78,40 @@ export function shortSessionDate(isoDate: string): string {
   return SHORT_DATE.format(localDate(isoDate)).replace('.', '');
 }
 
+const TICKET_DATE = new Intl.DateTimeFormat('es-ES', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+});
+
+/** Fecha de sello para la entrada: «lun 18 may». */
+export function ticketSessionDate(isoDate: string): string {
+  return TICKET_DATE.format(localDate(isoDate)).replace(/[.,]/g, '');
+}
+
 export function sessionPrice(value: number): string {
   return PRICE.format(value);
+}
+
+export interface PriceParts {
+  whole: string;
+  fraction: string;
+  currency: string;
+}
+
+/** El precio en piezas, para componerlo como un anuncio: entero grande, céntimos y moneda pequeños. */
+export function sessionPriceParts(value: number): PriceParts {
+  const parts = PRICE.formatToParts(value);
+  const pick = (types: string[]) =>
+    parts
+      .filter((part) => types.includes(part.type))
+      .map((part) => part.value)
+      .join('');
+  return {
+    whole: pick(['minusSign', 'integer', 'group']),
+    fraction: pick(['decimal', 'fraction']),
+    currency: pick(['currency']),
+  };
 }
 
 export function sessionDuration(minutes: number | null | undefined): string {

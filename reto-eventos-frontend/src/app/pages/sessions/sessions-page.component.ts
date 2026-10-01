@@ -25,18 +25,18 @@ import {
   longSessionDate,
   sessionDuration,
   sessionPrice,
+  sessionPriceParts,
+  ticketSessionDate,
   shortSessionDate,
 } from '../../features/sessions/session-dossier';
-import {
-  archiveCode,
-  compatibility,
-  sampleCode,
-  sessionImage,
-} from '../../features/sessions/session.presenter';
+import { archiveCode, sampleCode, sessionImage } from '../../features/sessions/session.presenter';
 import {
   CategoryOption,
   CategorySelectComponent,
 } from '../../features/sessions/category-select.component';
+import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
+import { FitBoxDirective } from '../../shared/fit-box/fit-box.directive';
+import { ScaleWidthDirective } from '../../shared/fit-box/scale-width.directive';
 import { filterSessions } from '../../features/sessions/session-search';
 import { EventoDetalle, EventoListado } from '../../models/api.models';
 import { SessionDossier } from '../../models/session-dossier.models';
@@ -51,7 +51,15 @@ interface OpenedSession {
 @Component({
   selector: 'app-sessions-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, CategorySelectComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    CategorySelectComponent,
+    FitLineDirective,
+    FitBoxDirective,
+    ScaleWidthDirective,
+  ],
   templateUrl: './sessions-page.component.html',
   styleUrl: './sessions-page.component.css',
 })
@@ -147,10 +155,11 @@ export class SessionsPageComponent implements OnInit {
   readonly sessionImage = sessionImage;
   readonly archiveCode = archiveCode;
   readonly sampleCode = sampleCode;
-  readonly compatibility = compatibility;
   readonly longDate = longSessionDate;
   readonly shortDate = shortSessionDate;
   readonly price = sessionPrice;
+  readonly priceParts = sessionPriceParts;
+  readonly ticketDate = ticketSessionDate;
   readonly duration = sessionDuration;
   readonly typeLabel = humanizeSessionType;
 
@@ -353,6 +362,36 @@ export class SessionsPageComponent implements OnInit {
     track?.scrollBy({ left: direction * track.clientWidth * 0.8, behavior: 'smooth' });
   }
 
+  /** Abrir una pestaña encuadra la ficha y la hoja blanca juntas, centradas bajo la barra superior. */
+  openTab(tab: DossierTab): void {
+    this.activeTab.set(tab);
+    const window = this.document.defaultView;
+    const anchor = this.fileAnchor()?.nativeElement;
+    if (!window || !anchor) {
+      return;
+    }
+
+    const offset = parseFloat(window.getComputedStyle(anchor).scrollMarginTop) || 0;
+    let target: number | null = null;
+    if (window.matchMedia('(max-width: 1000px)').matches) {
+      // En móvil la cabecera queda fija: si ya se ha pasado el principio de la hoja, se vuelve a él
+      // para leer la nueva sección desde arriba.
+      const main = this.document.querySelector('.dossier-main')?.getBoundingClientRect();
+      if (main && main.top < offset) {
+        target = window.scrollY + main.top - offset;
+      }
+    } else {
+      const frame = this.document.querySelector('.dossier-aside')?.getBoundingClientRect();
+      if (frame) {
+        const room = window.innerHeight - offset;
+        target = window.scrollY + frame.top - offset - Math.max(0, (room - frame.height) / 2);
+      }
+    }
+    if (target !== null && Math.abs(target - window.scrollY) > 2) {
+      window.scrollTo({ top: target, behavior: 'smooth' });
+    }
+  }
+
   /** Flechas, Inicio y Fin recorren las pestañas, como en cualquier tablist. */
   moveTab(event: KeyboardEvent): void {
     const tabs = this.tabs();
@@ -369,7 +408,7 @@ export class SessionsPageComponent implements OnInit {
     }
 
     event.preventDefault();
-    this.activeTab.set(tabs[next].id);
+    this.openTab(tabs[next].id);
     this.document.getElementById(`tab-${tabs[next].id}`)?.focus();
   }
 

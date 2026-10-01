@@ -49,3 +49,33 @@ navegador: `clos` no tocó esos archivos en esta tanda, así que no deberían ch
    límite de error de 48 kB.
 2. `/sesiones` a 390, 1100, 1440 y 1920 px: desplegable, buscador, orbes, cambiar de sesión desde
    la imagen (ratón, teclado y gesto táctil) y el scroll de la parte blanca.
+
+## Tanda del 30 de septiembre
+
+- **Ticket de reserva:** precio compuesto, troquel con muescas, botón coral y fecha discreta. La
+  ficha pierde Procedencia y Compatibilidad.
+- **Directiva `appFitLine`** (`shared/fit-line/`): las líneas de datos se encogen en vez de partirse.
+- **Guía «Cambiar de sesión» retirada:** quedan las flechas, las teclas y el gesto.
+- **«Información al asistente» pasa a ser «Hacen posible esta sesión»** (créditos de colaboración).
+  Cambia el contrato de expedientes: **`estacion` desaparece y entra `colaboradores`**
+  (`{ rol, nombre, detalle }`) en `session-dossier.models.ts`, `session-dossier.ts` y
+  `public/data/session-dossiers.json`. Si otra rama toca `estacion` en esos archivos, manda la de
+  `clos`; lo demás del JSON no se ha reformateado.
+- **Final de Sesiones sin lienzo blanco:** paginador y CTA final van sobre la textura; más aire
+  alrededor de la CTA. La tarjeta de la CTA lleva de fondo al astronauta
+  (`public/alienmilk-closing-astronaut.webp`) en lugar de la mano con leche, que sigue en la home.
+- **Colaboraciones:** minimilk en la eyebrow, nombres en coral y columnas centradas en vertical.
+- **Tarjeta final:** textos y botones más grandes y alineados al ancho del título; nuevo copy;
+  minimilk estampada en la taza del astronauta. `index.html` carga ahora la cursiva 400 de Barlow
+  Condensed.
+- **Paginador** con la flecha y el subrayado de «Explorar todas las sesiones» de la home.
+
+## Tanda del 1 de octubre
+
+- **Ficha y hoja blanca caben siempre en la pantalla** (escritorio): la ficha escala entera con la
+  directiva nueva `appFitBox` (`shared/fit-box/`); la hoja blanca desplaza el texto dentro.
+- **Tarjeta final** escala en pantallas grandes con `appScaleWidth` (tope ×1,08, centrada).
+- **Pestañas:** al tocarlas, el bloque se centra en la pantalla. En móvil, cabecera fija con la
+  eyebrow y las pestañas, y una sección cada vez.
+- **Móvil:** índice e imagen a sangre, paginador en dos columnas, ajustes de aire.
+- Minimilk de la eyebrow del expediente en coral.

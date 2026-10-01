@@ -156,17 +156,6 @@
                 [alt]="'Registro visual de la sesión ' + data.nombre"
               />
 
-              <!-- Guía para cambiar de sesión: teclas en ordenador, gesto en pantallas táctiles. -->
-              <p class="browse-hint" *ngIf="browseHint() && previousSession()" aria-hidden="true">
-                <span class="browse-keys"><kbd>←</kbd><kbd>→</kbd></span>
-                <svg class="browse-swipe" viewBox="0 0 28 16">
-                  <path d="M2 8h7M2 8l3-3M2 8l3 3M26 8h-7M26 8l-3-3M26 8l-3 3" />
-                  <circle class="browse-finger" cx="14" cy="8" r="3" />
-                </svg>
-                <span class="browse-label browse-label--keys">Cambiar de sesión</span>
-                <span class="browse-label browse-label--swipe">Desliza</span>
-              </p>
-
               <button
                 type="button"
                 class="browse-step browse-step--prev"
@@ -206,9 +195,11 @@
               <h2 id="dossier-title">{{ data.nombre }}</h2>
               <div class="dossier-heading-meta">
                 <span class="dossier-hero-code">{{ archiveCode(data) }}</span>
-                <span class="dossier-hero-details">
-                  {{ data.direccion }} · {{ longDate(data.fechaInicio)
-                  }}<ng-container *ngIf="current.dossier.horario">
+                <span class="dossier-hero-details" appFitLine>
+                  {{ data.direccion }} ·
+                  <span class="date-long">{{ longDate(data.fechaInicio) }}</span
+                  ><span class="date-short">{{ ticketDate(data.fechaInicio) }}</span
+                  ><ng-container *ngIf="current.dossier.horario">
                     · {{ current.dossier.horario }}</ng-container
                   >
                 </span>
@@ -218,122 +209,132 @@
 
           <div class="dossier-body">
             <aside class="dossier-aside">
-              <p class="dossier-kicker">
-                <span>{{ typeLabel(data.tipoEvento) }}</span>
-                <span>{{ archiveCode(data) }}</span>
-              </p>
-              <dl class="dossier-facts">
-                <div>
-                  <dt>Duración</dt>
-                  <dd>{{ duration(data.duracion) }}</dd>
-                </div>
-                <div>
-                  <dt>Aforo</dt>
-                  <dd>{{ data.aforoMaximo }} plazas</dd>
-                </div>
-                <div>
-                  <dt>Procedencia</dt>
-                  <dd>{{ current.dossier.procedencia }}</dd>
-                </div>
-                <div>
-                  <dt>Compatibilidad</dt>
-                  <dd>{{ compatibility(data) }}</dd>
-                </div>
-              </dl>
-
-              <div class="dossier-share">
-                <button type="button" (click)="share(data)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="18" cy="5" r="2.5" />
-                    <circle cx="6" cy="12" r="2.5" />
-                    <circle cx="18" cy="19" r="2.5" />
-                    <path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" />
-                  </svg>
-                  Compartir expediente
-                </button>
-                <span role="status">{{ shareFeedback() }}</span>
-              </div>
-
-              <div class="booking">
-                <div class="booking-price">
-                  <span>Acceso individual</span>
-                  <strong>{{ price(data.precio) }}</strong>
-                </div>
-
-                <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
-                  <div class="booking-fields">
-                    <label>
-                      <span>Plazas</span>
-                      <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
-                    </label>
-                    <label>
-                      <span>Observaciones</span>
-                      <input
-                        [(ngModel)]="observaciones"
-                        placeholder="Intolerancias, accesibilidad..."
-                      />
-                    </label>
-                  </div>
-                  <button
-                    type="button"
-                    class="booking-button"
-                    (click)="reservar()"
-                    [disabled]="loadingReservation()"
-                  >
-                    {{
-                      loadingReservation()
-                        ? 'Procesando acceso...'
-                        : 'Reservar plaza · ' + price(totalReserva())
-                    }}
-                  </button>
-                </ng-container>
-
-                <ng-template #accessPrompt>
-                  <p class="booking-note">
-                    La consulta del programa es pública. Para reservar plaza es necesario
-                    identificarse como participante.
-                  </p>
-                  <a
-                    class="booking-button"
-                    routerLink="/login"
-                    [queryParams]="{ redirectTo: currentUrl() }"
-                  >
-                    Identificarse para reservar
-                  </a>
-                  <a class="booking-link" routerLink="/registro"
-                    >Solicitar acceso de participante</a
-                  >
-                </ng-template>
-
-                <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
-                  {{ reservationFeedback() }}
+              <div class="dossier-aside-fit" appFitBox>
+                <p class="dossier-kicker">
+                  <span>{{ typeLabel(data.tipoEvento) }}</span>
+                  <span>{{ archiveCode(data) }}</span>
                 </p>
+                <dl class="dossier-facts">
+                  <div>
+                    <dt>Duración</dt>
+                    <dd>{{ duration(data.duracion) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Aforo</dt>
+                    <dd>{{ data.aforoMaximo }} plazas</dd>
+                  </div>
+                </dl>
+
+                <div class="dossier-share">
+                  <button type="button" (click)="share(data)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="18" cy="5" r="2.5" />
+                      <circle cx="6" cy="12" r="2.5" />
+                      <circle cx="18" cy="19" r="2.5" />
+                      <path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" />
+                    </svg>
+                    Compartir expediente
+                  </button>
+                  <span role="status">{{ shareFeedback() }}</span>
+                </div>
+
+                <div class="booking">
+                  <!-- Una entrada: el precio en la matriz y la reserva en el resguardo, con troquel entre ambos. -->
+                  <div class="booking-price" *ngIf="priceParts(data.precio) as amount">
+                    <p class="booking-head">
+                      <span class="booking-label">Acceso individual</span>
+                      <time class="booking-date" [attr.datetime]="data.fechaInicio">{{
+                        ticketDate(data.fechaInicio)
+                      }}</time>
+                    </p>
+                    <strong class="booking-amount" [attr.aria-label]="price(data.precio)"
+                      ><span class="booking-whole">{{ amount.whole }}</span
+                      ><span class="booking-cents">{{ amount.fraction }}</span
+                      ><span class="booking-currency">{{ amount.currency }}</span></strong
+                    >
+                    <span class="booking-unit">Por persona · impuestos incluidos</span>
+                  </div>
+
+                  <div class="booking-stub">
+                    <ng-container *ngIf="authService.isAuthenticated(); else accessPrompt">
+                      <div class="booking-fields">
+                        <label>
+                          <span>Plazas</span>
+                          <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
+                        </label>
+                        <label>
+                          <span>Observaciones</span>
+                          <input
+                            [(ngModel)]="observaciones"
+                            placeholder="Intolerancias, accesibilidad..."
+                          />
+                        </label>
+                      </div>
+                      <button
+                        type="button"
+                        class="booking-button"
+                        (click)="reservar()"
+                        [disabled]="loadingReservation()"
+                      >
+                        {{
+                          loadingReservation()
+                            ? 'Procesando acceso...'
+                            : 'Reservar plaza · ' + price(totalReserva())
+                        }}
+                      </button>
+                    </ng-container>
+
+                    <ng-template #accessPrompt>
+                      <p class="booking-note">
+                        La consulta del programa es pública. Para reservar plaza es necesario
+                        identificarse como participante.
+                      </p>
+                      <a
+                        class="booking-button"
+                        routerLink="/login"
+                        [queryParams]="{ redirectTo: currentUrl() }"
+                      >
+                        Identificarse para reservar
+                      </a>
+                      <a class="booking-link" routerLink="/registro"
+                        >Solicitar acceso de participante</a
+                      >
+                    </ng-template>
+
+                    <p class="booking-error" *ngIf="reservationFeedback()" role="alert">
+                      {{ reservationFeedback() }}
+                    </p>
+                  </div>
+                </div>
               </div>
             </aside>
 
             <div class="dossier-main">
-              <!-- Recuerda de qué sesión se habla cuando la banda del título ya no está a la vista. -->
-              <p class="eyebrow dossier-eyebrow" aria-hidden="true">
-                <span class="eyebrow-icon"></span>
-                <span class="dossier-eyebrow-code">{{ archiveCode(data) }}</span>
-                <span>{{ data.nombre }}</span>
-              </p>
+              <!-- Cabecera del expediente: en móvil queda fija bajo la barra superior y sirve de índice. -->
+              <div class="dossier-head">
+                <!-- Recuerda de qué sesión se habla cuando la banda del título ya no está a la vista. -->
+                <p class="eyebrow dossier-eyebrow" aria-hidden="true">
+                  <span class="eyebrow-icon"></span>
+                  <span class="dossier-eyebrow-code">{{ archiveCode(data) }}</span>
+                  <span>{{ data.nombre }}</span>
+                </p>
 
-              <!-- En escritorio las secciones son pestañas; en móvil se leen seguidas. -->
-              <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
-                <button
-                  type="button"
-                  role="tab"
-                  *ngFor="let tab of tabs()"
-                  [id]="'tab-' + tab.id"
-                  [attr.aria-controls]="'panel-' + tab.id"
-                  [attr.aria-selected]="activeTab() === tab.id"
-                  [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
-                  (click)="activeTab.set(tab.id)"
-                  (keydown)="moveTab($event)"
-                >
-                  {{ tab.label }}
-                </button>
+                <!-- En escritorio, pestañas; en móvil las secciones se leen seguidas y esto salta entre ellas. -->
+                <div class="dossier-tabs" role="tablist" aria-label="Secciones del expediente">
+                  <button
+                    type="button"
+                    role="tab"
+                    *ngFor="let tab of tabs()"
+                    [id]="'tab-' + tab.id"
+                    [attr.aria-controls]="'panel-' + tab.id"
+                    [attr.aria-selected]="activeTab() === tab.id"
+                    [attr.tabindex]="activeTab() === tab.id ? 0 : -1"
+                    (click)="openTab(tab.id)"
+                    (keydown)="moveTab($event)"
+                  >
+                    {{ tab.label }}
+                  </button>
+                </div>
               </div>
 
               <section
@@ -441,34 +442,39 @@
             </div>
           </div>
 
-          <section class="station" aria-labelledby="station-title">
+          <!-- Créditos de colaboración: lo que hace posible la sesión sin hacer falta para asistir. -->
+          <section
+            class="station"
+            *ngIf="current.dossier.colaboradores.length"
+            aria-labelledby="station-title"
+          >
             <div class="station-copy">
-              <p class="station-code">AM / Información al asistente</p>
-              <h3 id="station-title">{{ data.direccion }}</h3>
-              <p>{{ current.dossier.estacion.complemento }}</p>
+              <p class="station-code station-eyebrow">
+                <span class="eyebrow-icon" aria-hidden="true"></span>AM / Colaboraciones
+              </p>
+              <h3 id="station-title">Hacen posible esta sesión</h3>
+              <p>
+                Una sesión interplanetaria depende de muchas manos. Estos son los espacios, medios y
+                operadores que han intervenido en esta apertura.
+              </p>
             </div>
             <dl class="station-data">
-              <div>
-                <dt>Fecha</dt>
-                <dd>{{ longDate(data.fechaInicio) }}</dd>
-              </div>
-              <div>
-                <dt>Franja</dt>
+              <div *ngFor="let partner of current.dossier.colaboradores">
+                <dt>{{ partner.rol }}</dt>
                 <dd>
-                  {{ current.dossier.horario || 'Por confirmar' }} ·
-                  {{ current.dossier.estacion.franja }}
+                  <strong>{{ partner.nombre }}</strong>
+                  <span *ngIf="partner.detalle">{{ partner.detalle }}</span>
                 </dd>
               </div>
-              <div *ngFor="let operator of current.dossier.estacion.operadores">
-                <dt>{{ operator.etiqueta }}</dt>
-                <dd>{{ operator.valor }}</dd>
-              </div>
             </dl>
-            <p class="station-disclaimer">
-              AlienMilk responde exclusivamente de las actividades coordinadas por su personal
-              acreditado. La logística anterior y posterior al ingreso puede ser prestada por
-              operadores independientes.
-            </p>
+            <div class="station-disclaimer">
+              <p class="station-code">Alcance de la colaboración</p>
+              <p>
+                AlienMilk dirige y responde por el desarrollo de cada sesión. Las entidades
+                colaboradoras proporcionan infraestructura y apoyo logístico, pero no intervienen en
+                la experiencia ni en su contenido.
+              </p>
+            </div>
           </section>
 
           <nav class="pager" aria-label="Otras sesiones">
@@ -478,8 +484,15 @@
               *ngIf="previousSession() as previous"
               (click)="selectSession(previous)"
             >
-              <span>← Sesión anterior</span>
-              <strong>{{ previous.nombre }}</strong>
+              <span class="pager-label">Sesión anterior</span>
+              <span class="pager-name">
+                <span class="pager-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M19 12H5M11 6l-6 6 6 6" />
+                  </svg>
+                </span>
+                <strong>{{ previous.nombre }}</strong>
+              </span>
             </button>
             <button
               type="button"
@@ -487,8 +500,15 @@
               *ngIf="nextSession() as next"
               (click)="selectSession(next)"
             >
-              <span>Sesión siguiente →</span>
-              <strong>{{ next.nombre }}</strong>
+              <span class="pager-label">Sesión siguiente</span>
+              <span class="pager-name">
+                <strong>{{ next.nombre }}</strong>
+                <span class="pager-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </span>
             </button>
           </nav>
         </ng-container>
@@ -496,12 +516,13 @@
 
       <!-- Cierre para visitantes: la consulta es pública, la reserva requiere identificarse. -->
       <div class="closing" *ngIf="!authService.isAuthenticated()">
-        <section class="closing-cta" aria-labelledby="closing-cta-title">
+        <section class="closing-cta" aria-labelledby="closing-cta-title" [appScaleWidth]="1094">
           <div class="closing-cta-copy">
-            <h2 id="closing-cta-title">Hay una plaza esperando su nombre.</h2>
+            <h2 id="closing-cta-title">Hay una plaza <br />esperando su nombre.</h2>
             <p>
-              Identifíquese como participante para reservar sesiones, seguir el estado de sus
-              accesos y recibir cada convocatoria antes de que se publique.
+              No todas las experiencias requieren cruzar el universo. Algunas empiezan simplemente
+              aceptando una invitación. Si ha llegado hasta aquí, quizá la próxima plaza sea la
+              suya.
             </p>
             <div class="closing-cta-actions">
               <a class="closing-cta-primary" routerLink="/registro">Registrarse</a>
@@ -512,9 +533,11 @@
                 >Entrar</a
               >
             </div>
-            <p class="closing-cta-note">La consulta es pública. La degustación, no.</p>
+            <p class="closing-cta-note">
+              El universo es inmenso.<br />
+              Aun así, algunas cosas <em>siempre</em> terminan encontrándole.
+            </p>
           </div>
-          <img class="closing-cta-image" src="alienmilk-final-cta-hand.png" alt="" loading="lazy" />
         </section>
       </div>
     </ng-container>

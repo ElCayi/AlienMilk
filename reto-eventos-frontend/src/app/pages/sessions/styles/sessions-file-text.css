@@ -6,22 +6,83 @@
   font-size: 0.62rem;
 }
 
+.dossier-eyebrow .eyebrow-icon,
 .dossier-eyebrow-code {
   color: var(--coral);
 }
 
-/* En móvil las secciones se leen seguidas: la eyebrow acompaña bajo la barra superior. */
+.dossier-head {
+  flex-shrink: 0;
+}
+
+/* En móvil las secciones se leen seguidas: la cabecera acompaña bajo la barra superior con el nombre
+   de la sesión y un índice para saltar de una sección a otra. */
 @media (max-width: 1000px) {
-  .dossier-eyebrow {
+  .dossier-head {
     position: sticky;
     top: var(--topbar-height, 4.5rem);
     z-index: 2;
-    display: flex;
     /* A sangre dentro del lienzo: anula el relleno lateral de .dossier-main. */
     margin-inline: calc(-1 * var(--inset));
-    padding: 0.75rem var(--inset);
+    padding: 0.75rem var(--inset) 0;
     background: var(--page-canvas);
     box-shadow: 0 1px 0 var(--line);
+  }
+
+  .dossier-eyebrow {
+    display: flex;
+    margin-bottom: 0.55rem;
+  }
+
+  .dossier-tabs {
+    display: flex;
+    gap: 1.25rem;
+    margin-inline: calc(-1 * var(--inset));
+    padding-inline: var(--inset);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .dossier-tabs button {
+    flex: 0 0 auto;
+    padding: 0.2rem 0 0.6rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    background: none;
+    font: 700 0.85rem var(--condensed);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .dossier-tabs button[aria-selected='true'] {
+    border-bottom-color: var(--coral);
+    color: var(--ink);
+  }
+
+  /* Como en escritorio, una sección cada vez: las pestañas evitan el scroll infinito. */
+  .dossier-section {
+    display: none;
+  }
+
+  .dossier-section.is-active {
+    display: block;
+    margin-top: 0;
+    padding-top: 1.75rem;
+    animation: rise 360ms ease both;
+  }
+
+  /* La pestaña ya nombra la sección. */
+  .dossier-section h3 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
   }
 }
 

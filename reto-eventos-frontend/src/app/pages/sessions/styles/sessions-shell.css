@@ -60,13 +60,13 @@ button {
 .index-code,
 .dossier-kicker,
 .dossier-facts dt,
-.booking-price span,
+.booking-label,
 .booking-fields span,
 .tasting dt,
 .conditions dt,
 .station dt,
 .station-code,
-.pager-link span {
+.pager-label {
   font-family: 'Nunito', sans-serif;
   font-size: 0.66rem;
   font-weight: 800;

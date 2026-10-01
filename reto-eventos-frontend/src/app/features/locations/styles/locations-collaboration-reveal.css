@@ -1,0 +1,157 @@
+/* Entrada de Collaborators. Hoja aparte de locations-atlas.component.css para no pasar el límite
+   de tamaño por hoja; se carga después y comparte el encapsulado del componente. */
+
+/* La puerta se dibuja al entrar en pantalla (el componente pone .is-armed y, al verse,
+   .is-revealed; al acabar quita las dos y queda el diseño fijo). Nada se funde: entra por bloques.
+   Primero se trazan las rayas de pliegue sobre el recuadro vacío, repartidas por la boca del
+   interior (el papel cerrado). Luego la puerta se abre en un solo movimiento: las hojas se separan
+   desde el centro y se pliegan hacia los lados como un acordeón, oscureciéndose; entre las dos
+   hojas de dentro asoma el interior con el texto, y con la raya exterior se abren las alas del
+   techo y el suelo (sample-reception.component.css), que tapan lo que queda por encima y por debajo.
+
+   Un solo reloj por pareja de hojas: --fold-far, --fold-mid y --fold-near van de 0 (cerrada) a 1
+   (abierta) y todo se calcula a partir de ellos, así nada se desacompasa. El componente mide la
+   media boca del interior (--fold-neck) y el medio ancho del panel (--fold-seam-end). */
+@property --fold-far {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --fold-mid {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --fold-near {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+  .locations-layout-collaboration.is-armed {
+    --fold-span: calc(var(--collaboration-frame-half-width) + 5.75rem);
+    --fold-neck: calc(var(--fold-span) * 0.64);
+  }
+
+  .locations-layout-collaboration.is-revealed {
+    animation:
+      collaboration-fold-far 1000ms cubic-bezier(0.65, 0, 0.35, 1) 650ms both,
+      collaboration-fold-mid 1000ms cubic-bezier(0.65, 0, 0.35, 1) 740ms both,
+      collaboration-fold-near 1000ms cubic-bezier(0.65, 0, 0.35, 1) 830ms both;
+  }
+
+  /* Rayas y hojas: cada una sale de la boca cerrada (a 1/4, 5/8 y 1 de la media boca) y
+     --fold-from es lo que le queda por recorrer hasta su sitio. La exterior recorre justo el ala
+     del trapecio. Cada hoja va de su raya a la siguiente hacia el centro. */
+  .locations-layout-collaboration.is-armed .locations-collaboration-gate-line,
+  .locations-layout-collaboration.is-armed .locations-collaboration-gate-fill {
+    --fold-k: var(--fold-near);
+    --fold-from: calc(var(--collaboration-frame-half-width) - 1.2rem - var(--fold-neck) * 0.25);
+    --fold-delay: 180ms;
+    --fold-start-width: calc(var(--fold-neck) * 0.25);
+    --fold-end-width: 2.4rem;
+    translate: calc(var(--fold-from) * (1 - var(--fold-k)) * var(--fold-direction, 1)) 0;
+  }
+
+  .locations-layout-collaboration.is-armed .is-middle {
+    --fold-k: var(--fold-mid);
+    --fold-from: calc(var(--collaboration-frame-half-width) + 1.2rem - var(--fold-neck) * 0.625);
+    --fold-delay: 90ms;
+    --fold-start-width: calc(var(--fold-neck) * 0.375);
+  }
+
+  .locations-layout-collaboration.is-armed .is-far {
+    --fold-k: var(--fold-far);
+    --fold-from: calc(var(--fold-span) - var(--fold-neck));
+    --fold-delay: 0ms;
+    --fold-start-width: calc(var(--fold-neck) * 0.375);
+    --fold-end-width: 4.55rem;
+  }
+
+  .locations-layout-collaboration.is-armed .is-right {
+    --fold-direction: -1;
+  }
+
+  .locations-layout-collaboration.is-armed .locations-collaboration-gate-line {
+    display: block;
+    opacity: 0;
+  }
+
+  .locations-layout-collaboration.is-armed .locations-collaboration-gate-line.is-far {
+    --fold-to-opacity: 1;
+    --fold-to-bg: rgba(255, 255, 255, 0.5);
+  }
+
+  .locations-layout-collaboration.is-revealed .locations-collaboration-gate-line {
+    animation: collaboration-fold-line 2300ms var(--fold-delay, 0ms) both;
+  }
+
+  /* La hoja se estrecha hasta su ancho final y se oscurece en cuanto empieza a plegarse. */
+  .locations-layout-collaboration.is-armed .locations-collaboration-gate-fill {
+    width: calc(
+      var(--fold-start-width) + (var(--fold-end-width) - var(--fold-start-width)) * var(--fold-k)
+    );
+    opacity: min(1, var(--fold-k) * 6);
+  }
+}
+
+@keyframes collaboration-fold-far {
+  from {
+    --fold-far: 0;
+  }
+
+  to {
+    --fold-far: 1;
+  }
+}
+
+@keyframes collaboration-fold-mid {
+  from {
+    --fold-mid: 0;
+  }
+
+  to {
+    --fold-mid: 1;
+  }
+}
+
+@keyframes collaboration-fold-near {
+  from {
+    --fold-near: 0;
+  }
+
+  to {
+    --fold-near: 1;
+  }
+}
+
+/* Raya: se traza de arriba abajo, acompaña a la puerta mientras se abre (eso lo mueve su reloj) y
+   al final las intermedias se apagan y las de fuera quedan blancas. */
+@keyframes collaboration-fold-line {
+  0% {
+    opacity: 0;
+    scale: 1 0;
+    background: #394654;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  26% {
+    opacity: 1;
+    scale: 1 1;
+    background: #394654;
+  }
+
+  80% {
+    opacity: 1;
+    background: #394654;
+  }
+
+  100% {
+    opacity: var(--fold-to-opacity, 0);
+    scale: 1 1;
+    background: var(--fold-to-bg, #394654);
+  }
+}

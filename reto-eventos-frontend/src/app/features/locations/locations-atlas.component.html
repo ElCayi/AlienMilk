@@ -8,7 +8,7 @@
         <span *ngIf="collaborationMode">Programa de colaboradores · 2026</span>
       </p>
       <div class="locations-copy">
-        <h2 id="locations-title" *ngIf="!collaborationMode">Localizaciones</h2>
+        <h3 id="locations-title" class="locations-subsection-title" *ngIf="!collaborationMode">Localizaciones</h3>
         <h2 class="locations-collaborators-title" *ngIf="collaborationMode">
           <span class="locations-collaborators-brand">AlienMilk</span>
           <span class="locations-collaborators-label">Collaborators</span>
@@ -20,10 +20,10 @@
           <strong>AlienMilk</strong> está hecho por personas como usted. <em>Literalmente.</em>
         </p>
         <p class="locations-intro" *ngIf="!collaborationMode">
-          Las sesiones se programan de acuerdo con la disponibilidad de cada estación y las
-          condiciones locales de tránsito, presión, aislamiento y acceso. Antes de confirmar una
-          apertura, AlienMilk verifica que el espacio pueda conservar las muestras y sostener el
-          protocolo completo de la experiencia.
+          AlienMilk opera a escala interplanetaria a través de una red de estaciones y puntos de
+          colaboración. Estos espacios permiten conservar las muestras, preparar cada experiencia y
+          acoger las sesiones en distintos lugares del universo. La disponibilidad de cada sede depende
+          de sus condiciones locales y de su capacidad para cumplir el protocolo de AlienMilk.
         </p>
         <p class="locations-intro" *ngIf="collaborationMode">
           AlienMilk Collaborators es la división del ecosistema AlienMilk dedicada a la captación y
@@ -37,83 +37,121 @@
 
   <div class="locations-layout" *ngIf="!collaborationMode">
     <aside class="locations-brief" aria-label="Información para asistentes">
-      <span class="locations-brief-code">AM / INFORMACIÓN AL ASISTENTE</span>
-      <h3>Antes de su visita</h3>
+      <span class="locations-brief-code" appFitLine>AM / INFORMACIÓN AL ASISTENTE</span>
+      <h3 appFitLine>Antes de su visita</h3>
+      <ol class="locations-brief-steps" aria-label="Procedimiento de acceso">
+        <li>
+          <span class="locations-brief-step-time">45 min antes</span>
+          <span class="locations-brief-step-body">
+            <span class="locations-brief-step-number">01</span>
+            Localice la <strong>taquilla de acreditación</strong> de la instalación.
+          </span>
+        </li>
+        <li>
+          <span class="locations-brief-step-time">Al llegar</span>
+          <span class="locations-brief-step-body">
+            <span class="locations-brief-step-number">02</span>
+            Presente su <strong>código de acceso</strong> y un <strong>documento identificativo</strong>.
+          </span>
+        </li>
+        <li>
+          <span class="locations-brief-step-time">10 min antes</span>
+          <span class="locations-brief-step-body">
+            <span class="locations-brief-step-number">03</span>
+            El control de ingreso <strong>cierra</strong>. Pasada esa hora no se admiten accesos.
+          </span>
+        </li>
+      </ol>
       <p class="locations-brief-disclaimer">
         AlienMilk responde exclusivamente de las actividades coordinadas por su personal acreditado.
         La logística anterior y posterior al ingreso puede ser prestada por operadores independientes
         y queda sujeta a sus propias condiciones.
       </p>
-      <p>
-        Para acceder a cualquier instalación, localice la <strong>taquilla de acreditación</strong>
-        con al menos <strong>45 minutos de antelación</strong> respecto a la franja asignada. Presente su
-        <strong>código de acceso</strong> y un <strong>documento identificativo</strong>; el control
-        de ingreso <strong>cierra 10 minutos antes</strong>.
-      </p>
-      <dl>
-        <div>
-          <dt>Transporte</dt>
-          <dd>
-            <a class="locations-operator-link" href="/operadores/am-transit">
-              <span>AM Transit</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </a>
-          </dd>
-        </div>
-        <div>
-          <dt>Equipaje</dt>
-          <dd>
-            <a class="locations-operator-link" href="/operadores/helix-transfer">
-              <span>Helix Transfer</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </a>
-          </dd>
-        </div>
-        <div>
-          <dt>Coordinación</dt>
-          <dd>
-            <a class="locations-operator-link" href="/operadores/kepler-liaison">
-              <span>Kepler Liaison</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </a>
-          </dd>
-        </div>
-      </dl>
+      <fieldset class="locations-brief-operators">
+        <legend>Operadores asociados</legend>
+        <dl>
+          <div>
+            <dt>Transporte</dt>
+            <dd>
+              <a class="locations-operator-link" href="/operadores/am-transit">
+                <span>AM Transit</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Equipaje</dt>
+            <dd>
+              <a class="locations-operator-link" href="/operadores/helix-transfer">
+                <span>Helix Transfer</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt>Coordinación</dt>
+            <dd>
+              <a class="locations-operator-link" href="/operadores/kepler-liaison">
+                <span>Kepler Liaison</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      </fieldset>
+      <a class="locations-brief-cta locations-brief-cta-external" href="/documentacion/asistentes">
+        <span>Consultar documentación</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
     </aside>
 
     <div class="locations-chart-viewport">
       <div class="locations-chart" [class.is-loading]="loading">
         <article
           class="location-node"
-          *ngFor="let location of locations | slice: 0 : 3; let index = index; trackBy: trackLocation"
+          *ngFor="let station of stations | slice: 0 : 3; let index = index; trackBy: trackStation"
           [class.location-node-secondary]="index === 1"
           [class.location-node-tertiary]="index === 2"
         >
+          <span class="location-coordinates">{{ station.coordenadas }}</span>
           <div class="location-orbit" aria-hidden="true">
+            <svg class="location-dial" viewBox="-50 -50 100 100" focusable="false">
+              <circle class="location-dial-minutes" r="50" pathLength="360" />
+              <circle class="location-dial-hours" r="50.75" pathLength="360" />
+              <path class="location-dial-index" d="M0 -54.2 L-1.9 -57.6 H1.9 Z" />
+            </svg>
             <span class="location-orbit-ring">
               <span class="location-marker"><span></span></span>
             </span>
-            <video class="location-planet location-planet-video" *ngIf="index === 0" autoplay muted loop playsinline>
+            <!-- [muted] fija la propiedad: el atributo solo no basta en vídeos creados desde JS y Chrome
+                 bloquearía la reproducción automática. -->
+            <video
+              class="location-planet location-planet-video"
+              *ngIf="index === 0"
+              autoplay
+              muted
+              [muted]="true"
+              loop
+              playsinline
+            >
               <source src="alienmilk-planet-loop.webm" type="video/webm" />
               <source src="alienmilk-planet-loop.mp4" type="video/mp4" />
             </video>
             <span class="location-planet" *ngIf="index !== 0"></span>
           </div>
-          <details class="location-data" name="location-stations">
+          <details class="location-data">
             <summary>
-              <span>EVENTO {{ location.idEvento | number: '2.0' }} / {{ location.tipoEvento }}</span>
-              <strong>{{ location.direccion }}</strong>
-              <small>
-                {{ location.fechaInicio | date: 'dd.MM.yy · HH:mm' }} · {{ location.duracion }} MIN · AFORO
-                {{ location.aforoMaximo }}
-              </small>
+              <span class="location-code">{{ station.codigo }}</span>
+              <strong appFitLine>{{ station.sitio }}</strong>
+              <small appFitLine>{{ station.sistema }} · {{ station.planeta }}</small>
             </summary>
             <div class="location-data-details">
-              <p>{{ location.descripcion }}</p>
+              <p>{{ station.descripcion }}</p>
               <dl>
-                <div><dt>Estado</dt><dd>{{ location.estado }}</dd></div>
-                <div><dt>Asistencia mínima</dt><dd>{{ location.minimoAsistencia }}</dd></div>
-                <div><dt>Tarifa</dt><dd>{{ location.precio | currency: 'EUR' }}</dd></div>
+                <div><dt>Función</dt><dd appFitLine>{{ station.tipo }}</dd></div>
+                <div><dt>Dirección</dt><dd appFitLine>{{ station.direccion }}</dd></div>
+                <div><dt>Hora local</dt><dd appFitLine>{{ station.horaLocal }}</dd></div>
+                <div><dt>Acceso</dt><dd appFitLine>{{ station.acceso }}</dd></div>
               </dl>
             </div>
           </details>
@@ -123,11 +161,6 @@
       </div>
     </div>
   </div>
-
-  <a class="locations-brief-cta locations-brief-cta-external" *ngIf="!collaborationMode" href="/documentacion/asistentes">
-    <span>Consultar documentación</span>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-  </a>
 
   <div
     class="locations-layout locations-layout-collaboration"

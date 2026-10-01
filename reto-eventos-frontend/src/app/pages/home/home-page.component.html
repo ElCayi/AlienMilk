@@ -121,16 +121,9 @@
         (retry)="loadSessions()"
       />
 
-      <app-locations-atlas
-        [locations]="sessionLocations()"
-        [loading]="loadingLocations()"
-      />
+      <app-locations-atlas [stations]="stations()" [loading]="loadingStations()" />
 
-      <app-locations-atlas
-        [locations]="sessionLocations()"
-        [loading]="loadingLocations()"
-        [collaborationMode]="true"
-      />
+      <app-locations-atlas [collaborationMode]="true" />
 
       <section class="section-block final-cta-section">
         <div class="about-card">

@@ -113,7 +113,7 @@
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
-.locations-editorial h2 {
+.locations-editorial :is(h2, h3) {
   max-width: none;
   margin: 0;
   color: var(--gallery-ink, #211e24);
@@ -221,18 +221,24 @@
     url('/alienmilk-collaborators-texture.webp');
 }
 
-.locations-layout.locations-layout-collaboration {
+/* Medio marco de la puerta de Collaborators. Lo comparten el escaparate y el enlace de debajo; los
+   dos son contenedores con el mismo relleno, así 100cqw mide lo mismo en ambos. */
+:host(.locations-collaboration-section) {
+  --collaboration-gutter: clamp(2rem, 5vw, 4rem);
   --collaboration-frame-half-width: min(
     21rem,
     calc((100cqw - clamp(6rem, 10vw, 8rem)) / 2)
   );
+}
+
+.locations-layout.locations-layout-collaboration {
   container-type: inline-size;
   height: var(--home-showcase-height, 46rem);
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
   place-items: center;
   overflow: hidden;
-  padding: 0 clamp(2rem, 5vw, 4rem);
+  padding: 0 var(--collaboration-gutter);
 }
 
 .locations-collaboration-gate {

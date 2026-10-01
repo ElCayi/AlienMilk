@@ -40,7 +40,7 @@
     display: none;
   }
 
-  .locations-editorial h2 {
+  .locations-editorial :is(h2, h3) {
     max-width: none;
     font-size: clamp(2.6rem, 11vw, 3.8rem);
   }

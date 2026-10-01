@@ -330,6 +330,10 @@
     font-size: clamp(1.05rem, 1.15vw, 1.6rem);
   }
 
+  .session-secondary-cta .sessions-explore::after {
+    opacity: 1;
+  }
+
   .session-secondary-cta .sessions-explore-arrow {
     width: 1.35em;
     height: 1.35em;

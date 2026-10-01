@@ -229,8 +229,10 @@
     100% - var(--sample-portal-neck-inset) - var(--sample-portal-neck-inset) +
       var(--sample-portal-spread) + var(--sample-portal-spread)
   );
+  /* Llega justo al borde inferior del escaparate, así sus esquinas caen en las rayas exteriores de
+     la puerta: arranca tanto más arriba cuanto mayor es el relleno del panel, y crece eso mismo. */
   height: calc(
-    (var(--home-showcase-height, 46rem) - 100%) / 2 + 1.25rem
+    (var(--home-showcase-height, 46rem) - 100%) / 2 + var(--sample-panel-padding) - 2.25rem
   );
   background: var(--showcase-card-deep, #394654);
   clip-path: polygon(
@@ -833,5 +835,136 @@
   .sample-reception.is-panel-only .sample-reception-copy .sample-reception-motto {
     margin-top: 0.4rem;
     font-size: 1.42rem;
+  }
+}
+
+/* Entrada de Collaborators (la dispara la portada, ver locations-collaboration-reveal.css): el
+   interior asoma entre las dos hojas de dentro de la puerta según se separan desde el centro
+   (--fold-near) y el techo y el suelo crecen con la raya exterior (--fold-far). */
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+  :host-context(.locations-layout-collaboration.is-armed) .sample-reception.is-panel-only {
+    --fold-clip: calc(
+      var(--fold-seam-end, calc(var(--collaboration-frame-half-width) - 3.6rem)) * var(--fold-near)
+    );
+  }
+
+  :host-context(.locations-layout-collaboration.is-armed) .sample-reception.is-panel-only::before,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout::before,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > h2,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-marks,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-copy {
+    clip-path: inset(0 calc(50% - var(--fold-clip)) 0 calc(50% - var(--fold-clip)));
+  }
+
+  /* Techo y suelo crecen como un trapecio entero: la esquina exterior viaja con la raya exterior (de
+     la boca al marco) y a la vez el borde de la boca baja (en el suelo, sube) hasta su sitio. El lado
+     inclinado mantiene su ángulo y va tapando por arriba y por abajo las rayas y las hojas. */
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-ceiling,
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-surface {
+    --fold-wing: calc(var(--sample-portal-spread) * (1 - var(--fold-far)));
+    --fold-depth: calc(100% * var(--fold-far));
+  }
+
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-ceiling {
+    clip-path: polygon(
+      var(--fold-wing) 0,
+      calc(100% - var(--fold-wing)) 0,
+      calc(100% - var(--sample-portal-spread)) var(--fold-depth),
+      var(--sample-portal-spread) var(--fold-depth)
+    );
+  }
+
+  :host-context(.locations-layout-collaboration.is-armed)
+    .sample-reception.is-panel-only
+    .sample-reception-layout
+    > .sample-reception-portal-surface {
+    clip-path: polygon(
+      var(--sample-portal-spread) calc(100% - var(--fold-depth)),
+      calc(100% - var(--sample-portal-spread)) calc(100% - var(--fold-depth)),
+      calc(100% - var(--fold-wing)) 100%,
+      var(--fold-wing) 100%
+    );
+  }
+
+  /* Cuando la puerta acaba de abrirse, las minimilks vibran una tras otra, de la del centro hacia
+     fuera. Terminan antes de que la portada quite las clases (COLLABORATION_REVEAL_MS). */
+  :host-context(.locations-layout-collaboration.is-revealed) .sample-reception-mark {
+    animation: sample-mark-shiver 520ms 1650ms;
+  }
+
+  :host-context(.locations-layout-collaboration.is-revealed) .sample-reception-mark-side {
+    animation-delay: 1720ms;
+  }
+
+  :host-context(.locations-layout-collaboration.is-revealed) .sample-reception-mark-outer {
+    animation-delay: 1790ms;
+  }
+}
+
+/* Al pasar el ratón, la minimilk vibra un instante. Solo gira, sin desplazarse, para que su caja no
+   se escape del puntero y la vibración no vuelva a empezar en el borde. */
+@media (prefers-reduced-motion: no-preference) {
+  .sample-reception-mark:hover {
+    animation: sample-mark-shiver 520ms;
+  }
+}
+
+/* Vibración: giros cortos a un lado y a otro que se van apagando. */
+@keyframes sample-mark-shiver {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+
+  10% {
+    rotate: -5deg;
+  }
+
+  20% {
+    rotate: 4.5deg;
+  }
+
+  30% {
+    rotate: -4deg;
+  }
+
+  40% {
+    rotate: 3deg;
+  }
+
+  50% {
+    rotate: -2.25deg;
+  }
+
+  60% {
+    rotate: 1.5deg;
+  }
+
+  70% {
+    rotate: -1deg;
+  }
+
+  80% {
+    rotate: 0.5deg;
   }
 }

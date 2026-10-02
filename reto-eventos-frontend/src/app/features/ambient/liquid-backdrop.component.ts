@@ -20,6 +20,9 @@ void main() {
 // La textura se lava casi hasta el color del lienzo y el cursor la arrastra como un líquido espeso,
 // con el mismo gesto que el vídeo del hero. Donde se remueve, la leche se espesa un momento: la
 // textura gana presencia y vuelve a aclararse al asentarse.
+// Desde uDepthStart, a la vez y en tres cuartos de pantalla, los márgenes (fuera de la columna de
+// uDepthColumn, con borde neto) ganan textura y el centro se blanquea; el remolino del cursor sigue
+// asomando sobre ese blanco.
 const FRAGMENT = `
 precision mediump float;
 uniform sampler2D uTexture;
@@ -31,6 +34,10 @@ uniform float uStrength;
 uniform float uTime;
 uniform float uAmount;
 uniform vec3 uBase;
+uniform vec2 uView;
+uniform float uDepthStart;
+uniform vec2 uDepthColumn;
+uniform vec2 uDepth;
 varying vec2 vUv;
 
 vec2 cover(vec2 uv) {
@@ -49,8 +56,19 @@ void main() {
   float ripple = sin(length(delta) * 28.0 - uTime * 2.4) * 0.004;
   vec2 offset = (uVelocity * 0.9 + normalize(delta + 1e-4) * ripple) * falloff * uStrength;
   vec3 color = texture2D(uTexture, cover(clamp(vUv - offset, 0.0, 1.0))).rgb;
-  float thicken = falloff * clamp(uStrength / 6.0, 0.0, 1.0) * 0.16;
-  gl_FragColor = vec4(mix(uBase, color, uAmount + thicken), 1.0);
+  float thicken = falloff * clamp(uStrength / 6.0, 0.0, 1.0) * 0.35;
+
+  vec2 px = vec2(vUv.x, 1.0 - vUv.y) * uView;
+  float t = smoothstep(uDepthStart, uDepthStart + uView.y * 0.75, px.y);
+  // Las columnas se quedan un poco por fuera de la sección, para que el texto no toque su borde, y
+  // solo aparecen si les queda ancho: en móvil serían dos filos sueltos junto al borde.
+  float gutter = clamp(uView.x * 0.02, 20.0, 40.0);
+  float column = uDepthColumn.y + gutter;
+  float side = step(column, abs(px.x - uDepthColumn.x)) * step(40.0, uDepthColumn.x - column);
+  float white = t * (1.0 - side) * uDepth.y;
+  vec3 base = mix(uBase, vec3(1.0), white);
+  float amount = uAmount * (1.0 - white) + t * side * uDepth.x;
+  gl_FragColor = vec4(mix(base, color, amount + thicken), 1.0);
 }`;
 
 /**
@@ -84,6 +102,13 @@ export class LiquidBackdropComponent {
   @Input() src = 'alienmilk-showcase-texture.webp';
   /** Cuánta textura se ve sobre el blanco (0–1). */
   @Input() amount = 0.07;
+  /**
+   * Bloque desde el que cambia el fondo: al empezar su primera sección, los márgenes ganan textura
+   * en dos columnas de borde neto, a los lados de esa sección, y el centro se queda en blanco.
+   */
+  @Input() deepen?: HTMLElement;
+  /** Textura que ganan las columnas de los márgenes. */
+  @Input() depth = 0.45;
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
@@ -125,6 +150,10 @@ export class LiquidBackdropComponent {
       time: uniform('uTime'),
       amount: uniform('uAmount'),
       base: uniform('uBase'),
+      view: uniform('uView'),
+      depthStart: uniform('uDepthStart'),
+      depthColumn: uniform('uDepthColumn'),
+      depth: uniform('uDepth'),
     };
 
     const image = new Image();
@@ -146,6 +175,17 @@ export class LiquidBackdropComponent {
       gl.uniform1f(uniforms.amount, this.amount);
       // #fbf6f5, el lienzo de la página.
       gl.uniform3f(uniforms.base, 0.984, 0.965, 0.961);
+      gl.uniform2f(uniforms.view, canvas.clientWidth, canvas.clientHeight);
+      // Medidas en px CSS respecto a la ventana, como el lienzo fijo: se toman en cada dibujo
+      // porque la sección se mueve con el scroll.
+      const first = this.deepen?.firstElementChild?.getBoundingClientRect();
+      if (first) {
+        gl.uniform1f(uniforms.depthStart, first.top);
+        gl.uniform2f(uniforms.depthColumn, (first.left + first.right) / 2, first.width / 2);
+        gl.uniform2f(uniforms.depth, this.depth, 1);
+      } else {
+        gl.uniform2f(uniforms.depth, 0, 0);
+      }
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 
@@ -171,6 +211,18 @@ export class LiquidBackdropComponent {
       if (ready && !running) {
         running = true;
         frame = window.requestAnimationFrame(render);
+      }
+    };
+
+    // El espesor depende de dónde quede el bloque: al hacer scroll o cambiar su tamaño se
+    // redibuja una vez, salvo que el líquido ya se esté moviendo y lo haga en cada fotograma.
+    let pending = 0;
+    const redraw = () => {
+      if (ready && !running && !pending) {
+        pending = window.requestAnimationFrame((time) => {
+          pending = 0;
+          draw(time);
+        });
       }
     };
 
@@ -214,11 +266,20 @@ export class LiquidBackdropComponent {
     if (interactive) {
       window.addEventListener('pointermove', onMove, { passive: true });
     }
+    let blockResize: ResizeObserver | undefined;
+    if (this.deepen) {
+      window.addEventListener('scroll', redraw, { passive: true });
+      blockResize = new ResizeObserver(redraw);
+      blockResize.observe(this.deepen);
+    }
 
     this.destroyRef.onDestroy(() => {
       window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(pending);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('scroll', redraw);
+      blockResize?.disconnect();
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     });
   }

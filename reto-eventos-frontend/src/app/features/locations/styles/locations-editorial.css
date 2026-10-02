@@ -1,0 +1,59 @@
+/* Localizaciones: la cabecera y el planetario van en un bloque blanco con trazo negro y las
+   esquinas de los marcos de Próximas sesiones, al ancho de la sección (entre él y las columnas del
+   fondo queda aire). El bloque es la capa de fondo de la sección (.locations-background): para que
+   abarque las dos piezas, el contenedor del planetario y la ficha se deshace y los tres entran en
+   la rejilla de la sección. Hoja aparte de locations-atlas.component.css para no pasar el límite de
+   tamaño por hoja. */
+@media (min-width: 1001px) {
+  :host(:not(.locations-collaboration-section)) {
+    --locations-sheet-pad: clamp(1.75rem, 3vw, 3.25rem);
+    /* El mismo aire arriba y entre la cabecera y el planetario (arriba, además, deja el texto
+       fuera de la curva de la esquina); al pie, algo menos. */
+    --locations-sheet-air: clamp(4rem, 7.5vw, 7.5rem);
+    --locations-sheet-foot: clamp(3rem, 5vw, 5rem);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-atlas {
+    grid-template-rows: auto auto auto;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-layout {
+    display: contents;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-background {
+    display: block;
+    grid-row: 1 / 3;
+    grid-column: 1;
+    border: 2px solid var(--gallery-ink, #211e24);
+    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
+    background: #fff;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-editorial {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-copy {
+    --locations-copy-gutter: 0px;
+    padding: var(--locations-sheet-air) var(--locations-sheet-pad);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-chart-viewport {
+    position: relative;
+    z-index: 1;
+    grid-row: 2;
+    grid-column: 1;
+    padding: 0 var(--locations-sheet-pad) var(--locations-sheet-foot);
+  }
+
+  /* La ficha, fuera del bloque: el hueco que antes ponía su contenedor. */
+  :host(:not(.locations-collaboration-section)) .locations-brief {
+    position: relative;
+    z-index: 1;
+    grid-row: 3;
+    grid-column: 1;
+    margin-top: clamp(5rem, 8vw, 9.5rem);
+  }
+}

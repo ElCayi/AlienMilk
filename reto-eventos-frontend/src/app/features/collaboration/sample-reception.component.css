@@ -408,31 +408,6 @@
   letter-spacing: 0.06em;
 }
 
-.sample-reception-inline-lockup {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.12em;
-  color: #ff7f7f;
-  font-size: inherit;
-  font-weight: inherit;
-  white-space: nowrap;
-}
-
-.sample-reception-inline-lockup .sample-reception-brand {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-}
-
-.sample-reception-inline-lockup-label {
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.025em;
-}
-
-.sample-reception-copy .sample-reception-reward {
-  color: rgba(247, 248, 249, 0.78);
-}
-
 .sample-reception-placeholder {
   position: relative;
   min-height: 0;
@@ -488,10 +463,6 @@
   font-weight: 700;
 }
 
-.sample-reception-copy .sample-reception-continuation {
-  color: rgba(247, 248, 249, 0.78);
-}
-
 .sample-reception-copy .sample-reception-motto {
   margin-top: 0.75rem;
   color: #ff7f7f;
@@ -508,12 +479,6 @@
 .sample-reception-copy .sample-reception-motto span {
   font-weight: 500;
   font-style: italic;
-}
-
-.sample-reception-copy .sample-reception-inline-strong {
-  color: inherit;
-  font: inherit;
-  font-weight: 700;
 }
 
 .sample-reception-actions {
@@ -966,5 +931,22 @@
 
   80% {
     rotate: 0.5deg;
+  }
+}
+
+/* Los dos párrafos van encima de la puerta (en la portada): dentro quedan el título, las minimilks y
+   el lema, más grandes. */
+@media (min-width: 1001px) {
+  .sample-reception.is-panel-only h2 {
+    font-size: 4.1rem;
+  }
+
+  .sample-reception.is-panel-only .sample-reception-marks {
+    zoom: 1.25;
+  }
+
+  .sample-reception.is-panel-only .sample-reception-copy .sample-reception-motto {
+    margin-top: 0;
+    font-size: 1.6rem;
   }
 }

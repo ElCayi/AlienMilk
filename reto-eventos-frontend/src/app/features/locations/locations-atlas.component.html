@@ -35,6 +35,27 @@
     </div>
   </header>
 
+  <!-- Collaborators: los dos párrafos, en dos columnas al ancho de la puerta, entre la cabecera y ella. -->
+  <div class="locations-collaboration-intro" *ngIf="collaborationMode">
+    <div class="locations-collaboration-columns">
+      <p>
+        <span class="locations-collaboration-nowrap"
+          >Con
+          <span class="locations-collaboration-lockup"
+            ><span class="locations-collaborators-brand">AlienMilk</span
+            ><span class="locations-collaborators-label">Collaborators</span></span
+          >,</span
+        >
+        cada muestra amplía el archivo, alimenta futuras sesiones y
+        <strong>le acerca a una comunidad unida</strong> por la curiosidad y el descubrimiento.
+      </p>
+      <p>
+        Y no termina ahí. Los colaboradores pueden acceder a viajes, estancias y experiencias únicas
+        <strong>completamente gratis</strong> dentro del ecosistema AlienMilk.
+      </p>
+    </div>
+  </div>
+
   <div class="locations-layout" *ngIf="!collaborationMode">
     <aside class="locations-brief" aria-label="Información para asistentes">
       <span class="locations-brief-code" appFitLine>AM / INFORMACIÓN AL ASISTENTE</span>

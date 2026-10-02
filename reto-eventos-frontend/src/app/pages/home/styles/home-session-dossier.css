@@ -345,6 +345,80 @@
   }
 }
 
+/* Desde 1500 px las fotos son las protagonistas: crecen y se salen de sus marcos por arriba y por
+   abajo, y los marcos se aplastan en vertical y arrancan por detrás de la foto. Hace falta sitio
+   para que la foto supere al marco; en pantallas más estrechas o más bajas se queda la composición
+   de arriba, con el marco abrazando la foto. */
+@media (min-width: 1500px) and (min-height: 680px) {
+  .sessions-block {
+    /* Lo que la foto destacada sobresale de su marco por arriba y por abajo. */
+    --featured-photo-overflow: clamp(1rem, 2vw, 3rem);
+    --featured-photo-size: calc(
+      var(--home-showcase-height) - 2 * var(--sessions-showcase-inset) - 2.5rem +
+        2 * var(--featured-photo-overflow)
+    );
+    --featured-info-width: clamp(15rem, 16.5vw, 21rem);
+    --featured-gap: clamp(0.85rem, 1vw, 1.4rem);
+  }
+
+  /* La foto sobresale de la composición: se le reserva ese hueco arriba y abajo. */
+  .sessions-carousel {
+    padding-block: var(--featured-photo-overflow);
+  }
+
+  /* Sobresaliente en positivo: el marco y la columna de la derecha quedan dentro del alto de la
+     foto. */
+  .session-featured {
+    --featured-frame-overhang: var(--featured-photo-overflow);
+    grid-template-columns: minmax(0, 1fr) var(--featured-info-width);
+    gap: var(--featured-gap);
+  }
+
+  /* El marco arranca en el centro de la foto, por detrás de ella. */
+  .session-featured::before {
+    left: calc(
+      100% - var(--featured-info-width) - var(--featured-gap) -
+        min(100% - var(--featured-info-width) - var(--featured-gap), var(--featured-photo-size)) / 2
+    );
+  }
+
+  .session-featured .session-image-link {
+    width: min(100%, var(--featured-photo-size));
+  }
+
+  .session-featured-info {
+    padding-inline: clamp(0.6rem, 0.9vw, 1.1rem);
+  }
+
+  /* Tarjetas pequeñas: la foto crece por encima de su columna y la ficha se compacta. */
+  .session-secondary-image {
+    --secondary-photo-grow: clamp(0.75rem, 1.05vw, 1.5rem);
+    width: calc(100% + 2 * var(--secondary-photo-grow));
+    margin: calc(-1 * var(--secondary-photo-grow));
+  }
+
+  .session-secondary > div {
+    gap: 0.35rem;
+    padding: clamp(0.55rem, 0.7vw, 0.9rem);
+  }
+
+  .session-secondary > div h3 {
+    padding-block: clamp(0.35rem, 0.45vw, 0.6rem);
+  }
+
+  .session-secondary > div footer {
+    padding-block: clamp(0.3rem, 0.4vw, 0.55rem);
+  }
+
+  .session-secondary-list {
+    gap: clamp(1rem, 1.6vw, 2rem);
+  }
+
+  .session-secondary-cta > div {
+    padding-block: clamp(0.5rem, 0.75vw, 1.1rem);
+  }
+}
+
 /* Al cambiar la destacada los marcos laten como un muelle: se encogen, rebotan una pizca por
    encima y se asientan, en cascada de la destacada a la última sesión pequeña. */
 @keyframes session-frame-bounce {

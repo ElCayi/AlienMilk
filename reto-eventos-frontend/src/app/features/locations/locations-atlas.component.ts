@@ -22,7 +22,12 @@ const COLLABORATION_REVEAL_MS = 1850;
   standalone: true,
   imports: [CommonModule, FitLineDirective, SampleReceptionComponent],
   templateUrl: './locations-atlas.component.html',
-  styleUrls: ['./locations-atlas.component.css', './styles/locations-collaboration-reveal.css'],
+  styleUrls: [
+    './locations-atlas.component.css',
+    './styles/locations-editorial.css',
+    './styles/locations-collaboration.css',
+    './styles/locations-collaboration-reveal.css',
+  ],
   host: { '[class.locations-collaboration-section]': 'collaborationMode' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

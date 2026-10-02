@@ -1,4 +1,4 @@
-    <app-liquid-backdrop />
+    <app-liquid-backdrop [deepen]="editorialSections" />
 
     <section class="hero" id="inicio">
       <!-- [muted] fija la propiedad: el atributo solo no basta en vídeos creados desde JS y Chrome
@@ -113,7 +113,7 @@
       </figure>
     </section>
 
-    <div class="home-editorial-sections">
+    <div class="home-editorial-sections" #editorialSections>
       <app-sessions-program
         [sessions]="sessions()"
         [loading]="loadingSessions()"

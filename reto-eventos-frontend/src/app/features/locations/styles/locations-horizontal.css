@@ -1183,24 +1183,10 @@
   }
 }
 
-/* Cabecera de Collaborators centrada sobre la puerta, que es simétrica. El eyebrow se queda a la
-   izquierda, como en el resto de secciones, y el texto sigue justificado. */
+/* Con Nunito delante, la tinta del título de Collaborators empieza más arriba que en los títulos en
+   Barlow: se baja lo justo para que el hueco bajo el eyebrow mida lo mismo que en Próximas sesiones. */
 @media (min-width: 1001px) {
-  :host(.locations-collaboration-section) .locations-editorial-main {
-    max-width: none;
-  }
-
-  :host(.locations-collaboration-section) .locations-copy {
-    width: 100%;
-    max-width: var(--home-section-copy-width, 48rem);
-    margin-inline: auto;
-    text-align: center;
-  }
-
-  /* Con Nunito delante, la tinta del título empieza más arriba que en los títulos en Barlow: se baja
-     lo justo para que el hueco bajo el eyebrow mida lo mismo que en Próximas sesiones. */
   .locations-editorial .locations-collaborators-title {
-    justify-content: center;
     margin-top: 0.17em;
   }
 }

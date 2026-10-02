@@ -1,0 +1,62 @@
+/* Collaborators: los dos párrafos de la invitación, entre la cabecera y la puerta. Hoja aparte de
+   locations-atlas.component.css para no pasar el límite de tamaño por hoja. */
+.locations-collaboration-columns {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+  color: var(--gallery-ink, #211e24);
+  font-size: var(--home-section-copy-size, var(--home-editorial-copy-size, 1.1rem));
+  line-height: 1.6;
+}
+
+.locations-collaboration-columns p {
+  margin: 0;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* «Con», la marca y la coma que la sigue no se separan al partir la línea. */
+.locations-collaboration-nowrap {
+  white-space: nowrap;
+}
+
+.locations-collaboration-lockup {
+  color: #ff7f7f;
+}
+
+.locations-collaboration-lockup .locations-collaborators-brand {
+  font-size: 1em;
+}
+
+.locations-collaboration-lockup .locations-collaborators-label {
+  margin-left: 0.12em;
+  font-size: 0.96em;
+}
+
+/* En escritorio, dos columnas al ancho de la puerta, con letra grande. Como el enlace de debajo, el
+   contenedor mide por dentro lo que el escaparate para compartir sus medidas (locations-layout.css). */
+@media (min-width: 1001px) {
+  .locations-atlas:has(.locations-layout-collaboration) {
+    grid-template-rows: auto auto var(--home-showcase-height, 46rem) auto;
+  }
+
+  .locations-collaboration-intro {
+    container-type: inline-size;
+    padding-inline: var(--collaboration-gutter);
+  }
+
+  .locations-collaboration-columns {
+    width: calc(2 * (var(--collaboration-frame-half-width) + 5.75rem));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(2.5rem, 3.5vw, 4rem);
+    margin: 0 auto clamp(2.5rem, 4vh, 3.5rem);
+    /* Recuadro de solo trazo, con las esquinas de los marcos de Próximas sesiones. */
+    box-sizing: border-box;
+    padding: clamp(1.75rem, 2.5vw, 2.75rem) clamp(2rem, 3vw, 3.25rem);
+    border: 2px solid var(--gallery-ink, #211e24);
+    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
+    font-size: clamp(1.15rem, 1.25vw, 1.45rem);
+    line-height: 1.55;
+  }
+}

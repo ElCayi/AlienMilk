@@ -1,14 +1,16 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ContactService } from '../../core/services/contact.service';
+import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { describeDays, formatHour, siteStatus } from '../../features/contact/opening-hours';
+import { SOCIAL_LINKS } from '../../features/contact/social-links';
 
 @Component({
   selector: 'app-contact-page',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, FitLineDirective, NgTemplateOutlet, RouterLink],
   templateUrl: './contact-page.component.html',
   styleUrl: './contact-page.component.css',
 })
@@ -20,6 +22,7 @@ export class ContactPageComponent implements OnInit {
 
   readonly contacto = this.contactService.contacto;
   readonly error = this.contactService.error;
+  readonly socials = SOCIAL_LINKS;
 
   readonly areas = [
     {
@@ -28,7 +31,6 @@ export class ContactPageComponent implements OnInit {
       description: 'Una plaza, un cambio de planes o una duda sobre la experiencia que ha elegido.',
       preparation:
         'Indique la sesión, la fecha y la referencia de su reserva, si ya dispone de ella.',
-      subject: 'Sessions · Consulta sobre una reserva',
     },
     {
       number: '02',
@@ -37,7 +39,6 @@ export class ContactPageComponent implements OnInit {
         'Prepare su llegada, consulte las condiciones del recorrido o solicite acompañamiento.',
       preparation:
         'Cuéntenos qué necesita y cuándo desea visitarnos. No adjunte documentación médica.',
-      subject: 'Atención a visitantes · Preparación de la visita',
     },
     {
       number: '03',
@@ -46,7 +47,6 @@ export class ContactPageComponent implements OnInit {
         'Visitas de estudio, encuentros profesionales y propuestas para compartir una sesión.',
       preparation:
         'Incluya el número de participantes, las fechas previstas y el motivo de la visita.',
-      subject: 'Relaciones institucionales · Visita de grupo',
     },
     {
       number: '04',
@@ -55,7 +55,6 @@ export class ContactPageComponent implements OnInit {
         'Información editorial, consultas al catálogo y solicitudes de documentación o imágenes.',
       preparation:
         'Indique su medio o proyecto, el material que necesita y la fecha de publicación prevista.',
-      subject: 'Comunicación y archivo · Solicitud de información',
     },
   ];
 
@@ -73,9 +72,15 @@ export class ContactPageComponent implements OnInit {
       : '';
   });
 
+  /** «15002 A Coruña»: el código postal va delante de la ciudad, como en una dirección postal. */
+  readonly postalCity = computed(() => {
+    const contacto = this.contacto();
+    return contacto ? [contacto.codigoPostal, contacto.ciudad].filter(Boolean).join(' ') : '';
+  });
+
   readonly mapUrl = computed(() => {
     const contacto = this.contacto();
-    const query = contacto ? `${contacto.direccion}, ${contacto.ciudad}` : '';
+    const query = contacto ? [contacto.calle ?? contacto.direccion, this.postalCity()].join(', ') : '';
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
   });
 

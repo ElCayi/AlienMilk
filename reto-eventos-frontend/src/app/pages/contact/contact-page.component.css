@@ -87,7 +87,7 @@
   display: grid;
   grid-template-columns: minmax(0, 2.2fr) minmax(17rem, 0.8fr);
   gap: clamp(2rem, 6vw, 6rem);
-  align-items: end;
+  align-items: start;
 }
 
 .contact-copy {
@@ -100,7 +100,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  margin: 0;
+  margin: 0 0 clamp(1.75rem, 2.5vw, 2.5rem);
   color: var(--muted);
 }
 
@@ -112,7 +112,7 @@
 }
 
 h1 {
-  margin: clamp(2rem, 4vw, 3.5rem) 0 0;
+  margin: 2.35rem 0 0;
   font-family: var(--condensed);
   font-size: clamp(2.8rem, 4.4vw, 4.8rem);
   font-weight: 700;
@@ -389,33 +389,13 @@ h1 {
   font-size: 1rem;
   line-height: 1.7;
 }
-.text-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  min-height: 2.75rem;
-  width: fit-content;
-  max-width: 100%;
-  border-bottom: 1px solid currentColor;
-  color: inherit;
-  font:
-    800 0.85rem / 1.45 'Nunito',
-    sans-serif;
-  text-decoration: none;
-}
-.text-link svg,
 .contact-index a svg {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.5;
-}
-.contact-index a svg {
-  width: 1.5rem;
-  height: 1.5rem;
 }
 .contact a,
 .contact summary {
@@ -438,19 +418,19 @@ h1 {
   background: #f8f6f2;
 }
 .contact-directory a:hover {
-  color: #934545;
+  color: var(--coral);
 }
 .directory-intro .section-label {
   color: #58636a;
 }
 
-.directory-kicker {
+.section-kicker {
   display: flex;
   align-items: center;
   gap: 0.5em;
 }
 
-.directory-kicker .eyebrow-icon {
+.section-kicker .eyebrow-icon {
   flex: none;
 }
 
@@ -482,14 +462,10 @@ h1 {
     600 1rem / 1.5 'Nunito',
     sans-serif;
 }
-.direct-contact > p:last-child,
-.channel-note {
+.direct-contact > p:not(.section-label, .direct-status) {
   color: #58636a;
   font-size: 0.8rem;
   line-height: 1.65;
-}
-.channel-note {
-  margin-top: 1.5rem;
 }
 .directory-area {
   display: grid;
@@ -519,15 +495,12 @@ h1 {
 .directory-area p {
   margin: 0.65rem 0;
   color: #515d64;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   line-height: 1.6;
 }
 .directory-area .area-preparation {
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   color: #687176;
-}
-.directory-area .text-link {
-  margin-top: 0.3rem;
 }
 .contact-visit {
   margin-top: 1.25rem;
@@ -545,14 +518,6 @@ h1 {
 }
 .contact-visit .section-label {
   color: var(--coral);
-}
-.section-aside {
-  margin: 0;
-  max-width: 24rem;
-  color: var(--muted);
-  font:
-    400 0.85rem / 1.5 'Nunito',
-    sans-serif;
 }
 .visit-overview {
   display: grid;
@@ -600,11 +565,12 @@ h1 {
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.7;
+  margin-bottom: 0;
 }
 .visit-practical {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2.5rem;
+  gap: clamp(2.5rem, 5vw, 6rem);
 }
 .visit-practical article {
   padding-top: 1.25rem;
@@ -621,6 +587,9 @@ h1 {
   font: 400 1.8rem var(--condensed);
 }
 .visit-practical p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.7;
@@ -660,16 +629,13 @@ h1 {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.collaborators-copy > p:not(.section-label) {
+.collaborators-copy > p:not(.collaborators-brand) {
   color: #515b61;
   font-size: 0.95rem;
   line-height: 1.7;
 }
-.collaborators-copy .collaborators-note {
-  font-size: 0.85rem;
-}
 .collaborators-contact a:hover {
-  color: #934545;
+  color: var(--coral);
 }
 .contact-faq {
   display: grid;
@@ -894,5 +860,430 @@ h1 {
   .contact a,
   .contact summary {
     transition: none;
+  }
+}
+
+/* Correspondencia general: el estado de la sede, todos los datos de contacto y
+   las redes, como en el footer pero sobre el bloque claro. */
+.direct-status {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.35rem 0 0.25rem;
+  font:
+    700 0.95rem / 1.3 'Nunito',
+    sans-serif;
+}
+.direct-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #9aa3a8;
+}
+.direct-status.is-open .direct-status-dot {
+  background: #3fae6a;
+  box-shadow: 0 0 0 0.22rem rgba(63, 174, 106, 0.18);
+}
+/* Una tarjetita por dato, como en el footer, en versión clara. */
+.direct-list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.35rem 0 0.5rem;
+}
+.direct-list > div {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border: 1px solid #dfe1dd;
+  border-radius: 0.9rem;
+  background: #efefea;
+}
+.direct-list dt {
+  display: flex;
+  color: var(--coral);
+}
+.direct-list dt svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.direct-list dd {
+  min-width: 0;
+  margin: 0;
+  font:
+    600 1rem / 1.45 'Nunito',
+    sans-serif;
+}
+.direct-list dd a {
+  color: inherit;
+  text-decoration: none;
+}
+.direct-list dd a:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+.direct-socials {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.direct-social {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c9cdca;
+  border-radius: 50%;
+  color: #58636a;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.direct-social:is(:hover, :focus-visible) {
+  border-color: var(--coral);
+  color: var(--coral);
+  box-shadow: 0 0 0 0.25rem rgba(255, 127, 127, 0.14);
+}
+.direct-social svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.direct-social .is-filled {
+  fill: currentColor;
+  stroke: none;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+/* Cada dato en una sola línea: el enlace ocupa la tarjeta y appFitLine lo encoge si no cabe. */
+.direct-list dd a {
+  display: block;
+  width: auto;
+  overflow-wrap: normal;
+}
+
+/* La segunda columna arranca a la altura del título de la primera, no de su
+   antetítulo: baja lo que ocupan la etiqueta (0.66rem × 1.5) y el margen del h2. */
+@media (min-width: 700.02px) {
+  .directory-areas {
+    padding-top: calc(0.66rem * 1.5 + 1.5rem);
+  }
+}
+
+/* Botón subrayado base de la web (como «Proponer una muestra» o «Explorar»): texto en
+   mayúsculas, subrayado fino y flecha recta. Toma el color del bloque donde está. */
+.line-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: 0.35rem;
+  color: inherit;
+  font:
+    800 1.05rem / 1.2 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+}
+.line-action::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.62;
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+.line-action-label,
+.line-action-arrow {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+.line-action-arrow {
+  width: 1.35em;
+  height: 1.35em;
+  flex-shrink: 0;
+}
+.line-action-arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.contact .line-action:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+.line-action:is(:hover, :focus-visible)::after {
+  transform: scaleX(1.08);
+}
+.line-action:is(:hover, :focus-visible) .line-action-label {
+  transform: translateX(-0.18rem);
+}
+.line-action:is(:hover, :focus-visible) .line-action-arrow {
+  transform: translateX(0.3rem);
+}
+
+/* Un solo «Escribir al equipo» para todos los motivos: más grande y alineado con
+   los títulos (salta la columna del número y su hueco). */
+.team-action {
+  margin: 2.25rem 0 0 calc(2rem + 1rem);
+  font-size: 1.25rem;
+}
+@media (max-width: 1000px) {
+  .team-action {
+    margin-left: calc(1.2rem + 0.5rem);
+  }
+}
+
+/* Hueco bajo las redes: unas minimilks flotan en lo que la columna derecha deja
+   libre (una es coral, como en el acceso). Cuadradas, como todas las minimilks.
+   Si no queda hueco, no se ven; quietas si se pide reducir el movimiento. */
+.directory-intro {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.intro-drift {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 1.5rem;
+  container-type: size;
+  pointer-events: none;
+}
+.intro-drift span {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  background: #28333a;
+  opacity: var(--o);
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  animation: intro-drift var(--d) ease-in-out var(--delay) infinite alternate;
+}
+.intro-drift span:nth-child(1) { --s: 2.4rem; --o: 0.1; --d: 11s; --delay: -2s; top: 12%; left: 14%; }
+.intro-drift span:nth-child(2) { --s: 1.4rem; --o: 0.16; --d: 9s; --delay: -6s; top: 34%; left: 58%; }
+.intro-drift span:nth-child(3) { --s: 3rem; --o: 0.07; --d: 14s; --delay: -4s; top: 58%; left: 30%; }
+.intro-drift span:nth-child(4) { --s: 1.7rem; --o: 0.85; --d: 10s; --delay: -8s; top: 46%; left: 82%; background: var(--coral); }
+.intro-drift span:nth-child(5) { --s: 1.2rem; --o: 0.18; --d: 8s; --delay: -1s; top: 80%; left: 66%; }
+@keyframes intro-drift {
+  from {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  to {
+    transform: translate(0.6rem, -1.4rem) rotate(6deg);
+  }
+}
+@media (max-width: 700px) {
+  .intro-drift {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-drift span {
+    animation: none;
+  }
+}
+
+/* Dirección postal: calle y, más grande, «15002 A Coruña». */
+.visit-postal {
+  display: grid;
+  gap: 0.35rem;
+  font-style: normal;
+}
+.visit-postal span:first-child:not(.visit-city) {
+  color: var(--muted);
+  font:
+    600 1rem / 1.4 'Nunito',
+    sans-serif;
+}
+.visit-city {
+  font:
+    700 clamp(1.75rem, 2.7vw, 2.4rem) / 1.2 'Nunito',
+    sans-serif;
+}
+
+/* El horario va en su propio recuadro, como las tarjetas de la web, en vez de
+   separado por una línea. */
+.visit-hours {
+  align-self: center;
+  padding: clamp(1.5rem, 2.5vw, 2.25rem);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: rgba(247, 248, 249, 0.03);
+}
+.visit-hours > .section-label {
+  margin: 0;
+}
+@media (max-width: 700px) {
+  .visit-hours {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+  }
+}
+/* El botón del recuadro del horario, separado de la nota. */
+.visit-hours .line-action {
+  margin-top: 1.5rem;
+}
+/* Versión discreta del botón base, para acciones dentro de bloques de texto pequeño. */
+.line-action-small {
+  gap: 0.9rem;
+  font-size: 0.85rem;
+}
+
+/* Antetítulo de Collaborators: minimilk + firma de la unidad, como en el footer
+   (AlienMilk en Nunito, Collaborators más pequeño en Barlow Condensed). */
+.collaborators-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  color: #28333a;
+}
+.collaborators-brand .eyebrow-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+}
+.collaborators-brand .lockup {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22em;
+  font:
+    800 1.3rem / 1 'Nunito',
+    sans-serif;
+}
+.collaborators-brand .lockup-unit {
+  font:
+    400 0.72em 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.06em;
+}
+.collaborators-copy .line-action {
+  margin-top: 1.25rem;
+}
+/* Dos columnas: la leyenda de la imagen y el botón terminan a la misma altura. */
+@media (min-width: 700.02px) {
+  .collaborators-contact {
+    align-items: end;
+  }
+}
+
+/* Fondo de Collaborators: minimilks que flotan en los huecos, por detrás del contenido.
+   Mismo movimiento que las de la oficina de atención; una en coral. */
+.collaborators-contact {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.collaborators-drift {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.collaborators-drift span {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  background: #28333a;
+  opacity: var(--o);
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  animation: intro-drift var(--d) ease-in-out var(--delay) infinite alternate;
+}
+/* Siempre en los márgenes interiores del bloque (franjas de arriba, abajo y derecha),
+   que miden lo que su relleno: así no pisan el contenido a ningún ancho. */
+.collaborators-drift span { animation-name: collaborators-drift; }
+.collaborators-drift span:nth-child(1) { --s: 2rem; --o: 0.08; --d: 12s; --delay: -3s; top: 0.7rem; left: 5%; }
+.collaborators-drift span:nth-child(2) { --s: 1.4rem; --o: 0.14; --d: 9s; --delay: -6s; top: 24%; right: 0.9rem; }
+.collaborators-drift span:nth-child(3) { --s: 1.9rem; --o: 0.07; --d: 15s; --delay: -1s; top: 60%; right: 0.7rem; }
+.collaborators-drift span:nth-child(4) { --s: 1.6rem; --o: 0.85; --d: 10s; --delay: -7s; bottom: 0.8rem; left: 74%; background: var(--coral); }
+.collaborators-drift span:nth-child(5) { --s: 1.2rem; --o: 0.16; --d: 8s; --delay: -2s; bottom: 1rem; left: 40%; }
+.collaborators-drift span:nth-child(6) { --s: 1.7rem; --o: 0.09; --d: 11s; --delay: -5s; top: 0.8rem; left: 46%; }
+@keyframes collaborators-drift {
+  from {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  to {
+    transform: translate(0.3rem, -0.35rem) rotate(6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .collaborators-drift span {
+    animation: none;
+  }
+}
+/* Móvil: márgenes estrechos, minimilks más pequeñas y solo las de los bordes. */
+@media (max-width: 700px) {
+  .collaborators-drift span:nth-child(1),
+  .collaborators-drift span:nth-child(5) {
+    display: none;
+  }
+  .collaborators-drift span {
+    --s: 1.1rem;
+  }
+  .collaborators-drift span:nth-child(2),
+  .collaborators-drift span:nth-child(3) {
+    right: 0.35rem;
+  }
+  .collaborators-drift span:nth-child(4) {
+    bottom: 0.5rem;
+  }
+  .collaborators-drift span:nth-child(6) {
+    top: 0.5rem;
+  }
+}
+/* Sin recorte: al subir, la minimilk entra en el margen libre de encima (1,5rem,
+   más que su recorrido de 1,4rem). Si el hueco es muy bajo, no se muestran. */
+@container (max-height: 4.5rem) {
+  .intro-drift span {
+    display: none;
+  }
+}
+
+/* Collaborators en una columna: los márgenes laterales son estrechos y el texto
+   ocupa todo el ancho; solo quedan las de la franja de abajo. */
+@media (max-width: 1000px) {
+  .collaborators-drift span:nth-child(-n + 3),
+  .collaborators-drift span:nth-child(6) {
+    display: none;
+  }
+  .collaborators-drift span:nth-child(4),
+  .collaborators-drift span:nth-child(5) {
+    display: block;
+    --s: 1.1rem;
+    bottom: 0.45rem;
   }
 }

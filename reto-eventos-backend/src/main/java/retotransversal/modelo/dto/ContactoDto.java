@@ -19,6 +19,8 @@ public class ContactoDto {
 
 	private String nombreSede;
 	private String direccion;
+	private String calle;
+	private String codigoPostal;
 	private String ciudad;
 	private String email;
 	private String telefono;
@@ -35,6 +37,8 @@ public class ContactoDto {
 		return ContactoDto.builder()
 				.nombreSede(contacto.getNombreSede())
 				.direccion(contacto.getDireccion())
+				.calle(contacto.getCalle())
+				.codigoPostal(contacto.getCodigoPostal())
 				.ciudad(contacto.getCiudad())
 				.email(contacto.getEmail())
 				.telefono(contacto.getTelefono())

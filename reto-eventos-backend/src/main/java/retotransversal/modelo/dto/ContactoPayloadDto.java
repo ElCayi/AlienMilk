@@ -14,6 +14,8 @@ public class ContactoPayloadDto {
 
 	private String nombreSede;
 	private String direccion;
+	private String calle;
+	private String codigoPostal;
 	private String ciudad;
 	private String email;
 	private String telefono;

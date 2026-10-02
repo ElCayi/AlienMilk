@@ -104,6 +104,8 @@ export interface EventoPayload {
 export interface Contacto {
   nombreSede: string;
   direccion: string;
+  calle?: string | null;
+  codigoPostal?: string | null;
   ciudad: string;
   email: string;
   telefono: string | null;

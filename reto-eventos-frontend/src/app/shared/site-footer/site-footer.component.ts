@@ -15,6 +15,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { ContactService } from '../../core/services/contact.service';
 import { describeDays, formatHour, siteStatus } from '../../features/contact/opening-hours';
+import { SOCIAL_LINKS } from '../../features/contact/social-links';
 
 /**
  * Pie común de la web. No deja margen propio: cada página decide cómo termina su último bloque,
@@ -59,12 +60,7 @@ export class SiteFooterComponent {
       `mailto:${this.contacto()?.email ?? ''}?subject=${encodeURIComponent('Propuesta de muestra para evaluación')}`,
   );
 
-  /** Redes de AlienMilk. Sin `href`, el icono se muestra pero no enlaza a ningún sitio. */
-  readonly socials: { name: string; icon: 'instagram' | 'x' | 'linkedin'; href?: string }[] = [
-    { name: 'Instagram', icon: 'instagram' },
-    { name: 'X (Twitter)', icon: 'x' },
-    { name: 'LinkedIn', icon: 'linkedin' },
-  ];
+  readonly socials = SOCIAL_LINKS;
 
   readonly status = computed(() => {
     const contacto = this.contacto();

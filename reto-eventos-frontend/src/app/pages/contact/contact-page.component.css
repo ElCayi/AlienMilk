@@ -438,7 +438,7 @@ h1 {
   background: #f8f6f2;
 }
 .contact-directory a:hover {
-  color: #934545;
+  color: var(--coral);
 }
 .directory-intro .section-label {
   color: #58636a;
@@ -537,7 +537,8 @@ h1 {
 }
 .section-heading {
   display: flex;
-  align-items: start;
+  /* Label and aside differ in size: they share the baseline, not the top. */
+  align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
   padding-bottom: 1.5rem;
@@ -669,7 +670,7 @@ h1 {
   font-size: 0.85rem;
 }
 .collaborators-contact a:hover {
-  color: #934545;
+  color: var(--coral);
 }
 .contact-faq {
   display: grid;

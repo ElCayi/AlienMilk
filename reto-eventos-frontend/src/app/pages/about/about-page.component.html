@@ -72,32 +72,43 @@
     tabindex="-1"
     aria-labelledby="us-definition-title"
   >
-    <div class="us-label"><span>01 / Nuestro campo</span><span>Una definición funcional</span></div>
+    <div class="us-label">
+      <span class="us-label-mark"
+        ><span class="eyebrow-icon" aria-hidden="true"></span>01 / Nuestro campo</span
+      ><span>Una definición funcional</span>
+    </div>
     <!-- La placa negra va detrás de la imagen y de las funciones, hasta el final del bloque. -->
     <div class="us-definition-body">
       <div class="us-definition-grid">
-        <!-- El titular va al fondo de la imagen: la salpicadura pasa por delante. -->
+        <!-- El titular va al fondo, como en una portada: el busto se le superpone. -->
         <figure class="us-definition-visual">
-          <h2 id="us-definition-title">La función antes que la forma.</h2>
+          <h2 id="us-definition-title">El <em>fin</em> antes que la forma.</h2>
           <img
-            src="/alienmilk-about-hands.webp"
-            alt="Dos manos de piel azulada sostienen una leche blanca y espesa que salpica."
-            width="1320"
-            height="1125"
+            src="/alienmilk-about-android.webp"
+            alt="Busto de una figura de piel gris con piezas de equipo acopladas a la cabeza y los hombros."
+            width="626"
+            height="470"
             loading="lazy"
           />
-          <figcaption>Archivo visual / Manipulación sin recipiente</figcaption>
+          <!-- Copia exacta del titular por encima del busto: de ella solo se ve «forma.». -->
+          <p class="us-definition-front" aria-hidden="true">
+            El <em>fin</em> antes que la <span>forma.</span>
+          </p>
+          <figcaption>Archivo visual / Equipo de degustación asistida</figcaption>
         </figure>
         <div class="us-definition-copy">
-          <p>
-            En AlienMilk llamamos leche a los fluidos que un organismo produce para transferir algo
-            a otro: nutrición, señales, células o las condiciones para un nuevo desarrollo.
-          </p>
-          <p>
-            El color, la textura y el origen varían. También puede variar lo que sucede después. Por
-            eso cada muestra merece una clasificación propia y una forma adecuada de acercarla a
-            quienes desean conocerla.
-          </p>
+          <!-- En escritorio escala hasta medir lo mismo que el titular (ver appFitBox). -->
+          <div class="us-definition-copy-fit" appFitBox>
+            <p>
+              En AlienMilk llamamos leche a los fluidos que un organismo produce para transferir
+              algo a otro: nutrición, señales, células o las condiciones para un nuevo desarrollo.
+            </p>
+            <p>
+              El color, la textura y el origen varían. También puede variar lo que sucede después.
+              Por eso cada muestra merece una clasificación propia y una forma adecuada de acercarla
+              a quienes desean conocerla.
+            </p>
+          </div>
         </div>
       </div>
       <dl class="us-functions" aria-label="Funciones que estudiamos">
@@ -121,61 +132,122 @@
     </div>
   </section>
 
-  <!-- Banda oscura, la misma tinta que la barra superior. -->
+  <!-- 02 / Nuestro trabajo: una sola sección del alto de dos pantallas. A la izquierda, el texto en el
+       lienzo claro; a la derecha, el recuadro oscuro, reservado para la imagen. -->
   <section
-    class="us-practice"
+    class="us-definition us-definition--inverse us-work"
     id="trabajo"
     #trabajo
     tabindex="-1"
-    aria-labelledby="us-practice-title"
+    aria-labelledby="us-work-title"
   >
-    <figure class="us-practice-visual">
-      <img
-        src="/alienmilk-about-milk.png"
-        alt="Dos recipientes de vidrio con una muestra blanca preparada para servir."
-        loading="lazy"
-      />
-      <figcaption>Archivo visual / Forma de presentación conocida</figcaption>
-    </figure>
-    <div class="us-practice-copy">
-      <p class="us-kicker">02 / Nuestro trabajo</p>
-      <h2 id="us-practice-title">Del origen a la mesa.</h2>
-      <p class="us-practice-intro">
-        Una muestra es más que un hallazgo. Es una procedencia, un conjunto de condiciones y, cuando
-        corresponde, una experiencia que merece compartirse.
-      </p>
-      <ol class="us-steps">
-        <li>
-          <span>01</span>
-          <div>
-            <h3>Recepción</h3>
-            <p>
-              Registramos la procedencia y el organismo de origen. La persona remitente no tiene por
-              qué coincidir con este último.
-            </p>
+    <div class="us-label">
+      <span class="us-label-mark"
+        ><span class="eyebrow-icon" aria-hidden="true"></span>02 / Nuestro trabajo</span
+      ><span>Cadena de suministro</span>
+    </div>
+    <div class="us-definition-body">
+      <div class="us-definition-grid us-work-grid">
+        <div class="us-work-block">
+          <h2 id="us-work-title">Del origen a la mesa.</h2>
+          <p class="us-work-subtitle">Cada etapa bajo nuestro control.</p>
+          <p class="us-work-text">
+            <strong class="us-work-name">AlienMilk</strong> opera como una organización integrada de
+            investigación, abastecimiento y experiencias sensoriales, apoyada en una
+            <b>cadena de suministro verticalmente controlada</b>. Coordinamos directamente la
+            localización de nuevas muestras, su recogida, tránsito, recepción, acondicionamiento,
+            evaluación y conservación hasta su eventual incorporación al archivo o al programa
+            público de sesiones.
+          </p>
+        </div>
+        <!-- El recorrido de una muestra cruza la sección de lado a lado, del lienzo claro al recuadro
+             oscuro: cápsulas, como células, unidas por un filamento. -->
+        <div class="us-chain">
+          <p class="us-chain-title">Recorrido de una muestra</p>
+          <ol>
+            <li>
+              <span><b>01</b> Localización</span>
+            </li>
+            <li>
+              <span><b>02</b> Recogida</span>
+            </li>
+            <li>
+              <span><b>03</b> Tránsito</span>
+            </li>
+            <li>
+              <span><b>04</b> Recepción</span>
+            </li>
+            <li>
+              <span><b>05</b> Acondicionamiento</span>
+            </li>
+            <li>
+              <span><b>06</b> Evaluación</span>
+            </li>
+            <li>
+              <span><b>07</b> Conservación</span>
+            </li>
+            <li class="us-chain-end">
+              <span><b>08</b> Incorporación</span>
+            </li>
+          </ol>
+        </div>
+        <div class="us-work-block us-work-block--custody">
+          <h3>Bajo custodia.</h3>
+          <p class="us-work-subtitle">Cada lote, trazado de principio a fin.</p>
+          <p class="us-work-text">
+            Este modelo nos permite mantener la <b>trazabilidad de cada lote</b>, supervisar su
+            cadena de custodia y adaptar las condiciones de transporte y tratamiento a cada
+            procedencia. Por razones evidentes, no todos nuestros procesos, proveedores ni rutas
+            pueden hacerse públicos, pero la estructura general es sencilla:
+            <strong>AlienMilk</strong> procura intervenir en <b>cada etapa crítica</b> antes de que
+            una muestra llegue a la mesa.
+          </p>
+          <!-- Ficha de un lote: lo que no puede hacerse público, tachado. -->
+          <div class="us-lot">
+            <p class="us-lot-head"><span>Ficha de lote</span><span>AM-L-0427</span></p>
+            <dl>
+              <div>
+                <dt>Procedencia</dt>
+                <dd>
+                  <span class="us-redacted"
+                    ><span class="visually-hidden">Dato reservado</span></span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Ruta</dt>
+                <dd>
+                  <span class="us-redacted"
+                    ><span class="visually-hidden">Dato reservado</span></span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Proveedor</dt>
+                <dd>
+                  <span class="us-redacted"
+                    ><span class="visually-hidden">Dato reservado</span></span
+                  >
+                </dd>
+              </div>
+              <div>
+                <dt>Transporte</dt>
+                <dd>4 °C · Sin luz</dd>
+              </div>
+              <div>
+                <dt>Custodia</dt>
+                <dd>AlienMilk</dd>
+              </div>
+              <div>
+                <dt>Estado</dt>
+                <dd>En conservación</dd>
+              </div>
+            </dl>
           </div>
-        </li>
-        <li>
-          <span>02</span>
-          <div>
-            <h3>Conservación</h3>
-            <p>
-              Documentamos cada muestra y ajustamos su preparación a las propiedades que la hacen
-              singular.
-            </p>
-          </div>
-        </li>
-        <li>
-          <span>03</span>
-          <div>
-            <h3>Degustación</h3>
-            <p>
-              Las muestras seleccionadas llegan a la mesa con su contexto, su temperatura y el
-              tiempo necesario para descubrirlas.
-            </p>
-          </div>
-        </li>
-      </ol>
+        </div>
+        <!-- Hueco de la imagen: el recuadro oscuro, a todo el alto de la sección. -->
+        <div class="us-work-visual" aria-hidden="true"></div>
+      </div>
     </div>
   </section>
 

@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { SpecimenCultureComponent } from '../../features/about/specimen-culture.component';
+import { FitBoxDirective } from '../../shared/fit-box/fit-box.directive';
 
 /** Nosotros, vestida con el lenguaje visual del resto del sitio. */
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [RouterLink, SpecimenCultureComponent],
+  imports: [RouterLink, SpecimenCultureComponent, FitBoxDirective],
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.css',
 })

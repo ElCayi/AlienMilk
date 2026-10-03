@@ -7,7 +7,7 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
 ## Qué trae: página Nosotros
 
 - **Escritorio:** cada sección llena el alto útil de la pantalla (la pantalla menos la barra
-  superior) y lo de dentro se adapta; la 02 mide dos pantallas. En móvil las secciones fluyen.
+  superior) y lo de dentro se adapta; la 02 mide lo que su contenido. En móvil las secciones fluyen.
 - **Cabecera:** «Descubrir sesiones» más grande; el aire bajo la eyebrow, igualado al de Sesiones.
 - **01 / Nuestro campo:**
   - Imagen nueva, el busto con el equipo acoplado (`public/alienmilk-about-android.webp`), en lugar
@@ -20,7 +20,7 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
   - Textos de la usuaria, literales, con subtítulos en coral y frases clave en negrita.
   - «Recorrido de una muestra»: ocho cápsulas que cruzan la sección del lienzo claro al recuadro
     oscuro.
-  - Ficha de lote con procedencia, ruta y proveedor tachados.
+  - La sección va en dos partes del mismo alto, «02 / Nuestro trabajo — 1» y «— 2».
   - El recuadro oscuro queda reservado para una imagen pendiente.
 - **Unión 01/02:** esquinas pequeñas en el lado izquierdo.
 
@@ -31,7 +31,7 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
   texto de la derecha pasa a la tipografía de la 02. En escritorio la placa también pasa por detrás
   de las funciones.
 - **02:** el recorrido va en su propio recuadro oscuro, unido al de la derecha. El recuadro lleva
-  dos fotos: el cúmulo de cápsulas arriba (`alienmilk-about-cluster.webp`) y el androide de la
+  dos fotos: el androide granjero arriba (`alienmilk-about-farmer.webp`) y el androide de la
   custodia abajo (`alienmilk-about-custody.webp`). La 02 acaba con esquinas propias.
 - **Equipo (nuevo, entre la 02 y la 03):** frase centrada sobre la textura y el retrato del equipo
   (`alienmilk-about-team.webp`) en un marco blanco al ancho de los lienzos, con una minimilk coral
@@ -49,7 +49,7 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
 ## Después del merge, comprobar
 
 1. `pnpm check` (22 pruebas).
-2. `/nosotros` a 390, 1280×720, 1536×750 y 1920×1080: cada sección cabe en la pantalla, la 02 mide dos
-   pantallas y la cadena cruza del blanco al negro.
-3. Que se ven las imágenes de Nosotros en `public/` (estación, cúmulo, custodia, equipo y el busto en
+2. `/nosotros` a 390, 1280×720, 1536×750 y 1920×1080: cada sección cabe en la pantalla, la 02 mide lo
+   que su contenido y la cadena cruza del blanco al negro.
+3. Que se ven las imágenes de Nosotros en `public/` (estación, granjero, custodia, equipo y el busto en
    la invitación).

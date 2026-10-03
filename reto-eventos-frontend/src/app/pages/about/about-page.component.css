@@ -42,6 +42,7 @@
 .breadcrumb,
 .eyebrow,
 .us-label,
+.us-work-eyebrow,
 .us-kicker,
 .us-hero-bottom,
 .us-functions dt,
@@ -442,6 +443,7 @@ h2 em {
 }
 
 .us-label span:first-child,
+.us-work-eyebrow,
 .us-kicker {
   color: var(--coral);
 }
@@ -493,7 +495,8 @@ h2 em {
   border-bottom-color: transparent;
 }
 
-.us-label-mark {
+.us-label-mark,
+.us-work-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
@@ -641,6 +644,28 @@ h2 em {
 .us-station-tag-id {
   color: var(--light);
   font-size: 0.58rem;
+}
+
+/* La ficha de la foto de la 02, arriba a la derecha, sobre el organismo: a la altura de la cabeza
+   del androide, pero sin llegar a ella. */
+.us-work-visual .us-farm-tag {
+  top: clamp(4rem, 9%, 6rem);
+  right: clamp(0.5rem, 1.5vw - 0.6rem, 1.4rem);
+  bottom: auto;
+  max-width: none;
+  margin: 0;
+  padding-right: 0.7rem;
+  white-space: nowrap;
+}
+
+/* La de la custodia, arriba del todo, sobre los depósitos: la cabeza del androide queda debajo. */
+.us-work-visual .us-custody-tag {
+  top: 0.5rem;
+  /* La figura acaba antes del borde de la sección; la foto, no: la ficha se pega a ese borde. */
+  right: calc(0.75rem - var(--inset));
+  /* Estrecha, en bloque: las líneas se parten en vez de alargarse. */
+  max-width: 10rem;
+  white-space: normal;
 }
 
 .us-definition-copy {
@@ -807,7 +832,7 @@ h2 em {
 .us-definition.us-definition--inverse {
   /* Frente a la esquina inferior de la 01, la misma esquina: el paso de una sección a la otra. Abajo
      el lienzo se corta: el equipo flota sobre la textura antes de la 03. */
-  border-radius: var(--seam) 0 var(--corner) 1rem;
+  border-radius: var(--seam) 0 calc(var(--corner) * 1.6) 1rem;
   /* El recuadro oscuro sube 3 px sobre la sección de arriba: con su borde suavizado y recortado justo
      en el límite, dejaba ver medio píxel de lienzo claro como un filete. Solo se recorta a los lados. */
   overflow-y: visible;
@@ -818,7 +843,8 @@ h2 em {
   right: calc(-1 * var(--inset) - 1px);
   left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625);
   width: auto;
-  border-radius: 0 0 var(--corner) 0;
+  /* Un poco más curva que la de la foto que la tapa: así no asoma un filo oscuro por la esquina. */
+  border-radius: 0 0 calc(var(--corner) * 1.6 + 3px) 0;
 }
 
 /* Arriba, la esquina que se redondea es la del lienzo claro: detrás, el negro de la banda de la 01
@@ -861,6 +887,11 @@ h2 em {
   transform-origin: left center;
 }
 
+/* El rótulo de la segunda parte, como el de la sección, con el mismo aire hasta el titular. */
+.us-work-eyebrow {
+  margin: 0 0 calc(0.9rem + 1px + 1.15 * clamp(0.9rem, 1.146vw, 1.4rem));
+}
+
 /* Subtítulo pequeño en coral, como el de la cabecera de Sesiones, con aire bajo el titular. */
 .us-work-subtitle {
   margin: 0.95em 0 0;
@@ -901,9 +932,7 @@ h2 em {
 
 /* El recorrido de una muestra cruza la sección de lado a lado, del lienzo claro al recuadro oscuro:
    cápsulas, como células, unidas por un filamento que se estira hasta llenar el ancho. */
-.us-chain-title,
-.us-lot-head,
-.us-lot dt {
+.us-chain-title {
   font-family: 'Nunito', sans-serif;
   font-size: 0.62em;
   font-weight: 800;
@@ -992,72 +1021,6 @@ h2 em {
   color: var(--night);
 }
 
-/* La ficha de un lote, como la de la muestra de la cabecera: lo que no puede hacerse público va
-   tachado. */
-.us-lot {
-  margin-top: 1.75em;
-  padding: 0.85em 1.1em 0.95em;
-  border-left: 2px solid var(--coral);
-  background: rgba(33, 30, 36, 0.045);
-}
-
-.us-lot-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 1.2em;
-  padding-bottom: 1em;
-  border-bottom: 1px solid var(--line);
-  color: var(--ink);
-}
-
-.us-lot-head span:last-child {
-  color: var(--coral);
-}
-
-/* Tres columnas, la etiqueta sobre el valor: arriba lo reservado, abajo lo público. */
-.us-lot dl {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75em 1.25em;
-  margin: 0;
-}
-
-.us-lot dl div {
-  display: grid;
-  gap: 0.3em;
-  min-width: 0;
-}
-
-.us-lot dt {
-  color: var(--muted);
-}
-
-.us-lot dd {
-  margin: 0;
-  color: var(--ink);
-  font: 400 1em / 1.2 var(--condensed);
-  letter-spacing: 0.02em;
-}
-
-/* Barras de tinta de distinto largo, como en un documento clasificado. */
-.us-redacted {
-  display: inline-block;
-  width: 85%;
-  height: 0.85em;
-  border-radius: 1px;
-  background: var(--ink);
-  vertical-align: -0.04em;
-}
-
-.us-lot dl div:nth-child(2) .us-redacted {
-  width: 100%;
-}
-
-.us-lot dl div:nth-child(3) .us-redacted {
-  width: 60%;
-}
-
 /* La foto va en el recuadro oscuro, junto a «Bajo custodia». */
 .us-work-visual {
   position: relative;
@@ -1073,13 +1036,8 @@ h2 em {
   object-position: 46% 50%;
 }
 
-.us-work-visual--top img {
-  object-position: 50% 25%;
-}
-
 /* El equipo, entre la 02 y la 03, sobre la textura: una declaración en claro, centrada y a tamaño
-   de entradilla, y debajo el retrato en un marco transparente con trazo blanco. La foto viene
-   cortada por los lados y por abajo: el marco cae justo en esos cortes. */
+   de entradilla, y debajo el retrato en un marco con trazo blanco. */
 .us-team {
   display: flex;
   flex-direction: column;
@@ -1099,50 +1057,42 @@ h2 em {
   text-wrap: balance;
 }
 
-/* El marco ocupa el ancho de los lienzos; el retrato, centrado y a su tamaño, se apoya en el pie
-   sobre un degradado negro que sube desde el fondo. */
+/* El marco ocupa el ancho de los lienzos y la foto lo llena entera. */
 .us-team-frame {
-  display: flex;
-  justify-content: center;
+  position: relative;
   width: 100%;
   margin: 0;
   overflow: hidden;
   border: 2px solid var(--light);
   border-radius: var(--corner) 0.45rem var(--corner) 0.45rem;
+}
+
+/* El degradado negro sube desde el fondo, por encima de la foto. */
+.us-team-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
     to top,
-    rgba(5, 13, 22, 0.97),
-    rgba(5, 13, 22, 0.6) 25%,
-    rgba(5, 13, 22, 0) 65%
+    rgba(5, 13, 22, 0.7),
+    rgba(5, 13, 22, 0.25) 14%,
+    rgba(5, 13, 22, 0) 30%
   );
+  pointer-events: none;
 }
 
 .us-team-photo {
-  position: relative;
-  width: min(100%, 58rem);
+  display: block;
 }
 
-/* La foto trae su propia sombra abajo: los lados se funden para que no se vea su rectángulo. */
+/* La foto llena el marco en apaisado: se recorta arriba y abajo, con las cabezas y la taza dentro. */
 .us-team-photo img {
   display: block;
   width: 100%;
   height: auto;
-  mask: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
-}
-
-/* La minimilk de la taza: en caja cuadrada, como en toda la web, centrada en la cara de la taza
-   (al 54,9 % del ancho y el 90 % del alto de la foto). Se multiplica con el blanco de la loza para
-   que parezca impresa. */
-.us-team-mug {
-  position: absolute;
-  top: 90%;
-  left: 54.9%;
-  width: 5.5%;
-  aspect-ratio: 1;
-  background: var(--coral);
-  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
-  mix-blend-mode: multiply;
-  transform: translate(-50%, -50%) rotate(-6deg);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: 50% 62%;
 }
 
 /* Ecosistema */
@@ -1435,6 +1385,24 @@ h2 em {
     background: var(--night);
   }
 
+  /* En columna las fotos son pequeñas y las fichas taparían al androide: van debajo, en el recuadro
+     oscuro. */
+  .us-work-visual {
+    aspect-ratio: auto;
+  }
+
+  .us-work-visual img {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .us-work-visual .us-farm-tag {
+    position: static;
+    max-width: none;
+    margin: 0.9rem 1rem 1rem;
+    background: none;
+  }
+
   /* En columna, en la invitación la portada va debajo del texto, apoyada en el pie de la tarjeta. */
   .us-invitation-visual {
     order: 2;
@@ -1444,10 +1412,6 @@ h2 em {
 @media (max-width: 600px) {
   .us-label span:last-child {
     display: none;
-  }
-
-  .us-lot dl {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   /* Con tan pocas palabras por línea, justificar abre huecos: la nota va en bandera. */
@@ -1561,15 +1525,22 @@ h2 em {
     height: auto;
   }
 
-  /* 02: una sola sección del alto de dos pantallas, con el recuadro oscuro de arriba abajo. */
+  /* 02: mide lo que su contenido, con el recuadro oscuro de arriba abajo. Al menos una pantalla. */
   .us-definition.us-work {
-    height: max(calc(2 * var(--room)), 72rem);
+    height: auto;
+    min-height: max(var(--room), 36rem);
+    /* Abajo, además, el alto del rótulo de arriba: así las dos partes miden lo mismo. */
+    padding-bottom: calc(clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem);
   }
 
-  /* Tres filas: el primer bloque arriba, el recorrido de lado a lado y el segundo bloque apoyado
-     abajo. El hueco de la imagen ocupa la columna oscura a todo el alto. */
+  .us-definition.us-work .us-definition-body::before {
+    bottom: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem));
+  }
+
+  /* Tres filas: el primer bloque arriba, el recorrido de lado a lado y el segundo bloque debajo. Las
+     dos partes miden lo mismo: la más alta marca el alto de las dos. */
   .us-definition-grid.us-work-grid {
-    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-rows: 1fr auto 1fr;
     align-items: start;
     row-gap: 2.75em;
   }
@@ -1581,7 +1552,6 @@ h2 em {
 
   .us-work-block--custody {
     grid-row: 3;
-    align-self: end;
     padding-top: 0;
   }
 
@@ -1603,40 +1573,32 @@ h2 em {
     top: -2.75em;
     left: calc(-1 * clamp(2rem, 6vw, 6rem));
     width: calc(100% + clamp(2rem, 6vw, 6rem) + var(--inset) + 1px);
-    height: calc(100% + 2.75em + clamp(1.5rem, 2.5vw, 2.5rem));
+    height: calc(100% + 2.75em + clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem);
     mask: linear-gradient(to bottom, transparent, #000 28%) no-repeat;
     /* Acaba en la esquina inferior derecha de la sección. */
-    border-radius: 0 0 var(--corner) 0;
+    border-radius: 0 0 calc(var(--corner) * 1.6) 0;
   }
 
-  /* El cúmulo, arriba: ocupa el recuadro oscuro de lado a lado, desde el borde superior de la
-     sección hasta el recorrido. El brazo entra por el borde del lienzo claro y la mano, lo que más
-     importa, se apoya justo sobre el recorrido: solo se funde lo que queda por debajo de ella. Lo
-     que no cabe se pierde por arriba, que se oscurece para que el rótulo se lea. */
+  /* El androide de la granja, arriba: la foto llena el recuadro oscuro desde el borde superior de la
+     sección hasta el recorrido, a sangre por la derecha, con las esquinas de arriba redondeadas.
+     Arriba se oscurece un poco para que el rótulo se lea y abajo se funde con el negro antes del
+     recorrido. */
   .us-work-visual--top {
     grid-row: 1;
     align-self: stretch;
     margin: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem))
       calc(-1 * var(--inset) - 1px) -2.75em calc(-1 * clamp(2rem, 6vw, 6rem));
     overflow: hidden;
-    border-radius: var(--corner) 0 0 0;
-    mask: linear-gradient(to bottom, transparent, #000 5rem);
+    border-radius: var(--corner) var(--corner) 0 0;
   }
 
   .us-work-visual--top img {
-    top: auto;
-    bottom: 0;
-    /* Más ancha que el recuadro y centrada en las cápsulas (al 57 % del ancho de la foto): lo que
-       sobra se pierde por los bordes. */
-    left: -14%;
-    width: 122%;
-    height: auto;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 0;
-    /* Los tubos acaban cortados abajo: se funden con el negro antes del recorrido. */
-    /* Inclinado hacia la izquierda, girando desde arriba: los tubos se balancean hacia el texto. */
-    transform: translateY(17%) rotate(14deg);
-    transform-origin: 57% 0;
-    mask: linear-gradient(to bottom, #000 68%, transparent 82%);
+    object-position: 50% 35%;
+    mask: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), #000 6rem, #000 62%, transparent);
   }
 
   /* El recuadro del recorrido se une al de la derecha: esquinas redondeadas solo hacia el texto y,

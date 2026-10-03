@@ -24,6 +24,22 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
   - El recuadro oscuro queda reservado para una imagen pendiente.
 - **Unión 01/02:** esquinas pequeñas en el lado izquierdo.
 
+### Segunda tanda (mismo día, `065a52f` → siguiente commit)
+
+- **01:** el busto deja la placa a un paisaje (`public/alienmilk-about-station.webp`) que la llena,
+  con el titular encima y una etiqueta pequeña de la sede (Estación Meridiana, Gliese 667 Cc). El
+  texto de la derecha pasa a la tipografía de la 02. En escritorio la placa también pasa por detrás
+  de las funciones.
+- **02:** el recorrido va en su propio recuadro oscuro, unido al de la derecha. El recuadro lleva
+  dos fotos: el cúmulo de cápsulas arriba (`alienmilk-about-cluster.webp`) y el androide de la
+  custodia abajo (`alienmilk-about-custody.webp`). La 02 acaba con esquinas propias.
+- **Equipo (nuevo, entre la 02 y la 03):** frase centrada sobre la textura y el retrato del equipo
+  (`alienmilk-about-team.webp`) en un marco blanco al ancho de los lienzos, con una minimilk coral
+  en la taza. La 03 empieza como lienzo aparte.
+- **Invitación final:** la tarjeta oscura lleva a la izquierda la portada de la 01 con el busto
+  (`alienmilk-about-android.webp`).
+- Esquinas de la unión 01/02 más pronunciadas (`--seam`).
+
 ## Posibles choques
 
 - `about-page.component.*` cambia mucho, sobre todo el CSS. Si otra rama toca Nosotros, **manda la
@@ -35,3 +51,5 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
 1. `pnpm check` (22 pruebas).
 2. `/nosotros` a 390, 1280×720, 1536×750 y 1920×1080: cada sección cabe en la pantalla, la 02 mide dos
    pantallas y la cadena cruza del blanco al negro.
+3. Que se ven las imágenes de Nosotros en `public/` (estación, cúmulo, custodia, equipo y el busto en
+   la invitación).

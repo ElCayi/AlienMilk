@@ -80,33 +80,35 @@
     <!-- La placa negra va detrás de la imagen y de las funciones, hasta el final del bloque. -->
     <div class="us-definition-body">
       <div class="us-definition-grid">
-        <!-- El titular va al fondo, como en una portada: el busto se le superpone. -->
+        <!-- La foto llena la placa y el titular va encima, como en una portada. -->
         <figure class="us-definition-visual">
           <h2 id="us-definition-title">El <em>fin</em> antes que la forma.</h2>
           <img
-            src="/alienmilk-about-android.webp"
-            alt="Busto de una figura de piel gris con piezas de equipo acopladas a la cabeza y los hombros."
-            width="626"
-            height="470"
+            src="/alienmilk-about-station.webp"
+            alt="Una estación con forma de platillo y una torre alta en medio de un desierto rojo, bajo un cielo verde azulado con un planeta y varias lunas."
+            width="2000"
+            height="1368"
             loading="lazy"
           />
-          <!-- Copia exacta del titular por encima del busto: de ella solo se ve «forma.». -->
-          <p class="us-definition-front" aria-hidden="true">
-            El <em>fin</em> antes que la <span>forma.</span>
+          <!-- Etiqueta de la sede, como la ficha de la muestra de la cabecera. -->
+          <p class="us-station-tag">
+            <span class="us-station-tag-id">Sede central de AlienMilk</span>
+            <span>Estación Meridiana · Meseta de Ossar, Gliese 667 Cc</span>
           </p>
-          <figcaption>Archivo visual / Equipo de degustación asistida</figcaption>
+          <figcaption>Archivo visual / Estación de recepción de muestras</figcaption>
         </figure>
         <div class="us-definition-copy">
           <!-- En escritorio escala hasta medir lo mismo que el titular (ver appFitBox). -->
-          <div class="us-definition-copy-fit" appFitBox>
-            <p>
-              En AlienMilk llamamos leche a los fluidos que un organismo produce para transferir
-              algo a otro: nutrición, señales, células o las condiciones para un nuevo desarrollo.
+          <div class="us-definition-copy-fit" appFitBox [appFitBoxMax]="1.25">
+            <p class="us-definition-lead">
+              En <strong>AlienMilk</strong> llamamos <b>leche</b> a los fluidos que un organismo
+              produce para transferir algo a otro: nutrición, señales, células o las condiciones
+              para un nuevo desarrollo.
             </p>
             <p>
               El color, la textura y el origen varían. También puede variar lo que sucede después.
-              Por eso cada muestra merece una clasificación propia y una forma adecuada de acercarla
-              a quienes desean conocerla.
+              Por eso cada muestra merece una <b>clasificación propia</b> y una forma adecuada de
+              acercarla a quienes desean conocerla.
             </p>
           </div>
         </div>
@@ -133,7 +135,7 @@
   </section>
 
   <!-- 02 / Nuestro trabajo: una sola sección del alto de dos pantallas. A la izquierda, el texto en el
-       lienzo claro; a la derecha, el recuadro oscuro, reservado para la imagen. -->
+       lienzo claro; a la derecha, el recuadro oscuro con la foto. -->
   <section
     class="us-definition us-definition--inverse us-work"
     id="trabajo"
@@ -160,8 +162,18 @@
             público de sesiones.
           </p>
         </div>
-        <!-- El recorrido de una muestra cruza la sección de lado a lado, del lienzo claro al recuadro
-             oscuro: cápsulas, como células, unidas por un filamento. -->
+        <!-- Arriba, en el recuadro oscuro, el cúmulo de cápsulas: sale por el borde de la sección. -->
+        <figure class="us-work-visual us-work-visual--top">
+          <img
+            src="/alienmilk-about-cluster.webp"
+            alt="Un cúmulo de cápsulas verdes envueltas en filamentos, sujeto por un brazo metálico y conectado a tubos de extracción."
+            width="1254"
+            height="1254"
+            loading="lazy"
+          />
+        </figure>
+        <!-- El recorrido de una muestra cruza la sección de lado a lado, en un recuadro oscuro unido al
+             de la derecha: cápsulas, como células, unidas por un filamento. -->
         <div class="us-chain">
           <p class="us-chain-title">Recorrido de una muestra</p>
           <ol>
@@ -245,10 +257,42 @@
             </dl>
           </div>
         </div>
-        <!-- Hueco de la imagen: el recuadro oscuro, a todo el alto de la sección. -->
-        <div class="us-work-visual" aria-hidden="true"></div>
+        <!-- El recuadro oscuro, a todo el alto de la sección; la foto, junto a «Bajo custodia». -->
+        <figure class="us-work-visual">
+          <img
+            src="/alienmilk-about-custody.webp"
+            alt="Un androide con bata y guantes desechables revisa una tableta entre depósitos de acero inoxidable."
+            width="1536"
+            height="1024"
+            loading="lazy"
+          />
+        </figure>
       </div>
     </div>
+  </section>
+
+  <!-- Entre la 02 y la 03, sobre la textura: una declaración del equipo, centrada, y debajo su
+       retrato en un marco blanco. -->
+  <section class="us-team" aria-labelledby="us-team-title">
+    <h2 id="us-team-title" class="visually-hidden">Nuestro equipo</h2>
+    <p class="us-team-statement">
+      Detrás de cada sesión hay un equipo que localiza, recoge, evalúa y sirve. Trabajamos en turnos
+      que no siempre coinciden con su huso horario, pero con un compromiso que no cambia: que cada
+      muestra llegue a la mesa en las mejores condiciones.
+    </p>
+    <figure class="us-team-frame">
+      <!-- La minimilk de la taza va encima de la foto, en coral, como el logotipo impreso. -->
+      <span class="us-team-photo">
+        <img
+          src="/alienmilk-about-team.webp"
+          alt="Cinco androides con traje y una criatura verde y morada con chaqueta roja y una taza de café posan juntos, con la insignia de AlienMilk en la solapa."
+          width="1652"
+          height="1086"
+          loading="lazy"
+        />
+        <span class="us-team-mug" aria-hidden="true"></span>
+      </span>
+    </figure>
   </section>
 
   <section
@@ -292,11 +336,19 @@
     </div>
   </section>
 
-  <!-- Cierre sobre la textura, en tarjeta oscura como las CTA del resto del sitio. -->
+  <!-- Cierre sobre la textura, en tarjeta oscura como las CTA del resto del sitio. A la izquierda, la
+       portada de la 01 tal cual: el titular detrás del busto y «forma.» por delante. -->
   <section class="us-invitation" aria-labelledby="us-invitation-title">
     <div class="us-invitation-card">
-      <p class="us-kicker">La siguiente mesa</p>
-      <div>
+      <div class="us-invitation-visual" aria-hidden="true">
+        <p class="us-invitation-word">El <em>fin</em> antes que la forma.</p>
+        <img src="/alienmilk-about-android.webp" alt="" width="626" height="470" loading="lazy" />
+        <p class="us-invitation-word us-invitation-front">
+          El <em>fin</em> antes que la <span>forma.</span>
+        </p>
+      </div>
+      <div class="us-invitation-copy">
+        <p class="us-kicker">La siguiente mesa</p>
         <h2 id="us-invitation-title">Hay un sitio para usted.</h2>
         <p>Venga a probar, preguntar y descubrir algo que todavía no conocía.</p>
         <a class="us-pill" routerLink="/sesiones">Ver próximas sesiones</a>

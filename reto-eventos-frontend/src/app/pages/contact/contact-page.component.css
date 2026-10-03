@@ -335,8 +335,8 @@ h1 {
 
 /* Atención: directorio editorial y preparación de la visita. */
 .contact-index {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  justify-content: space-between;
   gap: 2rem;
   margin: 0 0 2.5rem;
   border-top: 1px solid var(--rule);
@@ -352,18 +352,13 @@ h1 {
     sans-serif;
   text-decoration: none;
 }
-.contact-index a:nth-child(2) {
-  justify-content: center;
-}
-.contact-index a:nth-child(3) {
-  justify-content: flex-end;
-}
 .contact-index a span {
   color: var(--muted);
   font-size: 0.8rem;
 }
 .contact-directory,
 .contact-visit,
+.collaborators-contact,
 .contact-faq {
   scroll-margin-top: 6rem;
 }
@@ -791,6 +786,21 @@ h1 {
   }
 }
 @media (max-width: 700px) {
+  /* En móvil el titular va pegado a su texto: 24 px más el interlineado
+     del párrafo dejaban un hueco excesivo. */
+  .contact-directory h2,
+  .contact-visit h2,
+  .collaborators-contact h2,
+  .contact-faq h2 {
+    margin-bottom: 0.25rem;
+  }
+  :is(.contact-directory, .contact-visit, .collaborators-contact, .contact-faq) h2 + p {
+    margin-top: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: justify;
+    hyphens: auto;
+  }
   .contact-header {
     grid-template-columns: 1fr;
     gap: 1.75rem;
@@ -812,16 +822,13 @@ h1 {
     justify-items: start;
   }
   .contact-index {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 0;
     margin-bottom: 1.5rem;
   }
   .contact-index a {
     min-height: 3.75rem;
     border-bottom: 1px solid var(--line);
-  }
-  .contact-index a:nth-child(n) {
-    justify-content: flex-start;
   }
   .contact-directory,
   .contact-faq,

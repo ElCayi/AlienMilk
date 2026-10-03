@@ -1230,3 +1230,17 @@ h1 {
   text-align: justify;
   hyphens: auto;
 }
+
+/* The lead is three lines at 30em, with room to spare on the last one, and
+   the sign-in line has the same air above, to the
+   button, and below, to the edge of the card. */
+.register-lead {
+  max-width: 30em;
+}
+.login-card {
+  padding-bottom: 1rem;
+}
+.login-card .signup-copy {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}

@@ -64,9 +64,13 @@
         ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
         ><span>02</span> Visitar la sede</a
       >
+      <a href="contacto#colaboradores" (click)="goToSection($event, collaborators)"
+        ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+        ><span>03</span> Collaborators</a
+      >
       <a href="contacto#preguntas" (click)="goToSection($event, questions)"
         ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
-        ><span>03</span> Antes de escribir</a
+        ><span>04</span> Antes de escribir</a
       >
     </nav>
 
@@ -189,13 +193,19 @@
       </div>
     </section>
 
-    <aside class="collaborators-contact" aria-labelledby="collaborators-contact-title">
+    <aside
+      class="collaborators-contact"
+      id="colaboradores"
+      #collaborators
+      tabindex="-1"
+      aria-labelledby="collaborators-contact-title"
+    >
       <div class="collaborators-art" aria-hidden="true">
         <div class="collaborators-cell"></div>
         <span class="cell-caption">Nuevas procedencias.<br />Nuevas posibilidades.</span>
       </div>
       <div class="collaborators-copy">
-        <p class="section-label">AlienMilk Collaborators</p>
+        <p class="section-label">03 / AlienMilk Collaborators</p>
         <h2 id="collaborators-contact-title">Hay más de una forma<br />de formar parte.</h2>
         <p>
           Si desea aportar una muestra o conocer el programa de colaboradores, este es su punto de
@@ -221,7 +231,7 @@
       aria-labelledby="faq-title"
     >
       <div class="faq-intro">
-        <p class="section-label">03 / Información útil</p>
+        <p class="section-label">04 / Información útil</p>
         <h2 id="faq-title">Antes de escribir.</h2>
         <p class="section-copy">Algunas respuestas para que pueda continuar con sus planes.</p>
         <a class="text-link" [href]="inquiryHref('Atención general · Otra consulta')"

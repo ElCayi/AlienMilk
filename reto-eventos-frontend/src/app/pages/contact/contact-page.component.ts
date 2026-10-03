@@ -110,7 +110,15 @@ export class ContactPageComponent implements OnInit {
     }
     // El router tiene desactivado el desplazamiento a fragmentos; esta navegación es local.
     event.preventDefault();
-    section.scrollIntoView({ behavior: 'instant', block: 'start' });
+
+    // Si la sección cabe bajo la barra, queda centrada en ese hueco; si es más alta, arranca
+    // con aire bajo la barra. Así no asoma media sección vecina al llegar.
+    const topbar = document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0;
+    const available = window.innerHeight - topbar;
+    const { top, height } = section.getBoundingClientRect();
+    const breathing = Math.min(48, available * 0.06);
+    const offset = height + 2 * breathing <= available ? (available - height) / 2 : breathing;
+    window.scrollTo({ top: window.scrollY + top - topbar - offset, behavior: 'instant' });
     section.focus({ preventScroll: true });
   }
 }

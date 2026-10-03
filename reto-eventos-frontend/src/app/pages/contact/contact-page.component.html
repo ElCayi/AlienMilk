@@ -75,9 +75,14 @@
         ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
         ><span>02</span> Visitar la sede</a
       >
+      <a href="contacto#collaborators" (click)="goToSection($event, collaborators)"
+        ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+        ><span>03</span>
+        <span class="index-lockup">AlienMilk<span class="lockup-unit">Collaborators</span></span></a
+      >
       <a href="contacto#preguntas" (click)="goToSection($event, questions)"
         ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
-        ><span>03</span> Antes de escribir</a
+        ><span>04</span> Antes de escribir</a
       >
     </nav>
 
@@ -281,7 +286,13 @@
       </div>
     </section>
 
-    <aside class="collaborators-contact" aria-labelledby="collaborators-contact-title">
+    <aside
+      class="collaborators-contact"
+      id="collaborators"
+      #collaborators
+      tabindex="-1"
+      aria-labelledby="collaborators-contact-title"
+    >
       <div class="collaborators-drift" aria-hidden="true">
         @for (drift of [1, 2, 3, 4, 5, 6]; track drift) {
           <span></span>
@@ -316,7 +327,10 @@
       aria-labelledby="faq-title"
     >
       <div class="faq-intro">
-        <p class="section-label">03 / Información útil</p>
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          04 / Información útil
+        </p>
         <h2 id="faq-title">Antes de escribir.</h2>
         <p class="section-copy">Algunas respuestas para que pueda continuar con sus planes.</p>
         <a class="line-action" [href]="inquiryHref('Atención general · Otra consulta')">
@@ -387,8 +401,9 @@
         <p>Datos de la sede revisados el {{ sede.actualizadoEn | date: 'dd.MM.yyyy' }}</p>
       }
       <a href="contacto#atencion" (click)="goToSection($event, directory)"
-        >Volver a los canales de atención ↑</a
-      >
+        >Volver a los canales de atención
+        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+      ></a>
     </footer>
   } @else if (error()) {
     <div class="contact-status" role="alert">

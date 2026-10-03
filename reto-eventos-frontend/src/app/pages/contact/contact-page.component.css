@@ -335,8 +335,8 @@ h1 {
 
 /* Atención: directorio editorial y preparación de la visita. */
 .contact-index {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  justify-content: space-between;
   gap: 2rem;
   margin: 0 0 2.5rem;
   border-top: 1px solid var(--rule);
@@ -352,18 +352,38 @@ h1 {
     sans-serif;
   text-decoration: none;
 }
-.contact-index a:nth-child(2) {
-  justify-content: center;
+/* Cuatro accesos en una fila caben desde 1280 px; por debajo, dos por fila, sin partir títulos. */
+@media (min-width: 700.02px) and (max-width: 1279.98px) {
+  .contact-index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 2rem;
+  }
 }
-.contact-index a:nth-child(3) {
-  justify-content: flex-end;
+.contact-index a {
+  white-space: nowrap;
 }
-.contact-index a span {
+.contact-index a > span:not(.index-lockup) {
   color: var(--muted);
   font-size: 0.8rem;
 }
+/* Firma AlienMilk Collaborators: AlienMilk en Nunito y la unidad pequeña en Barlow Condensed. */
+.index-lockup {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22em;
+  font-weight: 800;
+}
+.index-lockup .lockup-unit {
+  font:
+    400 0.78em 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.06em;
+}
 .contact-directory,
 .contact-visit,
+.collaborators-contact,
 .contact-faq {
   scroll-margin-top: 6rem;
 }
@@ -642,8 +662,19 @@ h1 {
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   gap: clamp(2rem, 5vw, 5rem);
 }
+.contact-faq .section-label {
+  color: var(--coral);
+}
+/* El subtítulo llena la columna junto a la lista: un punto más de cuerpo y de peso. */
 .contact-faq .section-copy {
+  margin: 0;
   color: var(--muted);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.faq-intro > .line-action {
+  margin-top: 2.5rem;
 }
 .faq-list details {
   border-top: 1px solid var(--rule);
@@ -659,7 +690,7 @@ h1 {
   min-height: 4.5rem;
   padding: 1.2rem 0;
   font:
-    700 0.98rem / 1.5 'Nunito',
+    700 1.28rem / 1.5 'Nunito',
     sans-serif;
   list-style: none;
   cursor: pointer;
@@ -683,7 +714,7 @@ h1 {
 .faq-answer {
   padding-bottom: 1.5rem;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 1.16rem;
   line-height: 1.75;
 }
 .faq-answer p {
@@ -697,20 +728,46 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem 2rem;
   margin-top: clamp(3rem, 5vw, 5rem);
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.6rem;
-  line-height: 1.8;
+  font-size: 0.75rem;
 }
 .contact-footnote p {
   margin: 0;
 }
+/* Mismo enlace de cierre que Login y Registro: sin subrayado y con la flecha coral de la
+   landing, aquí girada hacia arriba porque vuelve al principio de la página. */
 .contact-footnote a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   color: inherit;
-  text-underline-offset: 0.25em;
+  text-decoration: none;
+}
+.contact-footnote .arrow {
+  display: inline-block;
+  width: 1.35em;
+  height: 1.35em;
+  color: var(--coral);
+  rotate: -90deg;
+  transition: transform 180ms ease;
+}
+.contact-footnote .arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.contact-footnote a:is(:hover, :focus-visible) .arrow {
+  transform: translateX(0.3rem);
 }
 .contact-status {
   display: flex;
@@ -777,6 +834,7 @@ h1 {
     justify-items: start;
   }
   .contact-index {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 0;
     margin-bottom: 1.5rem;
@@ -784,9 +842,6 @@ h1 {
   .contact-index a {
     min-height: 3.75rem;
     border-bottom: 1px solid var(--line);
-  }
-  .contact-index a:nth-child(n) {
-    justify-content: flex-start;
   }
   .contact-directory,
   .contact-faq,
@@ -843,7 +898,7 @@ h1 {
     gap: 2rem;
   }
   .faq-list summary {
-    font-size: 0.92rem;
+    font-size: 1.12rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1285,5 +1340,124 @@ h1 {
     display: block;
     --s: 1.1rem;
     bottom: 0.45rem;
+  }
+}
+
+/* En móvil las tarjetas van a sangre (salvo Collaborators, que flota): recuperan el margen lateral del contenedor de la
+   página (app.css) y lo usan de relleno, así el texto sigue alineado con el resto. */
+@media (max-width: 700px) {
+  .contact-directory,
+  .contact-visit {
+    --gutter: clamp(1rem, 6vw, 3.75rem);
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    border-radius: 0;
+  }
+}
+
+/* Móvil: más aire entre los accesos y la primera tarjeta, y bajo el borde superior de las
+   tarjetas. El bloque del título es flex y no colapsa márgenes: el párrafo no suma el suyo. */
+@media (max-width: 700px) {
+  .contact-index {
+    margin-bottom: 3.5rem;
+  }
+  .contact-directory,
+  .contact-visit,
+  .collaborators-contact {
+    padding-top: 2.75rem;
+  }
+  .directory-intro > .section-copy {
+    margin-top: 0;
+  }
+}
+
+/* Móvil: Atención y Visitas van pegadas, sin la franja de textura entre ellas; el aire
+   pasa al final de la blanca y al principio de la negra. */
+@media (max-width: 700px) {
+  .contact-directory {
+    padding-bottom: 3.5rem;
+  }
+  .contact-visit {
+    margin-top: 0;
+    padding-block: 3.5rem;
+  }
+  .direct-contact {
+    padding-top: 2.25rem;
+  }
+}
+
+/* Todos los bloques de texto corrido de la página van justificados, como la entradilla y
+   las columnas prácticas: la última línea a la izquierda y con guiones para no abrir huecos. */
+.section-copy,
+.direct-contact > p:not(.section-label, .direct-status),
+.directory-area p,
+.hours-note,
+.collaborators-copy > p:not(.collaborators-brand),
+.faq-answer p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* Móvil: Collaborators flota con su margen lateral. Sus minimilks tienen una franja propia
+   al pie, lejos del subrayado del botón, repartidas a lo ancho y algo más visibles. */
+@media (max-width: 700px) {
+  .collaborators-contact {
+    padding-bottom: 4.25rem;
+  }
+  .collaborators-drift span:nth-child(n) {
+    display: block;
+    top: auto;
+    right: auto;
+    bottom: 1.35rem;
+  }
+  .collaborators-drift span:nth-child(-n + 3),
+  .collaborators-drift span:nth-child(6) {
+    display: none;
+  }
+  .collaborators-drift span:nth-child(1) { display: block; --s: 1.3rem; --o: 0.18; left: 1.5rem; }
+  .collaborators-drift span:nth-child(5) { --s: 1.05rem; --o: 0.24; left: 34%; bottom: 1.6rem; }
+  .collaborators-drift span:nth-child(4) { --s: 1.5rem; --o: 0.9; left: 58%; }
+  .collaborators-drift span:nth-child(3) { display: block; --s: 1.2rem; --o: 0.16; left: calc(100% - 2.7rem); bottom: 1.5rem; }
+}
+/* Móvil: un solo espacio entre secciones (3,5rem), el mismo que bajo los accesos. */
+@media (max-width: 700px) {
+  .collaborators-contact {
+    margin-block: 3.5rem;
+  }
+}
+
+/* Móvil: el enlace del pie, suelto entre letra pequeña, no parecía un botón. Toma la forma
+   del botón subrayado de la web (.line-action) y baja, separado de la firma. */
+@media (max-width: 700px) {
+  .contact-footnote {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .contact-footnote a {
+    position: relative;
+    gap: 1.25rem;
+    margin-top: 2.75rem;
+    padding-bottom: 0.35rem;
+    color: var(--ink);
+    font:
+      800 1rem / 1.2 'Barlow Condensed',
+      'Arial Narrow',
+      sans-serif;
+    letter-spacing: 0.12em;
+  }
+  .contact-footnote a::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.62;
+  }
+  .contact-footnote .arrow {
+    color: inherit;
   }
 }

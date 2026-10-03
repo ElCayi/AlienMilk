@@ -1399,26 +1399,21 @@ h1 {
   hyphens: auto;
 }
 
-/* Móvil: Collaborators flota con su margen lateral. Sus minimilks tienen una franja propia
-   al pie, lejos del subrayado del botón, repartidas a lo ancho y algo más visibles. */
+/* Móvil: Collaborators flota con su margen lateral. Las minimilks no caben: la firma
+   toma el coral en su lugar, y el pie de foto se centra en vertical con la imagen. */
 @media (max-width: 700px) {
   .collaborators-contact {
-    padding-bottom: 4.25rem;
+    padding-bottom: 2.75rem;
   }
-  .collaborators-drift span:nth-child(n) {
-    display: block;
-    top: auto;
-    right: auto;
-    bottom: 1.35rem;
-  }
-  .collaborators-drift span:nth-child(-n + 3),
-  .collaborators-drift span:nth-child(6) {
+  .collaborators-drift {
     display: none;
   }
-  .collaborators-drift span:nth-child(1) { display: block; --s: 1.3rem; --o: 0.18; left: 1.5rem; }
-  .collaborators-drift span:nth-child(5) { --s: 1.05rem; --o: 0.24; left: 34%; bottom: 1.6rem; }
-  .collaborators-drift span:nth-child(4) { --s: 1.5rem; --o: 0.9; left: 58%; }
-  .collaborators-drift span:nth-child(3) { display: block; --s: 1.2rem; --o: 0.16; left: calc(100% - 2.7rem); bottom: 1.5rem; }
+  .collaborators-art {
+    align-items: center;
+  }
+  .collaborators-brand {
+    color: var(--coral);
+  }
 }
 /* Móvil: un solo espacio entre secciones (3,5rem), el mismo que bajo los accesos. */
 @media (max-width: 700px) {
@@ -1459,5 +1454,58 @@ h1 {
   }
   .contact-footnote .arrow {
     color: inherit;
+  }
+}
+
+/* Móvil: el botón del mapa y el recuadro del horario necesitan más separación. */
+@media (max-width: 700px) {
+  .visit-hours {
+    margin-top: 1.25rem;
+  }
+}
+
+/* Móvil: «Mi consulta es otra» va al final, después de las preguntas. La columna del
+   título se deshace (display: contents) para poder reordenar el botón. */
+@media (max-width: 700px) {
+  .contact-faq {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .faq-intro {
+    display: contents;
+  }
+  .faq-list {
+    margin-top: 2rem;
+  }
+  .faq-intro > .line-action {
+    order: 1;
+  }
+}
+
+/* Móvil: los dos botones del final, centrados y seguidos; la firma con su línea cierra
+   la página. El filete pasa del pie a la firma para que el botón quede por encima. */
+@media (max-width: 700px) {
+  .faq-intro > .line-action {
+    align-self: center;
+    margin-top: 3.5rem;
+  }
+  .contact-footnote {
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .contact-footnote a {
+    order: -1;
+    margin: 0 0 3.5rem;
+  }
+  .contact-footnote p:first-of-type {
+    align-self: stretch;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .contact-footnote p {
+    align-self: stretch;
   }
 }

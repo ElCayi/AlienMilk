@@ -1,16 +1,10 @@
-/* Localizaciones: la cabecera y el planetario van en un bloque blanco con trazo negro y las
-   esquinas de los marcos de Próximas sesiones, al ancho de la sección (entre él y las columnas del
-   fondo queda aire). El bloque es la capa de fondo de la sección (.locations-background): para que
-   abarque las dos piezas, el contenedor del planetario y la ficha se deshace y los tres entran en
-   la rejilla de la sección. Hoja aparte de locations-atlas.component.css para no pasar el límite de
-   tamaño por hoja. */
+/* Localizaciones: la cabecera y el planetario ocupan el bloque blanco que el fondo abre bajo el corte
+   de Próximas sesiones, sin marco propio y al ancho de la sección. El contenedor del planetario y la
+   ficha se deshace y los tres entran en la rejilla de la sección. Hoja aparte de
+   locations-atlas.component.css para no pasar el límite de tamaño por hoja. */
 @media (min-width: 1001px) {
   :host(:not(.locations-collaboration-section)) {
-    --locations-sheet-pad: clamp(1.75rem, 3vw, 3.25rem);
-    /* El mismo aire arriba y entre la cabecera y el planetario (arriba, además, deja el texto
-       fuera de la curva de la esquina); al pie, algo menos. */
     --locations-sheet-air: clamp(4rem, 7.5vw, 7.5rem);
-    --locations-sheet-foot: clamp(3rem, 5vw, 5rem);
   }
 
   :host(:not(.locations-collaboration-section)) .locations-atlas {
@@ -21,23 +15,22 @@
     display: contents;
   }
 
-  :host(:not(.locations-collaboration-section)) .locations-background {
-    display: block;
-    grid-row: 1 / 3;
-    grid-column: 1;
-    border: 2px solid var(--gallery-ink, #211e24);
-    border-radius: 0.35rem clamp(2rem, 4vw, 3.5rem);
-    background: #fff;
-  }
-
   :host(:not(.locations-collaboration-section)) .locations-editorial {
     grid-row: 1;
     grid-column: 1;
   }
 
+  /* La cabecera va sobre la tinta que el fondo pinta desde el corte hasta su borde inferior
+     (data-backdrop-dark); el planetario, debajo, ya en blanco. */
   :host(:not(.locations-collaboration-section)) .locations-copy {
     --locations-copy-gutter: 0px;
-    padding: var(--locations-sheet-air) var(--locations-sheet-pad);
+    padding: clamp(1rem, 1.5vw, 1.75rem) 0 clamp(3.5rem, 6vw, 6rem);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-subsection-title,
+  :host(:not(.locations-collaboration-section)) .locations-intro {
+    border-color: rgba(251, 246, 245, 0.6);
+    color: #fbf6f5;
   }
 
   :host(:not(.locations-collaboration-section)) .locations-chart-viewport {
@@ -45,15 +38,32 @@
     z-index: 1;
     grid-row: 2;
     grid-column: 1;
-    padding: 0 var(--locations-sheet-pad) var(--locations-sheet-foot);
+    margin-top: var(--locations-sheet-air);
   }
 
-  /* La ficha, fuera del bloque: el hueco que antes ponía su contenedor. */
+  /* La ficha, en su propio bloque pegado al anterior: el fondo corta el blanco en medio de su
+     margen superior (data-backdrop-cut) y la pinta en tinta hasta el corte siguiente, antes de
+     Collaborators. Sin marco propio, al ancho de la sección y con el texto en claro. */
   :host(:not(.locations-collaboration-section)) .locations-brief {
+    --brief-ink: #fbf6f5;
+    --brief-line: rgba(251, 246, 245, 0.75);
+    --brief-rule: rgba(251, 246, 245, 0.25);
     position: relative;
     z-index: 1;
     grid-row: 3;
     grid-column: 1;
-    margin-top: clamp(5rem, 8vw, 9.5rem);
+    margin-top: clamp(8rem, 11vw, 12.5rem);
+    border: 0;
+    border-radius: 0;
+    padding: clamp(2rem, 3vw, 3.5rem) 0 clamp(0.5rem, 1vw, 1rem);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-body,
+  :host(:not(.locations-collaboration-section)) .locations-brief dt {
+    color: rgba(251, 246, 245, 0.82);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief > .locations-brief-disclaimer {
+    color: rgba(251, 246, 245, 0.68);
   }
 }

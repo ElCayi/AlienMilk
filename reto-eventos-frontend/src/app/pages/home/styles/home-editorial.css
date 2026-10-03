@@ -103,7 +103,7 @@
 .sessions-copy > p:not(.sessions-subtitle) {
   max-width: 140ch;
   margin: 1rem 0 0;
-  color: var(--gallery-muted);
+  color: var(--gallery-ink);
   font-family: Arial, sans-serif;
   font-size: var(--home-editorial-copy-size);
   line-height: var(--home-editorial-copy-leading);

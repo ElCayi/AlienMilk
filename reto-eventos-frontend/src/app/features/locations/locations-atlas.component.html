@@ -7,7 +7,7 @@
         <span *ngIf="!collaborationMode">Cartografía / Red operativa · 2026</span>
         <span *ngIf="collaborationMode">Programa de colaboradores · 2026</span>
       </p>
-      <div class="locations-copy">
+      <div class="locations-copy" [attr.data-backdrop-dark]="collaborationMode ? null : ''">
         <h3 id="locations-title" class="locations-subsection-title" *ngIf="!collaborationMode">Localizaciones</h3>
         <h2 class="locations-collaborators-title" *ngIf="collaborationMode">
           <span class="locations-collaborators-brand">AlienMilk</span>
@@ -57,7 +57,7 @@
   </div>
 
   <div class="locations-layout" *ngIf="!collaborationMode">
-    <aside class="locations-brief" aria-label="Información para asistentes">
+    <aside class="locations-brief" aria-label="Información para asistentes" data-backdrop-cut>
       <span class="locations-brief-code" appFitLine>AM / INFORMACIÓN AL ASISTENTE</span>
       <h3 appFitLine>Antes de su visita</h3>
       <ol class="locations-brief-steps" aria-label="Procedimiento de acceso">

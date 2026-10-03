@@ -461,3 +461,15 @@
     animation-delay: 210ms;
   }
 }
+
+/* El fondo corta la columna blanca entre Próximas sesiones y Localizaciones, y entre la ficha de
+   Localizaciones y Collaborators: más hueco para que a cada lado del corte quede aire blanco. */
+@media (min-width: 1001px) {
+  .home-editorial-sections > app-locations-atlas:not(.locations-collaboration-section) {
+    margin-top: clamp(6.5rem, 9.4vw, 11.5rem);
+  }
+
+  .home-editorial-sections > app-locations-atlas.locations-collaboration-section {
+    margin-top: clamp(1.5rem, 2.5vw, 3rem);
+  }
+}

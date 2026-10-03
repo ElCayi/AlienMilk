@@ -23,8 +23,8 @@ void main() {
 // Desde uDepthStart, a la vez y en tres cuartos de pantalla, los márgenes (fuera de la columna de
 // uDepthColumn, con borde neto) ganan textura y el centro se blanquea; el remolino del cursor sigue
 // asomando sobre ese blanco. Entre la primera sección y la segunda, la franja uDepthCut corta el
-// blanco de lado a lado, como si fueran dos bloques. El de abajo empieza en tinta hasta uDark (su
-// cabecera) y se cierra recto, salvo la esquina de la derecha, curvada hacia arriba.
+// blanco de lado a lado, como si fueran dos bloques. El de abajo es de tinta, con una ventana blanca
+// para el planetario, hasta uDepthCut3, el corte antes de Collaborators.
 const FRAGMENT = `
 precision mediump float;
 uniform sampler2D uTexture;
@@ -41,7 +41,6 @@ uniform float uDepthStart;
 uniform vec2 uDepthColumn;
 uniform vec2 uDepth;
 uniform vec2 uDepthCut;
-uniform vec2 uDepthCut2;
 uniform vec2 uDepthCut3;
 uniform vec2 uDark2;
 uniform float uDepthRound;
@@ -84,23 +83,25 @@ void main() {
   float r = (px.x < uDepthColumn.x) == lower ? uDepthRound : 16.0;
   // Borde suavizado un par de px: el lienzo va a media resolución y la curva grande se escalonaba.
   float block = 1.0 - smoothstep(r - 1.5, r + 1.5, length(max(vec2(outside + r, r - away), 0.0)));
-  // El segundo corte, bajo el planetario, con todas las esquinas pequeñas: el bloque de abajo sigue
-  // al de arriba.
-  float away2 = max(uDepthCut2.x - px.y, px.y - uDepthCut2.y);
-  float r2 = 16.0;
-  block *= 1.0 - smoothstep(r2 - 1.5, r2 + 1.5, length(max(vec2(outside + r2, r2 - away2), 0.0)));
-  // Y el tercero, entre la ficha y Collaborators, igual.
+  // El tercer corte, antes de Collaborators, en diagonal como el primero: la curva amplia abajo a
+  // la derecha del bloque de tinta y arriba a la izquierda del siguiente.
   float away3 = max(uDepthCut3.x - px.y, px.y - uDepthCut3.y);
-  block *= 1.0 - smoothstep(r2 - 1.5, r2 + 1.5, length(max(vec2(outside + r2, r2 - away3), 0.0)));
+  bool above3 = px.y < (uDepthCut3.x + uDepthCut3.y) * 0.5;
+  float r3 = (px.x > uDepthColumn.x) == above3 ? uDepthRound : 16.0;
+  block *= 1.0 - smoothstep(r3 - 1.5, r3 + 1.5, length(max(vec2(outside + r3, r3 - away3), 0.0)));
   float side = (1.0 - block) * wide;
   float white = t * (1.0 - side) * uDepth.y;
   vec3 base = mix(uBase, vec3(1.0), white);
-  float end = px.x > uDepthColumn.x ? uDepthRound : 0.0;
-  vec2 q = vec2(outside + end, px.y - uDark.x + end);
-  float edge = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - end;
-  float ink = block * float(lower) * uDark.y * (1.0 - smoothstep(-1.5, 1.5, edge));
-  // La ficha, entre el segundo corte y el tercero, también en tinta.
-  ink = max(ink, block * step(uDark2.x, px.y) * step(px.y, uDark2.y));
+  // Del segundo bloque hasta el tercer corte, tinta, salvo una ventana blanca entre la cabecera
+  // (uDark.x) y la ficha (uDark2.x): el planetario, con columnas finas de tinta (rim) a los lados y
+  // la curva amplia arriba a la derecha y abajo a la izquierda, como los marcos; las otras dos
+  // esquinas, con el redondeo pequeño.
+  float rim = clamp(uView.x * 0.012, 14.0, 26.0);
+  float mid = (uDark.x + uDark2.x) * 0.5;
+  float rw = (px.x > uDepthColumn.x) == (px.y < mid) ? uDepthRound : 16.0;
+  vec2 q = vec2(outside + rim, max(uDark.x - px.y, px.y - uDark2.x)) + rw;
+  float pane = 1.0 - smoothstep(-1.5, 1.5, length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rw);
+  float ink = block * float(lower) * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
   base = mix(base, uInk, ink);
   float amount = uAmount * (1.0 - white) + t * side * uDepth.x;
   gl_FragColor = vec4(mix(base, color, amount + thicken), 1.0);
@@ -190,7 +191,6 @@ export class LiquidBackdropComponent {
       depthColumn: uniform('uDepthColumn'),
       depth: uniform('uDepth'),
       depthCut: uniform('uDepthCut'),
-      depthCut2: uniform('uDepthCut2'),
       depthCut3: uniform('uDepthCut3'),
       dark2: uniform('uDark2'),
       depthRound: uniform('uDepthRound'),
@@ -232,21 +232,15 @@ export class LiquidBackdropComponent {
         const cut = first.bottom + gap / 2;
         const half = Math.min(Math.max(window.innerWidth * 0.024, 24), 48, gap / 3);
         gl.uniform2f(uniforms.depthCut, gap > 0 ? cut - half : -2, gap > 0 ? cut + half : -1);
-        // Otro corte igual, en medio del margen superior del elemento marcado; con las columnas,
-        // como sus estilos.
-        const marked = wideLayout.matches
-          ? this.deepen?.querySelector<HTMLElement>('[data-backdrop-cut]')
-          : null;
-        const lead = marked ? parseFloat(window.getComputedStyle(marked).marginTop) : 0;
-        const cut2 = marked ? marked.getBoundingClientRect().top - lead / 2 : 0;
-        gl.uniform2f(uniforms.depthCut2, lead > 0 ? cut2 - half : -2, lead > 0 ? cut2 + half : -1);
-        const brief = marked?.getBoundingClientRect();
-        // El tercero, a medio camino entre el final de ese elemento y la sección siguiente. Entre
-        // los dos, tinta.
-        const next = this.deepen?.children[2]?.getBoundingClientRect();
-        const cut3 = brief && next ? (brief.bottom + next.top) / 2 : 0;
-        gl.uniform2f(uniforms.depthCut3, cut3 ? cut3 - half : -2, cut3 ? cut3 + half : -1);
-        gl.uniform2f(uniforms.dark2, lead > 0 ? cut2 : 0, lead > 0 && cut3 ? cut3 : -1);
+        // El elemento marcado empieza la tinta de abajo; otro corte igual lo cierra, con algo de
+        // aire. Con las columnas, como sus estilos.
+        const brief = wideLayout.matches
+          ? this.deepen?.querySelector('[data-backdrop-cut]')?.getBoundingClientRect()
+          : undefined;
+        const air = Math.min(Math.max(window.innerWidth * 0.055, 48), 96);
+        const cut3 = brief ? brief.bottom + air + half : 0;
+        gl.uniform2f(uniforms.depthCut3, brief ? cut3 - half : -2, brief ? cut3 + half : -1);
+        gl.uniform2f(uniforms.dark2, brief?.top ?? 0, brief ? cut3 : -1);
         // La esquina grande, más abierta que la de los marcos.
         gl.uniform1f(uniforms.depthRound, Math.min(Math.max(window.innerWidth * 0.07, 64), 120));
         // La tinta llega hasta el final del elemento marcado; con las columnas, como sus estilos.

@@ -1,4 +1,4 @@
-/* Collaborators: los dos párrafos de la invitación, entre la cabecera y la puerta. Hoja aparte de
+/* Collaborators: los dos párrafos de la invitación, bajo la puerta. Hoja aparte de
    locations-atlas.component.css para no pasar el límite de tamaño por hoja. */
 .locations-collaboration-columns {
   display: grid;
@@ -38,7 +38,7 @@
    contenedor mide por dentro lo que el escaparate para compartir sus medidas (locations-layout.css). */
 @media (min-width: 1001px) {
   .locations-atlas:has(.locations-layout-collaboration) {
-    grid-template-rows: auto auto var(--home-showcase-height, 46rem) auto;
+    grid-template-rows: auto var(--home-showcase-height, 46rem) auto auto;
   }
 
   .locations-collaboration-intro {
@@ -50,7 +50,7 @@
     width: calc(2 * (var(--collaboration-frame-half-width) + 5.75rem));
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: clamp(2.5rem, 3.5vw, 4rem);
-    margin: 0 auto clamp(2.5rem, 4vh, 3.5rem);
+    margin: clamp(2.5rem, 4vh, 3.5rem) auto 0;
     /* Recuadro de solo trazo, con las esquinas de los marcos de Próximas sesiones. */
     box-sizing: border-box;
     padding: clamp(1.75rem, 2.5vw, 2.75rem) clamp(2rem, 3vw, 3.25rem);

@@ -352,10 +352,10 @@
 @media (min-width: 1500px) and (min-height: 680px) {
   .sessions-block {
     /* Lo que la foto destacada sobresale de su marco por arriba y por abajo. */
-    --featured-photo-overflow: clamp(1rem, 2vw, 3rem);
+    --featured-photo-overflow: clamp(2rem, 3.5vw, 5rem);
     --featured-photo-size: calc(
       var(--home-showcase-height) - 2 * var(--sessions-showcase-inset) - 2.5rem +
-        2 * var(--featured-photo-overflow)
+        2 * clamp(1rem, 2vw, 3rem)
     );
     --featured-info-width: clamp(15rem, 16.5vw, 21rem);
     --featured-gap: clamp(0.85rem, 1vw, 1.4rem);
@@ -398,24 +398,24 @@
   }
 
   .session-secondary > div {
-    gap: 0.35rem;
-    padding: clamp(0.55rem, 0.7vw, 0.9rem);
+    gap: 0.25rem;
+    padding: clamp(0.4rem, 0.5vw, 0.65rem);
   }
 
   .session-secondary > div h3 {
-    padding-block: clamp(0.35rem, 0.45vw, 0.6rem);
+    padding-block: clamp(0.2rem, 0.3vw, 0.4rem);
   }
 
   .session-secondary > div footer {
-    padding-block: clamp(0.3rem, 0.4vw, 0.55rem);
+    padding-block: clamp(0.2rem, 0.3vw, 0.4rem);
   }
 
   .session-secondary-list {
-    gap: clamp(1rem, 1.6vw, 2rem);
+    gap: clamp(0.75rem, 1vw, 1.25rem);
   }
 
   .session-secondary-cta > div {
-    padding-block: clamp(0.5rem, 0.75vw, 1.1rem);
+    padding-block: clamp(0.35rem, 0.5vw, 0.75rem);
   }
 }
 
@@ -470,6 +470,44 @@
   }
 
   .home-editorial-sections > app-locations-atlas.locations-collaboration-section {
-    margin-top: clamp(1.5rem, 2.5vw, 3rem);
+    margin-top: clamp(3.5rem, 5vw, 6rem);
+  }
+}
+
+/* Las fichas de las sesiones, con el fondo en tinta: el marco de la destacada y el de cada sesión
+   pequeña. El enlace a toda la programación, sin recuadro. En las pequeñas, las placas se
+   estrechan y se alinean a la derecha. */
+@media (min-width: 901px) {
+  .session-featured::before,
+  .session-secondary:not(.session-secondary-cta) > div,
+  .session-secondary:not(.session-secondary-cta) > div::before {
+    background: var(--gallery-ink, #211e24);
+  }
+
+  /* La parte del marco que va por detrás de la foto se mete 2 px bajo la ficha: tocándose en una
+     x fraccionaria, entre las dos asomaba una raya del fondo a través del halo de la foto. */
+  .session-secondary:not(.session-secondary-cta) > div::before {
+    right: calc(100% - 2px);
+  }
+
+  .session-secondary-cta > div {
+    border: 0;
+    background: none;
+  }
+
+  .session-secondary:not(.session-secondary-cta) > div > * {
+    justify-self: end;
+  }
+
+  .session-secondary:not(.session-secondary-cta) > div > :is(h3, footer) {
+    width: min(100%, clamp(11rem, 13vw, 16.5rem));
+  }
+}
+
+/* Las sesiones pequeñas ocupan el alto de la foto destacada, no el de su marco: más aire alrededor
+   del enlace a toda la programación. */
+@media (min-width: 1500px) and (min-height: 680px) {
+  .session-secondary-list {
+    margin-block: calc(-1 * var(--featured-photo-overflow));
   }
 }

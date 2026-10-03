@@ -1,12 +1,8 @@
-/* Localizaciones: la cabecera y el planetario ocupan el bloque blanco que el fondo abre bajo el corte
-   de Próximas sesiones, sin marco propio y al ancho de la sección. El contenedor del planetario y la
-   ficha se deshace y los tres entran en la rejilla de la sección. Hoja aparte de
-   locations-atlas.component.css para no pasar el límite de tamaño por hoja. */
+/* Localizaciones, sobre el bloque que el fondo abre bajo el corte de Próximas sesiones: la cabecera
+   y la ficha en tinta, el planetario en una ventana blanca entre ellas. Sin marcos propios. El
+   contenedor del planetario y la ficha se deshace y los tres entran en la rejilla de la sección.
+   Hoja aparte de locations-atlas.component.css para no pasar el límite de tamaño por hoja. */
 @media (min-width: 1001px) {
-  :host(:not(.locations-collaboration-section)) {
-    --locations-sheet-air: clamp(4rem, 7.5vw, 7.5rem);
-  }
-
   :host(:not(.locations-collaboration-section)) .locations-atlas {
     grid-template-rows: auto auto auto;
   }
@@ -24,7 +20,7 @@
      (data-backdrop-dark); el planetario, debajo, ya en blanco. */
   :host(:not(.locations-collaboration-section)) .locations-copy {
     --locations-copy-gutter: 0px;
-    padding: clamp(1rem, 1.5vw, 1.75rem) 0 clamp(3.5rem, 6vw, 6rem);
+    padding: clamp(1rem, 1.5vw, 1.75rem) clamp(1.5rem, 3vw, 3.5rem) clamp(3.5rem, 6vw, 6rem);
   }
 
   :host(:not(.locations-collaboration-section)) .locations-subsection-title,
@@ -38,12 +34,12 @@
     z-index: 1;
     grid-row: 2;
     grid-column: 1;
-    margin-top: var(--locations-sheet-air);
+    margin-top: clamp(3rem, 5.3vw, 5.5rem);
   }
 
-  /* La ficha, en su propio bloque pegado al anterior: el fondo corta el blanco en medio de su
-     margen superior (data-backdrop-cut) y la pinta en tinta hasta el corte siguiente, antes de
-     Collaborators. Sin marco propio, al ancho de la sección y con el texto en claro. */
+  /* La ficha, pegada al planetario: desde su borde superior (data-backdrop-cut) el fondo vuelve a
+     la tinta hasta el corte antes de Collaborators. Sin marco propio, al ancho de la sección y con
+     el texto en claro. */
   :host(:not(.locations-collaboration-section)) .locations-brief {
     --brief-ink: #fbf6f5;
     --brief-line: rgba(251, 246, 245, 0.75);
@@ -52,10 +48,10 @@
     z-index: 1;
     grid-row: 3;
     grid-column: 1;
-    margin-top: clamp(8rem, 11vw, 12.5rem);
+    margin-top: clamp(3rem, 5.3vw, 5.5rem);
     border: 0;
     border-radius: 0;
-    padding: clamp(2rem, 3vw, 3.5rem) 0 clamp(0.5rem, 1vw, 1rem);
+    padding: clamp(2.75rem, 4vw, 4.5rem) 0 clamp(0.5rem, 1vw, 1rem);
   }
 
   :host(:not(.locations-collaboration-section)) .locations-brief-step-body,
@@ -65,5 +61,16 @@
 
   :host(:not(.locations-collaboration-section)) .locations-brief > .locations-brief-disclaimer {
     color: rgba(251, 246, 245, 0.68);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief > .locations-brief-code {
+    margin-bottom: clamp(1.25rem, 2vw, 2.25rem);
+  }
+
+  /* El enlace recupera el coral al pasar por encima: la regla de la ficha clara lo fijaba. */
+  :host(:not(.locations-collaboration-section))
+    .locations-brief
+    > .locations-brief-cta-external:is(:hover, :focus-visible) {
+    color: #ff7f7f;
   }
 }

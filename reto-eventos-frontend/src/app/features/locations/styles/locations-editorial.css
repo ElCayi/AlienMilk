@@ -20,7 +20,11 @@
      (data-backdrop-dark); el planetario, debajo, ya en blanco. */
   :host(:not(.locations-collaboration-section)) .locations-copy {
     --locations-copy-gutter: 0px;
-    padding: clamp(1rem, 1.5vw, 1.75rem) clamp(1.5rem, 3vw, 3.5rem) clamp(3.5rem, 6vw, 6rem);
+    /* Más ancho para el texto y algo menos de hueco: el párrafo cabe en cinco líneas sin que el
+       subtítulo se parta. */
+    --subsection-gap: clamp(2rem, 3.25vw, 4rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
+    padding: clamp(0.25rem, 0.75vw, 1rem) clamp(1.5rem, 3vw, 3.5rem) clamp(3.5rem, 6vw, 6rem);
   }
 
   :host(:not(.locations-collaboration-section)) .locations-subsection-title,

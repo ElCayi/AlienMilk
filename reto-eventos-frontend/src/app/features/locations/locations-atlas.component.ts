@@ -26,6 +26,7 @@ const COLLABORATION_REVEAL_MS = 1850;
     './locations-atlas.component.css',
     './styles/locations-editorial.css',
     './styles/locations-collaboration.css',
+    './styles/locations-collaboration-how.css',
     './styles/locations-collaboration-reveal.css',
   ],
   host: { '[class.locations-collaboration-section]': 'collaborationMode' },

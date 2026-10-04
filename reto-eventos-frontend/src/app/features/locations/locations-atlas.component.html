@@ -13,7 +13,7 @@
           <span class="locations-collaborators-brand">AlienMilk</span>
           <span class="locations-collaborators-label">Collaborators</span>
         </h2>
-        <p class="locations-subtitle" *ngIf="!collaborationMode">
+        <p class="locations-subtitle" *ngIf="!collaborationMode" appFitLine>
           Cada estación responde a un entorno distinto.
         </p>
         <p class="locations-subtitle locations-collaborators-subtitle" *ngIf="collaborationMode">
@@ -34,6 +34,99 @@
       </div>
     </div>
   </header>
+
+  <!-- Collaborators: «Cómo colaborar» (texto de JT), en tinta entre la cabecera y la puerta. -->
+  <section
+    class="locations-collaboration-how"
+    *ngIf="collaborationMode"
+    aria-labelledby="collaboration-how-title"
+  >
+    <div class="locations-collaboration-how-head">
+      <h3 id="collaboration-how-title">Cómo colaborar</h3>
+      <p>
+        Participar es más sencillo de lo que parece. No necesita preparar un envío ni tener todos los
+        detalles resueltos antes de escribirnos. Empiece contándonos qué tiene, qué le gustaría
+        aportar o, simplemente, qué quiere saber.
+      </p>
+      <!-- El gancho, en un recuadro, entre la entradilla y la invitación. -->
+      <div class="locations-collaboration-columns">
+        <p>
+          Con
+          <span class="locations-collaboration-nowrap"
+            ><span class="locations-collaboration-lockup"
+              ><span class="locations-collaborators-brand">AlienMilk</span
+              ><span class="locations-collaborators-label">Collaborators</span></span
+            >,</span
+          >
+          cada mues&shy;tra am&shy;plía el ar&shy;chi&shy;vo, ali&shy;men&shy;ta fu&shy;tu&shy;ras
+          se&shy;sio&shy;nes y <strong>le acerca a una co&shy;mu&shy;ni&shy;dad unida</strong> por la
+          cu&shy;rio&shy;si&shy;dad y el des&shy;cu&shy;bri&shy;mien&shy;to.
+        </p>
+        <p>
+          Y no ter&shy;mi&shy;na ahí. Los co&shy;la&shy;bo&shy;ra&shy;do&shy;res pue&shy;den ac&shy;ce&shy;der a via&shy;jes,
+          es&shy;tan&shy;cias y ex&shy;pe&shy;rien&shy;cias úni&shy;cas
+          <strong>com&shy;ple&shy;ta&shy;men&shy;te gra&shy;tis</strong> den&shy;tro del eco&shy;sis&shy;te&shy;ma
+          AlienMilk.
+        </p>
+      </div>
+      <p class="locations-collaboration-how-close">
+        <a
+          class="locations-collaboration-how-start"
+          href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20colaboraci%C3%B3n"
+        >
+          Solo tiene que empezar la conversación.
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </p>
+    </div>
+    <ol class="locations-collaboration-how-steps">
+      <li>
+        <span class="locations-collaboration-how-visual is-step-01" aria-hidden="true">
+          <span class="locations-collaboration-how-number">01</span>
+        </span>
+        <strong appFitLine>Cuéntenos su propuesta</strong>
+        <p>
+          Explíquenos brevemente qué quiere compartir. Una muestra, una posibilidad o incluso una
+          duda son suficientes para empezar.
+        </p>
+      </li>
+      <li>
+        <span class="locations-collaboration-how-visual is-step-02" aria-hidden="true">
+          <span class="locations-collaboration-how-number">02</span>
+        </span>
+        <strong appFitLine>Lo revisamos con usted</strong>
+        <p>
+          El equipo de Collaborators estudia la propuesta y le ayuda a determinar si tiene sentido
+          continuar y de qué manera.
+        </p>
+      </li>
+      <li>
+        <span class="locations-collaboration-how-visual is-step-03" aria-hidden="true">
+          <span class="locations-collaboration-how-number">03</span>
+        </span>
+        <strong appFitLine>Preparamos el siguiente paso</strong>
+        <p>
+          Si es necesario recibir una muestra, le indicaremos cómo documentarla, conservarla y
+          prepararla. No envíe nada antes de recibir instrucciones.
+        </p>
+      </li>
+      <li>
+        <span class="locations-collaboration-how-visual is-step-04" aria-hidden="true">
+          <span class="locations-collaboration-how-number">04</span>
+        </span>
+        <strong appFitLine>Nosotros coordinamos el resto</strong>
+        <p>
+          Organizamos con usted la recogida o el envío y seguimos la muestra durante su incorporación
+          al circuito de AlienMilk.
+        </p>
+      </li>
+    </ol>
+    <p class="locations-collaboration-how-note">
+      Sin compromiso, sin prisas y sin necesidad de saber cómo funciona todo de antemano.
+    </p>
+  </section>
 
   <div class="locations-layout" *ngIf="!collaborationMode">
     <aside class="locations-brief" aria-label="Información para asistentes" data-backdrop-cut>
@@ -182,27 +275,6 @@
       <span class="locations-collaboration-gate-line is-right is-far"></span>
     </div>
     <app-sample-reception [panelOnly]="true" [hideActions]="true" />
-  </div>
-
-  <!-- Collaborators: los dos párrafos, en dos columnas al ancho de la puerta, bajo ella. -->
-  <div class="locations-collaboration-intro" *ngIf="collaborationMode">
-    <div class="locations-collaboration-columns">
-      <p>
-        <span class="locations-collaboration-nowrap"
-          >Con
-          <span class="locations-collaboration-lockup"
-            ><span class="locations-collaborators-brand">AlienMilk</span
-            ><span class="locations-collaborators-label">Collaborators</span></span
-          >,</span
-        >
-        cada muestra amplía el archivo, alimenta futuras sesiones y
-        <strong>le acerca a una comunidad unida</strong> por la curiosidad y el descubrimiento.
-      </p>
-      <p>
-        Y no termina ahí. Los colaboradores pueden acceder a viajes, estancias y experiencias únicas
-        <strong>completamente gratis</strong> dentro del ecosistema AlienMilk.
-      </p>
-    </div>
   </div>
 
   <div class="locations-collaboration-actions" *ngIf="collaborationMode">

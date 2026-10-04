@@ -250,11 +250,20 @@
     margin-block: calc(-1 * var(--featured-frame-overhang));
   }
 
+  /* El enlace a toda la programación, siempre en el centro de la columna: las sesiones pequeñas se
+     pegan arriba y abajo, y lo que miden (cambia al rotar la destacada) no lo mueve. */
   .session-secondary-list {
-    grid-template-rows: repeat(3, auto);
-    align-content: space-between;
-    /* Hueco mínimo: lo que sobre del alto de la destacada se reparte a partes iguales. */
+    grid-template-rows: 1fr auto 1fr;
+    /* Hueco mínimo entre filas. */
     gap: clamp(1.25rem, 2vw, 2.5rem);
+  }
+
+  .session-secondary-list > .session-secondary:first-child {
+    align-self: start;
+  }
+
+  .session-secondary-list > .session-secondary:last-child {
+    align-self: end;
   }
 
   /* El enlace asienta su texto en la última línea del texto de la cabecera. */
@@ -399,7 +408,8 @@
 
   .session-secondary > div {
     gap: 0.25rem;
-    padding: clamp(0.4rem, 0.5vw, 0.65rem);
+    /* Más aire arriba y abajo que a los lados. */
+    padding: clamp(0.9rem, 1.25vw, 1.6rem) clamp(0.4rem, 0.5vw, 0.65rem);
   }
 
   .session-secondary > div h3 {
@@ -445,16 +455,12 @@
 
 @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
   .is-swapping .session-featured::before,
-  .is-swapping .session-secondary > div {
+  .is-swapping .session-secondary:not(.session-secondary-cta) > div {
     animation: session-frame-bounce 640ms cubic-bezier(0.33, 0, 0.2, 1) both;
   }
 
   .is-swapping .session-secondary:nth-child(1) > div {
     animation-delay: 70ms;
-  }
-
-  .is-swapping .session-secondary-cta > div {
-    animation-delay: 140ms;
   }
 
   .is-swapping .session-secondary:nth-child(3) > div {
@@ -493,6 +499,9 @@
   .session-secondary-cta > div {
     border: 0;
     background: none;
+    /* Pegado al margen derecho, como las fichas. */
+    justify-content: flex-end;
+    padding-right: 0;
   }
 
   .session-secondary:not(.session-secondary-cta) > div > * {

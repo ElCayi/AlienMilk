@@ -182,7 +182,6 @@
         <!-- El recorrido de una muestra cruza la sección de lado a lado, en un recuadro oscuro unido al
              de la derecha: cápsulas, como células, unidas por un filamento. -->
         <div class="us-chain">
-          <p class="us-chain-title">Recorrido de una muestra</p>
           <ol>
             <li>
               <span><b>01</b> Localización</span>
@@ -247,14 +246,19 @@
   </section>
 
   <!-- Entre la 02 y la 03, sobre la textura: una declaración del equipo, centrada, y debajo su
-       retrato en un marco blanco. -->
+       retrato, con su ficha. -->
   <section class="us-team" aria-labelledby="us-team-title">
     <h2 id="us-team-title" class="visually-hidden">Nuestro equipo</h2>
-    <p class="us-team-statement">
-      Detrás de cada sesión hay un equipo que localiza, recoge, evalúa y sirve. Trabajamos en turnos
-      que no siempre coinciden con su huso horario, pero con un compromiso que no cambia: que cada
-      muestra llegue a la mesa en las mejores condiciones.
-    </p>
+    <!-- Nota firmada, con el mismo formato que la de la cabecera. -->
+    <figure class="us-hero-note us-team-statement">
+      <p class="us-hero-lead">
+        Creemos que el universo todavía guarda demasiadas <b>sensaciones sin descubrir</b>.
+        <strong>AlienMilk</strong> existe para <b>encontrarlas</b>, <b>preservarlas</b> y llevarlas
+        hasta la mesa. Detrás de esa búsqueda hay personas y sistemas que comparten una misma
+        curiosidad: averiguar <b>qué más queda por probar</b>.
+      </p>
+      <figcaption class="us-hero-signature">— Cayi, CEO &amp; Founder</figcaption>
+    </figure>
     <figure class="us-team-frame">
       <span class="us-team-photo">
         <img
@@ -265,6 +269,18 @@
           loading="lazy"
         />
       </span>
+      <!-- La credencial de Cayi, como la acreditación de un museo. -->
+      <figcaption class="us-team-tag us-ceo-tag">
+        <span class="us-ceo-name">El Cayi</span>
+        <span class="us-ceo-role"
+          ><span class="eyebrow-icon" aria-hidden="true"></span>CEO y fundadora</span
+        >
+        <span class="us-ceo-place">Sede central · Estación Meridiana<br />Gliese 667 Cc</span>
+      </figcaption>
+      <p class="us-station-tag us-team-tag us-agents-tag">
+        <span class="us-station-tag-id">Synthetic Executive Agents</span>
+        <span>Physical representatives of AlienMilk’s IEAs.</span>
+      </p>
     </figure>
   </section>
 

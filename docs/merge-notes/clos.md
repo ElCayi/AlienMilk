@@ -33,9 +33,9 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
 - **02:** el recorrido va en su propio recuadro oscuro, unido al de la derecha. El recuadro lleva
   dos fotos: el androide granjero arriba (`alienmilk-about-farmer.webp`) y el androide de la
   custodia abajo (`alienmilk-about-custody.webp`). La 02 acaba con esquinas propias.
-- **Equipo (nuevo, entre la 02 y la 03):** frase centrada sobre la textura y el retrato del equipo
-  (`alienmilk-about-team.webp`) en un marco blanco al ancho de los lienzos, con una minimilk coral
-  en la taza. La 03 empieza como lienzo aparte.
+- **Equipo (nuevo, entre la 02 y la 03):** nota firmada con el formato de la de la cabecera y el
+  retrato del equipo (`alienmilk-about-team.webp`) al ancho de los lienzos, con la credencial coral
+  de Cayi y la ficha de los agentes. La 03 empieza como lienzo aparte.
 - **Invitación final:** la tarjeta oscura lleva a la izquierda la portada de la 01 con el busto
   (`alienmilk-about-android.webp`).
 - Esquinas de la unión 01/02 más pronunciadas (`--seam`).

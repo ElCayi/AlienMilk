@@ -14,15 +14,21 @@ import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { SampleReceptionComponent } from '../collaboration/sample-reception.component';
 
 // Lo que dura la entrada de Collaborators, del primer trazo a la última raya apagada (la más tardía
-// empieza a 180 ms y dura 2300 ms; ver locations-collaboration-reveal.css), con un margen.
-const COLLABORATION_REVEAL_MS = 2600;
+// empieza a 120 ms y dura 1600 ms; ver locations-collaboration-reveal.css), con un margen.
+const COLLABORATION_REVEAL_MS = 1850;
 
 @Component({
   selector: 'app-locations-atlas',
   standalone: true,
   imports: [CommonModule, FitLineDirective, SampleReceptionComponent],
   templateUrl: './locations-atlas.component.html',
-  styleUrls: ['./locations-atlas.component.css', './styles/locations-collaboration-reveal.css'],
+  styleUrls: [
+    './locations-atlas.component.css',
+    './styles/locations-editorial.css',
+    './styles/locations-collaboration.css',
+    './styles/locations-collaboration-how.css',
+    './styles/locations-collaboration-reveal.css',
+  ],
   host: { '[class.locations-collaboration-section]': 'collaborationMode' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

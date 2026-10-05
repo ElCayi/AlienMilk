@@ -1183,22 +1183,11 @@
   }
 }
 
-/* Cabecera de Collaborators centrada sobre la puerta, que es simétrica. El eyebrow se queda a la
-   izquierda, como en el resto de secciones, y el texto sigue justificado. */
+/* Con Nunito delante, la tinta del título de Collaborators empieza más arriba que en los títulos en
+   Barlow: se baja lo justo para que el hueco bajo el eyebrow mida lo mismo que en Próximas sesiones. */
 @media (min-width: 1001px) {
-  :host(.locations-collaboration-section) .locations-editorial-main {
-    max-width: none;
-  }
-
-  :host(.locations-collaboration-section) .locations-copy {
-    width: 100%;
-    max-width: var(--home-section-copy-width, 48rem);
-    margin-inline: auto;
-    text-align: center;
-  }
-
   .locations-editorial .locations-collaborators-title {
-    justify-content: center;
+    margin-top: 0.17em;
   }
 }
 
@@ -1215,5 +1204,56 @@
 
   .locations-collaboration-action {
     margin-right: calc(50cqw - var(--collaboration-frame-half-width) - 5.75rem);
+  }
+}
+
+/* Prueba: la ficha del asistente sin fondo, directa sobre la textura, con el trazo del recuadro, la
+   línea de pasos y el texto en oscuro. Para comparar con la versión oscura. */
+@media (min-width: 1001px) {
+  .locations-layout .locations-brief {
+    --brief-ink: var(--gallery-ink, #211e24);
+    --brief-line: #394654;
+    --brief-rule: rgba(57, 70, 84, 0.3);
+    border: 2px solid var(--brief-line);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .locations-layout .locations-brief h3,
+  .locations-brief-step-time,
+  .locations-brief-steps strong,
+  .locations-brief dd,
+  .locations-layout .locations-brief > .locations-brief-cta-external {
+    color: var(--brief-ink);
+  }
+
+  .locations-brief-step-body,
+  .locations-brief dt {
+    color: #46535f;
+  }
+
+  .locations-layout .locations-brief > .locations-brief-disclaimer {
+    color: var(--gallery-muted, #68727d);
+  }
+
+  .locations-layout .locations-brief-step-body,
+  .locations-brief-steps li:last-child .locations-brief-step-body::after {
+    border-color: var(--brief-line);
+  }
+
+  .locations-brief-step-body::before {
+    background: var(--brief-line);
+  }
+
+  .locations-layout .locations-brief dl div {
+    border-color: var(--brief-rule);
+  }
+
+  .locations-layout .locations-brief .locations-brief-operators {
+    border-color: var(--brief-line);
+  }
+
+  .locations-operator-link:not(:hover, :focus-visible) {
+    color: var(--brief-ink);
   }
 }

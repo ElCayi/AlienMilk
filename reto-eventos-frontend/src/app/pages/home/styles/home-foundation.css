@@ -79,8 +79,7 @@
 
     .sessions-editorial,
     .sessions-carousel,
-    .sessions-explore,
-    .final-cta-section .about-layout {
+    .sessions-explore {
       position: relative;
       z-index: 1;
     }

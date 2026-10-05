@@ -516,29 +516,27 @@
 
       <!-- Cierre para visitantes: la consulta es pública, la reserva requiere identificarse. -->
       <div class="closing" *ngIf="!authService.isAuthenticated()">
-        <section class="closing-cta" aria-labelledby="closing-cta-title" [appScaleWidth]="1094">
-          <div class="closing-cta-copy">
-            <h2 id="closing-cta-title">Hay una plaza <br />esperando su nombre.</h2>
-            <p>
-              No todas las experiencias requieren cruzar el universo. Algunas empiezan simplemente
-              aceptando una invitación. Si ha llegado hasta aquí, quizá la próxima plaza sea la
-              suya.
-            </p>
-            <div class="closing-cta-actions">
-              <a class="closing-cta-primary" routerLink="/registro">Registrarse</a>
-              <a
-                class="closing-cta-secondary"
-                routerLink="/login"
-                [queryParams]="{ redirectTo: currentUrl() }"
-                >Entrar</a
-              >
-            </div>
-            <p class="closing-cta-note">
-              El universo es inmenso.<br />
-              Aun así, algunas cosas <em>siempre</em> terminan encontrándole.
-            </p>
+        <app-closing-cta image="/alienmilk-closing-astronaut.webp" labelledBy="closing-cta-title">
+          <h2 id="closing-cta-title">Hay una plaza <br />esperando su nombre.</h2>
+          <p>
+            No todas las experiencias requieren cruzar el universo. Algunas empiezan simplemente
+            aceptando una invitación. Si ha llegado hasta aquí, quizá la próxima plaza sea la
+            suya.
+          </p>
+          <div class="closing-cta-actions">
+            <a class="closing-cta-primary" routerLink="/registro">Registrarse</a>
+            <a
+              class="closing-cta-secondary"
+              routerLink="/login"
+              [queryParams]="{ redirectTo: currentUrl() }"
+              >Entrar</a
+            >
           </div>
-        </section>
+          <p class="closing-cta-note">
+            El universo es inmenso.<br />
+            Aun así, algunas cosas <em>siempre</em> terminan encontrándole.
+          </p>
+        </app-closing-cta>
       </div>
     </ng-container>
   </div>

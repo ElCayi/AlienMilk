@@ -10,6 +10,7 @@ import { LiquidVideoDirective } from '../../features/ambient/liquid-video.direct
 import { LiquidBackdropComponent } from '../../features/ambient/liquid-backdrop.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
 import { SessionsProgramComponent } from '../../features/sessions/sessions-program.component';
+import { ClosingCtaComponent } from '../../shared/closing-cta/closing-cta.component';
 
 @Component({
   selector: 'app-home-page',
@@ -21,6 +22,7 @@ import { SessionsProgramComponent } from '../../features/sessions/sessions-progr
     LiquidVideoDirective,
     SessionsProgramComponent,
     LocationsAtlasComponent,
+    ClosingCtaComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.css', './styles/home-session-dossier.css'],

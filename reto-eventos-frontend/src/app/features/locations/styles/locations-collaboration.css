@@ -1,0 +1,155 @@
+/* Collaborators: los dos párrafos de la invitación, el gancho, bajo la foto del equipo, sobre la
+   columna blanca y en tinta; en escritorio, uno en cada columna. Hoja aparte de
+   locations-atlas.component.css para no pasar el límite de tamaño por hoja. */
+.locations-collaboration-columns {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  color: var(--gallery-ink, #211e24);
+}
+
+.locations-collaboration-columns p {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.7vw, 2rem);
+  line-height: 1.65;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  /* Se parten las palabras con guion antes que abrir huecos al justificar (Chrome no parte la última
+     palabra del párrafo por su cuenta: las largas llevan guiones suaves en la plantilla). */
+  hyphenate-limit-chars: 5 2 2;
+}
+
+.locations-collaboration-columns strong {
+  color: inherit;
+}
+
+/* La marca y la coma que la sigue no se separan al partir la línea. */
+.locations-collaboration-nowrap {
+  white-space: nowrap;
+}
+
+.locations-collaboration-lockup {
+  color: #ff7f7f;
+  /* Más grande que el texto, sin abrir más su línea que las demás. */
+  line-height: 1;
+}
+
+.locations-collaboration-lockup .locations-collaborators-brand {
+  font-size: 1em;
+}
+
+.locations-collaboration-lockup .locations-collaborators-label {
+  margin-left: 0.12em;
+  font-size: 0.96em;
+}
+
+@media (min-width: 1001px) {
+  .locations-atlas:has(.locations-layout-collaboration) {
+    grid-template-rows: auto auto auto auto var(--home-showcase-height, 46rem) auto;
+  }
+
+  .locations-collaboration-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2.5rem, 5vw, 6rem);
+    /* El mismo aire que entre el párrafo de la cabecera y la foto. */
+    margin-top: clamp(2rem, 3.1vw, 3.25rem);
+  }
+
+  /* La firma, algo mayor que el texto (en móvil no: abriría huecos en la primera línea). */
+  .locations-collaboration-columns .locations-collaborators-brand {
+    font-size: 1.25em;
+  }
+
+  .locations-collaboration-columns .locations-collaborators-label {
+    font-size: 1.2em;
+  }
+}
+
+/* El equipo, bajo la cabecera: la foto con las esquinas de los bloques (la curva amplia arriba a
+   la derecha y abajo a la izquierda). */
+.locations-collaboration-team {
+  margin: 2.5rem 0 0;
+}
+
+.locations-collaboration-team img {
+  border-radius: 1rem;
+}
+
+.locations-collaboration-team img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: 50% 70%;
+}
+
+@media (min-width: 1001px) {
+  /* Casi al borde del margen de la sección: a los lados queda una columna blanca fina. */
+  .locations-collaboration-team {
+    margin: clamp(2rem, 3.1vw, 3.25rem) calc(18px - clamp(24px, 4.5vw, 80px)) 0;
+    border-radius: 1rem clamp(4rem, 7vw, 7.5rem);
+  }
+
+  /* Apaisada, para que quepa entera en la pantalla del portátil. */
+  .locations-collaboration-team img {
+    aspect-ratio: 2 / 1;
+    object-position: 50% 85%;
+    /* Un poco de zoom hacia el grupo, casi al pie: el corte de abajo no llega a los brazos. */
+    transform: scale(1.05);
+    transform-origin: 50% 85%;
+  }
+}
+
+/* La etiqueta de la foto, como la de la sede en Nosotros: filo coral a la izquierda, fondo oscuro
+   que se desvanece hacia la derecha y versalitas en Nunito. En escritorio, arriba a la izquierda
+   sobre la foto; en móvil, bajo ella. */
+.locations-collaboration-team-tag {
+  display: grid;
+  justify-self: start;
+  gap: 0.2rem;
+  max-width: 24rem;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem 0.55rem 0.65rem;
+  border-left: 2px solid #ff7f7f;
+  color: rgba(247, 248, 249, 0.78);
+  /* Sobre el blanco, el fondo no se desvanece: el texto claro dejaría de leerse. */
+  background: rgba(13, 21, 30, 0.88);
+  font: 800 0.56rem / 1.45 'Nunito', sans-serif;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.locations-collaboration-team-code {
+  color: #f7f8f9;
+  font-size: 1.2em;
+}
+
+@media (min-width: 1001px) {
+  .locations-collaboration-team {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .locations-collaboration-team img {
+    border-radius: 0;
+  }
+
+  .locations-collaboration-team-tag {
+    position: absolute;
+    top: clamp(1rem, 1.6vw, 1.75rem);
+    left: clamp(1rem, 1.6vw, 1.75rem);
+    z-index: 1;
+    max-width: clamp(20rem, 26vw, 28rem);
+    margin: 0;
+    padding-right: 1.6rem;
+    background: linear-gradient(
+      to right,
+      rgba(13, 21, 30, 0.88) 0%,
+      rgba(13, 21, 30, 0.82) 62%,
+      rgba(13, 21, 30, 0) 100%
+    );
+    font-size: clamp(0.56rem, 0.6vw, 0.72rem);
+  }
+}

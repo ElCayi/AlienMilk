@@ -7,36 +7,154 @@
         <span *ngIf="!collaborationMode">Cartografía / Red operativa · 2026</span>
         <span *ngIf="collaborationMode">Programa de colaboradores · 2026</span>
       </p>
-      <div class="locations-copy">
+      <div class="locations-copy" [attr.data-backdrop-dark]="collaborationMode ? null : ''">
         <h3 id="locations-title" class="locations-subsection-title" *ngIf="!collaborationMode">Localizaciones</h3>
         <h2 class="locations-collaborators-title" *ngIf="collaborationMode">
           <span class="locations-collaborators-brand">AlienMilk</span>
           <span class="locations-collaborators-label">Collaborators</span>
         </h2>
-        <p class="locations-subtitle" *ngIf="!collaborationMode">
+        <p class="locations-subtitle" *ngIf="!collaborationMode" appFitLine>
           Cada estación responde a un entorno distinto.
         </p>
         <p class="locations-subtitle locations-collaborators-subtitle" *ngIf="collaborationMode">
           <strong>AlienMilk</strong> está hecho por personas como usted. <em>Literalmente.</em>
         </p>
         <p class="locations-intro" *ngIf="!collaborationMode">
-          AlienMilk opera a escala interplanetaria a través de una red de estaciones y puntos de
-          colaboración. Estos espacios permiten conservar las muestras, preparar cada experiencia y
-          acoger las sesiones en distintos lugares del universo. La disponibilidad de cada sede depende
-          de sus condiciones locales y de su capacidad para cumplir el protocolo de AlienMilk.
+          <!-- Un solo hijo: el párrafo es una rejilla (centra el texto en el filete) y partiría el
+               texto en bloques en cada negrita. -->
+          <span>
+            AlienMilk opera <strong>a escala interplanetaria</strong> a través de una red de estaciones y puntos de
+            colaboración. Estos espacios permiten conservar las muestras, preparar cada experiencia y
+            acoger las sesiones en distintos lugares del universo. La disponibilidad de cada sede depende
+            de sus condiciones locales y de <strong>cumplimentación del protocolo de AlienMilk</strong>.
+          </span>
         </p>
         <p class="locations-intro" *ngIf="collaborationMode">
           AlienMilk Collaborators es la división del ecosistema AlienMilk dedicada a la captación y
-          evaluación de muestras aportadas voluntariamente. Permite a particulares proponer material
-          propio y solicitar una valoración cuando se considere que su producción presenta
-          cualidades de interés sensorial para el archivo y futuras degustaciones.
+          evaluación de muestras <strong>aportadas voluntariamente</strong>. Permite a particulares <strong>proponer material
+          propio</strong> y solicitar una valoración cuando se considere que su producción presenta
+          cualidades de interés sensorial para el archivo y futuras degustaciones. Cada propuesta se
+          estudia de forma <strong>individual y confidencial</strong>.
         </p>
       </div>
     </div>
   </header>
 
+  <!-- Collaborators: el equipo, bajo la cabecera. -->
+  <figure class="locations-collaboration-team" *ngIf="collaborationMode">
+    <img
+      src="/alienmilk-collaborators-team.webp"
+      alt="El equipo de AlienMilk Collaborators brinda con vasos de leche en un paisaje alienígena."
+      width="1800"
+      height="1048"
+      loading="lazy"
+    />
+    <figcaption class="locations-collaboration-team-tag">
+      <span class="locations-collaboration-team-code">Encuentro de campo · AlienMilk Collaborators</span>
+      <span class="locations-collaboration-team-text">
+        Participantes humanos y flügels durante una jornada de intercambio en Estación Pelagia.
+      </span>
+    </figcaption>
+  </figure>
+
+  <!-- Collaborators: el gancho, bajo la foto, en dos columnas. -->
+  <div class="locations-collaboration-columns" *ngIf="collaborationMode">
+    <p>
+      Con
+      <span class="locations-collaboration-nowrap"
+        ><span class="locations-collaboration-lockup"
+          ><span class="locations-collaborators-brand">AlienMilk</span
+          ><span class="locations-collaborators-label">Collaborators</span></span
+        >,</span
+      >
+      cada mues&shy;tra am&shy;plía el ar&shy;chi&shy;vo, ali&shy;men&shy;ta fu&shy;tu&shy;ras
+      se&shy;sio&shy;nes y <strong>le acerca a una co&shy;mu&shy;ni&shy;dad unida</strong> por la
+      cu&shy;rio&shy;si&shy;dad y el des&shy;cu&shy;bri&shy;mien&shy;to.
+    </p>
+    <p>
+      Y no ter&shy;mi&shy;na ahí. Los co&shy;la&shy;bo&shy;ra&shy;do&shy;res pue&shy;den ac&shy;ce&shy;der a via&shy;jes,
+      es&shy;tan&shy;cias y ex&shy;pe&shy;rien&shy;cias úni&shy;cas
+      <strong>com&shy;ple&shy;ta&shy;men&shy;te gra&shy;tis</strong> den&shy;tro del eco&shy;sis&shy;te&shy;ma&nbsp;AlienMilk.
+    </p>
+  </div>
+
+  <!-- Collaborators: «Cómo colaborar» (texto de JT), en tinta entre la cabecera y la puerta. -->
+  <section
+    class="locations-collaboration-how"
+    *ngIf="collaborationMode"
+    aria-labelledby="collaboration-how-title"
+  >
+    <div class="locations-collaboration-how-head">
+      <span class="locations-collaboration-how-code" appFitLine>AM / INFORMACIÓN AL COLABORADOR</span>
+      <h3 id="collaboration-how-title">Cómo colaborar</h3>
+      <div class="locations-collaboration-how-intro">
+        <p>Participar es más sencillo de lo que parece.</p>
+        <p>
+          <strong>No necesita preparar un envío ni tener todos los detalles re&shy;suel&shy;tos an&shy;tes de
+          es&shy;cri&shy;bir&shy;nos.</strong>
+        </p>
+      </div>
+      <p class="locations-collaboration-how-close">
+        <a
+          class="locations-collaboration-how-start"
+          href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20colaboraci%C3%B3n"
+        >
+          Solo tiene que empezar la conversación.
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </p>
+    </div>
+    <ol class="locations-collaboration-how-steps">
+      <li>
+        <span class="locations-collaboration-how-visual is-step-01" aria-hidden="true">
+          <span class="locations-collaboration-how-number">01</span>
+        </span>
+        <strong appFitLine>Cuéntenos su propuesta</strong>
+        <p>
+          Ex&shy;plí&shy;que&shy;nos bre&shy;ve&shy;men&shy;te qué quie&shy;re com&shy;par&shy;tir. Una mues&shy;tra, una po&shy;si&shy;bi&shy;li&shy;dad o in&shy;clu&shy;so una
+          du&shy;da son su&shy;fi&shy;cien&shy;tes pa&shy;ra em&shy;pe&shy;zar.
+        </p>
+      </li>
+      <li>
+        <span class="locations-collaboration-how-visual is-step-02" aria-hidden="true">
+          <span class="locations-collaboration-how-number">02</span>
+        </span>
+        <strong appFitLine>Lo revisamos con usted</strong>
+        <p>
+          El equi&shy;po de Co&shy;lla&shy;bo&shy;ra&shy;tors es&shy;tu&shy;dia la pro&shy;pues&shy;ta y le ayu&shy;da a de&shy;ter&shy;mi&shy;nar si tie&shy;ne sen&shy;ti&shy;do
+          con&shy;ti&shy;nuar y de qué ma&shy;ne&shy;ra.
+        </p>
+      </li>
+      <li>
+        <span class="locations-collaboration-how-visual is-step-03" aria-hidden="true">
+          <span class="locations-collaboration-how-number">03</span>
+        </span>
+        <strong appFitLine>Preparamos el siguiente paso</strong>
+        <p>
+          Si es ne&shy;ce&shy;sa&shy;rio re&shy;ci&shy;bir una mues&shy;tra, le in&shy;di&shy;ca&shy;re&shy;mos có&shy;mo do&shy;cu&shy;men&shy;tar&shy;la, con&shy;ser&shy;var&shy;la y
+          pre&shy;pa&shy;rar&shy;la. No en&shy;víe na&shy;da an&shy;tes de re&shy;ci&shy;bir ins&shy;truc&shy;cio&shy;nes.
+        </p>
+      </li>
+      <li>
+        <span class="locations-collaboration-how-visual is-step-04" aria-hidden="true">
+          <span class="locations-collaboration-how-number">04</span>
+        </span>
+        <strong appFitLine>Nosotros coordinamos el resto</strong>
+        <p>
+          Or&shy;ga&shy;ni&shy;za&shy;mos con us&shy;ted la re&shy;co&shy;gi&shy;da o el en&shy;vío y se&shy;gui&shy;mos la mues&shy;tra du&shy;ran&shy;te su in&shy;cor&shy;po&shy;ra&shy;ción
+          al cir&shy;cui&shy;to de AlienMilk.
+        </p>
+      </li>
+    </ol>
+    <p class="locations-collaboration-how-note">
+      Sin compromiso, sin prisas y sin necesidad de saber cómo funciona todo de antemano.
+    </p>
+  </section>
+
   <div class="locations-layout" *ngIf="!collaborationMode">
-    <aside class="locations-brief" aria-label="Información para asistentes">
+    <aside class="locations-brief" aria-label="Información para asistentes" data-backdrop-cut>
       <span class="locations-brief-code" appFitLine>AM / INFORMACIÓN AL ASISTENTE</span>
       <h3 appFitLine>Antes de su visita</h3>
       <ol class="locations-brief-steps" aria-label="Procedimiento de acceso">

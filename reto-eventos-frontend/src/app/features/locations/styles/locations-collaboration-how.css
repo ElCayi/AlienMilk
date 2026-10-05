@@ -1,0 +1,349 @@
+/* Collaborators: «Cómo colaborar», un bloque en tinta entre la cabecera y la puerta, como la ficha
+   de Localizaciones. Más invitación que protocolo: la última frase es el enlace para empezar, y
+   cada paso, una muestra en su círculo (como las fotos de Próximas sesiones) unida a la siguiente
+   por un filamento. Las imágenes son provisionales. Hoja aparte de locations-atlas.component.css
+   para no pasar el límite de tamaño por hoja. */
+.locations-collaboration-how {
+  --how-ink: #fbf6f5;
+  --how-line: rgba(251, 246, 245, 0.32);
+  --how-orb: 5.5rem;
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  padding: 2.25rem 1.5rem;
+  border-radius: 1rem;
+  color: rgba(251, 246, 245, 0.82);
+  background: var(--gallery-ink, #211e24);
+  font-family: Arial, sans-serif;
+}
+
+.locations-collaboration-how-head {
+  display: grid;
+  gap: 1rem;
+}
+
+/* El rótulo y el título, como los de «Antes de su visita» en Localizaciones. */
+.locations-collaboration-how-code {
+  min-width: 0;
+  color: #ff7f7f;
+  font: 800 clamp(0.8rem, 0.75vw, 0.95rem) / 1.5 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Una minimilk abre el rótulo, en su mismo coral. */
+.locations-collaboration-how-code::before {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.6em;
+  vertical-align: -0.45em;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.locations-collaboration-how h3 {
+  margin: 0;
+  color: var(--how-ink);
+  font: 400 clamp(2.4rem, 2.9vw, 3.7rem) / 0.95 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  white-space: nowrap;
+}
+
+.locations-collaboration-how-intro {
+  display: grid;
+  gap: 0.5em;
+}
+
+.locations-collaboration-how-intro strong {
+  color: var(--how-ink);
+  font-weight: 700;
+}
+
+.locations-collaboration-how-head p,
+.locations-collaboration-how-steps p,
+.locations-collaboration-how-close {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.locations-collaboration-how-head p {
+  font-size: var(--home-section-copy-size, 1.1rem);
+}
+
+.locations-collaboration-how-steps {
+  position: relative;
+  display: grid;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.locations-collaboration-how-steps li {
+  display: grid;
+  grid-template-columns: var(--how-orb) minmax(0, 1fr);
+  column-gap: 1.1rem;
+  row-gap: 0.4rem;
+  align-items: start;
+}
+
+/* La muestra: foto en círculo con halo y filo coral, como en Próximas sesiones. */
+.locations-collaboration-how-visual {
+  position: relative;
+  grid-row: 1 / 3;
+  width: var(--how-orb);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--how-image) center / cover no-repeat;
+  box-shadow: 0 0 0 clamp(0.4rem, 0.7vw, 0.75rem) rgba(251, 246, 245, 0.08);
+}
+
+.locations-collaboration-how-visual::before {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(255, 127, 127, 0.82);
+  border-radius: 50%;
+}
+
+.locations-collaboration-how-visual.is-step-01 {
+  --how-image: url('/alienmilk-about-hands.webp');
+}
+
+.locations-collaboration-how-visual.is-step-02 {
+  --how-image: url('/alienmilk-collaborators-texture.webp');
+}
+
+.locations-collaboration-how-visual.is-step-03 {
+  --how-image: url('/alienmilk-about-milk.png');
+}
+
+.locations-collaboration-how-visual.is-step-04 {
+  --how-image: url('/alienmilk-showcase-texture.webp');
+}
+
+/* El número, en la placa de las sesiones, sobre el borde del círculo. */
+.locations-collaboration-how-number {
+  position: absolute;
+  top: 4%;
+  left: -6%;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid rgba(247, 248, 249, 0.2);
+  border-radius: 0.35rem;
+  color: #ff7f7f;
+  background: rgba(13, 22, 31, 0.92);
+  font: 800 0.72rem / 1 'Nunito', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+/* Cada paso en una sola línea (appFitLine la encoge si no cabe). */
+.locations-collaboration-how-steps strong {
+  min-width: 0;
+  color: var(--how-ink);
+  font: 600 clamp(1.25rem, 1.6vw, 1.85rem) / 1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.locations-collaboration-how-steps p {
+  font-size: 0.95rem;
+}
+
+.locations-collaboration-how-close {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  font-size: var(--home-section-copy-size, 1.1rem);
+}
+
+.locations-collaboration-how-note {
+  margin: 0;
+  color: #ff7f7f;
+  font: 700 var(--home-section-copy-size, 1.1rem) / 1.5 'Nunito', sans-serif;
+}
+
+/* Al pasar el cursor, la muestra crece un poco. */
+@media (prefers-reduced-motion: no-preference) {
+  .locations-collaboration-how-visual {
+    transition: transform 0.45s cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .locations-collaboration-how-visual:hover {
+    transform: scale(1.12);
+  }
+}
+
+/* La invitación: la última frase, en una píldora coral. */
+.locations-collaboration-how-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  border: 1px solid #ff7f7f;
+  border-radius: 999px;
+  color: var(--how-ink);
+  font: 600 clamp(1.15rem, 1.45vw, 1.7rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.locations-collaboration-how-start svg {
+  width: 1.3em;
+  height: 1.3em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.locations-collaboration-how-start:hover,
+.locations-collaboration-how-start:focus-visible {
+  color: var(--gallery-ink, #211e24);
+  background: #ff7f7f;
+}
+
+.locations-collaboration-how-start:hover svg,
+.locations-collaboration-how-start:focus-visible svg {
+  transform: translateX(0.25rem);
+}
+
+/* En móvil, una sola columna: los pasos y, al final, la invitación. */
+@media (max-width: 1000px) {
+  .locations-collaboration-how-head {
+    display: contents;
+  }
+
+  .locations-collaboration-how-note {
+    order: 1;
+  }
+
+  .locations-collaboration-how-close {
+    order: 2;
+  }
+}
+
+/* En escritorio, a lo ancho de la columna blanca (lo que esta sobresale de la sección, como en el
+   fondo), con las esquinas de los marcos: la curva amplia arriba a la derecha y abajo a la
+   izquierda. Arriba el rótulo, el título y la entradilla; debajo, los cuatro pasos en fila, cada
+   muestra unida a la siguiente por un filamento; al pie, la frase final y la invitación. */
+@media (min-width: 1001px) {
+  :host(.locations-collaboration-section) .locations-copy {
+    padding-bottom: 0;
+  }
+
+  .locations-collaboration-how {
+    --how-pad: clamp(1.5rem, 3vw, 3.5rem);
+    --how-round: clamp(4rem, 7vw, 7.5rem);
+    --how-orb: clamp(8.5rem, 10.5vw, 13rem);
+    --how-step-gap: clamp(0.75rem, 1.1vw, 1.25rem);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    column-gap: clamp(2.5rem, 5vw, 6rem);
+    row-gap: clamp(1.25rem, 2vw, 2rem);
+    align-items: start;
+    /* Del gancho al bloque, algo menos de aire que en Localizaciones. */
+    margin: clamp(3.5rem, 6vw, 6.25rem) calc(-1 * clamp(24px, 4.5vw, 80px)) clamp(2.5rem, 4vw, 4rem);
+    padding: clamp(3.5rem, 5.5vw, 6rem) calc(clamp(24px, 4.5vw, 80px) + var(--how-pad));
+    border-radius: 1rem var(--how-round);
+  }
+
+  .locations-collaboration-how-head {
+    display: contents;
+  }
+
+  .locations-collaboration-how-code,
+  .locations-collaboration-how h3,
+  .locations-collaboration-how-steps {
+    grid-column: 1 / -1;
+  }
+
+  /* La entradilla: cada frase en su línea. */
+  .locations-collaboration-how-intro {
+    grid-column: 1 / -1;
+    max-width: 46em;
+    font-size: var(--home-section-copy-size, 1.1rem);
+  }
+
+  .locations-collaboration-how-intro p {
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
+  }
+
+  .locations-collaboration-how-steps {
+    grid-row: 4;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--how-step-gap);
+    margin-block: clamp(1.5rem, 3vw, 3.5rem);
+  }
+
+  /* Al pie: la frase final a la izquierda y la invitación a la derecha, a la misma altura. */
+  .locations-collaboration-how-note {
+    grid-row: 5;
+    grid-column: 1;
+    align-self: center;
+  }
+
+  .locations-collaboration-how-close {
+    grid-row: 5;
+    grid-column: 2;
+    justify-items: end;
+    align-self: center;
+  }
+
+  .locations-collaboration-how-start {
+    white-space: nowrap;
+  }
+
+  /* Cada paso en su placa: los separa el color, alterno, no un filete. */
+  .locations-collaboration-how-steps li {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    row-gap: clamp(0.5rem, 0.8vw, 0.9rem);
+    padding: clamp(1.25rem, 1.8vw, 2rem) clamp(1rem, 1.5vw, 1.75rem) clamp(1.5rem, 2.2vw, 2.5rem);
+    border-radius: 0.75rem;
+    background: rgba(251, 246, 245, 0.045);
+  }
+
+  .locations-collaboration-how-steps li:nth-child(even) {
+    background: rgba(251, 246, 245, 0.085);
+  }
+
+  /* La muestra, centrada sobre el texto. */
+  .locations-collaboration-how-visual {
+    z-index: 1;
+    grid-row: auto;
+    justify-self: center;
+    margin-bottom: clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+
+  /* El filamento: del centro de cada muestra al de la siguiente, por detrás de los círculos. */
+  .locations-collaboration-how-steps li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(clamp(1.25rem, 1.8vw, 2rem) + var(--how-orb) / 2);
+    left: 50%;
+    width: calc(100% + var(--how-step-gap));
+    height: 1px;
+    background: var(--how-line);
+  }
+
+  /* Los cuatro títulos al mismo tamaño: el del más largo, que así cabe sin encoger. */
+  .locations-collaboration-how-steps strong {
+    font-size: clamp(0.85rem, 1.25vw, 1.45rem);
+  }
+
+  .locations-collaboration-how-steps p {
+    font-size: clamp(0.95rem, 1.05vw, 1.2rem);
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
+    hyphenate-limit-chars: 5 2 2;
+  }
+}

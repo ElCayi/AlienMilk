@@ -259,29 +259,284 @@
       </p>
       <figcaption class="us-hero-signature">— Cayi, CEO &amp; Founder</figcaption>
     </figure>
-    <figure class="us-team-frame">
-      <span class="us-team-photo">
-        <img
-          src="/alienmilk-about-team.webp"
-          alt="Cuatro androides con traje negro y una criatura verde y morada con chaqueta roja y una taza de AlienMilk posan en el vestíbulo de la sede, con el desierto al fondo."
-          width="1448"
-          height="1086"
-          loading="lazy"
-        />
-      </span>
-      <!-- La credencial de Cayi, como la acreditación de un museo. -->
-      <figcaption class="us-team-tag us-ceo-tag">
-        <span class="us-ceo-name">El Cayi</span>
-        <span class="us-ceo-role"
-          ><span class="eyebrow-icon" aria-hidden="true"></span>CEO y fundadora</span
-        >
-        <span class="us-ceo-place">Sede central · Estación Meridiana<br />Gliese 667 Cc</span>
-      </figcaption>
-      <p class="us-station-tag us-team-tag us-agents-tag">
-        <span class="us-station-tag-id">Synthetic Executive Agents</span>
-        <span>Physical representatives of AlienMilk’s IEAs.</span>
-      </p>
-    </figure>
+    <div class="us-team-board">
+      <figure class="us-team-frame">
+        <span class="us-team-photo">
+          <img
+            src="/alienmilk-about-team.webp"
+            alt="Cuatro androides con traje negro y una criatura verde y morada con chaqueta roja y una taza de AlienMilk posan en el vestíbulo de la sede, con el desierto al fondo."
+            width="1448"
+            height="1086"
+            loading="lazy"
+          />
+        </span>
+        <!-- La credencial de Cayi, como la acreditación de un museo. -->
+        <figcaption class="us-team-tag us-ceo-tag">
+          <span class="us-ceo-name">El Cayi</span>
+          <span class="us-ceo-role"
+            ><span class="eyebrow-icon" aria-hidden="true"></span>CEO y fundadora</span
+          >
+          <span class="us-ceo-place">Sede central · Estación Meridiana<br />Gliese 667 Cc</span>
+        </figcaption>
+        <p class="us-station-tag us-team-tag us-agents-tag">
+          <span class="us-station-tag-id">Synthetic Executive Agents</span>
+          <span>Physical representatives of AlienMilk’s IEAs.</span>
+        </p>
+      </figure>
+      <!-- Pegado al retrato, la arquitectura ejecutiva en pestañas, en un bloque oscuro. Los textos
+           son de la usuaria, literales. -->
+      <section
+        class="us-arch"
+        [class.us-arch--closed]="!archOpen()"
+        aria-labelledby="us-arch-title"
+      >
+        <div class="us-arch-head">
+          <h3 id="us-arch-title">Arquitectura ejecutiva</h3>
+          <p>
+            AlienMilk distribuye dirección, inteligencia y representación entre distintas capas
+            operativas. Cada una mantiene un nivel diferente de autoridad, persistencia y presencia,
+            pero todas trabajan sobre el mismo marco estratégico.
+          </p>
+        </div>
+        <!-- Plegado, solo se ven la cabecera y las pestañas; una pestaña o el botón lo despliegan. -->
+        <div class="us-arch-bar">
+          <div class="us-arch-tabs" role="tablist" aria-label="Capas de la arquitectura ejecutiva">
+            @for (tab of architecture; track tab.id; let i = $index) {
+              <button
+                type="button"
+                role="tab"
+                class="us-arch-tab"
+                [id]="'us-arch-tab-' + tab.id"
+                [attr.aria-selected]="activeTab() === i"
+                [attr.aria-controls]="'us-arch-panel-' + tab.id"
+                [tabindex]="activeTab() === i ? 0 : -1"
+                (click)="openTab(i)"
+                (keydown)="moveTab($event, i)"
+              >
+                <span>{{ tab.code }}</span> {{ tab.label }}
+              </button>
+            }
+          </div>
+          <button
+            type="button"
+            class="us-arch-toggle"
+            [attr.aria-expanded]="archOpen()"
+            (click)="archOpen.set(!archOpen())"
+          >
+            {{ archOpen() ? 'Replegar' : 'Desplegar' }}
+            <span aria-hidden="true">{{ archOpen() ? '−' : '+' }}</span>
+          </button>
+        </div>
+
+        @if (archOpen()) {
+          <div
+            class="us-arch-panel"
+            role="tabpanel"
+            id="us-arch-panel-direccion"
+            aria-labelledby="us-arch-tab-direccion"
+            [hidden]="activeTab() !== 0"
+          >
+            <div class="us-arch-copy">
+              <h4>Dirección fundadora</h4>
+              <p>
+                La dirección fundadora define la misión, las prioridades estratégicas, los criterios
+                de riesgo y los límites dentro de los cuales puede actuar el resto de la
+                organización.
+              </p>
+              <p>
+                Su función no consiste en autorizar cada operación de manera individual, sino en
+                establecer el <b>marco ejecutivo</b> que determina qué puede decidirse de forma
+                autónoma, qué requiere escalado y qué permanece fuera de los límites operativos de
+                AlienMilk.
+              </p>
+            </div>
+            <dl class="us-arch-facts">
+              <dt>Responsabilidad</dt>
+              <dd>Estrategia</dd>
+              <dd>Doctrina</dd>
+              <dd>Prioridades</dd>
+              <dd>Límites de autoridad</dd>
+            </dl>
+          </div>
+
+          <div
+            class="us-arch-panel"
+            role="tabpanel"
+            id="us-arch-panel-iea"
+            aria-labelledby="us-arch-tab-iea"
+            [hidden]="activeTab() !== 1"
+          >
+            <div class="us-arch-copy">
+              <h4>IEA</h4>
+              <p class="us-arch-sub">Inteligencias Ejecutivas Autónomas</p>
+              <p>Las IEA constituyen la capa ejecutiva persistente de AlienMilk.</p>
+              <p>
+                Mantienen contexto operativo de largo plazo, coordinan procesos y agentes y pueden
+                continuar ejecutando dentro de sus respectivos <b>policy envelopes</b> incluso
+                cuando el estado global de la organización es incompleto, existe latencia
+                significativa o una región queda temporalmente aislada.
+              </p>
+              <p>
+                Cada IEA trabaja sobre información versionada y trazable, conserva el estado que
+                sustenta sus decisiones y puede revisar posteriormente una operación cuando nuevos
+                datos modifican el contexto disponible.
+              </p>
+              <p>
+                No funcionan como asistentes. Funcionan como <b>sistemas ejecutivos permanentes</b>.
+              </p>
+            </div>
+            <dl class="us-arch-facts">
+              <dt>Responsabilidad</dt>
+              <dd>Análisis</dd>
+              <dd>Decisión</dd>
+              <dd>Coordinación</dd>
+              <dd>Continuidad</dd>
+              <dd>Reconciliación</dd>
+            </dl>
+          </div>
+
+          <div
+            class="us-arch-panel"
+            role="tabpanel"
+            id="us-arch-panel-sea"
+            aria-labelledby="us-arch-tab-sea"
+            [hidden]="activeTab() !== 2"
+          >
+            <div class="us-arch-copy">
+              <h4>SEA</h4>
+              <p class="us-arch-sub">Synthetic Executive Agents</p>
+              <p>
+                Cuando una IEA necesita presencia física o interacción local, puede desplegar un
+                SEA.
+              </p>
+              <p>
+                Los SEA son agentes sintéticos especializados en representación ejecutiva,
+                supervisión e interacción con otros participantes de la organización. Operan con un
+                subconjunto de contexto, permisos y capacidades definido por la función que deben
+                desempeñar.
+              </p>
+              <p>
+                Pueden participar en reuniones, representar decisiones, supervisar instalaciones o
+                actuar como interlocutores de una IEA.
+              </p>
+              <p>
+                Un SEA <b>no contiene a la IEA en su totalidad</b>. Es una instancia operativa
+                desplegada bajo su autoridad.
+              </p>
+            </div>
+            <dl class="us-arch-facts">
+              <dt>Responsabilidad</dt>
+              <dd>Presencia</dd>
+              <dd>Representación</dd>
+              <dd>Interacción</dd>
+              <dd>Ejecución local</dd>
+            </dl>
+          </div>
+
+          <div
+            class="us-arch-panel"
+            role="tabpanel"
+            id="us-arch-panel-continuidad"
+            aria-labelledby="us-arch-tab-continuidad"
+            [hidden]="activeTab() !== 3"
+          >
+            <div class="us-arch-copy">
+              <h4>Continuidad</h4>
+              <p>
+                La arquitectura ejecutiva de AlienMilk está diseñada para sobrevivir a cambios de
+                personal, infraestructura, localización y sustrato computacional.
+              </p>
+              <p>
+                Las IEA mantienen continuidad mediante estados verificables, <b>Evidence Chains</b>,
+                replicación distribuida y protocolos de migración entre plataformas. Los SEA pueden
+                sustituirse, redistribuirse o retirarse sin alterar necesariamente la continuidad de
+                la inteligencia ejecutiva que representan.
+              </p>
+              <p>
+                La identidad operacional reside en el <b>Continuity Lineage</b>, no en una máquina,
+                una sede o un agente concreto.
+              </p>
+            </div>
+            <dl class="us-arch-facts us-arch-facts--principle">
+              <dt>Principio</dt>
+              <dd>La instancia puede cambiar; el linaje ejecutivo permanece.</dd>
+            </dl>
+          </div>
+
+          <!-- Cierre del bloque, bajo las pestañas: por qué las IEA. Texto de la usuaria, literal. -->
+          <div class="us-arch-scale">
+            <h4>Diseñadas para operar a otra escala</h4>
+            <div class="us-arch-scale-copy">
+              <p>
+                AlienMilk opera en entornos donde la latencia, las particiones de red y la
+                divergencia temporal de estado forman parte normal de la actividad.
+              </p>
+              <p>
+                Por eso nuestra arquitectura ejecutiva se apoya en
+                <b>Inteligencias Ejecutivas Autónomas (IEA)</b>: sistemas persistentes capaces de
+                mantener contexto, coordinar operaciones y tomar decisiones dentro de límites
+                definidos incluso cuando el estado global de la organización no está disponible.
+              </p>
+              <p>
+                Las IEA trabajan con <b>información parcial, retrasada o contradictoria</b>. Cada
+                observación conserva procedencia, timestamp, nivel de confianza y evidencia
+                asociada; los conflictos se registran y reconcilian cuando nuevos datos permiten
+                hacerlo.
+              </p>
+              <p>
+                Esto permite operar localmente, sincronizar después y reconstruir con precisión qué
+                información sustentó cada decisión.
+              </p>
+              <p class="us-arch-scale-claim">
+                A escala interplanetaria, la ventaja no está en eliminar la incertidumbre, sino en
+                diseñar para ella.
+              </p>
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  </section>
+
+  <!-- Bajo el equipo, sobre la textura: la trayectoria en tres cifras y la cinta de quienes confían
+       en AlienMilk. La cinta va doble para que el bucle no tenga costura; la copia no se lee. -->
+  <section class="us-trust" aria-labelledby="us-trust-title">
+    <div class="us-trust-head">
+      <p class="us-kicker">Trayectoria</p>
+      <h2 id="us-trust-title">Seis décadas llevando lo desconocido a la mesa.</h2>
+    </div>
+    <dl class="us-trust-figures">
+      <div>
+        <dt>Desde</dt>
+        <dd>1962</dd>
+        <dd class="us-trust-note">Calendario terrestre</dd>
+      </div>
+      <div>
+        <dt>Comensales</dt>
+        <dd>4,8 M</dd>
+        <dd class="us-trust-note">Y otras tantas formas de vida</dd>
+      </div>
+      <div>
+        <dt>Procedencias</dt>
+        <dd>212</dd>
+        <dd class="us-trust-note">En 38 sistemas</dd>
+      </div>
+    </dl>
+    <div class="us-trust-reel">
+      <p class="visually-hidden">Colaboran con AlienMilk:</p>
+      <ul class="us-trust-track">
+        @for (copy of [0, 1]; track copy) {
+          @for (brand of brands; track brand.name) {
+            <li
+              [class]="'us-brand us-brand--' + brand.style"
+              [attr.aria-hidden]="copy ? 'true' : null"
+            >
+              {{ brand.name }}
+            </li>
+          }
+        }
+      </ul>
+    </div>
   </section>
 
   <section

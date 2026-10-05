@@ -36,6 +36,11 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
 - **Equipo (nuevo, entre la 02 y la 03):** nota firmada con el formato de la de la cabecera y el
   retrato del equipo (`alienmilk-about-team.webp`) al ancho de los lienzos, con la credencial coral
   de Cayi y la ficha de los agentes. La 03 empieza como lienzo aparte.
+- **Arquitectura ejecutiva (nuevo, pegado bajo el retrato):** bloque oscuro plegable con pestañas
+  (Dirección fundadora, IEA, SEA, Continuidad) y el cierre «Diseñadas para operar a otra escala».
+  Textos de JT, literales. Estado en `about-page.component.ts` (`activeTab`, `archOpen`).
+- **Trayectoria (nuevo, antes de la 03):** tres cifras y una cinta de marcas en bucle (las marcas,
+  en `BRANDS` del `.ts`). Es lo único que se mueve solo; con movimiento reducido queda quieta.
 - **Invitación final:** la tarjeta oscura lleva a la izquierda la portada de la 01 con el busto
   (`alienmilk-about-android.webp`).
 - Esquinas de la unión 01/02 más pronunciadas (`--seam`).
@@ -53,3 +58,5 @@ Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `mai
    que su contenido y la cadena cruza del blanco al negro.
 3. Que se ven las imágenes de Nosotros en `public/` (estación, granjero, custodia, equipo y el busto en
    la invitación).
+4. En `/nosotros`, el bloque de la arquitectura se despliega con una pestaña o el botón y se repliega
+   con el botón o pulsando otra vez la pestaña abierta.

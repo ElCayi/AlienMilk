@@ -681,7 +681,8 @@ h2 em {
   .us-definition-copy {
     align-self: stretch;
     height: auto;
-    padding-block: clamp(2rem, 6svh, 4rem);
+    /* Un poco más arriba que el centro: el ojo lo lee centrado con el rótulo encima. */
+    padding-block: clamp(1.25rem, 3.5svh, 2.5rem) clamp(2.75rem, 8.5svh, 5.5rem);
     margin: 0 0 calc(4.75rem + 1.5rem) calc(clamp(1.5rem, 3.7vw, 4rem) - clamp(2rem, 6vw, 6rem));
   }
 
@@ -1044,13 +1045,20 @@ h2 em {
   content: none;
 }
 
-/* El marco ocupa el ancho de los lienzos y la foto lo llena entera. */
-.us-team-frame {
-  position: relative;
+/* El retrato y la arquitectura forman una sola pieza al ancho de los lienzos, sin hueco entre ellos:
+   las esquinas son de la pieza entera. */
+.us-team-board {
   width: 100%;
-  margin: 0;
   overflow: hidden;
   border-radius: calc(var(--corner) * 1.6) 0.45rem calc(var(--corner) * 1.6) 0.45rem;
+}
+
+/* La foto llena el marco entero. El marco contiene los márgenes de sus fichas: si no, en móvil se
+   escapan y abren un hueco sobre el bloque de la arquitectura. */
+.us-team-frame {
+  position: relative;
+  display: flow-root;
+  margin: 0;
 }
 
 /* La ficha del retrato, como las de las fotos de la 02: junto a Cayi, a su derecha, sobre el traje
@@ -1142,6 +1150,424 @@ h2 em {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   object-position: 50% 62%;
+}
+
+/* La arquitectura ejecutiva, pegada bajo el retrato: un bloque oscuro con pestañas, como los
+   rótulos de la página, y en cada una el texto justificado y su responsabilidad al lado. */
+.us-arch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: clamp(1.75rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 4rem) clamp(2rem, 4vw, 3.5rem);
+  color: var(--light);
+  background: var(--night);
+}
+
+/* La cabecera del bloque: el título y la entradilla, encima de las pestañas. */
+.us-arch-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem clamp(1.75rem, 3vw, 3rem);
+  align-items: center;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.us-arch-head h3 {
+  margin: 0;
+  /* Una palabra por línea, como estaba. */
+  max-width: min-content;
+  font: 700 clamp(2.4rem, 4vw, 4rem) / 1.05 var(--condensed);
+  letter-spacing: 0.025em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+.us-arch-head p {
+  margin: 0;
+  /* Separado del título por una barra vertical, cerca de él. */
+  padding-left: clamp(1.75rem, 3vw, 3rem);
+  border-left: 1px solid var(--light-rule);
+  color: var(--light-muted);
+  font:
+    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* La fila de las pestañas, con el botón de desplegar en el margen derecho. */
+.us-arch-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  border-bottom: 1px solid var(--light-line);
+}
+
+/* Las cuatro pestañas ocupan lo mismo, separadas por un filete vertical corto. */
+.us-arch-tabs {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  row-gap: 0.25rem;
+  margin-right: clamp(1rem, 2vw, 2rem);
+}
+
+.us-arch-tab + .us-arch-tab::before {
+  content: '';
+  position: absolute;
+  top: 0.1em;
+  left: 0;
+  height: 1.1em;
+  border-left: 1px solid var(--light-rule);
+}
+
+/* Plegado no hay pestaña abierta: ninguna lleva el subrayado. */
+.us-arch--closed .us-arch-tab[aria-selected='true'] {
+  border-bottom-color: transparent;
+  color: var(--light-muted);
+}
+
+.us-arch-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.3rem;
+  padding: 0;
+  border: 0;
+  color: var(--light-muted);
+  background: none;
+  font:
+    800 0.66rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.us-arch-toggle span {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font:
+    400 1.1rem / 1 'Nunito',
+    sans-serif;
+  letter-spacing: 0;
+}
+
+.us-arch-toggle:hover {
+  color: var(--coral);
+}
+
+.us-arch-toggle:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 4px;
+}
+
+.us-arch-tab {
+  position: relative;
+  margin-bottom: -1px;
+  padding: 0 0.25rem 1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--light-muted);
+  background: none;
+  font:
+    800 clamp(0.62rem, 0.78vw, 0.78rem) 'Nunito',
+    sans-serif;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.us-arch-tab span {
+  margin-right: 0.4em;
+  color: var(--coral);
+}
+
+.us-arch-tab:hover {
+  color: var(--light);
+}
+
+.us-arch-tab[aria-selected='true'] {
+  border-bottom-color: var(--coral);
+  color: var(--light);
+}
+
+.us-arch-tab:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 4px;
+}
+
+.us-arch-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  padding-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* Todas las pestañas ocupan la misma celda: el bloque mide lo que la más larga y no salta al
+   cambiar. Las ocultas no se ven ni se leen. */
+.us-arch-panel {
+  grid-area: 3 / 1;
+}
+
+.us-arch-panel[hidden] {
+  display: grid;
+  visibility: hidden;
+}
+
+.us-arch-copy h4 {
+  margin: 0;
+  font: 700 clamp(1.9rem, 2.8vw, 2.8rem) / 0.85 var(--condensed);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+/* El nombre completo de la sigla, en coral bajo el título. */
+.us-arch-copy .us-arch-sub {
+  margin-top: 0.3rem;
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.us-arch-copy p {
+  margin: 0.9rem 0 0;
+  color: rgba(247, 248, 249, 0.86);
+  font:
+    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.us-arch-copy b {
+  color: var(--light);
+  font-weight: 800;
+}
+
+/* La responsabilidad de cada capa, como una lista de funciones: una por línea, con su filete. */
+.us-arch-facts {
+  margin: 0;
+}
+
+.us-arch-facts dt {
+  margin-bottom: 0.4rem;
+  color: var(--coral);
+  font:
+    800 0.6rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.us-arch-facts dd {
+  margin: 0;
+  padding: 0.5rem 0 0.4rem;
+  border-top: 1px solid var(--light-line);
+  font: 400 clamp(1.35rem, 1.9vw, 1.8rem) / 1.1 var(--condensed);
+}
+
+/* El principio de la continuidad, como una cita: una sola frase, más suelta. */
+.us-arch-facts--principle dd {
+  padding-top: 0.8rem;
+  font-style: italic;
+  line-height: 1.2;
+}
+
+/* El cierre del bloque, bajo las pestañas y tras un filete: el título a la izquierda y el texto a
+   la derecha, que acaba en una frase destacada en coral. */
+.us-arch-scale {
+  display: grid;
+  grid-area: 4 / 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 1rem clamp(2rem, 5vw, 5rem);
+  margin-top: clamp(2.5rem, 4.5vw, 4rem);
+  padding-top: clamp(2rem, 3.5vw, 3rem);
+  border-top: 1px solid var(--light-line);
+}
+
+.us-arch-scale h4 {
+  margin: 0;
+  font: 700 clamp(1.9rem, 2.8vw, 2.8rem) / 0.85 var(--condensed);
+  letter-spacing: 0.025em;
+  text-wrap: balance;
+  transform: scaleY(0.78);
+  transform-origin: left top;
+}
+
+.us-arch-scale-copy p {
+  margin: 0 0 0.9rem;
+  color: rgba(247, 248, 249, 0.86);
+  font:
+    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.us-arch-scale-copy b {
+  color: var(--light);
+  font-weight: 800;
+}
+
+.us-arch-scale-copy .us-arch-scale-claim {
+  margin: 1.4rem 0 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--coral);
+  color: var(--coral);
+  font-size: clamp(1.15rem, 1.45vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+/* Trayectoria, bajo el equipo y sobre la textura: titular y cifras en claro y, debajo, la cinta de
+   quienes confían en AlienMilk, que pasa despacio de lado a lado y se funde en los bordes. */
+.us-trust {
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+  color: var(--light);
+}
+
+.us-trust-head {
+  display: grid;
+  gap: 1rem;
+  max-width: 46rem;
+}
+
+.us-trust-head h2 {
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  text-wrap: balance;
+}
+
+.us-trust-figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+}
+
+.us-trust-figures div {
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--light-rule);
+}
+
+.us-trust-figures dt {
+  color: var(--coral);
+  font:
+    800 0.62rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.us-trust-figures dd {
+  margin: 0.35rem 0 0;
+  font: 400 clamp(2.4rem, 4.2vw, 4rem) / 1 var(--condensed);
+}
+
+.us-trust-figures .us-trust-note {
+  margin-top: 0.3rem;
+  color: var(--light-muted);
+  font:
+    500 0.85rem / 1.4 'Nunito',
+    sans-serif;
+}
+
+.us-trust-reel {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  overflow: hidden;
+  padding-block: 1.4rem;
+  border-block: 1px solid var(--light-line);
+  mask: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.us-trust-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: us-trust-reel 60s linear infinite;
+}
+
+.us-trust-reel:hover .us-trust-track {
+  animation-play-state: paused;
+}
+
+/* La cinta va doble: al recorrer media, la segunda copia ocupa el sitio de la primera. El hueco
+   entre copias es el mismo que entre marcas. */
+@keyframes us-trust-reel {
+  to {
+    transform: translateX(calc(-50% - clamp(2.5rem, 5vw, 4.5rem) / 2));
+  }
+}
+
+/* Cada marca con su rótulo, en claro y algo apagada, como logotipos en una sola tinta. */
+.us-brand {
+  flex: none;
+  color: rgba(247, 248, 249, 0.72);
+  white-space: nowrap;
+}
+
+.us-brand--serif {
+  font:
+    400 1.45rem 'Gloock',
+    'Didot',
+    serif;
+}
+
+.us-brand--condensed {
+  font: 700 1.55rem var(--condensed);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.us-brand--wide {
+  font:
+    800 0.95rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.us-brand--italic {
+  font: italic 400 1.6rem var(--condensed);
+  letter-spacing: 0.02em;
+}
+
+/* Sin movimiento, la cinta se queda quieta y en varias filas, sin la copia. */
+@media (prefers-reduced-motion: reduce) {
+  .us-trust-reel {
+    mask: none;
+  }
+
+  .us-trust-track {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: auto;
+    row-gap: 1rem;
+    animation: none;
+  }
+
+  .us-brand[aria-hidden='true'] {
+    display: none;
+  }
 }
 
 /* Ecosistema */
@@ -1471,6 +1897,19 @@ h2 em {
     background: rgba(255, 127, 127, 0.94);
   }
 
+  .us-arch-panel,
+  .us-arch-head {
+    grid-template-columns: 1fr;
+  }
+
+  .us-arch-head p {
+    padding-left: 1rem;
+  }
+
+  .us-arch-scale {
+    grid-template-columns: 1fr;
+  }
+
   /* En columna, en la invitación la portada va debajo del texto, apoyada en el pie de la tarjeta. */
   .us-invitation-visual {
     order: 2;
@@ -1478,6 +1917,33 @@ h2 em {
 }
 
 @media (max-width: 600px) {
+  /* En móvil, dos pestañas por fila: el filete solo entre las de una misma fila. */
+  .us-arch-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-right: 0;
+  }
+
+  .us-arch-tab {
+    font-size: 0.68rem;
+    white-space: normal;
+  }
+
+  .us-arch-tab + .us-arch-tab:nth-child(3)::before {
+    content: none;
+  }
+  /* En móvil las pestañas necesitan el ancho: el botón va debajo, a la derecha. */
+  .us-arch-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .us-arch-toggle {
+    align-self: flex-end;
+    margin-bottom: 0.9rem;
+  }
+  .us-trust-figures {
+    grid-template-columns: 1fr;
+  }
   .us-label span:last-child {
     display: none;
   }
@@ -1639,10 +2105,22 @@ h2 em {
   .us-work-visual img {
     position: absolute;
     top: -2.75em;
-    left: calc(-1 * clamp(2rem, 6vw, 6rem));
-    width: calc(100% + clamp(2rem, 6vw, 6rem) + var(--inset) + 1px);
+    /* Empieza una esquina antes del recuadro oscuro: abajo, ese trozo redondea la esquina del lienzo
+       claro con la propia foto; arriba de él no se ve. */
+    left: calc(-1 * clamp(2rem, 6vw, 6rem) - var(--corner));
+    width: calc(100% + clamp(2rem, 6vw, 6rem) + var(--inset) + 1px + var(--corner));
     height: calc(100% + 2.75em + clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem);
-    mask: linear-gradient(to bottom, transparent, #000 28%) no-repeat;
+    mask:
+      linear-gradient(to bottom, transparent, #000 28%),
+      linear-gradient(
+        to right,
+        transparent calc(var(--corner) - 1px),
+        #000 calc(var(--corner) - 1px)
+      ),
+      radial-gradient(circle var(--corner) at 0 0, transparent calc(100% - 0.5px), #000 100%) left
+        bottom / var(--corner) var(--corner);
+    mask-repeat: no-repeat;
+    mask-composite: intersect, add;
     /* Acaba en la esquina inferior derecha de la sección. */
     border-radius: 0 0 calc(var(--corner) * 1.6) 0;
   }
@@ -1734,5 +2212,12 @@ h2 em {
 @media (min-width: 1001px) and (max-width: 1250px) {
   .us-chain li {
     flex-basis: 25%;
+  }
+}
+
+/* En escritorio estrecho «Dirección fundadora» no cabe en su cuarto: las pestañas pueden partirse. */
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .us-arch-tab {
+    white-space: normal;
   }
 }

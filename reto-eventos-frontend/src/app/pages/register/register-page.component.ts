@@ -21,13 +21,22 @@ export class RegisterPageComponent {
   email = '';
   username = '';
   password = '';
+  passwordRepeat = '';
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly showPassword = signal(false);
+  /** The mismatch warning waits until the visitor leaves the field or submits. */
+  readonly repeatTouched = signal(false);
+
+  mismatch(): boolean {
+    return this.repeatTouched() && this.passwordRepeat !== '' && this.password !== this.passwordRepeat;
+  }
 
   submit(): void {
     if (this.loading()) return;
+    this.repeatTouched.set(true);
+    if (this.password !== this.passwordRepeat) return;
     this.loading.set(true);
     this.errorMessage.set('');
 

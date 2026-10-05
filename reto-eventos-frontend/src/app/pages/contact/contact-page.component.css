@@ -530,7 +530,8 @@ h1 {
 }
 .section-heading {
   display: flex;
-  align-items: start;
+  /* Label and aside differ in size: they share the baseline, not the top. */
+  align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
   padding-bottom: 1.5rem;
@@ -813,6 +814,21 @@ h1 {
   }
 }
 @media (max-width: 700px) {
+  /* En móvil el titular va pegado a su texto: 24 px más el interlineado
+     del párrafo dejaban un hueco excesivo. */
+  .contact-directory h2,
+  .contact-visit h2,
+  .collaborators-contact h2,
+  .contact-faq h2 {
+    margin-bottom: 0.25rem;
+  }
+  :is(.contact-directory, .contact-visit, .collaborators-contact, .contact-faq) h2 + p {
+    margin-top: 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: justify;
+    hyphens: auto;
+  }
   .contact-header {
     grid-template-columns: 1fr;
     gap: 1.75rem;

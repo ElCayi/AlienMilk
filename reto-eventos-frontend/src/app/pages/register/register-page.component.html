@@ -11,6 +11,10 @@
       <h1>
         Crea tu<br />cuenta en<br /><span class="lockup"><span class="lockup-name">AlienMilk</span><span class="lockup-unit">Sessions.</span></span>
       </h1>
+      <p class="register-lead">
+        Detrás de cada sesión hay una muestra que ha viajado mucho para llegar a la mesa. Con tu
+        cuenta reservas plaza y te enteras antes que nadie. Solo falta quien se atreva a probarla.
+      </p>
     </div>
     <div class="login-card">
       <div class="card-drift" aria-hidden="true">
@@ -18,11 +22,7 @@
           <span></span>
         }
       </div>
-      <div class="milk-row" aria-hidden="true">
-        @for (milk of [1, 2, 3, 4, 5, 6, 7, 8, 9]; track milk) {
-          <span [class.you]="milk === 5"></span>
-        }
-      </div>
+      <h2>Regístrate</h2>
       <form
         #registerForm="ngForm"
         (ngSubmit)="registerForm.valid && submit()"
@@ -70,6 +70,23 @@
             {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
           </button>
         </div>
+        <label for="password-repeat">Repetir contraseña</label>
+        <input
+          id="password-repeat"
+          [(ngModel)]="passwordRepeat"
+          name="passwordRepeat"
+          autocomplete="new-password"
+          [type]="showPassword() ? 'text' : 'password'"
+          placeholder="Vuelve a escribirla"
+          required
+          [readOnly]="loading()"
+          [attr.aria-invalid]="mismatch() ? 'true' : null"
+          [attr.aria-describedby]="mismatch() ? 'password-mismatch' : null"
+          (blur)="repeatTouched.set(true)"
+        />
+        @if (mismatch()) {
+          <p class="error" id="password-mismatch">Las contraseñas no coinciden.</p>
+        }
         @if (errorMessage()) {
           <p class="error" role="alert">{{ errorMessage() }}</p>
         }
@@ -81,10 +98,10 @@
     </div>
     <aside class="demo-box" aria-labelledby="client-title">
       <div class="demo-heading">
-        <h2 id="client-title">Alta cliente</h2>
+        <h2 id="client-title">Alta cliente de prueba</h2>
+        <span class="demo-badge">Portfolio · Acceso libre</span>
       </div>
-      <p>Tu cuenta se crea directamente como <strong>cliente</strong>.</p>
-      <p>Después del registro entrarás automáticamente en la app.</p>
+      <p>¿Vienes a curiosear? Entras como <strong>cliente</strong> y lo pruebas todo.</p>
     </aside>
   </div>
   <footer class="login-footnote">

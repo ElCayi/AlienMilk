@@ -11,6 +11,8 @@
   --night: #0d151e;
   --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --corner: clamp(2rem, 4vw, 3.5rem);
+  /* Las esquinas de la unión 01/02, en el lado izquierdo. */
+  --seam: clamp(1.5rem, 2.6vw, 2.5rem);
   --inset: clamp(1.5rem, 4vw, 4rem);
   display: block;
   color: var(--ink);
@@ -40,6 +42,7 @@
 .breadcrumb,
 .eyebrow,
 .us-label,
+.us-work-eyebrow,
 .us-kicker,
 .us-hero-bottom,
 .us-functions dt,
@@ -148,7 +151,9 @@ h2 em {
 .us-hero-note {
   position: relative;
   max-width: 40rem;
-  margin: clamp(1rem, 3vh, 2.5rem) 0 0;
+  /* Bajo la eyebrow, el aire de una sección: más que el de Sesiones, porque aquí no abre un titular
+     grande sino texto de lectura. */
+  margin: clamp(2.6rem, 3.2vw, 3.4rem) 0 0;
 }
 
 .us-hero-note::before {
@@ -213,11 +218,11 @@ h2 em {
   width: fit-content;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 1rem;
   margin-top: 2.25rem;
-  padding-bottom: 0.45rem;
+  padding-bottom: 0.55rem;
   color: var(--light);
-  font: 700 1.05rem var(--condensed);
+  font: 700 clamp(1.2rem, 1.5vw, 1.45rem) var(--condensed);
   letter-spacing: 0.08em;
   text-decoration: none;
   text-transform: uppercase;
@@ -243,8 +248,8 @@ h2 em {
 }
 
 .us-explore-arrow {
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.3em;
+  height: 1.3em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -331,7 +336,7 @@ h2 em {
   display: grid;
   gap: 0.2rem;
   max-width: 15.5rem;
-  padding: 0.45rem 1.6rem 0.5rem 0.6rem;
+  padding: 0.38rem 1.3rem 0.42rem 0.5rem;
   border-left: 2px solid var(--coral);
   color: rgba(247, 248, 249, 0.78);
   background: linear-gradient(
@@ -395,7 +400,6 @@ h2 em {
 
 /* Destinos del índice: la barra superior no tapa el arranque de la sección. */
 .us-definition,
-.us-practice,
 .us-ecosystem {
   scroll-margin-top: 5rem;
 }
@@ -411,11 +415,19 @@ h2 em {
   background: var(--page-canvas);
 }
 
-/* Primera esquina grande hacia la textura, como el carrusel de Sesiones. Arriba, el aire justo
-   para el rótulo. */
+/* Entre bloques del cuerpo, un píxel de solape: si se tocan en una coordenada fraccionaria, el
+   suavizado del borde deja ver la textura de debajo como un filete gris. */
+.us-definition + .us-definition,
+.us-definition + .us-ecosystem {
+  margin-top: -1px;
+}
+
+/* Primera esquina grande hacia la textura, como el carrusel de Sesiones; abajo a la izquierda, una
+   marcada frente a la de la 02. Arriba, el aire justo para el rótulo. */
 .us-definition {
   padding-top: clamp(1.5rem, 2.5vw, 2.5rem);
-  border-radius: var(--corner) 1rem 0 0;
+  position: relative;
+  border-radius: var(--corner) 1rem 0 var(--seam);
   /* La placa sobresale 1px por la izquierda para no dejar un filo claro; aquí se recorta. */
   overflow: clip;
 }
@@ -426,10 +438,12 @@ h2 em {
   gap: 1rem;
   padding-bottom: 0.9rem;
   border-bottom: 1px solid var(--line);
+  align-items: center;
   color: var(--muted);
 }
 
 .us-label span:first-child,
+.us-work-eyebrow,
 .us-kicker {
   color: var(--coral);
 }
@@ -456,11 +470,38 @@ h2 em {
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
   align-items: center;
   padding-top: 0;
+  /* Compartidas por el titular (en la placa) y el texto de al lado, que se mide con él. */
+  --plate-pad: clamp(2rem, 4vw, 3.5rem);
+  /* Mide con el alto útil (la pantalla menos la barra): descontado lo fijo de la sección (rótulo,
+     funciones, márgenes), siempre deja el mismo aire sobre las funciones. */
+  --title-size: clamp(
+    3.4rem,
+    min(9.6vw, (100svh - var(--topbar-height, 3.75rem) - 7.125rem) * 0.15),
+    11.5rem
+  );
 }
 
 /* La placa es el fondo del cuerpo de la sección: cubre la columna de la imagen desde la regla del
    rótulo hasta el final del bloque, donde enlaza con la banda oscura de la sección 02. Su propio
    fondo claro hace que el texto que la cruza pueda invertirse (ver .us-functions). */
+.us-definition .us-label {
+  position: relative;
+  z-index: 1;
+}
+
+/* El rótulo cruza la placa: sin raya, que partida en dos colores estorbaba. El borde se queda
+   transparente para conservar el alto que la placa tiene en cuenta. */
+.us-definition .us-label {
+  border-bottom-color: transparent;
+}
+
+.us-label-mark,
+.us-work-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
 .us-definition-body {
   position: relative;
   z-index: 0;
@@ -470,7 +511,8 @@ h2 em {
 .us-definition-body::before {
   content: '';
   position: absolute;
-  top: 0;
+  /* Sube hasta el borde superior de la sección: el rótulo 01 queda sobre la placa. */
+  top: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem + 1px));
   bottom: calc(-1 * clamp(2.5rem, 5vw, 4.5rem));
   left: calc(-1 * var(--inset) - 1px);
   z-index: -1;
@@ -481,7 +523,6 @@ h2 em {
 }
 
 .us-definition-visual {
-  --plate-pad: clamp(2rem, 4vw, 3.5rem);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -491,21 +532,25 @@ h2 em {
 }
 
 /* En escritorio la sección entera cabe en la pantalla: la placa toma el alto que dejan el rótulo,
-   las funciones y los márgenes, y la imagen se escala dentro apoyada abajo a la izquierda, con el
-   brazo saliendo del borde. */
+   las funciones y los márgenes, y la foto la llena. */
 @media (min-width: 1001px) {
-  /* La figura llega hasta las funciones, que se apoyan en el pie de la placa: el alto que antes
-     ocupaban debajo es ahora de la imagen. */
+  /* La figura llega hasta las funciones, que se apoyan en el pie de la placa. */
   .us-definition-visual {
-    height: clamp(26rem, 100svh - 13rem, 54rem);
-    padding-bottom: 6rem;
+    height: clamp(30.25rem, 100svh - 8.75rem, 58.25rem);
+    padding-top: calc(var(--plate-pad) + 4.25rem);
+    padding-bottom: calc(6rem + var(--functions-drop, 0px));
   }
 
-  .us-definition-visual img {
-    flex: 1 1 auto;
-    min-height: 0;
-    object-fit: contain;
-    object-position: left bottom;
+  /* La foto llena la placa desde su borde superior hasta las funciones, con la esquina de la placa,
+     y se funde con el negro antes de llegar a ellas. */
+  .us-definition .us-definition-visual img {
+    top: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem));
+    height: calc(100% + clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem - 4.75rem);
+    border-radius: 0 var(--corner) 0 0;
+    mask:
+      linear-gradient(to bottom, #000 80%, transparent),
+      linear-gradient(to right, rgba(0, 0, 0, 0.45), #000 60%);
+    mask-composite: intersect;
   }
 
   .us-definition .us-functions {
@@ -516,32 +561,56 @@ h2 em {
      ahí no lo pisan ni el titular ni la leche. */
   .us-definition .us-definition-visual figcaption {
     position: absolute;
-    bottom: 7rem;
+    z-index: 2;
+    bottom: calc(7rem + var(--functions-drop, 0px));
     right: clamp(0.9rem, 1.5vw, 1.4rem);
     margin: 0;
     writing-mode: vertical-rl;
     rotate: 180deg;
   }
+
+  /* La etiqueta de la sede, arriba a la derecha, a la altura del rótulo y alineada con el pie. */
+  .us-definition .us-station-tag {
+    top: -2.3rem;
+    right: clamp(0.9rem, 1.5vw, 1.4rem);
+    bottom: auto;
+    max-width: 15rem;
+  }
 }
 
-/* El titular, grande, en blanco y detrás de la imagen. */
+/* El titular, de portada de revista (Didone), grande y sobre la foto. */
 .us-definition-visual h2 {
   position: absolute;
-  top: calc(var(--plate-pad) * 0.55);
+  top: calc(var(--plate-pad) * 0.35);
   left: var(--inset);
-  z-index: 0;
-  max-width: 10ch;
+  z-index: 2;
+  /* Una palabra por línea, en columna junto al busto. */
+  max-width: 1ch;
   color: var(--light);
   /* Mide con el ancho y con el alto: en pantallas bajas la placa también lo es. */
-  font-size: clamp(2.8rem, min(7.4vw, 10.5svh), 8.5rem);
+  font-family: 'Gloock', 'Didot', serif;
+  font-weight: 400;
+  font-size: var(--title-size);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  /* Sin el estrechado de los titulares condensados: la Didone va con su proporción. */
+  transform: none;
+  margin: 0;
 }
 
+/* La foto, a todo el hueco de la placa. A la izquierda, bajo el titular, se oscurece para que se lea. */
 .us-definition-visual img {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1;
-  width: 100%;
-  height: auto;
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 42% 60%;
+  mask: linear-gradient(to right, rgba(0, 0, 0, 0.45), #000 60%);
 }
 
 .us-definition-visual figcaption {
@@ -549,7 +618,126 @@ h2 em {
   color: var(--light-muted);
 }
 
-.us-definition-copy p,
+/* La etiqueta de la sede, pequeña y sobre la foto: la misma ficha que la de la muestra de la cabecera. */
+.us-station-tag {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.45rem 1.6rem 0.5rem 0.6rem;
+  border-left: 2px solid var(--coral);
+  color: rgba(247, 248, 249, 0.78);
+  background: linear-gradient(
+    to right,
+    rgba(13, 21, 30, 0.88) 0%,
+    rgba(13, 21, 30, 0.82) 62%,
+    rgba(13, 21, 30, 0) 100%
+  );
+  font:
+    800 0.44rem / 1.45 'Nunito',
+    sans-serif;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.us-station-tag-id {
+  color: var(--light);
+  font-size: 0.52rem;
+}
+
+/* La ficha de la foto de la 02, arriba a la derecha, sobre el organismo: a la altura de la cabeza
+   del androide, pero sin llegar a ella. */
+.us-work-visual .us-farm-tag {
+  top: clamp(4rem, 9%, 6rem);
+  right: clamp(0.5rem, 1.5vw - 0.6rem, 1.4rem);
+  bottom: auto;
+  max-width: none;
+  margin: 0;
+  padding-right: 0.7rem;
+  white-space: nowrap;
+}
+
+/* La de la custodia, arriba del todo, sobre los depósitos: la cabeza del androide queda debajo. */
+.us-work-visual .us-custody-tag {
+  top: 0.5rem;
+  /* La figura acaba antes del borde de la sección; la foto, no: la ficha se pega a ese borde. */
+  right: calc(0.75rem - var(--inset));
+  /* Estrecha, en bloque: las líneas se parten en vez de alargarse. */
+  max-width: 10rem;
+  white-space: normal;
+}
+
+.us-definition-copy {
+  justify-self: stretch;
+  align-self: start;
+}
+
+/* En escritorio el texto ocupa el lienzo claro que queda entre el rótulo y la banda negra de las
+   funciones, con el mismo aire arriba y abajo, y escala dentro hasta llenarlo (appFitBox). Abajo se
+   descuenta lo que las funciones suben sobre la rejilla y el aire de la banda. A la izquierda arranca
+   con aire tras la placa: el hueco de la rejilla también es claro, así que se descuenta. */
+@media (min-width: 1001px) {
+  .us-definition-copy {
+    align-self: stretch;
+    height: auto;
+    /* Un poco más arriba que el centro: el ojo lo lee centrado con el rótulo encima. */
+    padding-block: clamp(1.25rem, 3.5svh, 2.5rem) clamp(2.75rem, 8.5svh, 5.5rem);
+    margin: 0 0 calc(4.75rem + 1.5rem) calc(clamp(1.5rem, 3.7vw, 4rem) - clamp(2rem, 6vw, 6rem));
+  }
+
+  /* Lo que sobra al escalar va arriba y abajo, a partes iguales: los párrafos no se separan. */
+  .us-definition-copy-fit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* El borde del bloque es la tinta: mayúscula arriba, línea base abajo. */
+  .us-definition-copy .us-definition-copy-fit p:first-child {
+    margin-top: -0.31em;
+  }
+
+  .us-definition-copy .us-definition-copy-fit p:last-child {
+    margin-bottom: -0.5em;
+  }
+}
+
+/* El texto, con la misma tipografía que la 02: una entrada en Nunito gruesa y el párrafo a tamaño de
+   lectura, justificado, con las ideas clave en negrita y AlienMilk en coral. */
+.us-definition-copy {
+  font-size: clamp(0.9rem, 1.146vw, 1.4rem);
+}
+
+.us-definition-copy p {
+  margin: 0;
+  color: var(--ink);
+  font:
+    500 1.06em / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.us-definition-copy .us-definition-lead {
+  margin-bottom: 1.4em;
+  font-size: 1.32em;
+  font-weight: 700;
+  line-height: 1.42;
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.us-definition-copy b,
+.us-definition-copy strong {
+  font-weight: 800;
+}
+
+.us-definition-copy strong {
+  color: var(--coral);
+}
+
 .us-ecosystem-heading p {
   margin: 1rem 0 0;
   color: var(--muted);
@@ -561,20 +749,47 @@ h2 em {
   hyphens: auto;
 }
 
-.us-definition-copy p:first-child {
-  margin-top: 0;
-  color: var(--ink);
-  font:
-    600 clamp(1.15rem, 1.5vw, 1.35rem) / 1.35 'Nunito',
-    sans-serif;
-  text-align: left;
-}
-
 .us-functions {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.5rem;
   margin: clamp(3rem, 5vw, 4.5rem) 0 0;
+}
+
+/* En escritorio la placa también pasa por detrás de las funciones: una banda negra hasta el borde
+   derecho, con un remate cóncavo donde se une a la placa y la esquina de fuera redondeada. */
+@media (min-width: 1001px) {
+  .us-definition:not(.us-definition--inverse) .us-functions {
+    position: relative;
+  }
+
+  .us-definition:not(.us-definition--inverse) .us-functions::before,
+  .us-definition:not(.us-definition--inverse) .us-functions::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+  }
+
+  .us-definition:not(.us-definition--inverse) .us-functions::before {
+    top: -1.5rem;
+    right: calc(-1 * var(--inset) - 1px);
+    bottom: calc(var(--functions-drop) - clamp(1.5rem, 2.5vw, 2.5rem));
+    left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625 - 1px);
+    border-radius: 0 var(--seam) 0 0;
+    background: var(--night);
+  }
+
+  .us-definition:not(.us-definition--inverse) .us-functions::after {
+    top: calc(-1.5rem - var(--seam) + 1px);
+    left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625 - 1px);
+    width: calc(var(--seam) + 1px);
+    height: var(--seam);
+    background: radial-gradient(
+      circle var(--seam) at 100% 0,
+      transparent calc(100% - 0.5px),
+      var(--night) 100%
+    );
+  }
 }
 
 /* Las funciones cruzan el borde de la placa: el trazo y el nombre van en blanco con fusión
@@ -607,94 +822,752 @@ h2 em {
   mix-blend-mode: difference;
 }
 
-/* Trabajo: banda oscura con la imagen recortada en la esquina, como la portada del expediente. */
-.us-practice {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(2rem, 5vw, 5rem);
-  padding: 0 var(--inset) clamp(2.5rem, 5vw, 4.5rem) 0;
-  color: var(--light);
-  background: var(--night);
-}
-
-.us-practice-visual {
-  position: relative;
-  margin: 0;
-  overflow: hidden;
-  border-radius: 0 0 var(--corner) 0;
-}
-
-.us-practice-visual img {
-  width: 100%;
-  height: 100%;
-  min-height: 28rem;
-  display: block;
-  object-fit: cover;
-}
-
-.us-practice-visual figcaption {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 0.6rem calc(var(--corner) + 1rem) 0.7rem 1.5rem;
-  color: rgba(250, 249, 247, 0.78);
-  background: var(--night);
-}
-
-.us-practice-copy {
-  padding-top: clamp(2.5rem, 5vw, 4.5rem);
-}
-
 .us-kicker {
   margin: 0;
 }
 
-.us-practice h2 {
-  margin-top: 1.2rem;
-  font-size: clamp(3rem, 5.4vw, 5.6rem);
+/* 02 / Nuestro trabajo: la geometría de la 01 al revés, del alto de dos pantallas. El lienzo claro va
+   de borde a borde y lleva el texto; el recuadro oscuro, con la esquina redondeada hacia el texto,
+   queda para la imagen. La frontera entre claro y oscuro cae donde acaba la placa de la 01. */
+.us-definition.us-definition--inverse {
+  /* Frente a la esquina inferior de la 01, la misma esquina: el paso de una sección a la otra. Abajo
+     el lienzo se corta: el equipo flota sobre la textura antes de la 03. */
+  border-radius: var(--seam) 0 calc(var(--corner) * 1.6) 1rem;
+  /* El recuadro oscuro sube 3 px sobre la sección de arriba: con su borde suavizado y recortado justo
+     en el límite, dejaba ver medio píxel de lienzo claro como un filete. Solo se recorta a los lados. */
+  overflow-y: visible;
 }
 
-.us-practice-intro {
-  max-width: 34rem;
-  margin: 0.5rem 0 2rem;
+.us-definition--inverse .us-definition-body::before {
+  top: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem + 3px));
+  right: calc(-1 * var(--inset) - 1px);
+  left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625);
+  width: auto;
+  /* Un poco más curva que la de la foto que la tapa: así no asoma un filo oscuro por la esquina. */
+  border-radius: 0 0 calc(var(--corner) * 1.6 + 3px) 0;
+}
+
+/* Arriba, la esquina que se redondea es la del lienzo claro: detrás, el negro de la banda de la 01
+   continúa en el recuadro oscuro. */
+@media (min-width: 1001px) {
+  .us-definition--inverse .us-definition-body::after {
+    content: '';
+    position: absolute;
+    top: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem + 1px));
+    left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625 - var(--corner));
+    z-index: -1;
+    width: calc(var(--corner) + 1px);
+    height: var(--corner);
+    background: radial-gradient(
+      circle var(--corner) at 0 100%,
+      transparent calc(100% - 0.5px),
+      var(--night) 100%
+    );
+  }
+}
+
+.us-definition--inverse .us-label {
   color: var(--light-muted);
-  line-height: 1.6;
 }
 
-.us-steps {
+/* Todo lo de la sección va en em: crece con el ancho de la pantalla y conserva la medida de línea. */
+.us-work {
+  font-size: clamp(0.9rem, 1.146vw, 1.4rem);
+}
+
+/* Titulares como los del resto de la página: condensada gruesa y aplastada, a un tamaño contenido. */
+.us-work-block :is(h2, h3) {
+  margin: 0;
+  font-family: var(--condensed);
+  font-size: 3em;
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: 0.025em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+/* El rótulo de la segunda parte, como el de la sección, con el mismo aire hasta el titular. */
+.us-work-eyebrow {
+  margin: 0 0 calc(0.9rem + 1px + 1.15 * clamp(0.9rem, 1.146vw, 1.4rem));
+}
+
+/* Subtítulo pequeño en coral, como el de la cabecera de Sesiones, con aire bajo el titular. */
+.us-work-subtitle {
+  margin: 0.95em 0 0;
+  color: var(--coral);
+  font:
+    700 1.1em / 1.3 'Nunito',
+    sans-serif;
+  letter-spacing: 0.025em;
+  text-wrap: balance;
+}
+
+/* El párrafo, a tamaño de lectura y justificado, como el resto de textos. */
+.us-work-text {
+  margin: 1.2em 0 0;
+  color: var(--ink);
+  font:
+    500 1.06em / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* Las ideas clave en negrita y AlienMilk en coral, como en la nota de la cabecera. */
+.us-work-text b,
+.us-work-text strong {
+  font-weight: 800;
+}
+
+.us-work-text strong {
+  color: var(--coral);
+}
+
+/* El AlienMilk que abre la sección, un poco mayor. */
+.us-work-text .us-work-name {
+  font-size: 1.12em;
+}
+
+/* El recorrido de una muestra cruza la sección de lado a lado en su propio recuadro oscuro, que en
+   escritorio se une al de la derecha: cápsulas, como células, unidas por un filamento que se estira
+   hasta llenar el ancho, centradas en el recuadro. */
+.us-chain {
+  position: relative;
+  padding: 1.6em 0.5em 1.6em 2.3em;
+}
+
+.us-chain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--seam);
+  background: var(--night);
+}
+
+.us-chain ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 0.9em;
   margin: 0;
   padding: 0;
+  font-size: 0.78em;
   list-style: none;
 }
 
-.us-steps li {
+.us-chain li {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+}
+
+.us-chain li:last-child {
+  flex: none;
+}
+
+.us-chain li:not(:last-child)::after {
+  content: '';
+  flex: 1 1 0.6em;
+  min-width: 0.6em;
+  height: 1.5px;
+  background: var(--light-rule);
+}
+
+.us-chain li > span {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.4em 0.7em 0.4em 0.55em;
+  border: 1px solid rgba(33, 30, 36, 0.24);
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--page-canvas);
+  font:
+    700 1em 'Nunito',
+    sans-serif;
+  white-space: nowrap;
+}
+
+.us-chain b {
+  color: var(--coral);
+  font: 700 1.15em var(--condensed);
+  letter-spacing: 0.04em;
+}
+
+/* La última etapa, en coral: ahí acaba el recorrido. */
+.us-chain .us-chain-end > span {
+  border-color: var(--coral);
+  background: var(--coral);
+}
+
+.us-chain .us-chain-end b {
+  color: var(--night);
+}
+
+/* La foto va en el recuadro oscuro, junto a «Bajo custodia». */
+.us-work-visual {
+  position: relative;
+  margin: 0;
+  min-height: 12rem;
+}
+
+.us-work-visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 46% 50%;
+}
+
+/* El equipo, entre la 02 y la 03, sobre la textura: una nota firmada como la de la cabecera, y
+   debajo el retrato en un marco redondeado, con sus fichas. */
+.us-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* El mismo aire encima y debajo de la frase. */
+  gap: clamp(4.5rem, 9vw, 9rem);
+  padding-block: clamp(4.5rem, 9vw, 9rem) clamp(3rem, 6vw, 5rem);
+}
+
+/* La nota no lleva aquí el margen de la cabecera: el aire lo da la sección, igual arriba y abajo. */
+.us-hero-note.us-team-statement {
+  width: min(100%, 40rem);
+  margin: 0;
+}
+
+/* La firma ya abre con su raya: sin el trazo de la de la cabecera. */
+.us-team-statement .us-hero-signature::before {
+  content: none;
+}
+
+/* El retrato y la arquitectura forman una sola pieza al ancho de los lienzos, sin hueco entre ellos:
+   las esquinas son de la pieza entera. */
+.us-team-board {
+  width: 100%;
+  overflow: hidden;
+  border-radius: calc(var(--corner) * 1.6) 0.45rem calc(var(--corner) * 1.6) 0.45rem;
+}
+
+/* La foto llena el marco entero. El marco contiene los márgenes de sus fichas: si no, en móvil se
+   escapan y abren un hueco sobre el bloque de la arquitectura. */
+.us-team-frame {
+  position: relative;
+  display: flow-root;
+  margin: 0;
+}
+
+/* La ficha del retrato, como las de las fotos de la 02: junto a Cayi, a su derecha, sobre el traje
+   del androide de al lado. */
+.us-team-frame .us-team-tag {
+  position: absolute;
+  bottom: 30%;
+  left: 62.5%;
+  margin: 0;
+}
+
+/* La credencial de Cayi, como la acreditación de un museo: una tarjeta coral con las esquinas de la
+   web, el nombre en la letra de los titulares, el cargo debajo con la minimilk y la ubicación bajo
+   un filete. Todo en un granate cálido. */
+.us-team-frame .us-ceo-tag {
+  position: absolute;
   display: grid;
-  grid-template-columns: 3rem 1fr;
-  gap: 1rem;
-  padding: 1.1rem 0;
+  overflow: hidden;
+  isolation: isolate;
+  margin: 0;
+  padding: 0.95rem 0.95rem 0.65rem 0.8rem;
+  border-radius: var(--seam) 0.35rem var(--seam) 0.35rem;
+  color: #5c1e28;
+  background: rgba(255, 127, 127, 0.94);
+  box-shadow: 0 14px 30px rgba(13, 21, 30, 0.28);
+  font-family: 'Nunito', sans-serif;
+  text-transform: uppercase;
+}
+
+/* De fondo, una minimilk grande, oscura y tenue, como una marca de agua, que se sale por la esquina. */
+.us-team-frame .us-ceo-tag::before {
+  content: '';
+  position: absolute;
+  top: -0.8rem;
+  right: -1.4rem;
+  z-index: -1;
+  width: 6rem;
+  aspect-ratio: 1;
+  background: #5c1e28;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  opacity: 0.12;
+  rotate: -12deg;
+}
+
+.us-ceo-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  margin-bottom: 0.5rem;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.us-ceo-name {
+  margin: 0 0 0.3rem;
+  font: 700 1.95rem / 0.85 var(--condensed);
+  letter-spacing: 0.04em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+.us-ceo-place {
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(92, 30, 40, 0.3);
+  color: rgba(92, 30, 40, 0.82);
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  line-height: 1.6;
+}
+
+/* La de los agentes, abajo a la izquierda, sobre el traje del primero. */
+.us-team-frame .us-agents-tag {
+  bottom: 9%;
+  left: 3%;
+  max-width: 14rem;
+}
+
+.us-team-photo {
+  display: block;
+}
+
+/* La foto llena el marco en apaisado: se recorta arriba y abajo, con las cabezas y la taza dentro. */
+.us-team-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+
+/* La arquitectura ejecutiva, pegada bajo el retrato: un bloque oscuro con pestañas, como los
+   rótulos de la página, y en cada una el texto justificado y su responsabilidad al lado. */
+.us-arch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: clamp(1.75rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 4rem) clamp(2rem, 4vw, 3.5rem);
+  color: var(--light);
+  background: var(--night);
+}
+
+/* La cabecera del bloque: el título y la entradilla, encima de las pestañas. */
+.us-arch-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem clamp(1.75rem, 3vw, 3rem);
+  align-items: center;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.us-arch-head h3 {
+  margin: 0;
+  /* Una palabra por línea, como estaba. */
+  max-width: min-content;
+  font: 700 clamp(2.4rem, 4vw, 4rem) / 1.05 var(--condensed);
+  letter-spacing: 0.025em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+.us-arch-head p {
+  margin: 0;
+  /* Separado del título por una barra vertical, cerca de él. */
+  padding-left: clamp(1.75rem, 3vw, 3rem);
+  border-left: 1px solid var(--light-rule);
+  color: var(--light-muted);
+  font:
+    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* La fila de las pestañas, con el botón de desplegar en el margen derecho. */
+.us-arch-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  border-bottom: 1px solid var(--light-line);
+}
+
+/* Las cuatro pestañas ocupan lo mismo, separadas por un filete vertical corto. */
+.us-arch-tabs {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  row-gap: 0.25rem;
+  margin-right: clamp(1rem, 2vw, 2rem);
+}
+
+.us-arch-tab + .us-arch-tab::before {
+  content: '';
+  position: absolute;
+  top: 0.1em;
+  left: 0;
+  height: 1.1em;
+  border-left: 1px solid var(--light-rule);
+}
+
+/* Plegado no hay pestaña abierta: ninguna lleva el subrayado. */
+.us-arch--closed .us-arch-tab[aria-selected='true'] {
+  border-bottom-color: transparent;
+  color: var(--light-muted);
+}
+
+.us-arch-toggle {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.3rem;
+  padding: 0;
+  border: 0;
+  color: var(--light-muted);
+  background: none;
+  font:
+    800 0.66rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.us-arch-toggle span {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font:
+    400 1.1rem / 1 'Nunito',
+    sans-serif;
+  letter-spacing: 0;
+}
+
+.us-arch-toggle:hover {
+  color: var(--coral);
+}
+
+.us-arch-toggle:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 4px;
+}
+
+.us-arch-tab {
+  position: relative;
+  margin-bottom: -1px;
+  padding: 0 0.25rem 1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--light-muted);
+  background: none;
+  font:
+    800 clamp(0.62rem, 0.78vw, 0.78rem) 'Nunito',
+    sans-serif;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.us-arch-tab span {
+  margin-right: 0.4em;
+  color: var(--coral);
+}
+
+.us-arch-tab:hover {
+  color: var(--light);
+}
+
+.us-arch-tab[aria-selected='true'] {
+  border-bottom-color: var(--coral);
+  color: var(--light);
+}
+
+.us-arch-tab:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 4px;
+}
+
+.us-arch-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  padding-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* Todas las pestañas ocupan la misma celda: el bloque mide lo que la más larga y no salta al
+   cambiar. Las ocultas no se ven ni se leen. */
+.us-arch-panel {
+  grid-area: 3 / 1;
+}
+
+.us-arch-panel[hidden] {
+  display: grid;
+  visibility: hidden;
+}
+
+.us-arch-copy h4 {
+  margin: 0;
+  font: 700 clamp(1.9rem, 2.8vw, 2.8rem) / 0.85 var(--condensed);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+/* El nombre completo de la sigla, en coral bajo el título. */
+.us-arch-copy .us-arch-sub {
+  margin-top: 0.3rem;
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.us-arch-copy p {
+  margin: 0.9rem 0 0;
+  color: rgba(247, 248, 249, 0.86);
+  font:
+    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.us-arch-copy b {
+  color: var(--light);
+  font-weight: 800;
+}
+
+/* La responsabilidad de cada capa, como una lista de funciones: una por línea, con su filete. */
+.us-arch-facts {
+  margin: 0;
+}
+
+.us-arch-facts dt {
+  margin-bottom: 0.4rem;
+  color: var(--coral);
+  font:
+    800 0.6rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.us-arch-facts dd {
+  margin: 0;
+  padding: 0.5rem 0 0.4rem;
+  border-top: 1px solid var(--light-line);
+  font: 400 clamp(1.35rem, 1.9vw, 1.8rem) / 1.1 var(--condensed);
+}
+
+/* El principio de la continuidad, como una cita: una sola frase, más suelta. */
+.us-arch-facts--principle dd {
+  padding-top: 0.8rem;
+  font-style: italic;
+  line-height: 1.2;
+}
+
+/* El cierre del bloque, bajo las pestañas y tras un filete: el título a la izquierda y el texto a
+   la derecha, que acaba en una frase destacada en coral. */
+.us-arch-scale {
+  display: grid;
+  grid-area: 4 / 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 1rem clamp(2rem, 5vw, 5rem);
+  margin-top: clamp(2.5rem, 4.5vw, 4rem);
+  padding-top: clamp(2rem, 3.5vw, 3rem);
   border-top: 1px solid var(--light-line);
 }
 
-.us-steps li > span {
-  color: var(--coral);
-  font: 700 1.05rem var(--condensed);
-  letter-spacing: 0.06em;
-}
-
-.us-steps h3 {
-  margin: 0 0 0.35rem;
-  font:
-    700 0.98rem 'Nunito',
-    sans-serif;
-}
-
-.us-steps p {
+.us-arch-scale h4 {
   margin: 0;
+  font: 700 clamp(1.9rem, 2.8vw, 2.8rem) / 0.85 var(--condensed);
+  letter-spacing: 0.025em;
+  text-wrap: balance;
+  transform: scaleY(0.78);
+  transform-origin: left top;
+}
+
+.us-arch-scale-copy p {
+  margin: 0 0 0.9rem;
+  color: rgba(247, 248, 249, 0.86);
+  font:
+    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.us-arch-scale-copy b {
+  color: var(--light);
+  font-weight: 800;
+}
+
+.us-arch-scale-copy .us-arch-scale-claim {
+  margin: 1.4rem 0 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--coral);
+  color: var(--coral);
+  font-size: clamp(1.15rem, 1.45vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+/* Trayectoria, bajo el equipo y sobre la textura: titular y cifras en claro y, debajo, la cinta de
+   quienes confían en AlienMilk, que pasa despacio de lado a lado y se funde en los bordes. */
+.us-trust {
+  padding-bottom: clamp(3.5rem, 7vw, 6rem);
+  color: var(--light);
+}
+
+.us-trust-head {
+  display: grid;
+  gap: 1rem;
+  max-width: 46rem;
+}
+
+.us-trust-head h2 {
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  text-wrap: balance;
+}
+
+.us-trust-figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+}
+
+.us-trust-figures div {
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--light-rule);
+}
+
+.us-trust-figures dt {
+  color: var(--coral);
+  font:
+    800 0.62rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.us-trust-figures dd {
+  margin: 0.35rem 0 0;
+  font: 400 clamp(2.4rem, 4.2vw, 4rem) / 1 var(--condensed);
+}
+
+.us-trust-figures .us-trust-note {
+  margin-top: 0.3rem;
   color: var(--light-muted);
   font:
-    0.92rem / 1.55 Arial,
+    500 0.85rem / 1.4 'Nunito',
     sans-serif;
+}
+
+.us-trust-reel {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  overflow: hidden;
+  padding-block: 1.4rem;
+  border-block: 1px solid var(--light-line);
+  mask: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.us-trust-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: us-trust-reel 60s linear infinite;
+}
+
+.us-trust-reel:hover .us-trust-track {
+  animation-play-state: paused;
+}
+
+/* La cinta va doble: al recorrer media, la segunda copia ocupa el sitio de la primera. El hueco
+   entre copias es el mismo que entre marcas. */
+@keyframes us-trust-reel {
+  to {
+    transform: translateX(calc(-50% - clamp(2.5rem, 5vw, 4.5rem) / 2));
+  }
+}
+
+/* Cada marca con su rótulo, en claro y algo apagada, como logotipos en una sola tinta. */
+.us-brand {
+  flex: none;
+  color: rgba(247, 248, 249, 0.72);
+  white-space: nowrap;
+}
+
+.us-brand--serif {
+  font:
+    400 1.45rem 'Gloock',
+    'Didot',
+    serif;
+}
+
+.us-brand--condensed {
+  font: 700 1.55rem var(--condensed);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.us-brand--wide {
+  font:
+    800 0.95rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.us-brand--italic {
+  font: italic 400 1.6rem var(--condensed);
+  letter-spacing: 0.02em;
+}
+
+/* Sin movimiento, la cinta se queda quieta y en varias filas, sin la copia. */
+@media (prefers-reduced-motion: reduce) {
+  .us-trust-reel {
+    mask: none;
+  }
+
+  .us-trust-track {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: auto;
+    row-gap: 1rem;
+    animation: none;
+  }
+
+  .us-brand[aria-hidden='true'] {
+    display: none;
+  }
 }
 
 /* Ecosistema */
@@ -783,9 +1656,9 @@ h2 em {
   color: var(--coral);
 }
 
-/* El lienzo se cierra con la esquina grande opuesta a la de arriba. */
+/* La 03 es un lienzo aparte: esquinas grandes en diagonal, pequeñas en las otras dos. */
 .us-ecosystem {
-  border-radius: 0 0 var(--corner) 1rem;
+  border-radius: var(--corner) 1rem var(--corner) 1rem;
 }
 
 /* Invitación: tarjeta oscura flotando sobre la textura, fuera del lienzo. */
@@ -795,7 +1668,8 @@ h2 em {
 
 .us-invitation-card {
   display: grid;
-  grid-template-columns: minmax(0, 0.3fr) minmax(0, 0.7fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
   gap: 2rem;
   padding: clamp(2.5rem, 5vw, 4.5rem);
   border-radius: 1.25rem;
@@ -804,11 +1678,71 @@ h2 em {
   box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
 }
 
+/* La portada de la 01 dentro de la tarjeta, con las mismas proporciones: el titular en columna,
+   una palabra por línea, y el busto encima, apoyado en el pie de la tarjeta. Todo se mide con el
+   ancho de su columna (la letra es 1/6,8 de él). */
+.us-invitation-visual {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 6.8 / 5.9;
+  margin-bottom: calc(-1 * clamp(2.5rem, 5vw, 4.5rem));
+  pointer-events: none;
+}
+
+.us-invitation-visual .us-invitation-word {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  max-width: 1ch;
+  margin: 0;
+  color: var(--light);
+  font:
+    400 calc(100cqi / 6.8) / 0.9 'Gloock',
+    'Didot',
+    serif;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.us-invitation-word em {
+  color: var(--coral);
+  font-style: normal;
+}
+
+.us-invitation-visual img {
+  position: absolute;
+  bottom: 0;
+  left: 4.56%;
+  z-index: 1;
+  width: 115%;
+  height: auto;
+  mask: linear-gradient(to top, transparent 0, #000 22%);
+}
+
+/* «Forma.», y solo esa palabra, por delante del busto, como en la 01. */
+.us-invitation-visual .us-invitation-front {
+  z-index: 2;
+  visibility: hidden;
+}
+
+.us-invitation-front span {
+  visibility: visible;
+}
+
+.us-invitation-copy {
+  align-self: center;
+}
+
+.us-invitation-copy .us-kicker {
+  margin-bottom: 1.25rem;
+}
+
 .us-invitation h2 {
   font-size: clamp(3rem, 5.4vw, 5.6rem);
 }
 
-.us-invitation-card p:not(.us-kicker) {
+.us-invitation-copy p:not(.us-kicker) {
   max-width: 30rem;
   margin: 0.5rem 0 0;
   color: rgba(241, 236, 239, 0.78);
@@ -845,7 +1779,6 @@ h2 em {
   .us-hero-grid,
   .us-definition-grid,
   .us-ecosystem-heading,
-  .us-practice,
   .us-invitation-card {
     grid-template-columns: 1fr;
   }
@@ -864,6 +1797,22 @@ h2 em {
     overflow: hidden;
     border-radius: 0 var(--corner) 0.35rem 0;
     background: var(--night);
+    /* La foto va de fondo: la figura mide lo que el titular y deja sitio debajo para el pie. */
+    min-height: calc(var(--title-size) * 5.4 + var(--plate-pad) * 0.35 + 11rem);
+  }
+
+  /* La etiqueta de la sede no cabe junto al titular: va debajo de él, sobre el pie. */
+  .us-station-tag {
+    position: relative;
+    top: auto;
+    right: auto;
+    max-width: 15rem;
+    margin: 0 0 0 var(--inset);
+  }
+
+  .us-definition-visual figcaption {
+    position: relative;
+    z-index: 2;
   }
 
   /* En columna el cultivo va debajo: la nota ocupa todo el ancho y, sin margen donde colgarlas,
@@ -896,25 +1845,105 @@ h2 em {
     margin-top: 0.75rem;
   }
 
-  .us-practice {
-    padding-left: var(--inset);
+  /* En columna, el texto va sobre el lienzo claro, el recorrido debajo y el hueco de la imagen al
+     final, en su recuadro oscuro. */
+  .us-work,
+  .us-definition-copy {
+    font-size: 1rem;
   }
 
-  .us-practice-visual {
-    margin-inline: calc(-1 * var(--inset));
-  }
-
-  .us-practice-visual img {
+  .us-work-visual {
     min-height: 0;
-    max-height: 26rem;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--corner) 0 0 0.35rem;
+    background: var(--night);
   }
 
-  .us-practice-copy {
-    padding-top: 0;
+  /* En columna las fotos son pequeñas y las fichas taparían al androide: van debajo, en el recuadro
+     oscuro. */
+  .us-work-visual {
+    aspect-ratio: auto;
+  }
+
+  .us-work-visual img {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .us-work-visual .us-farm-tag {
+    position: static;
+    max-width: none;
+    margin: 0.9rem 1rem 1rem;
+    background: none;
+  }
+
+  /* La foto del equipo es pequeña: la ficha va debajo, dentro del marco, para no tapar a nadie. */
+  .us-team-frame {
+    background: var(--night);
+  }
+
+  .us-team-frame .us-team-tag {
+    position: static;
+    max-width: none;
+    margin: 0.75rem 1rem 0.9rem;
+    background: none;
+  }
+
+  .us-team-frame .us-ceo-tag {
+    position: static;
+    width: fit-content;
+    margin: 1rem 1rem 0.25rem;
+    background: rgba(255, 127, 127, 0.94);
+  }
+
+  .us-arch-panel,
+  .us-arch-head {
+    grid-template-columns: 1fr;
+  }
+
+  .us-arch-head p {
+    padding-left: 1rem;
+  }
+
+  .us-arch-scale {
+    grid-template-columns: 1fr;
+  }
+
+  /* En columna, en la invitación la portada va debajo del texto, apoyada en el pie de la tarjeta. */
+  .us-invitation-visual {
+    order: 2;
   }
 }
 
 @media (max-width: 600px) {
+  /* En móvil, dos pestañas por fila: el filete solo entre las de una misma fila. */
+  .us-arch-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-right: 0;
+  }
+
+  .us-arch-tab {
+    font-size: 0.68rem;
+    white-space: normal;
+  }
+
+  .us-arch-tab + .us-arch-tab:nth-child(3)::before {
+    content: none;
+  }
+  /* En móvil las pestañas necesitan el ancho: el botón va debajo, a la derecha. */
+  .us-arch-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .us-arch-toggle {
+    align-self: flex-end;
+    margin-bottom: 0.9rem;
+  }
+  .us-trust-figures {
+    grid-template-columns: 1fr;
+  }
   .us-label span:last-child {
     display: none;
   }
@@ -949,5 +1978,246 @@ h2 em {
 
   .us-unit {
     min-height: 22rem;
+  }
+}
+
+/* En escritorio cada sección cabe en una pantalla y la llena: mide el alto útil (la pantalla menos
+   la barra superior) y lo de dentro se reparte o escala con él. Con un mínimo, para que en
+   pantallas muy bajas nada se monte. */
+@media (min-width: 1001px) {
+  .us {
+    --room: calc(100svh - var(--topbar-height, 3.75rem));
+  }
+
+  /* Al saltar desde el índice, la sección arranca justo bajo la barra y se ve entera. */
+  .us-definition,
+  .us-ecosystem {
+    scroll-margin-top: var(--topbar-height, 3.75rem);
+  }
+
+  /* Cabecera: la rejilla toma lo que dejan las migas y el índice. */
+  .us-hero {
+    display: flex;
+    flex-direction: column;
+    height: max(var(--room), 34rem);
+  }
+
+  .us-hero-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* En pantallas bajas la nota se ajusta para que el enlace no baje hasta el índice. */
+  .us-hero-note {
+    margin-top: clamp(1.5rem, min(3.2vw, 6.5svh), 3.4rem);
+  }
+
+  .us-hero-lead {
+    font-size: clamp(1.1rem, min(1.5vw, 3.1svh), 1.7rem);
+  }
+
+  /* 01 y 02: la placa toma lo que dejan el rótulo y las funciones. */
+  .us-definition {
+    display: flex;
+    flex-direction: column;
+    height: max(var(--room), 36rem);
+    /* Bajo las funciones, el mismo aire que sobre el rótulo: el resto es para la composición. */
+    padding-bottom: clamp(1.5rem, 2.5vw, 2.5rem);
+  }
+
+  .us-definition-body::before {
+    bottom: calc(-1 * clamp(1.5rem, 2.5vw, 2.5rem));
+  }
+
+  /* 01: la fila de funciones va algo más abajo y se come el 40 % del margen inferior. La figura gana
+     ese alto por abajo, así que el busto y su pie no se mueven. */
+  .us-definition:not(.us-definition--inverse) {
+    --functions-drop: calc(clamp(1.5rem, 2.5vw, 2.5rem) * 0.4);
+    padding-bottom: calc(clamp(1.5rem, 2.5vw, 2.5rem) - var(--functions-drop));
+  }
+
+  .us-definition:not(.us-definition--inverse) .us-definition-body::before {
+    bottom: calc(var(--functions-drop) - clamp(1.5rem, 2.5vw, 2.5rem));
+  }
+
+  .us-definition-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .us-definition-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* La fila no crece con la imagen: la imagen se escala dentro de ella. */
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .us-definition-visual {
+    align-self: stretch;
+    height: auto;
+  }
+
+  /* 02: mide lo que su contenido, con el recuadro oscuro de arriba abajo. Al menos una pantalla. */
+  .us-definition.us-work {
+    height: auto;
+    min-height: max(var(--room), 36rem);
+    /* Abajo, además, el alto del rótulo de arriba: así las dos partes miden lo mismo. */
+    padding-bottom: calc(clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem);
+  }
+
+  .us-definition.us-work .us-definition-body::before {
+    bottom: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem));
+  }
+
+  /* Tres filas: el primer bloque arriba, el recorrido de lado a lado y el segundo bloque debajo. Las
+     dos partes miden lo mismo: la más alta marca el alto de las dos. */
+  .us-definition-grid.us-work-grid {
+    grid-template-rows: 1fr auto 1fr;
+    align-items: start;
+    row-gap: 2.75em;
+  }
+
+  .us-work-block {
+    grid-column: 1;
+    padding: 1.15em clamp(1.5rem, 3.7vw, 4rem) 0 0;
+  }
+
+  .us-work-block--custody {
+    grid-row: 3;
+    padding-top: 0;
+  }
+
+  .us-chain {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* La foto llena el recuadro oscuro desde el recorrido hasta el pie de la sección, a sangre por la
+     derecha, y se funde con el negro por arriba. */
+  .us-work-visual {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: stretch;
+  }
+
+  .us-work-visual img {
+    position: absolute;
+    top: -2.75em;
+    /* Empieza una esquina antes del recuadro oscuro: abajo, ese trozo redondea la esquina del lienzo
+       claro con la propia foto; arriba de él no se ve. */
+    left: calc(-1 * clamp(2rem, 6vw, 6rem) - var(--corner));
+    width: calc(100% + clamp(2rem, 6vw, 6rem) + var(--inset) + 1px + var(--corner));
+    height: calc(100% + 2.75em + clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem);
+    mask:
+      linear-gradient(to bottom, transparent, #000 28%),
+      linear-gradient(
+        to right,
+        transparent calc(var(--corner) - 1px),
+        #000 calc(var(--corner) - 1px)
+      ),
+      radial-gradient(circle var(--corner) at 0 0, transparent calc(100% - 0.5px), #000 100%) left
+        bottom / var(--corner) var(--corner);
+    mask-repeat: no-repeat;
+    mask-composite: intersect, add;
+    /* Acaba en la esquina inferior derecha de la sección. */
+    border-radius: 0 0 calc(var(--corner) * 1.6) 0;
+  }
+
+  /* El androide de la granja, arriba: la foto llena el recuadro oscuro desde el borde superior de la
+     sección hasta el recorrido, a sangre por la derecha, con las esquinas de arriba redondeadas.
+     Arriba se oscurece un poco para que el rótulo se lea y abajo se funde con el negro antes del
+     recorrido. */
+  .us-work-visual--top {
+    grid-row: 1;
+    align-self: stretch;
+    margin: calc(-1 * (clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem))
+      calc(-1 * var(--inset) - 1px) -2.75em calc(-1 * clamp(2rem, 6vw, 6rem));
+    overflow: hidden;
+    border-radius: var(--corner) var(--corner) 0 0;
+  }
+
+  .us-work-visual--top img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-position: 50% 35%;
+    mask: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), #000 6rem, #000 62%, transparent);
+  }
+
+  /* El recuadro del recorrido se une al de la derecha: esquinas redondeadas solo hacia el texto y,
+     en las uniones, un remate cóncavo. */
+  .us-chain::before {
+    border-radius: var(--seam) 0 0 var(--seam);
+  }
+
+  .us-chain::after,
+  .us-chain ol::before {
+    content: '';
+    position: absolute;
+    left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625 - var(--seam));
+    z-index: -1;
+    /* Un píxel de solape con los dos recuadros, para que no quede filete entre ellos. */
+    width: calc(var(--seam) + 1px);
+    height: calc(var(--seam) + 1px);
+  }
+
+  .us-chain::after {
+    bottom: calc(100% - 1px);
+    background: radial-gradient(
+      circle var(--seam) at 0 0,
+      transparent calc(100% - 0.5px),
+      var(--night) 100%
+    );
+  }
+
+  .us-chain ol::before {
+    top: calc(100% - 1px);
+    background: radial-gradient(
+      circle var(--seam) at 0 100%,
+      transparent calc(100% - 0.5px),
+      var(--night) 100%
+    );
+  }
+
+  /* 03: las tarjetas toman lo que deja el titular; los márgenes miden con el alto de la pantalla. */
+  .us-ecosystem {
+    display: flex;
+    flex-direction: column;
+    height: max(var(--room), 36rem);
+    padding-block: clamp(1.5rem, 5svh, 4.5rem);
+  }
+
+  .us-ecosystem-heading {
+    padding-block: clamp(1.25rem, 4svh, 4rem) clamp(1rem, 3svh, 3rem);
+  }
+
+  .us-ecosystem h2 {
+    font-size: clamp(2.6rem, min(5.4vw, 8.5svh), 5.6rem);
+  }
+
+  .us-unit-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .us-unit {
+    min-height: 0;
+  }
+}
+
+/* Si el recorrido no cabe en una fila, va en dos de cuatro etapas. */
+@media (min-width: 1001px) and (max-width: 1250px) {
+  .us-chain li {
+    flex-basis: 25%;
+  }
+}
+
+/* En escritorio estrecho «Dirección fundadora» no cabe en su cuarto: las pestañas pueden partirse. */
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .us-arch-tab {
+    white-space: normal;
   }
 }

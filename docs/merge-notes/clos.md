@@ -1,81 +1,62 @@
 # Notas de merge — rama `clos`
 
-Tanda del 29 de septiembre de 2026, sobre `main` en `10e5252`. La nota anterior de esta rama (26 de
-septiembre) ya está integrada; queda en el historial de git.
+Tanda del 2 de octubre de 2026, sobre `main` en `5da7bcf`. Las notas anteriores de esta rama ya están
+integradas (la última, `552033d`, en la integración del 1 de octubre); quedan en el historial de git.
+Esta tanda parte de la versión de Nosotros de `mini-codex` que ya está en `main` (`2d37300`).
 
-## Qué trae: página de Sesiones
+## Qué trae: página Nosotros
 
-- **Desplegable de clasificación propio** (`features/sessions/category-select.component.*`) en lugar
-  del `<select>` nativo. Teclado completo (flechas, Inicio, Fin, Intro, Escape).
-- **Buscador:** el foco vuelve a iluminarse en coral, como en la portada.
-- **Índice de orbes:** hover más marcado; clasificación y fecha encima del título; alto fijo del
-  contenedor aunque cambie el filtro o no haya resultados; las flechas del carrusel flotan.
-- **Al elegir sesión**, la imagen y su banda quedan centradas en el hueco bajo la barra superior.
-- **Cambiar de sesión desde la imagen:** flechas laterales y teclas ← → en ordenador, gesto de
-  deslizar en pantallas táctiles, con una guía que desaparece al usarla
-  (`styles/sessions-browse.css`, hoja nueva).
-- **Expediente:** tarjeta y parte blanca alineadas arriba y abajo, con scroll propio en la parte
-  blanca; barra de scroll invisible salvo mientras se desplaza; pestañas en una sola fila (si no
-  caben, se desplazan con un degradado en el borde); esquina inferior derecha del lienzo blanco
-  redondeada como la del índice.
-- **Texto del expediente** (`styles/sessions-file-text.css`, hoja nueva): eyebrow con el código y el
-  nombre de la sesión sobre las pestañas (en móvil, fija bajo la barra superior), entradilla
-  justificada y créditos como firma. Solo forma; el contenido sigue llegando del expediente. Más
-  margen lateral en la hoja blanca, igual a ambos lados.
+- **Escritorio:** cada sección llena el alto útil de la pantalla (la pantalla menos la barra
+  superior) y lo de dentro se adapta; la 02 mide lo que su contenido. En móvil las secciones fluyen.
+- **Cabecera:** «Descubrir sesiones» más grande; el aire bajo la eyebrow, igualado al de Sesiones.
+- **01 / Nuestro campo:**
+  - Imagen nueva, el busto con el equipo acoplado (`public/alienmilk-about-android.webp`), en lugar
+    de las manos. `alienmilk-about-hands.webp` sigue en el repositorio, sin uso en Nosotros.
+  - Titular «El fin antes que la forma.» en **Gloock**, una palabra por línea, detrás del busto;
+    «forma.» pasa por delante gracias a una copia del titular con `aria-hidden`.
+  - Placa negra hasta arriba, sin la raya del rótulo y con minimilk; el texto de la derecha escala
+    (`appFitBox`) para medir lo mismo que el titular; las funciones, algo más abajo.
+- **02 / Nuestro trabajo:** sustituye a la banda «Del origen a la mesa» con sus tres pasos.
+  - Textos de la usuaria, literales, con subtítulos en coral y frases clave en negrita.
+  - «Recorrido de una muestra»: ocho cápsulas que cruzan la sección del lienzo claro al recuadro
+    oscuro.
+  - La sección va en dos partes del mismo alto, «02 / Nuestro trabajo — 1» y «— 2».
+  - El recuadro oscuro queda reservado para una imagen pendiente.
+- **Unión 01/02:** esquinas pequeñas en el lado izquierdo.
 
-## Incluye trabajo sin commitear de `mini-codex`
+### Segunda tanda (mismo día, `065a52f` → siguiente commit)
 
-`mini-codex` tenía sin commitear ajustes de estilo de Sesiones en `sessions-details.css`,
-`sessions-dossier.css` y `sessions-responsive.css` (alinear tarjeta y parte blanca, scroll interior,
-separar pestañas). Con el visto bueno de la usuaria se copiaron tal cual a `clos` y **encima se
-retocaron**:
+- **01:** el busto deja la placa a un paisaje (`public/alienmilk-about-station.webp`) que la llena,
+  con el titular encima y una etiqueta pequeña de la sede (Estación Meridiana, Gliese 667 Cc). El
+  texto de la derecha pasa a la tipografía de la 02. En escritorio la placa también pasa por detrás
+  de las funciones.
+- **02:** el recorrido va en su propio recuadro oscuro, unido al de la derecha. El recuadro lleva
+  dos fotos: el androide granjero arriba (`alienmilk-about-farmer.webp`) y el androide de la
+  custodia abajo (`alienmilk-about-custody.webp`). La 02 acaba con esquinas propias.
+- **Equipo (nuevo, entre la 02 y la 03):** nota firmada con el formato de la de la cabecera y el
+  retrato del equipo (`alienmilk-about-team.webp`) al ancho de los lienzos, con la credencial coral
+  de Cayi y la ficha de los agentes. La 03 empieza como lienzo aparte.
+- **Arquitectura ejecutiva (nuevo, pegado bajo el retrato):** bloque oscuro plegable con pestañas
+  (Dirección fundadora, IEA, SEA, Continuidad) y el cierre «Diseñadas para operar a otra escala».
+  Textos de JT, literales. Estado en `about-page.component.ts` (`activeTab`, `archOpen`).
+- **Trayectoria (nuevo, antes de la 03):** tres cifras y una cinta de marcas en bucle (las marcas,
+  en `BRANDS` del `.ts`). Es lo único que se mueve solo; con movimiento reducido queda quieta.
+- **Invitación final:** la tarjeta oscura lleva a la izquierda la portada de la 01 con el busto
+  (`alienmilk-about-android.webp`).
+- Esquinas de la unión 01/02 más pronunciadas (`--seam`).
 
-- `sessions-details.css`: las pestañas ya no usan `justify-content: space-between` ni se parten en
-  dos filas (una fila, `gap: 1.5rem`, desplazamiento horizontal con degradado); la barra de scroll
-  del texto es transparente salvo con la clase `is-scrolling`.
-- `sessions-dossier.css`: `.dossier-main` lleva además la esquina inferior derecha de `1rem`.
+## Posibles choques
 
-**Resolución:** si `mini-codex` llega a commitear su versión de esos tres archivos y chocan, **manda
-la de `clos`**, que ya contiene lo suyo más los retoques. Lo que sea idéntico combina solo.
-
-**No se trajo** lo demás que `mini-codex` tiene sin commitear: los cambios del cultivo de Nosotros en
-`specimen-culture.component.ts` (`SCALE` 0.98, `SOURCE_ZOOM`, encuadre de los bordes) y en
-`about-page.component.css` (nuevo `inset` de `.us-culture`). Si se integran, revisar Nosotros en el
-navegador: `clos` no tocó esos archivos en esta tanda, así que no deberían chocar.
+- `about-page.component.*` cambia mucho, sobre todo el CSS. Si otra rama toca Nosotros, **manda la
+  versión de `clos`** y lo de la otra se reaplica encima.
+- `src/index.html` añade la familia **Gloock** a la carga de Google Fonts.
 
 ## Después del merge, comprobar
 
-1. `pnpm check` (22 pruebas). El CSS de Sesiones pasa del aviso de 20 kB (unos 24 kB), lejos del
-   límite de error de 48 kB.
-2. `/sesiones` a 390, 1100, 1440 y 1920 px: desplegable, buscador, orbes, cambiar de sesión desde
-   la imagen (ratón, teclado y gesto táctil) y el scroll de la parte blanca.
-
-## Tanda del 30 de septiembre
-
-- **Ticket de reserva:** precio compuesto, troquel con muescas, botón coral y fecha discreta. La
-  ficha pierde Procedencia y Compatibilidad.
-- **Directiva `appFitLine`** (`shared/fit-line/`): las líneas de datos se encogen en vez de partirse.
-- **Guía «Cambiar de sesión» retirada:** quedan las flechas, las teclas y el gesto.
-- **«Información al asistente» pasa a ser «Hacen posible esta sesión»** (créditos de colaboración).
-  Cambia el contrato de expedientes: **`estacion` desaparece y entra `colaboradores`**
-  (`{ rol, nombre, detalle }`) en `session-dossier.models.ts`, `session-dossier.ts` y
-  `public/data/session-dossiers.json`. Si otra rama toca `estacion` en esos archivos, manda la de
-  `clos`; lo demás del JSON no se ha reformateado.
-- **Final de Sesiones sin lienzo blanco:** paginador y CTA final van sobre la textura; más aire
-  alrededor de la CTA. La tarjeta de la CTA lleva de fondo al astronauta
-  (`public/alienmilk-closing-astronaut.webp`) en lugar de la mano con leche, que sigue en la home.
-- **Colaboraciones:** minimilk en la eyebrow, nombres en coral y columnas centradas en vertical.
-- **Tarjeta final:** textos y botones más grandes y alineados al ancho del título; nuevo copy;
-  minimilk estampada en la taza del astronauta. `index.html` carga ahora la cursiva 400 de Barlow
-  Condensed.
-- **Paginador** con la flecha y el subrayado de «Explorar todas las sesiones» de la home.
-
-## Tanda del 1 de octubre
-
-- **Ficha y hoja blanca caben siempre en la pantalla** (escritorio): la ficha escala entera con la
-  directiva nueva `appFitBox` (`shared/fit-box/`); la hoja blanca desplaza el texto dentro.
-- **Tarjeta final** escala en pantallas grandes con `appScaleWidth` (tope ×1,08, centrada).
-- **Pestañas:** al tocarlas, el bloque se centra en la pantalla. En móvil, cabecera fija con la
-  eyebrow y las pestañas, y una sección cada vez.
-- **Móvil:** índice e imagen a sangre, paginador en dos columnas, ajustes de aire.
-- Minimilk de la eyebrow del expediente en coral.
+1. `pnpm check` (22 pruebas).
+2. `/nosotros` a 390, 1280×720, 1536×750 y 1920×1080: cada sección cabe en la pantalla, la 02 mide lo
+   que su contenido y la cadena cruza del blanco al negro.
+3. Que se ven las imágenes de Nosotros en `public/` (estación, granjero, custodia, equipo y el busto en
+   la invitación).
+4. En `/nosotros`, el bloque de la arquitectura se despliega con una pestaña o el botón y se repliega
+   con el botón o pulsando otra vez la pestaña abierta.

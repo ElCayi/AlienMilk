@@ -17,6 +17,11 @@
       </p>
     </div>
     <div class="login-card">
+      <div class="card-drift" aria-hidden="true">
+        @for (drift of [1, 2, 3, 4, 5, 6]; track drift) {
+          <span></span>
+        }
+      </div>
       <h2>Regístrate</h2>
       <form
         #registerForm="ngForm"

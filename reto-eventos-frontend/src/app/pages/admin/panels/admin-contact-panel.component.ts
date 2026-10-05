@@ -243,6 +243,8 @@ function toPayload(contacto: Contacto): ContactoPayload {
   return {
     nombreSede: contacto.nombreSede,
     direccion: contacto.direccion,
+    calle: contacto.calle ?? '',
+    codigoPostal: contacto.codigoPostal ?? '',
     ciudad: contacto.ciudad,
     email: contacto.email,
     telefono: contacto.telefono ?? '',

@@ -39,6 +39,8 @@ public class ContactoServiceImpl implements ContactoService {
 
 		contacto.setNombreSede(requerido(datos.getNombreSede(), "El nombre de la sede", 80));
 		contacto.setDireccion(requerido(datos.getDireccion(), "La dirección", 120));
+		contacto.setCalle(opcional(datos.getCalle(), "La calle", 120));
+		contacto.setCodigoPostal(opcional(datos.getCodigoPostal(), "El código postal", 10));
 		contacto.setCiudad(requerido(datos.getCiudad(), "La ciudad", 80));
 		contacto.setEmail(email(datos.getEmail()));
 		contacto.setTelefono(telefono(datos.getTelefono()));

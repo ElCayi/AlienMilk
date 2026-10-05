@@ -1,0 +1,205 @@
+<article class="secondary-page" [attr.data-operator]="operator.slug" aria-labelledby="operator-title">
+  <div class="secondary-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span>Operadores<span class="crumb-tail"> asociados</span></span>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ operator.name }}</span>
+    </nav>
+
+    <header class="secondary-header">
+      <div class="secondary-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>Operador asociado / {{ operator.area }}</span>
+        </p>
+        <h1 id="operator-title" appFitLine>{{ operator.name }}</h1>
+        <p class="secondary-subtitle">{{ operator.tagline }}</p>
+        <p class="secondary-intro">{{ operator.intro }}</p>
+      </div>
+
+      <!-- Sello del operador: su nombre gira alrededor de un disco con su servicio dibujado. -->
+      <figure class="operator-seal">
+        <div class="seal" aria-hidden="true">
+          <svg class="seal-ring" viewBox="0 0 200 200" focusable="false">
+            <path id="operator-seal-path" d="M100 12a88 88 0 1 1 0 176a88 88 0 1 1 0-176" />
+            <text>
+              <textPath href="#operator-seal-path" textLength="552" lengthAdjust="spacing"
+                >{{ operator.name }} · Operador asociado · {{ operator.area }} ·&nbsp;</textPath
+              >
+            </text>
+          </svg>
+          <div class="seal-disc">
+            @switch (operator.slug) {
+              @case ('am-transit') {
+                <!-- Una línea con tres paradas y un ramal a la órbita; el vehículo va y vuelve. -->
+                <svg class="seal-symbol" viewBox="0 0 120 120" focusable="false">
+                  <path class="transit-branch" d="M60 60C60 43 71 32 88 29" />
+                  <circle class="transit-planet" cx="93" cy="28" r="4.5" />
+                  <path class="transit-line" d="M12 60H108" />
+                  <circle class="transit-stop" cx="24" cy="60" r="5" />
+                  <circle class="transit-stop is-interchange" cx="60" cy="60" r="7" />
+                  <circle class="transit-stop" cx="96" cy="60" r="5" />
+                  <circle class="transit-vehicle" cx="24" cy="60" r="3" />
+                </svg>
+              }
+              @case ('helix-transfer') {
+                <!-- Doble hélice que avanza de un lado a otro: lo que se entrega y lo que se recoge. -->
+                <svg class="seal-symbol" viewBox="0 0 120 120" focusable="false">
+                  <g class="helix">
+                    <path
+                      class="helix-rungs"
+                      d="M-35 47.3V72.7M-30 42V78M-25 47.3V72.7M-15 47.3V72.7M-10 42V78M-5 47.3V72.7M5 47.3V72.7M10 42V78M15 47.3V72.7M25 47.3V72.7M30 42V78M35 47.3V72.7M45 47.3V72.7M50 42V78M55 47.3V72.7M65 47.3V72.7M70 42V78M75 47.3V72.7M85 47.3V72.7M90 42V78M95 47.3V72.7M105 47.3V72.7M110 42V78M115 47.3V72.7M125 47.3V72.7M130 42V78M135 47.3V72.7M145 47.3V72.7M150 42V78M155 47.3V72.7"
+                    />
+                    <path
+                      class="helix-strand"
+                      d="M-40 60C-33.5 36 -26.5 36 -20 60S-6.5 84 0 60S13.5 36 20 60S33.5 84 40 60S53.5 36 60 60S73.5 84 80 60S93.5 36 100 60S113.5 84 120 60S133.5 36 140 60S153.5 84 160 60"
+                    />
+                    <path
+                      class="helix-strand is-accent"
+                      d="M-40 60C-33.5 84 -26.5 84 -20 60S-6.5 36 0 60S13.5 84 20 60S33.5 36 40 60S53.5 84 60 60S73.5 36 80 60S93.5 84 100 60S113.5 36 120 60S133.5 84 140 60S153.5 36 160 60"
+                    />
+                  </g>
+                </svg>
+              }
+              @default {
+                <!-- Dos gotas que se acercan, se unen por tensión superficial y vuelven a separarse. -->
+                <svg class="seal-symbol" viewBox="0 0 120 120" focusable="false">
+                  <defs>
+                    <filter id="operator-liaison-goo" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur stdDeviation="3.2" />
+                      <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" />
+                    </filter>
+                  </defs>
+                  <g filter="url(#operator-liaison-goo)">
+                    <circle class="liaison-drop is-guest" cx="36" cy="60" r="15" />
+                    <circle class="liaison-drop is-host" cx="84" cy="60" r="11" />
+                  </g>
+                </svg>
+              }
+            }
+          </div>
+        </div>
+        <figcaption class="seal-caption">
+          {{ operator.registry.label }} <span class="nowrap">{{ operator.registry.code }}</span>
+        </figcaption>
+      </figure>
+    </header>
+  </div>
+
+  <section class="paper-card card-split" aria-labelledby="service-title">
+    <div class="card-intro">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        01 / {{ operator.service.kicker }}
+      </p>
+      <h2 id="service-title">
+        @for (line of operator.service.title; track $index) {
+          <span class="title-line">{{ line }}</span>
+        }
+      </h2>
+      <p class="section-copy">{{ operator.service.copy }}</p>
+      <dl class="fact-list">
+        @for (fact of operator.service.facts; track fact.label) {
+          <div>
+            <dt>{{ fact.label }}</dt>
+            <dd>{{ fact.value }}</dd>
+          </div>
+        }
+        <div>
+          <dt>Web oficial</dt>
+          <dd>
+            <!-- Roto a propósito (decisión de la autora): los operadores son ficticios y el
+                 dominio .sol3 no puede existir, así que el enlace nunca lleva a una web real. -->
+            <a class="fact-link" [href]="'https://' + operator.website" target="_blank" rel="noopener">{{
+              operator.website
+            }}</a>
+          </dd>
+        </div>
+      </dl>
+      <a class="line-action" [href]="inquiryHref()">
+        <span class="line-action-label">{{ operator.service.action }}</span>
+        <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+      </a>
+    </div>
+    <ol class="item-list">
+      @for (item of operator.service.items; track item.code) {
+        <li>
+          <span class="item-code">{{ item.code }}</span>
+          <div>
+            <h3 appFitLine>{{ item.title }}</h3>
+            <p>{{ item.text }}</p>
+            @if (item.detail) {
+              <p class="item-detail" appFitLine>{{ item.detail }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <section class="ink-card" aria-labelledby="conditions-title">
+    <div class="section-heading">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        02 / {{ operator.conditions.kicker }}
+      </p>
+    </div>
+    <h2 id="conditions-title">{{ operator.conditions.title }}</h2>
+    <div class="card-columns">
+      @for (item of operator.conditions.items; track item.title; let i = $index) {
+        <article>
+          <span class="column-number" aria-hidden="true">0{{ i + 1 }}</span>
+          <h3 appFitLine>{{ item.title }}</h3>
+          <p>{{ item.text }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="secondary-closing" aria-labelledby="network-title">
+    <div>
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        03 / Red de operadores
+      </p>
+      <h2 id="network-title">Cada tramo, con su responsable.</h2>
+      <p class="note-box">
+        {{ operator.name }} presta su servicio con independencia de AlienMilk y bajo sus propias
+        condiciones. AlienMilk responde exclusivamente de las actividades coordinadas por su
+        personal acreditado. {{ operator.note }}
+      </p>
+    </div>
+    <!-- El mismo recuadro que en Localizaciones, con la ficha actual marcada. -->
+    <fieldset class="legend-box">
+      <legend>Operadores asociados</legend>
+      <dl>
+        @for (other of operators; track other.slug) {
+          <div>
+            <dt>{{ other.area }}</dt>
+            <dd>
+              @if (other.slug === operator.slug) {
+                <span class="network-current" aria-current="page">{{ other.name }}</span>
+              } @else {
+                <a class="network-link" [routerLink]="['/operadores', other.slug]">
+                  <span>{{ other.name }}</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </a>
+              }
+            </dd>
+          </div>
+        }
+      </dl>
+    </fieldset>
+  </section>
+
+  <footer class="secondary-footnote">
+    <p>AlienMilk / Operadores asociados / <span class="nowrap">{{ operator.name }}</span></p>
+    <p>Información facilitada por el operador · <span class="nowrap">Ciclo 2026</span></p>
+    <a routerLink="/sesiones"
+      >Explorar sesiones
+      <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+    ></a>
+  </footer>
+</article>

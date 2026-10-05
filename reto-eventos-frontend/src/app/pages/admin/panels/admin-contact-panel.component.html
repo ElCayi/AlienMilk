@@ -23,7 +23,7 @@
 
       <div class="field-row">
         <label class="field">
-          <span>Dirección</span>
+          <span>Recinto</span>
           <input
             [ngModel]="ficha.direccion"
             (ngModelChange)="update('direccion', $event)"
@@ -40,6 +40,28 @@
             name="contactoCiudad"
             maxlength="80"
             required
+          />
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Calle</span>
+          <input
+            [ngModel]="ficha.calle"
+            (ngModelChange)="update('calle', $event)"
+            name="contactoCalle"
+            maxlength="120"
+          />
+        </label>
+        <label class="field">
+          <span>Código postal</span>
+          <input
+            [ngModel]="ficha.codigoPostal"
+            (ngModelChange)="update('codigoPostal', $event)"
+            name="contactoCodigoPostal"
+            maxlength="10"
+            autocomplete="postal-code"
           />
         </label>
       </div>

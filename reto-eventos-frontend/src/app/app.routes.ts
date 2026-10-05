@@ -27,6 +27,22 @@ export const routes: Routes = [
         ({ ContactPageComponent }) => ContactPageComponent,
       ),
   },
+  // Una ruta por operador asociado: una dirección desconocida cae en la redirección final.
+  ...['am-transit', 'helix-transfer', 'kepler-liaison'].map((operator) => ({
+    path: `operadores/${operator}`,
+    data: { operator },
+    loadComponent: () =>
+      import('./pages/operator/operator-page.component').then(
+        ({ OperatorPageComponent }) => OperatorPageComponent,
+      ),
+  })),
+  {
+    path: 'documentacion/asistentes',
+    loadComponent: () =>
+      import('./pages/documentation/documentation-page.component').then(
+        ({ DocumentationPageComponent }) => DocumentationPageComponent,
+      ),
+  },
   ...[
     ['aviso-legal', 'Aviso legal'],
     ['privacidad', 'Política de privacidad'],

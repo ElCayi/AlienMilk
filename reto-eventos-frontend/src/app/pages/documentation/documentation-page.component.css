@@ -1,0 +1,161 @@
+/* Documentación para asistentes. La base (cabecera, bloques, pie) está en
+   shared/secondary-page/secondary-page.css; aquí, el recuadro «Lleve consigo» y el catálogo. */
+
+/* «Lleve consigo»: número coral, lo que hay que traer y una nota debajo. */
+.carry-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carry-list li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  column-gap: 0.5rem;
+  row-gap: 0.3rem;
+  padding-block: clamp(1rem, 1.4vw, 1.4rem);
+  border-top: 1px solid var(--line);
+}
+
+.carry-list li:first-child {
+  padding-top: 0.5rem;
+  border-top: 0;
+}
+
+.carry-list li:last-child {
+  padding-bottom: 0;
+}
+
+.carry-number {
+  grid-row: span 2;
+  color: var(--coral);
+  font:
+    800 0.7rem / 1.9 'Nunito',
+    sans-serif;
+}
+
+.carry-list strong {
+  font: 400 clamp(1.05rem, 1vw, 1.25rem) / 1.25 var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.carry-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Bloque claro: el rótulo de la lista se alinea con el del título. */
+.card-detail {
+  min-width: 0;
+}
+
+.card-detail .item-list {
+  margin-top: 1.75rem;
+}
+
+.card-intro .fact-list {
+  margin-bottom: 0;
+}
+
+/* Bloque oscuro: entradilla bajo el título y listas en las columnas. */
+.ink-card h2 {
+  margin-bottom: 1.25rem;
+}
+
+.catalog-intro {
+  max-width: 44rem;
+  margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+  color: var(--muted);
+}
+
+.catalog-list {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-list li {
+  position: relative;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.catalog-list li::before {
+  content: '';
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: rgba(247, 248, 249, 0.5);
+}
+
+.card-columns .catalog-note {
+  margin: 1.4rem 0 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--coral);
+  color: var(--ink);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.secondary-closing .section-copy {
+  color: var(--muted);
+}
+
+/* Una línea por concepto: si no cabe, appFitLine reduce la letra. */
+.carry-list strong {
+  display: block;
+  min-width: 0;
+}
+
+.card-columns .catalog-note {
+  text-align: left;
+}
+
+/* El recuadro necesita más ancho que el sello de los operadores para «Documento identificativo». */
+@media (min-width: 1000.02px) {
+  .secondary-header {
+    grid-template-columns: minmax(0, 2fr) minmax(19rem, 1fr);
+  }
+}
+
+/* Tableta: el recuadro baja bajo el texto y sus tres puntos van en fila. */
+@media (min-width: 700.02px) and (max-width: 1000px) {
+  .secondary-header {
+    grid-template-columns: 1fr;
+  }
+
+  .carry-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .carry-list li,
+  .carry-list li:first-child,
+  .carry-list li:last-child {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    padding: 0.5rem 1.25rem 0;
+    border-top: 0;
+  }
+
+  .carry-list li:first-child {
+    padding-left: 0;
+  }
+
+  .carry-list li + li {
+    border-left: 1px solid var(--line);
+  }
+
+  .carry-number {
+    grid-row: auto;
+  }
+}

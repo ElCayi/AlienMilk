@@ -35,6 +35,13 @@ public class Contacto {
 	@Column(nullable = false, length = 120)
 	private String direccion;
 
+	/** Calle y número de la sede; `direccion` es el nombre del recinto. */
+	@Column(length = 120)
+	private String calle;
+
+	@Column(name = "codigo_postal", length = 10)
+	private String codigoPostal;
+
 	@Column(nullable = false, length = 80)
 	private String ciudad;
 

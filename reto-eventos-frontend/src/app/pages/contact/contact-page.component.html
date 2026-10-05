@@ -1,3 +1,14 @@
+<ng-template #socialIcon let-red>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    @for (d of red.paths; track d) {
+      <path [attr.d]="d" />
+    }
+    @for (d of red.filled ?? []; track d) {
+      <path class="is-filled" [attr.d]="d" />
+    }
+  </svg>
+</ng-template>
+
 <section class="contact">
   <div class="contact-stage">
     <nav class="breadcrumb" aria-label="Ruta de navegación">
@@ -64,9 +75,14 @@
         ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
         ><span>02</span> Visitar la sede</a
       >
+      <a href="contacto#collaborators" (click)="goToSection($event, collaborators)"
+        ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+        ><span>03</span>
+        <span class="index-lockup">AlienMilk<span class="lockup-unit">Collaborators</span></span></a
+      >
       <a href="contacto#preguntas" (click)="goToSection($event, questions)"
         ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
-        ><span>03</span> Antes de escribir</a
+        ><span>04</span> Antes de escribir</a
       >
     </nav>
 
@@ -78,7 +94,7 @@
       aria-labelledby="directory-title"
     >
       <div class="directory-intro">
-        <p class="section-label directory-kicker">
+        <p class="section-label section-kicker">
           <span class="eyebrow-icon" aria-hidden="true"></span>
           Oficina de atención / AlienMilk
         </p>
@@ -89,20 +105,96 @@
         </p>
         <div class="direct-contact">
           <p class="section-label">Correspondencia general</p>
-          <a class="directory-email" [href]="'mailto:' + sede.email">{{ sede.email }}</a>
-          @if (sede.telefono) {
-            <a class="directory-phone" [href]="phoneHref()">{{ sede.telefono }}</a>
+          @if (status(); as estado) {
+            <p class="direct-status" [class.is-open]="estado.abierta">
+              <span class="direct-status-dot" aria-hidden="true"></span>
+              {{ estado.estado }} · {{ estado.detalle }}
+            </p>
           }
+          <dl class="direct-list">
+            <div>
+              <dt>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+                  <path d="m4 7 8 6 8-6" />
+                </svg>
+                <span class="visually-hidden">Correo electrónico</span>
+              </dt>
+              <dd>
+                <a class="directory-email" [href]="'mailto:' + sede.email" appFitLine>{{ sede.email }}</a>
+              </dd>
+            </div>
+            @if (sede.telefono) {
+              <div>
+                <dt>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M6.5 4h2.8l1.4 3.8-1.9 1.3a10.5 10.5 0 0 0 6.1 6.1l1.3-1.9 3.8 1.4v2.8a1.5 1.5 0 0 1-1.6 1.5A14.5 14.5 0 0 1 5 5.6 1.5 1.5 0 0 1 6.5 4z"
+                    />
+                  </svg>
+                  <span class="visually-hidden">Teléfono</span>
+                </dt>
+                <dd>
+                  <a class="directory-phone" [href]="phoneHref()" appFitLine>{{ sede.telefono }}</a>
+                </dd>
+              </div>
+            }
+            <div>
+              <dt>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="8.5" />
+                  <path d="M12 7.5V12l3 2" />
+                </svg>
+                <span class="visually-hidden">Horario</span>
+              </dt>
+              <dd appFitLine>{{ days() }} · {{ hours() }}</dd>
+            </div>
+            <div>
+              <dt>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" />
+                  <circle cx="12" cy="10.5" r="2.3" />
+                </svg>
+                <span class="visually-hidden">Sede</span>
+              </dt>
+              <dd>
+                <a href="contacto#visita" (click)="goToSection($event, visit)" appFitLine
+                  >{{ sede.direccion }}, {{ sede.ciudad }}</a
+                >
+              </dd>
+            </div>
+          </dl>
           <p>
-            Atención durante el horario de apertura de la sede. Las consultas recibidas fuera de ese
-            horario se revisan en la siguiente jornada de atención.
+            Respondemos por escrito en un plazo de dos días hábiles. Para cambios en una sesión de las
+            próximas 48 horas, llámenos durante el horario de apertura.
           </p>
+          <ul class="direct-socials" aria-label="AlienMilk en redes sociales">
+            @for (red of socials; track red.icon) {
+              <li>
+                @if (red.href) {
+                  <a
+                    class="direct-social"
+                    [href]="red.href"
+                    target="_blank"
+                    rel="noopener"
+                    [attr.aria-label]="red.name"
+                  >
+                    <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red }" />
+                  </a>
+                } @else {
+                  <span class="direct-social" [attr.aria-label]="red.name" [title]="red.name" role="img">
+                    <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red }" />
+                  </span>
+                }
+              </li>
+            }
+          </ul>
         </div>
-        <a class="text-link" routerLink="/reservas"
-          >Consultar mis reservas
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-        ></a>
-        <p class="channel-note">Los enlaces de consulta abren su aplicación de correo.</p>
+        <div class="intro-drift" aria-hidden="true">
+          @for (drift of [1, 2, 3, 4, 5]; track drift) {
+            <span></span>
+          }
+        </div>
       </div>
       <div class="directory-areas">
         @for (area of areas; track area.number) {
@@ -112,37 +204,41 @@
               <h3>{{ area.title }}</h3>
               <p>{{ area.description }}</p>
               <p class="area-preparation">{{ area.preparation }}</p>
-              <a
-                class="text-link"
-                [href]="inquiryHref(area.subject)"
-                [attr.aria-label]="'Escribir sobre ' + area.title"
-                >Escribir al equipo
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-              ></a>
             </div>
           </article>
         }
+        <a class="line-action team-action" [href]="inquiryHref('Oficina de atención · Consulta')">
+          <span class="line-action-label">Escribir al equipo</span>
+          <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+        </a>
       </div>
     </section>
 
     <section class="contact-visit" id="visita" #visit tabindex="-1" aria-labelledby="visit-title">
       <div class="section-heading">
-        <p class="section-label">02 / Recepción y visitas</p>
-        <p class="section-aside">Su llegada también forma parte de la experiencia.</p>
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          02 / Recepción y visitas
+        </p>
       </div>
       <div class="visit-overview">
         <div class="visit-address">
           <p class="section-label">{{ sede.nombreSede }}</p>
           <h2 id="visit-title">{{ sede.direccion }}</h2>
-          <address>{{ sede.ciudad }}</address>
+          <address class="visit-postal">
+            @if (sede.calle) {
+              <span>{{ sede.calle }}</span>
+            }
+            <span class="visit-city">{{ postalCity() }}</span>
+          </address>
           <p class="section-copy">
             Punto de encuentro para las sesiones y las visitas concertadas al archivo. Compruebe en
             su reserva el lugar de recepción: algunas experiencias comienzan en otra instalación.
           </p>
-          <a class="text-link" [href]="mapUrl()" target="_blank" rel="noopener"
-            >Buscar dirección en el mapa
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-          ></a>
+          <a class="line-action" [href]="mapUrl()" target="_blank" rel="noopener">
+            <span class="line-action-label">Buscar dirección en el mapa</span>
+            <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          </a>
         </div>
         <div class="visit-hours">
           <h3 class="section-label">Horario de la sede</h3>
@@ -153,10 +249,10 @@
             El horario de cada sesión figura en su reserva. Para reuniones y consultas presenciales
             al archivo, solicite una cita antes de desplazarse.
           </p>
-          <a class="text-link" [href]="inquiryHref('Sede central · Solicitud de cita')"
-            >Concertar una visita
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-          ></a>
+          <a class="line-action" [href]="inquiryHref('Sede central · Solicitud de cita')">
+            <span class="line-action-label">Concertar una visita</span>
+            <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          </a>
         </div>
       </div>
       <div class="visit-practical">
@@ -178,38 +274,48 @@
           <span class="practical-number" aria-hidden="true">03</span>
           <h3>Si viene de lejos</h3>
           <p>
-            Antes de organizar el viaje, confirme su plaza y el punto de encuentro. Consulte con
-            atención a visitantes las opciones de traslado y estancia vinculadas a su experiencia.
+            Los horarios se expresan según el ciclo local de A Coruña y pueden no coincidir con su
+            rotación de origen, metabolismo o percepción temporal. Calcule su llegada con margen
+            suficiente.
           </p>
-          <a class="text-link" [href]="inquiryHref('Atención a visitantes · Traslado y estancia')"
-            >Preparar mi llegada
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-          ></a>
+          <a class="line-action line-action-small" [href]="inquiryHref('Atención a visitantes · Traslado y estancia')">
+            <span class="line-action-label">Calculómetro</span>
+            <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          </a>
         </article>
       </div>
     </section>
 
-    <aside class="collaborators-contact" aria-labelledby="collaborators-contact-title">
+    <aside
+      class="collaborators-contact"
+      id="collaborators"
+      #collaborators
+      tabindex="-1"
+      aria-labelledby="collaborators-contact-title"
+    >
+      <div class="collaborators-drift" aria-hidden="true">
+        @for (drift of [1, 2, 3, 4, 5, 6]; track drift) {
+          <span></span>
+        }
+      </div>
       <div class="collaborators-art" aria-hidden="true">
         <div class="collaborators-cell"></div>
         <span class="cell-caption">Nuevas procedencias.<br />Nuevas posibilidades.</span>
       </div>
       <div class="collaborators-copy">
-        <p class="section-label">AlienMilk Collaborators</p>
+        <p class="collaborators-brand">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span class="lockup">AlienMilk<span class="lockup-unit">Collaborators</span></span>
+        </p>
         <h2 id="collaborators-contact-title">Hay más de una forma<br />de formar parte.</h2>
         <p>
-          Si desea aportar una muestra o conocer el programa de colaboradores, este es su punto de
-          contacto. Collaborators acompaña cada propuesta y abre la puerta a encuentros, viajes y
-          experiencias dentro de AlienMilk.
+          Collaborators es una puerta abierta para participar, compartir y descubrir qué puede aportar
+          cada persona al ecosistema. Si le apetece probar, estamos al otro lado.
         </p>
-        <p class="collaborators-note">
-          Empiece contándonos su propuesta. El equipo le indicará los siguientes pasos antes de
-          organizar cualquier envío.
-        </p>
-        <a class="text-link" [href]="inquiryHref('Collaborators · Primera consulta')"
-          >Hablar con Collaborators
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-        ></a>
+        <a class="line-action" [href]="inquiryHref('Collaborators · Primera consulta')">
+          <span class="line-action-label">Hablar con Collaborators</span>
+          <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+        </a>
       </div>
     </aside>
 
@@ -221,13 +327,16 @@
       aria-labelledby="faq-title"
     >
       <div class="faq-intro">
-        <p class="section-label">03 / Información útil</p>
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          04 / Información útil
+        </p>
         <h2 id="faq-title">Antes de escribir.</h2>
         <p class="section-copy">Algunas respuestas para que pueda continuar con sus planes.</p>
-        <a class="text-link" [href]="inquiryHref('Atención general · Otra consulta')"
-          >Mi consulta es otra
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg
-        ></a>
+        <a class="line-action" [href]="inquiryHref('Atención general · Otra consulta')">
+          <span class="line-action-label">Mi consulta es otra</span>
+          <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+        </a>
       </div>
       <div class="faq-list">
         <details>
@@ -292,8 +401,9 @@
         <p>Datos de la sede revisados el {{ sede.actualizadoEn | date: 'dd.MM.yyyy' }}</p>
       }
       <a href="contacto#atencion" (click)="goToSection($event, directory)"
-        >Volver a los canales de atención ↑</a
-      >
+        >Volver a los canales de atención
+        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+      ></a>
     </footer>
   } @else if (error()) {
     <div class="contact-status" role="alert">

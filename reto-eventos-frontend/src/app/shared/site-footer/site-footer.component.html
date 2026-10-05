@@ -1,19 +1,10 @@
-<ng-template #socialIcon let-icon>
+<ng-template #socialIcon let-red>
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    @switch (icon) {
-      @case ('instagram') {
-        <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-        <circle cx="12" cy="12" r="4" />
-        <circle class="is-filled" cx="17.2" cy="6.8" r="1.1" />
-      }
-      @case ('x') {
-        <path d="M4.5 4.5h4l11 15h-4z" />
-        <path d="M19.5 4.5 13.4 11.4M4.5 19.5l6.1-6.9" />
-      }
-      @case ('linkedin') {
-        <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
-        <path d="M8 10.5v6M8 7.5v.01M11.5 16.5v-6M11.5 13a2.5 2.5 0 0 1 5 0v3.5" />
-      }
+    @for (d of red.paths; track d) {
+      <path [attr.d]="d" />
+    }
+    @for (d of red.filled ?? []; track d) {
+      <path class="is-filled" [attr.d]="d" />
     }
   </svg>
 </ng-template>
@@ -72,7 +63,7 @@
                 rel="noopener"
                 [attr.aria-label]="red.name"
               >
-                <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red.icon }" />
+                <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red }" />
               </a>
             } @else {
               <span
@@ -81,7 +72,7 @@
                 [title]="red.name"
                 role="img"
               >
-                <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red.icon }" />
+                <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red }" />
               </span>
             }
           </li>

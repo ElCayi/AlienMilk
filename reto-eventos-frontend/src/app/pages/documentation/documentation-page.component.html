@@ -1,0 +1,140 @@
+<article class="secondary-page" aria-labelledby="documentation-title">
+  <div class="secondary-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span>Información<span class="crumb-tail"> al asistente</span></span>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Documentación</span>
+    </nav>
+
+    <header class="secondary-header">
+      <div class="secondary-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>AM / Información al asistente</span>
+        </p>
+        <h1 id="documentation-title">Documentación</h1>
+        <p class="secondary-subtitle">Quién es usted, de dónde viene y qué necesita para respirar.</p>
+        <p class="secondary-intro">
+          Para acceder a una sesión de AlienMilk basta con su código de acceso y un documento
+          identificativo en vigor. Esta página reúne los documentos que se admiten en la taquilla de
+          acreditación, el catálogo de soportes vitales permitidos en las sedes y lo que debe hacer si
+          los datos de su documento no coinciden con los de su reserva.
+        </p>
+      </div>
+
+      <!-- Resumen para llevar en la cabeza: el mismo recuadro con leyenda que en Localizaciones. -->
+      <fieldset class="legend-box carry-box">
+        <legend>Lleve consigo</legend>
+        <ol class="carry-list">
+          @for (item of carry; track item.title; let i = $index) {
+            <li>
+              <span class="carry-number" aria-hidden="true">0{{ i + 1 }}</span>
+              <strong appFitLine>{{ item.title }}</strong>
+              <span class="carry-note">{{ item.note }}</span>
+            </li>
+          }
+        </ol>
+      </fieldset>
+    </header>
+  </div>
+
+  <section class="paper-card card-split" aria-labelledby="accreditation-title">
+    <div class="card-intro">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        01 / Acreditación
+      </p>
+      <h2 id="accreditation-title">
+        <span class="title-line">Quién es usted,</span>
+        <span class="title-line">por escrito.</span>
+      </h2>
+      <p class="section-copy">
+        La acreditación se hace en la taquilla de cada sede, con el documento que figura en su
+        reserva. Sin él no es posible pasar el control de ingreso, aunque el personal le reconozca.
+      </p>
+      <dl class="fact-list">
+        @for (fact of facts; track fact.label) {
+          <div>
+            <dt>{{ fact.label }}</dt>
+            <dd>{{ fact.value }}</dd>
+          </div>
+        }
+      </dl>
+    </div>
+    <div class="card-detail">
+      <p class="section-label">Documentos admitidos</p>
+      <ol class="item-list">
+        @for (doc of documents; track doc.code) {
+          <li>
+            <span class="item-code">{{ doc.code }}</span>
+            <div>
+              <h3 appFitLine>{{ doc.title }}</h3>
+              <p>{{ doc.text }}</p>
+              <p class="item-detail">{{ doc.detail }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="ink-card" aria-labelledby="support-title">
+    <div class="section-heading">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        02 / Soportes vitales
+      </p>
+    </div>
+    <h2 id="support-title">
+      <span class="title-line">Catálogo de soportes</span>
+      <span class="title-line">vitales permitidos.</span>
+    </h2>
+    <p class="section-copy catalog-intro">
+      Las sedes de SOL-III mantienen una gravedad próxima a 1 g y una atmósfera de nitrógeno y
+      oxígeno. Si su organismo necesita otras condiciones, puede traerlas consigo siempre que figuren
+      en este catálogo.
+    </p>
+    <div class="card-columns">
+      @for (group of catalog; track group.title; let i = $index) {
+        <article>
+          <span class="column-number" aria-hidden="true">0{{ i + 1 }}</span>
+          <h3 appFitLine>{{ group.title }}</h3>
+          <ul class="catalog-list">
+            @for (item of group.items; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+          @if (group.note) {
+            <p class="catalog-note">{{ group.note }}</p>
+          }
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="secondary-closing" aria-labelledby="origin-title">
+    <div>
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        03 / Procedencia
+      </p>
+      <h2 id="origin-title">Si algo no coincide.</h2>
+      <p class="section-copy">
+        La procedencia que declaró al reservar debe coincidir con la de su documento. Si no es así,
+        avise en la taquilla antes de pasar el control: el personal acreditado tramitará una
+        declaración de procedencia en el momento y sin coste. Ocurre más a menudo de lo que parece.
+      </p>
+    </div>
+    <p class="note-box">
+      AlienMilk no conserva copias de su documento. La declaración de procedencia se archiva con su
+      reserva hasta el cierre del ciclo y no se comparte con su organismo de origen.
+    </p>
+  </section>
+
+  <footer class="secondary-footnote">
+    <p>AlienMilk / Información al asistente / Documentación</p>
+    <p>Revisado para el <span class="nowrap">ciclo 2026</span></p>
+  </footer>
+</article>

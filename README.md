@@ -128,7 +128,7 @@ cuatro que aparecen hoy están en `false` a conciencia: se comprobó que el buil
   marca; leer antes de escribir texto, diseñar o proponer funcionalidades
 - [Trabajar en paralelo](docs/colaboracion.md) — worktrees, merges, migraciones de base de
   datos, servicios y CSS; leer antes de editar o fusionar
-- [Entrega de la integración](docs/merge-notes/integracion-2026-10-01.md) —
+- [Entrega de la integración](docs/merge-notes/integracion-2026-10-05.md) —
   cambios incorporados, comprobaciones y puntos pendientes para colaboradores
 - [Guía de despliegue](docs/guia-despliegue.md) — puesta en producción
 - [Del navegador a nvim](docs/click-a-nvim.md) — pinchar un componente en la página y

@@ -53,7 +53,7 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
   que el `.component.css` importa **en el orden de la cascada**. Al mover reglas, respetar ese orden.
 - Presupuesto de `anyComponentStyle` (`angular.json`): aviso desde 20 kB, error a partir de 48 kB.
   Separar en hojas **no** reduce el total del componente. El CSS combinado de portada ronda los
-  45,87 kB y el de ubicaciones los 46,55 kB (integración del 1 de octubre), cerca del límite de error.
+  41,13 kB y el de ubicaciones los 47,35 kB (integración del 5 de octubre); ubicaciones está cerca del límite de error.
 - El ancho de cada página se ajusta en `app.css` con `.page-container:has(app-<pagina>-page)`;
   al crear una página nueva, mirar esas reglas antes de inventar otra.
 - **El pie es un componente común** (`shared/site-footer/`) y sale en toda la web salvo en

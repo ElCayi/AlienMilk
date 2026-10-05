@@ -1269,7 +1269,7 @@ h1 {
 }
 @media (max-width: 800px) and (min-height: 700.02px) {
   .login-shell {
-    row-gap: 2.25rem;
+    row-gap: 1.75rem;
   }
   .login-card .submit-btn {
     margin-top: 1.75rem;

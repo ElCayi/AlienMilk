@@ -8,6 +8,7 @@ import {
   Input,
   OnDestroy,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { Estacion } from '../../models/station.models';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
@@ -20,7 +21,7 @@ const COLLABORATION_REVEAL_MS = 2600;
 @Component({
   selector: 'app-locations-atlas',
   standalone: true,
-  imports: [CommonModule, FitLineDirective, SampleReceptionComponent],
+  imports: [CommonModule, FitLineDirective, RouterLink, SampleReceptionComponent],
   templateUrl: './locations-atlas.component.html',
   styleUrls: ['./locations-atlas.component.css', './styles/locations-collaboration-reveal.css'],
   host: { '[class.locations-collaboration-section]': 'collaborationMode' },

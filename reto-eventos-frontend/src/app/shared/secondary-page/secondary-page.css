@@ -1,0 +1,777 @@
+/* Base de las páginas secundarias (operadores asociados, documentación…): el lenguaje de Contacto
+   en versión corta. Cada página la carga antes que su propia hoja, que añade lo específico.
+   Piezas: cabecera, bloque claro (.paper-card), bloque oscuro (.ink-card), cierre y pie. */
+:host {
+  --ink: #f7f8f9;
+  --muted: rgba(247, 248, 249, 0.68);
+  --line: rgba(247, 248, 249, 0.16);
+  --rule: rgba(247, 248, 249, 0.42);
+  --coral: #ff7f7f;
+  --canvas: #0d151e;
+  --paper: #f8f6f2;
+  --paper-ink: #28333a;
+  --paper-muted: #58636a;
+  --paper-line: #c9cdca;
+  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  display: block;
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
+
+.secondary-page {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+/* Textura a sangre detrás de toda la página, como en Contacto. */
+.secondary-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background:
+    linear-gradient(rgba(63, 73, 87, 0.9), rgba(63, 73, 87, 0.9)),
+    url('/alienmilk-showcase-texture.webp') center / cover fixed;
+}
+
+.secondary-stage {
+  padding: 0 0 clamp(2.5rem, 4.5vw, 4rem);
+}
+
+/* Tipografía compartida */
+.breadcrumb,
+.eyebrow,
+.secondary-footnote {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.breadcrumb {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 1.3rem 0;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--muted);
+}
+
+.breadcrumb::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  z-index: -1;
+  width: 100vw;
+  background: rgba(17, 21, 29, 0.42);
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb [aria-current='page'] {
+  color: var(--coral);
+}
+
+/* Cabecera: el texto a la izquierda y una pieza propia de cada página a la derecha. */
+.secondary-header {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(15rem, 0.8fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+
+.secondary-copy {
+  min-width: 0;
+  padding-top: 0.4rem;
+  border-top: 2px solid var(--rule);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 clamp(1.75rem, 2.5vw, 2.5rem);
+  color: var(--muted);
+}
+
+.eyebrow-icon {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+h1 {
+  margin: 2.35rem 0 0;
+  font-family: var(--condensed);
+  font-size: clamp(2.8rem, 4.4vw, 4.8rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: 0.025em;
+  transform: scaleY(0.78);
+  transform-origin: left center;
+}
+
+.secondary-subtitle {
+  margin: 1.3rem 0 0;
+  color: var(--coral);
+  font:
+    700 clamp(1.05rem, 1.55vw, 1.3rem) / 1.3 'Nunito',
+    sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.secondary-intro {
+  max-width: 48rem;
+  margin: 1rem 0 0;
+  color: var(--muted);
+  font:
+    clamp(1rem, 1vw, 1.1rem) / 1.6 Arial,
+    sans-serif;
+}
+
+/* Rótulos y títulos de sección */
+.section-label {
+  margin: 0;
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.section-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.secondary-page h2 {
+  margin: 1.5rem 0;
+  font: 400 clamp(2.5rem, 3.7vw, 4rem) / 1.05 var(--condensed);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Títulos con saltos de línea decididos, como los <br> de Contacto. */
+.title-line {
+  display: block;
+}
+
+.section-copy {
+  max-width: 36rem;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.section-heading {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Bloque claro: suele ir en dos columnas (.card-split), la ficha a la izquierda y el detalle a la
+   derecha. */
+.paper-card {
+  padding: clamp(2rem, 4.5vw, 5rem);
+  border-radius: clamp(3rem, 6vw, 6rem) 1rem 1rem 1rem;
+  color: var(--paper-ink);
+  background: var(--paper);
+}
+
+.paper-card .section-label,
+.paper-card .section-copy {
+  color: var(--paper-muted);
+}
+
+.paper-card .line-action:is(:hover, :focus-visible) {
+  color: #e0605f;
+}
+
+.card-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+}
+
+.card-intro {
+  min-width: 0;
+}
+
+/* Ficha de datos: rótulo pequeño encima y valor debajo, separados por filetes. */
+.fact-list {
+  display: grid;
+  margin: 2.25rem 0 2.5rem;
+}
+
+.fact-list div {
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.fact-list div:last-child {
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.fact-list dt {
+  color: var(--paper-muted);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.fact-list dd {
+  margin: 0.2rem 0 0;
+  font:
+    600 1rem / 1.45 'Nunito',
+    sans-serif;
+}
+
+/* Lista numerada del bloque claro: código en una burbuja, título, texto y un dato en una línea. */
+.item-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-list li {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 1.25rem;
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.item-list li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.item-list li:last-child {
+  padding-bottom: 0;
+}
+
+.item-code {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--paper-ink);
+  border-radius: 50%;
+  font:
+    600 1rem / 1 var(--condensed);
+  letter-spacing: 0.04em;
+}
+
+.item-list h3 {
+  margin: 0.35rem 0 0;
+  font: 500 clamp(1.6rem, 2.1vw, 2.1rem) / 1.15 var(--condensed);
+}
+
+.item-list p {
+  margin: 0.65rem 0 0;
+  color: #515d64;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.item-list .item-detail {
+  min-width: 0;
+  margin-top: 0.85rem;
+  color: var(--paper-ink);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.item-detail::before {
+  content: '';
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: var(--coral);
+  vertical-align: 0.05em;
+}
+
+/* Bloque oscuro: rótulo con filete, título y tres columnas. */
+.ink-card {
+  margin-top: 1.25rem;
+  padding: clamp(2rem, 4.5vw, 5rem);
+  border-radius: 1rem 1rem clamp(3rem, 6vw, 6rem) 1rem;
+  background: var(--canvas);
+}
+
+.ink-card .section-label,
+.secondary-closing .section-label {
+  color: var(--coral);
+}
+
+.ink-card h2 {
+  margin: clamp(2rem, 3.5vw, 3rem) 0;
+}
+
+.card-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2.5rem, 5vw, 6rem);
+}
+
+.card-columns article {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.column-number {
+  color: var(--coral);
+  font:
+    700 0.65rem 'Nunito',
+    sans-serif;
+}
+
+.card-columns h3 {
+  margin: 1rem 0;
+  font: 400 1.8rem var(--condensed);
+}
+
+.card-columns p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+/* Cierre sobre la textura: texto a la izquierda y un recuadro a la derecha. */
+.secondary-closing {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  align-items: center;
+  margin-top: clamp(3.5rem, 6vw, 6rem);
+}
+
+/* Nota con filete coral, como el aviso de la ficha de Localizaciones. */
+.note-box {
+  max-width: 40rem;
+  margin: 0;
+  padding: 1rem 1.15rem;
+  border-left: 2px solid var(--coral);
+  border-radius: 0.2rem;
+  background: rgba(5, 13, 22, 0.22);
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Recuadro con la leyenda cortando el trazo superior, como «Operadores asociados» en
+   Localizaciones. Por defecto, filas de rótulo y valor en una sola línea. */
+.legend-box {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(1.75rem, 2.3vw, 2.6rem) clamp(1.15rem, 1.8vw, 2rem) clamp(1.5rem, 2vw, 2.25rem);
+  border: 1px solid rgba(247, 248, 249, 0.24);
+  border-radius: 0.35rem;
+}
+
+.legend-box legend {
+  margin-left: -0.7em;
+  padding: 0 0.7em;
+  color: var(--coral);
+  font:
+    800 clamp(0.8rem, 0.75vw, 0.95rem) / 1 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.legend-box dl {
+  display: grid;
+  margin: 0;
+}
+
+.legend-box dl div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-block: clamp(1.25rem, 1.8vw, 1.9rem);
+  border-top: 1px solid var(--line);
+}
+
+.legend-box dl div:first-child {
+  padding-top: 0.5rem;
+  border-top: 0;
+}
+
+.legend-box dl div:last-child {
+  padding-bottom: 0;
+}
+
+.legend-box dt,
+.legend-box dd {
+  margin: 0;
+  font-family: var(--condensed);
+  font-size: clamp(1.05rem, 1vw, 1.25rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.legend-box dt {
+  color: var(--muted);
+}
+
+/* Botón subrayado base de la web: mayúsculas, subrayado fino y flecha recta. */
+.line-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: 0.35rem;
+  color: inherit;
+  font:
+    800 1.05rem / 1.2 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+}
+
+.line-action::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.62;
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.line-action-label,
+.line-action-arrow {
+  display: inline-block;
+  transition: transform 180ms ease;
+}
+
+.line-action-arrow {
+  width: 1.35em;
+  height: 1.35em;
+  flex-shrink: 0;
+}
+
+.line-action-arrow svg,
+.secondary-footnote .arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.line-action:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.line-action:is(:hover, :focus-visible)::after {
+  transform: scaleX(1.08);
+}
+
+.line-action:is(:hover, :focus-visible) .line-action-label {
+  transform: translateX(-0.18rem);
+}
+
+.line-action:is(:hover, :focus-visible) .line-action-arrow {
+  transform: translateX(0.3rem);
+}
+
+.secondary-page :is(a, button):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 5px;
+}
+
+/* Pie: firma y, si la página lo lleva, enlace de cierre, como en Contacto y Login. */
+.secondary-footnote {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-top: clamp(3.5rem, 6vw, 6rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.secondary-footnote p {
+  margin: 0;
+}
+
+.secondary-footnote a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: inherit;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.secondary-footnote a:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.secondary-footnote .arrow {
+  display: inline-block;
+  width: 1.35em;
+  height: 1.35em;
+  color: var(--coral);
+  transition: transform 180ms ease;
+}
+
+.secondary-footnote a:is(:hover, :focus-visible) .arrow {
+  transform: translateX(0.3rem);
+}
+
+/* Los nombres y los números de registro no se parten entre líneas. */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* Párrafos justificados, con la última línea a la izquierda y guiones para no abrir huecos. */
+.secondary-intro,
+.section-copy,
+.item-list p:not(.item-detail),
+.card-columns p,
+.note-box {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+@media (max-width: 1000px) {
+  .secondary-header {
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.55fr);
+    gap: 2rem;
+  }
+
+  .card-split {
+    gap: 2.5rem;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .item-list li {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .item-code {
+    width: 2.4rem;
+  }
+
+  .card-columns {
+    gap: 1.5rem;
+  }
+
+  .secondary-closing {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* Tableta: las columnas estrechas abrían huecos en el texto justificado. El bloque claro pasa a
+   una columna (la ficha, en dos) y cada columna del oscuro a una fila: título a la izquierda,
+   texto a la derecha. */
+@media (min-width: 700.02px) and (max-width: 1000px) {
+  .card-split {
+    grid-template-columns: 1fr;
+  }
+
+  .fact-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+
+  .fact-list div:nth-last-child(2) {
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .item-list li:first-child {
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .card-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  /* La segunda fila se queda el alto sobrante: número y título siguen arriba aunque el texto de la
+     derecha sea largo. */
+  .card-columns article {
+    display: grid;
+    grid-template-columns: minmax(0, 0.38fr) minmax(0, 0.62fr);
+    grid-template-rows: auto 1fr;
+    align-content: start;
+    column-gap: 2rem;
+    padding-block: 1.25rem 1.75rem;
+  }
+
+  .card-columns h3 {
+    margin: 0.6rem 0 0;
+  }
+
+  .card-columns article > :not(.column-number, h3) {
+    grid-column: 2;
+  }
+
+  .card-columns article > :nth-child(3) {
+    grid-row: 1 / span 2;
+  }
+}
+
+/* Móvil: una columna; los bloques claro y oscuro van a sangre y pegados, como en Contacto. */
+@media (max-width: 700px) {
+  .secondary-page {
+    --gutter: clamp(1rem, 6vw, 3.75rem);
+  }
+
+  /* La ruta se acorta para caber en una línea. */
+  .crumb-tail {
+    display: none;
+  }
+
+  .secondary-header {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .paper-card,
+  .ink-card {
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 2.75rem var(--gutter) 3.5rem;
+    border-radius: 0;
+  }
+
+  .card-split {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .ink-card {
+    margin-top: 0;
+    padding-top: 3.5rem;
+  }
+
+  .item-list li:first-child {
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .card-columns {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .secondary-closing {
+    margin-top: 3.5rem;
+  }
+
+  .legend-box {
+    padding: 1.5rem 1.15rem 1.25rem;
+  }
+
+  /* En los móviles más estrechos, rótulo y valor se aprietan para seguir en una sola línea. */
+  .legend-box dl div {
+    gap: 0.75rem;
+    padding-block: 1.1rem;
+  }
+
+  .legend-box dt,
+  .legend-box dd {
+    font-size: min(1.05rem, 4.6vw);
+    letter-spacing: 0.06em;
+  }
+
+  /* Pie centrado: el botón arriba (si lo hay) y la firma con su línea cerrando la página. */
+  .secondary-footnote {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3.5rem;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .secondary-footnote a {
+    position: relative;
+    order: -1;
+    gap: 1.25rem;
+    margin: 0 0 3.5rem;
+    padding-bottom: 0.35rem;
+    color: var(--ink);
+    font:
+      800 1rem / 1.2 'Barlow Condensed',
+      'Arial Narrow',
+      sans-serif;
+    letter-spacing: 0.12em;
+  }
+
+  .secondary-footnote a::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.62;
+  }
+
+  .secondary-footnote .arrow {
+    color: inherit;
+  }
+
+  .secondary-footnote p {
+    align-self: stretch;
+  }
+
+  .secondary-footnote p:first-of-type {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .secondary-page a,
+  .secondary-page a * {
+    transition: none;
+  }
+}

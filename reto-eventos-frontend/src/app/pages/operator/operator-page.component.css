@@ -1,0 +1,324 @@
+/* Ficha de operador asociado. La base (cabecera, bloques, pie) está en
+   shared/secondary-page/secondary-page.css; aquí, el sello, el recuadro de la red y la web. */
+
+/* Sello: el nombre gira despacio alrededor de un disco oscuro con el servicio dibujado. */
+.operator-seal {
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  margin: 0;
+}
+
+.seal {
+  position: relative;
+  width: min(100%, clamp(13rem, 14vw, 17rem));
+  aspect-ratio: 1;
+}
+
+.seal-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: seal-turn 80s linear infinite;
+}
+
+.seal-ring path {
+  fill: none;
+}
+
+.seal-ring text {
+  fill: var(--muted);
+  font: 600 12.5px var(--condensed);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@keyframes seal-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.seal-disc {
+  position: absolute;
+  inset: 13%;
+  overflow: hidden;
+  border: 1px solid rgba(247, 248, 249, 0.34);
+  border-radius: 50%;
+  background: var(--canvas);
+  box-shadow:
+    0 0 0 0.5rem rgba(247, 248, 249, 0.06),
+    0 18px 44px rgba(13, 21, 30, 0.35);
+}
+
+.seal-symbol {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.seal-caption {
+  color: var(--muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* AM Transit: línea con tres paradas; el vehículo va hasta el final y vuelve al punto de partida. */
+.transit-line,
+.transit-branch {
+  fill: none;
+  stroke: rgba(247, 248, 249, 0.7);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.transit-branch {
+  stroke: rgba(247, 248, 249, 0.42);
+  stroke-dasharray: 2 4;
+}
+
+.transit-planet {
+  fill: none;
+  stroke: rgba(247, 248, 249, 0.6);
+  stroke-width: 1.5;
+}
+
+.transit-stop {
+  fill: var(--canvas);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.transit-stop.is-interchange {
+  stroke-width: 2.5;
+}
+
+.transit-vehicle {
+  fill: var(--coral);
+  animation: transit-run 12s ease-in-out infinite;
+}
+
+@keyframes transit-run {
+  0%,
+  8% {
+    transform: translateX(0);
+  }
+  25%,
+  33% {
+    transform: translateX(36px);
+  }
+  50%,
+  58% {
+    transform: translateX(72px);
+  }
+  75%,
+  83% {
+    transform: translateX(36px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Helix Transfer: la hélice se desplaza un periodo y vuelve a empezar, sin salto visible. */
+.helix {
+  animation: helix-flow 7s linear infinite;
+}
+
+.helix-strand,
+.helix-rungs {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.helix-strand {
+  stroke: var(--ink);
+  stroke-width: 2.2;
+}
+
+.helix-strand.is-accent {
+  stroke: var(--coral);
+}
+
+.helix-rungs {
+  stroke: rgba(247, 248, 249, 0.26);
+  stroke-width: 1.2;
+}
+
+@keyframes helix-flow {
+  to {
+    transform: translateX(-40px);
+  }
+}
+
+/* Kepler Liaison: dos gotas se acercan, se funden un momento y se separan (el filtro del SVG
+   suaviza la unión como tensión superficial). */
+.liaison-drop {
+  fill: var(--ink);
+  animation: liaison-guest 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+.liaison-drop.is-host {
+  fill: var(--coral);
+  animation-name: liaison-host;
+}
+
+@keyframes liaison-guest {
+  0%,
+  12%,
+  100% {
+    transform: translateX(0);
+  }
+  45%,
+  62% {
+    transform: translateX(14px);
+  }
+}
+
+@keyframes liaison-host {
+  0%,
+  12%,
+  100% {
+    transform: translateX(0);
+  }
+  45%,
+  62% {
+    transform: translateX(-14px);
+  }
+}
+
+/* En AM Transit son líneas: la burbuja va rellena, como en un plano de transporte. */
+[data-operator='am-transit'] .item-code {
+  color: var(--paper);
+  background: var(--paper-ink);
+}
+
+/* Web oficial del operador: dirección inventada, enlace roto a propósito (ver la plantilla). */
+.fact-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color 160ms ease;
+}
+
+.fact-link:is(:hover, :focus-visible) {
+  color: #e0605f;
+}
+
+/* Recuadro de la red: enlaces a los otros operadores y la ficha actual marcada. */
+.network-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding-bottom: 0.3rem;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.network-link::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transition: transform 180ms ease;
+}
+
+.network-link span,
+.network-link svg {
+  transition: transform 180ms ease;
+}
+
+.network-link svg {
+  display: block;
+  width: 1.2em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.network-link:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.network-link:is(:hover, :focus-visible)::after {
+  transform: scaleX(1.08);
+}
+
+.network-link:is(:hover, :focus-visible) span {
+  transform: translateX(-0.18rem);
+}
+
+.network-link:is(:hover, :focus-visible) svg {
+  transform: translateX(0.3rem);
+}
+
+/* La ficha que se está viendo: en coral, sin enlace, con el punto de «usted está aquí». */
+.network-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.3rem;
+  color: var(--coral);
+}
+
+.network-current::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Móvil: el sello se queda en el disco, con su dato al lado. */
+@media (max-width: 700px) {
+  .operator-seal {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .seal {
+    width: 6rem;
+  }
+
+  .seal-ring {
+    display: none;
+  }
+
+  .seal-disc {
+    inset: 0;
+    box-shadow: 0 0 0 0.35rem rgba(247, 248, 249, 0.08);
+  }
+
+  .seal-caption {
+    text-align: left;
+    line-height: 1.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seal-ring,
+  .transit-vehicle,
+  .helix,
+  .liaison-drop {
+    animation: none;
+  }
+}

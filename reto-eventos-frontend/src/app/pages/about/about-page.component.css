@@ -1661,73 +1661,51 @@ h2 em {
   border-radius: var(--corner) 1rem var(--corner) 1rem;
 }
 
-/* Invitación: tarjeta oscura flotando sobre la textura, fuera del lienzo. */
+/* Invitación: tarjeta blanca flotando sobre la textura, fuera del lienzo. */
 .us-invitation {
   padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(3rem, 6vw, 5rem);
 }
 
 .us-invitation-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: end;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  align-items: center;
   gap: 2rem;
   padding: clamp(2.5rem, 5vw, 4.5rem);
   border-radius: 1.25rem;
-  color: #f1ecef;
-  background: rgba(5, 13, 22, 0.9);
-  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.2);
 }
 
-/* La portada de la 01 dentro de la tarjeta, con las mismas proporciones: el titular en columna,
-   una palabra por línea, y el busto encima, apoyado en el pie de la tarjeta. Todo se mide con el
-   ancho de su columna (la letra es 1/6,8 de él). */
-.us-invitation-visual {
-  position: relative;
-  container-type: inline-size;
-  aspect-ratio: 6.8 / 5.9;
-  margin-bottom: calc(-1 * clamp(2.5rem, 5vw, 4.5rem));
-  pointer-events: none;
+/* La puerta de Collaborators, a su tamaño de diseño y escalada a lo ancho de su columna (su
+   perspectiva va en medidas fijas). */
+.us-invitation-door {
+  display: grid;
+  justify-items: center;
 }
 
-.us-invitation-visual .us-invitation-word {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  max-width: 1ch;
-  margin: 0;
-  color: var(--light);
-  font:
-    400 calc(100cqi / 6.8) / 0.9 'Gloock',
-    'Didot',
-    serif;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
+.us-invitation-door app-collaborators-door {
+  zoom: 0.6;
 }
 
-.us-invitation-word em {
-  color: var(--coral);
-  font-style: normal;
+@media (min-width: 1700px) {
+  .us-invitation-door app-collaborators-door {
+    zoom: 0.72;
+  }
 }
 
-.us-invitation-visual img {
-  position: absolute;
-  bottom: 0;
-  left: 4.56%;
-  z-index: 1;
-  width: 115%;
-  height: auto;
-  mask: linear-gradient(to top, transparent 0, #000 22%);
+@media (max-width: 1400px) {
+  .us-invitation-door app-collaborators-door {
+    zoom: 0.5;
+  }
 }
 
-/* «Forma.», y solo esa palabra, por delante del busto, como en la 01. */
-.us-invitation-visual .us-invitation-front {
-  z-index: 2;
-  visibility: hidden;
-}
-
-.us-invitation-front span {
-  visibility: visible;
+/* En columna no cabe a un tamaño que se lea (su panel se rehace en móvil): solo el texto. */
+@media (max-width: 1000px) {
+  .us-invitation-door {
+    display: none;
+  }
 }
 
 .us-invitation-copy {
@@ -1745,8 +1723,21 @@ h2 em {
 .us-invitation-copy p:not(.us-kicker) {
   max-width: 30rem;
   margin: 0.5rem 0 0;
-  color: rgba(241, 236, 239, 0.78);
+  color: rgba(33, 30, 36, 0.78);
   line-height: 1.6;
+}
+
+/* El lema que cerraba la puerta en la portada, en tinta. */
+.us-invitation-copy p.us-invitation-motto {
+  margin-top: 0.25rem;
+  color: var(--ink);
+  font: 600 clamp(1.1rem, 1.35vw, 1.4rem) / 1.4 'Nunito', sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.us-invitation-motto span {
+  font-weight: 500;
+  font-style: italic;
 }
 
 .us-pill {
@@ -1754,8 +1745,8 @@ h2 em {
   margin-top: 1.75rem;
   padding: 0.85rem 1.6rem;
   border-radius: 999px;
-  color: #151217;
-  background: #faf9f7;
+  color: #faf9f7;
+  background: var(--ink);
   font: 700 0.95rem var(--condensed);
   letter-spacing: 0.08em;
   text-decoration: none;
@@ -1910,10 +1901,6 @@ h2 em {
     grid-template-columns: 1fr;
   }
 
-  /* En columna, en la invitación la portada va debajo del texto, apoyada en el pie de la tarjeta. */
-  .us-invitation-visual {
-    order: 2;
-  }
 }
 
 @media (max-width: 600px) {

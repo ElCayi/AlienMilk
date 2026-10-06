@@ -24,7 +24,8 @@ void main() {
 // uDepthColumn, con borde neto) ganan textura y el centro se blanquea; el remolino del cursor sigue
 // asomando sobre ese blanco. Entre la primera sección y la segunda, la franja uDepthCut corta el
 // blanco de lado a lado, como si fueran dos bloques. El de abajo es de tinta, con una ventana blanca
-// para el planetario, hasta uDepthCut3, el corte antes de Collaborators.
+// para el planetario, hasta uDepthCut3, el corte antes de Collaborators. Tras Collaborators, otro corte
+// y otro bloque blanco (uBlock), el de la red de confianza.
 const FRAGMENT = `
 precision mediump float;
 uniform sampler2D uTexture;
@@ -42,6 +43,8 @@ uniform vec2 uDepthColumn;
 uniform vec2 uDepth;
 uniform vec2 uDepthCut;
 uniform vec2 uDepthCut3;
+uniform float uDepthEnd;
+uniform vec2 uBlock;
 uniform vec2 uDark2;
 uniform float uDepthRound;
 uniform vec2 uDark;
@@ -89,6 +92,18 @@ void main() {
   bool above3 = px.y < (uDepthCut3.x + uDepthCut3.y) * 0.5;
   float r3 = (px.x > uDepthColumn.x) == above3 ? uDepthRound : 16.0;
   block *= 1.0 - smoothstep(r3 - 1.5, r3 + 1.5, length(max(vec2(outside + r3, r3 - away3), 0.0)));
+  // El final, tras Collaborators: el blanco acaba justo donde el bloque de tinta que lo cierra, con sus
+  // mismas esquinas (la curva amplia abajo a la izquierda), así no asoma blanco por debajo ni por la
+  // curva; debajo solo queda la textura.
+  float r4 = px.x < uDepthColumn.x ? uDepthRound : 16.0;
+  block *= 1.0 - smoothstep(r4 - 1.5, r4 + 1.5, length(max(vec2(outside + r4, r4 - (uDepthEnd - px.y)), 0.0)));
+  // Tras un corte de textura, el bloque blanco de la red de confianza (uBlock), con las esquinas de
+  // los marcos: la curva amplia arriba a la derecha, en diagonal con la de Collaborators, y abajo a
+  // la izquierda; las otras dos, con el redondeo pequeño.
+  float midB = (uBlock.x + uBlock.y) * 0.5;
+  float rb = (px.x > uDepthColumn.x) == (px.y < midB) ? uDepthRound : 16.0;
+  vec2 qb = vec2(outside, max(uBlock.x - px.y, px.y - uBlock.y)) + rb;
+  block = max(block, 1.0 - smoothstep(-1.5, 1.5, length(max(qb, 0.0)) + min(max(qb.x, qb.y), 0.0) - rb));
   float side = (1.0 - block) * wide;
   float white = t * (1.0 - side) * uDepth.y;
   vec3 base = mix(uBase, vec3(1.0), white);
@@ -192,6 +207,8 @@ export class LiquidBackdropComponent {
       depth: uniform('uDepth'),
       depthCut: uniform('uDepthCut'),
       depthCut3: uniform('uDepthCut3'),
+      depthEnd: uniform('uDepthEnd'),
+      block: uniform('uBlock'),
       dark2: uniform('uDark2'),
       depthRound: uniform('uDepthRound'),
       dark: uniform('uDark'),
@@ -241,6 +258,21 @@ export class LiquidBackdropComponent {
         const cut3 = brief ? brief.bottom + air + half : 0;
         gl.uniform2f(uniforms.depthCut3, brief ? cut3 - half : -2, brief ? cut3 + half : -1);
         gl.uniform2f(uniforms.dark2, brief?.top ?? 0, brief ? cut3 : -1);
+        // El blanco acaba con el elemento marcado (un píxel antes, para que el borde suavizado no asome).
+        const end = wideLayout.matches
+          ? this.deepen?.querySelector('[data-backdrop-end]')?.getBoundingClientRect()
+          : undefined;
+        gl.uniform1f(uniforms.depthEnd, end ? end.bottom - 1 : 1e4);
+        // El bloque de la red de confianza: desde un corte como los demás tras el final de Collaborators
+        // hasta el final del elemento marcado.
+        const extra = wideLayout.matches
+          ? this.deepen?.querySelector('[data-backdrop-block]')?.getBoundingClientRect()
+          : undefined;
+        gl.uniform2f(
+          uniforms.block,
+          extra ? (end ? end.bottom + 2 * half : extra.top) : -1e4,
+          extra ? extra.bottom : -1e4 + 1,
+        );
         // La esquina grande, más abierta que la de los marcos.
         gl.uniform1f(uniforms.depthRound, Math.min(Math.max(window.innerWidth * 0.07, 64), 120));
         // La tinta llega hasta el final del elemento marcado; con las columnas, como sus estilos.
@@ -252,6 +284,8 @@ export class LiquidBackdropComponent {
         gl.uniform3f(uniforms.ink, 0.129, 0.118, 0.141);
       } else {
         gl.uniform2f(uniforms.dark, 0, 0);
+        gl.uniform1f(uniforms.depthEnd, 1e4);
+        gl.uniform2f(uniforms.block, -1e4, -1e4 + 1);
         gl.uniform2f(uniforms.dark2, 0, -1);
         gl.uniform2f(uniforms.depth, 0, 0);
       }

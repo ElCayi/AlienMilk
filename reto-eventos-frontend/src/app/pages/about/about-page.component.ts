@@ -2,22 +2,9 @@ import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { SpecimenCultureComponent } from '../../features/about/specimen-culture.component';
+import { CollaboratorsDoorComponent } from '../../features/collaboration/collaborators-door.component';
+import { BRANDS } from '../../features/trust/brands';
 import { FitBoxDirective } from '../../shared/fit-box/fit-box.directive';
-
-/** Quienes confían en AlienMilk: proveedores, hostelería y organismos de varios sistemas. Cada uno
- *  con su propio rótulo, como los logotipos de una cinta de marcas. */
-const BRANDS: readonly { name: string; style: string }[] = [
-  { name: 'Cooperativa Láctea de Ceto IV', style: 'serif' },
-  { name: 'Hostelería Orbital', style: 'condensed' },
-  { name: 'Grupo Meridiana', style: 'wide' },
-  { name: 'Ultramarinos Kepler', style: 'italic' },
-  { name: 'Fundación Proxima', style: 'serif' },
-  { name: 'Transportes Halley', style: 'condensed' },
-  { name: 'Casa Vesta', style: 'wide' },
-  { name: 'Mesón Andrómeda', style: 'italic' },
-  { name: 'Federación de Catadores de Tau Ceti', style: 'serif' },
-  { name: 'Frío Gliese', style: 'condensed' },
-];
 
 /** Las capas de la arquitectura ejecutiva, una pestaña por capa (el texto de cada una, en la plantilla). */
 const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
@@ -31,7 +18,7 @@ const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [RouterLink, SpecimenCultureComponent, FitBoxDirective],
+  imports: [RouterLink, SpecimenCultureComponent, CollaboratorsDoorComponent, FitBoxDirective],
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.css',
 })

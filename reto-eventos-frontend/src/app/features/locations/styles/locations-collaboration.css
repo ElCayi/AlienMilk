@@ -45,10 +45,6 @@
 }
 
 @media (min-width: 1001px) {
-  .locations-atlas:has(.locations-layout-collaboration) {
-    grid-template-rows: auto auto auto auto var(--home-showcase-height, 46rem) auto;
-  }
-
   .locations-collaboration-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(2.5rem, 5vw, 6rem);

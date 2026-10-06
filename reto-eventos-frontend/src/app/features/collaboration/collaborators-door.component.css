@@ -1,0 +1,69 @@
+/* El marco de la puerta, como en el escaparate de Collaborators (locations-layout.css): tres
+   pliegues a cada lado del panel, cada uno más claro. */
+:host {
+  /* Los tonos de la portada, donde nació. */
+  --showcase-card: #1f2430;
+  --showcase-card-deep: #151a22;
+  --collaboration-frame-half-width: 21rem;
+  --home-showcase-height: 40rem;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: calc(2 * (var(--collaboration-frame-half-width) + 5.75rem));
+  height: var(--home-showcase-height);
+  overflow: hidden;
+}
+
+.door-gate {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.door-gate-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2.4rem;
+  background: rgba(57, 70, 84, 0.4);
+}
+
+.door-gate-fill.is-left {
+  left: calc(50% - var(--collaboration-frame-half-width) + 1.2rem);
+}
+
+.door-gate-fill.is-right {
+  right: calc(50% - var(--collaboration-frame-half-width) + 1.2rem);
+}
+
+.door-gate-fill.is-left.is-middle {
+  left: calc(50% - var(--collaboration-frame-half-width) - 1.2rem);
+  background: rgba(57, 70, 84, 0.2);
+}
+
+.door-gate-fill.is-right.is-middle {
+  right: calc(50% - var(--collaboration-frame-half-width) - 1.2rem);
+  background: rgba(57, 70, 84, 0.2);
+}
+
+.door-gate-fill.is-left.is-far {
+  left: calc(50% - var(--collaboration-frame-half-width) - 5.75rem);
+  width: 4.55rem;
+  background: rgba(57, 70, 84, 0.05);
+}
+
+.door-gate-fill.is-right.is-far {
+  right: calc(50% - var(--collaboration-frame-half-width) - 5.75rem);
+  width: 4.55rem;
+  background: rgba(57, 70, 84, 0.05);
+}
+
+app-sample-reception {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  max-width: 43.5rem;
+}

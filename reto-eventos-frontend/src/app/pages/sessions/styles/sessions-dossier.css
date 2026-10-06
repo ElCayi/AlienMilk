@@ -116,7 +116,7 @@
 
 .dossier-hero-details {
   min-width: 0;
-  color: rgba(250, 249, 247, 0.64);
+  color: rgba(250, 249, 247, 0.84);
   font:
     800 clamp(0.78rem, 0.9vw, 0.9rem) / 1.35 'Nunito',
     sans-serif;
@@ -233,7 +233,7 @@
 }
 
 .dossier-facts dt {
-  color: rgba(247, 248, 249, 0.82);
+  color: rgba(247, 248, 249, 0.92);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
 }
@@ -424,7 +424,7 @@
 }
 
 .booking-fields span {
-  color: rgba(247, 248, 249, 0.82);
+  color: rgba(247, 248, 249, 0.92);
 }
 
 .booking-fields {
@@ -452,8 +452,8 @@
 
 .booking-note {
   margin: 0;
-  color: rgba(247, 248, 249, 0.86);
-  font-size: 0.85rem;
+  color: rgba(247, 248, 249, 0.94);
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 

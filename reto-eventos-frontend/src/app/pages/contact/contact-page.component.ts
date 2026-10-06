@@ -28,33 +28,33 @@ export class ContactPageComponent implements OnInit {
     {
       number: '01',
       title: 'Reservas y sesiones',
-      description: 'Una plaza, un cambio de planes o una duda sobre la experiencia que ha elegido.',
+      description: 'Una <b>plaza</b>, un <b>cambio de planes</b> o una <b>duda</b> sobre la experiencia que ha elegido.',
       preparation:
-        'Indique la sesión, la fecha y la referencia de su reserva, si ya dispone de ella.',
+        'Indique la <b>sesión</b>, la <b>fecha</b> y la <b>referencia de su reserva</b>, si ya dispone de ella.',
     },
     {
       number: '02',
       title: 'Visitas y accesibilidad',
       description:
-        'Prepare su llegada, consulte las condiciones del recorrido o solicite acompañamiento.',
+        'Prepare su <b>llegada</b>, consulte las <b>condiciones del recorrido</b> o solicite <b>acompañamiento</b>.',
       preparation:
-        'Cuéntenos qué necesita y cuándo desea visitarnos. No adjunte documentación médica.',
+        'Cuéntenos qué necesita y cuándo desea visitarnos. <b>No adjunte documentación médica</b>.',
     },
     {
       number: '03',
       title: 'Grupos e instituciones',
       description:
-        'Visitas de estudio, encuentros profesionales y propuestas para compartir una sesión.',
+        '<b>Visitas de estudio</b>, <b>encuentros profesionales</b> y propuestas para compartir una sesión.',
       preparation:
-        'Incluya el número de participantes, las fechas previstas y el motivo de la visita.',
+        'Incluya el <b>número de participantes</b>, las <b>fechas previstas</b> y el <b>motivo</b> de la visita.',
     },
     {
       number: '04',
       title: 'Prensa, archivo e investigación',
       description:
-        'Información editorial, consultas al catálogo y solicitudes de documentación o imágenes.',
+        '<b>Información editorial</b>, <b>consultas al catálogo</b> y solicitudes de <b>documentación o imágenes</b>.',
       preparation:
-        'Indique su medio o proyecto, el material que necesita y la fecha de publicación prevista.',
+        'Indique su <b>medio o proyecto</b>, el <b>material</b> que necesita y la <b>fecha</b> de publicación prevista.',
     },
   ];
 

@@ -1,7 +1,7 @@
 :host {
   --ink: #f7f8f9;
-  --muted: rgba(247, 248, 249, 0.68);
-  --faint: rgba(247, 248, 249, 0.46);
+  --muted: rgba(247, 248, 249, 0.88);
+  --faint: rgba(247, 248, 249, 0.64);
   --line: rgba(247, 248, 249, 0.16);
   --rule: rgba(247, 248, 249, 0.42);
   --coral: #ff7f7f;
@@ -134,9 +134,9 @@ h1 {
 .contact-intro {
   max-width: 48rem;
   margin: 1rem 0 0;
-  color: var(--muted);
+  color: var(--ink);
   font:
-    clamp(1rem, 1vw, 1.1rem) / 1.6 Arial,
+    clamp(1.05rem, 1vw, 1.1rem) / 1.6 Arial,
     sans-serif;
   text-align: justify;
   text-align-last: left;
@@ -406,8 +406,8 @@ h1 {
 }
 .section-copy {
   max-width: 36rem;
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 .contact-index a svg {
   width: 1.5rem;
@@ -455,7 +455,7 @@ h1 {
 }
 
 .directory-intro > .section-copy {
-  color: #58636a;
+  color: #3d474e;
 }
 .direct-contact {
   display: grid;
@@ -483,8 +483,8 @@ h1 {
     sans-serif;
 }
 .direct-contact > p:not(.section-label, .direct-status) {
-  color: #58636a;
-  font-size: 0.8rem;
+  color: #3d474e;
+  font-size: 0.95rem;
   line-height: 1.65;
 }
 .directory-area {
@@ -514,13 +514,13 @@ h1 {
 }
 .directory-area p {
   margin: 0.65rem 0;
-  color: #515d64;
-  font-size: 0.98rem;
+  color: #3d484f;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
   line-height: 1.6;
 }
 .directory-area .area-preparation {
-  font-size: 0.86rem;
-  color: #687176;
+  font-size: 0.95rem;
+  color: #535d63;
 }
 .contact-visit {
   margin-top: 1.25rem;
@@ -584,7 +584,7 @@ h1 {
 }
 .hours-note {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   line-height: 1.7;
   margin-bottom: 0;
 }
@@ -612,8 +612,8 @@ h1 {
   text-align-last: left;
   hyphens: auto;
   color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 .collaborators-contact {
   display: grid;
@@ -651,9 +651,9 @@ h1 {
   text-transform: uppercase;
 }
 .collaborators-copy > p:not(.collaborators-brand) {
-  color: #515b61;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  color: #3d474d;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 .collaborators-contact a:hover {
   color: var(--coral);
@@ -1524,4 +1524,14 @@ h1 {
   .contact-footnote p {
     align-self: stretch;
   }
+}
+
+/* Las ideas clave, en negrita: en blanco pleno sobre fondo oscuro y en tinta sobre el papel. */
+.contact b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+:is(.contact-directory, .collaborators-contact) b {
+  color: #1f2930;
 }

@@ -3,3 +3,8 @@
 .closing {
   padding: clamp(4rem, 8vw, 7.2rem) 0 clamp(7.5rem, 15.5vw, 14.5rem);
 }
+
+/* El párrafo del cierre, un poco más blanco que en la portada. */
+.closing p:not(.closing-cta-note) {
+  color: rgba(241, 236, 239, 0.92);
+}

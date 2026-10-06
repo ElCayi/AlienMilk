@@ -26,9 +26,10 @@
         <h1>Contacto</h1>
         <p class="contact-subtitle">Atendemos consultas de cualquier procedencia.</p>
         <p class="contact-intro">
-          Una visita, una reserva, una propuesta por compartir. La oficina de atención conecta a
-          visitantes, colaboradores e instituciones con el equipo adecuado de AlienMilk. Díganos qué
-          necesita; le ayudaremos a preparar el siguiente paso.
+          Una visita, una reserva, una propuesta por compartir. La
+          <b>oficina de atención</b> conecta a visitantes, colaboradores e instituciones con el
+          <b>equipo adecuado</b> de AlienMilk. Díganos qué necesita; le ayudaremos a preparar el
+          siguiente paso.
         </p>
       </div>
 
@@ -100,7 +101,8 @@
         </p>
         <h2 id="directory-title">Cada consulta,<br />en buenas manos.</h2>
         <p class="section-copy">
-          Detrás de cada experiencia hay alguien que puede ayudarle. Elija el motivo de su consulta
+          Detrás de cada experiencia hay alguien que puede ayudarle. Elija el
+          <b>motivo de su consulta</b>
           y cuéntenos lo que tiene en mente.
         </p>
         <div class="direct-contact">
@@ -121,7 +123,9 @@
                 <span class="visually-hidden">Correo electrónico</span>
               </dt>
               <dd>
-                <a class="directory-email" [href]="'mailto:' + sede.email" appFitLine>{{ sede.email }}</a>
+                <a class="directory-email" [href]="'mailto:' + sede.email" appFitLine>{{
+                  sede.email
+                }}</a>
               </dd>
             </div>
             @if (sede.telefono) {
@@ -165,8 +169,8 @@
             </div>
           </dl>
           <p>
-            Respondemos por escrito en un plazo de dos días hábiles. Para cambios en una sesión de las
-            próximas 48 horas, llámenos durante el horario de apertura.
+            Respondemos por escrito en un plazo de <b>dos días hábiles</b>. Para cambios en una
+            sesión de las próximas 48 horas, <b>llámenos</b> durante el horario de apertura.
           </p>
           <ul class="direct-socials" aria-label="AlienMilk en redes sociales">
             @for (red of socials; track red.icon) {
@@ -182,7 +186,12 @@
                     <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red }" />
                   </a>
                 } @else {
-                  <span class="direct-social" [attr.aria-label]="red.name" [title]="red.name" role="img">
+                  <span
+                    class="direct-social"
+                    [attr.aria-label]="red.name"
+                    [title]="red.name"
+                    role="img"
+                  >
                     <ng-container *ngTemplateOutlet="socialIcon; context: { $implicit: red }" />
                   </span>
                 }
@@ -202,14 +211,16 @@
             <span class="area-number" aria-hidden="true">{{ area.number }}</span>
             <div>
               <h3>{{ area.title }}</h3>
-              <p>{{ area.description }}</p>
-              <p class="area-preparation">{{ area.preparation }}</p>
+              <p [innerHTML]="area.description"></p>
+              <p class="area-preparation" [innerHTML]="area.preparation"></p>
             </div>
           </article>
         }
         <a class="line-action team-action" [href]="inquiryHref('Oficina de atención · Consulta')">
           <span class="line-action-label">Escribir al equipo</span>
-          <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          <span class="line-action-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+          ></span>
         </a>
       </div>
     </section>
@@ -232,12 +243,15 @@
             <span class="visit-city">{{ postalCity() }}</span>
           </address>
           <p class="section-copy">
-            Punto de encuentro para las sesiones y las visitas concertadas al archivo. Compruebe en
-            su reserva el lugar de recepción: algunas experiencias comienzan en otra instalación.
+            <b>Punto de encuentro</b> para las sesiones y las visitas concertadas al archivo.
+            Compruebe en su reserva el <b>lugar de recepción</b>: algunas experiencias comienzan en
+            otra instalación.
           </p>
           <a class="line-action" [href]="mapUrl()" target="_blank" rel="noopener">
             <span class="line-action-label">Buscar dirección en el mapa</span>
-            <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
           </a>
         </div>
         <div class="visit-hours">
@@ -246,12 +260,14 @@
           <p class="hours-time">{{ hours() }}</p>
           <p class="hours-zone">Hora local · {{ sede.zonaHoraria }}</p>
           <p class="hours-note">
-            El horario de cada sesión figura en su reserva. Para reuniones y consultas presenciales
-            al archivo, solicite una cita antes de desplazarse.
+            El <b>horario de cada sesión</b> figura en su reserva. Para reuniones y consultas
+            presenciales al archivo, <b>solicite una cita</b> antes de desplazarse.
           </p>
           <a class="line-action" [href]="inquiryHref('Sede central · Solicitud de cita')">
             <span class="line-action-label">Concertar una visita</span>
-            <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
           </a>
         </div>
       </div>
@@ -274,13 +290,18 @@
           <span class="practical-number" aria-hidden="true">03</span>
           <h3>Si viene de lejos</h3>
           <p>
-            Los horarios se expresan según el ciclo local de A Coruña y pueden no coincidir con su
-            rotación de origen, metabolismo o percepción temporal. Calcule su llegada con margen
-            suficiente.
+            Los horarios se expresan según el <b>ciclo local de A Coruña</b> y pueden no coincidir
+            con su rotación de origen, metabolismo o percepción temporal.
+            <b>Calcule su llegada con margen suficiente</b>.
           </p>
-          <a class="line-action line-action-small" [href]="inquiryHref('Atención a visitantes · Traslado y estancia')">
+          <a
+            class="line-action line-action-small"
+            [href]="inquiryHref('Atención a visitantes · Traslado y estancia')"
+          >
             <span class="line-action-label">Calculómetro</span>
-            <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
           </a>
         </article>
       </div>
@@ -309,12 +330,14 @@
         </p>
         <h2 id="collaborators-contact-title">Hay más de una forma<br />de formar parte.</h2>
         <p>
-          Collaborators es una puerta abierta para participar, compartir y descubrir qué puede aportar
-          cada persona al ecosistema. Si le apetece probar, estamos al otro lado.
+          <b>Collaborators</b> es una <b>puerta abierta</b> para participar, compartir y descubrir
+          qué puede aportar cada persona al ecosistema. Si le apetece probar, estamos al otro lado.
         </p>
         <a class="line-action" [href]="inquiryHref('Collaborators · Primera consulta')">
           <span class="line-action-label">Hablar con Collaborators</span>
-          <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          <span class="line-action-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+          ></span>
         </a>
       </div>
     </aside>
@@ -335,7 +358,9 @@
         <p class="section-copy">Algunas respuestas para que pueda continuar con sus planes.</p>
         <a class="line-action" [href]="inquiryHref('Atención general · Otra consulta')">
           <span class="line-action-label">Mi consulta es otra</span>
-          <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+          <span class="line-action-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+          ></span>
         </a>
       </div>
       <div class="faq-list">
@@ -344,8 +369,8 @@
           <div class="faq-answer">
             <p>
               Acceda a <a routerLink="/reservas">Mis reservas</a> con la cuenta que utilizó al
-              reservar. Allí puede consultar sus sesiones y cancelar una reserva. Para otras
-              gestiones, escriba al equipo e indique la sesión y la fecha.
+              reservar. Allí puede <b>consultar sus sesiones</b> y <b>cancelar una reserva</b>. Para
+              otras gestiones, escriba al equipo e indique la sesión y la fecha.
             </p>
           </div>
         </details>
@@ -353,8 +378,8 @@
           <summary>¿Puedo visitar las instalaciones sin una sesión reservada?</summary>
           <div class="faq-answer">
             <p>
-              El acceso a las experiencias requiere una reserva o invitación. Si desea conocer las
-              instalaciones o consultar el archivo,
+              El acceso a las experiencias requiere una <b>reserva o invitación</b>. Si desea
+              conocer las instalaciones o consultar el archivo,
               <a [href]="inquiryHref('Sede central · Solicitud de cita')">solicite una visita</a> e
               indique el motivo y las fechas que le interesan.
             </p>
@@ -364,10 +389,10 @@
           <summary>¿Cómo comunico una necesidad de acceso o alimentación?</summary>
           <div class="faq-answer">
             <p>
-              Contacte con atención a visitantes antes de reservar e indique qué sesión está
+              Contacte con <b>atención a visitantes</b> antes de reservar e indique qué sesión está
               considerando. El equipo podrá confirmar las condiciones del recorrido y de la
-              degustación. Basta con describir el apoyo que necesita; no envíe informes médicos por
-              correo.
+              degustación. Basta con describir el apoyo que necesita;
+              <b>no envíe informes médicos por correo</b>.
             </p>
           </div>
         </details>
@@ -387,9 +412,9 @@
           <summary>He olvidado algo durante una visita.</summary>
           <div class="faq-answer">
             <p>
-              Escriba con la fecha, la sesión y una descripción del objeto para que recepción pueda
-              identificarlo. Los objetos olvidados en la sede se conservan durante treinta días. Las
-              muestras, según protocolo.
+              Escriba con la <b>fecha</b>, la <b>sesión</b> y una <b>descripción del objeto</b> para
+              que recepción pueda identificarlo. Los objetos olvidados en la sede se conservan
+              durante <b>treinta días</b>. Las muestras, según protocolo.
             </p>
           </div>
         </details>
@@ -402,7 +427,8 @@
       }
       <a href="contacto#atencion" (click)="goToSection($event, directory)"
         >Volver a los canales de atención
-        <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+        <span class="arrow" aria-hidden="true"
+          ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
       ></a>
     </footer>
   } @else if (error()) {

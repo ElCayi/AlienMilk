@@ -1049,8 +1049,8 @@ h1 {
 .register-lead {
   max-width: 34rem;
   margin: 0 0 1.5rem;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.1vw, 1.15rem);
+  color: rgba(247, 248, 249, 0.94);
+  font-size: clamp(1.05rem, 1.15vw, 1.2rem);
   line-height: 1.65;
 }
 
@@ -1082,7 +1082,7 @@ h1 {
   }
   .register-lead {
     margin-bottom: 0.9rem;
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1.55;
   }
   .demo-box {
@@ -1381,4 +1381,10 @@ h1 {
   .card-drift span {
     animation: none;
   }
+}
+
+/* Las ideas clave del párrafo, en negrita y en blanco pleno. */
+.register-lead b {
+  color: var(--ink);
+  font-weight: 700;
 }

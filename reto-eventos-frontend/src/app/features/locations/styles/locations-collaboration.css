@@ -45,8 +45,12 @@
 }
 
 @media (min-width: 1001px) {
-  .locations-atlas:has(.locations-layout-collaboration) {
-    grid-template-rows: auto auto auto auto var(--home-showcase-height, 46rem) auto;
+  /* Collaborators, con filas a su medida: el margen de arriba de la sección (en la portada) alarga
+     el elemento sin contar en su fila, y con la rejilla general (una fila elástica) ese sobrante
+     abría un hueco bajo la foto. Así queda al pie, bajo «Cómo colaborar». */
+  :host(.locations-collaboration-section) .locations-atlas {
+    height: auto;
+    grid-template-rows: none;
   }
 
   .locations-collaboration-columns {

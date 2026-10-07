@@ -52,7 +52,7 @@
     <figcaption class="locations-collaboration-team-tag">
       <span class="locations-collaboration-team-code">Encuentro de campo · AlienMilk Collaborators</span>
       <span class="locations-collaboration-team-text">
-        Participantes humanos y flügels durante una jornada de intercambio en Estación Pelagia.
+        Participantes humanos y flügels durante una jornada de intercambio en Estación Pelagia, AE03 - Lagos.
       </span>
     </figcaption>
   </figure>
@@ -78,17 +78,23 @@
     </p>
   </div>
 
-  <!-- Collaborators: «Cómo colaborar» (texto de JT), en tinta entre la cabecera y la puerta. -->
+  <!-- Collaborators: «Cómo colaborar» (texto de JT), en tinta, cierra la sección. -->
   <section
     class="locations-collaboration-how"
     *ngIf="collaborationMode"
+    data-backdrop-end
     aria-labelledby="collaboration-how-title"
   >
+    <!-- A la derecha de la cabecera y en el hueco junto a la invitación, unas minimilks flotan (como en
+         Contacto). -->
+    <div class="locations-collaboration-how-drift is-top" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
     <div class="locations-collaboration-how-head">
       <span class="locations-collaboration-how-code" appFitLine>AM / INFORMACIÓN AL COLABORADOR</span>
       <h3 id="collaboration-how-title">Cómo colaborar</h3>
       <div class="locations-collaboration-how-intro">
-        <p>Participar es más sencillo de lo que parece.</p>
+        <p>¡Participar es más sencillo de lo que cree!</p>
         <p>
           <strong>No necesita preparar un envío ni tener todos los detalles re&shy;suel&shy;tos an&shy;tes de
           es&shy;cri&shy;bir&shy;nos.</strong>
@@ -99,7 +105,7 @@
           class="locations-collaboration-how-start"
           href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20colaboraci%C3%B3n"
         >
-          Solo tiene que empezar la conversación.
+          Cuéntenos su propuesta.
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
@@ -113,44 +119,40 @@
         </span>
         <strong appFitLine>Cuéntenos su propuesta</strong>
         <p>
-          Ex&shy;plí&shy;que&shy;nos bre&shy;ve&shy;men&shy;te qué quie&shy;re com&shy;par&shy;tir. Una mues&shy;tra, una po&shy;si&shy;bi&shy;li&shy;dad o in&shy;clu&shy;so una
-          du&shy;da son su&shy;fi&shy;cien&shy;tes pa&shy;ra em&shy;pe&shy;zar.
+          Ex&shy;plí&shy;que&shy;nos bre&shy;ve&shy;men&shy;te qué quie&shy;re apor&shy;tar. No ne&shy;ce&shy;si&shy;ta pre&shy;pa&shy;rar do&shy;cu&shy;men&shy;ta&shy;ción ni rea&shy;li&shy;zar nin&shy;gún en&shy;vío pa&shy;ra em&shy;pe&shy;zar.
         </p>
       </li>
       <li>
         <span class="locations-collaboration-how-visual is-step-02" aria-hidden="true">
           <span class="locations-collaboration-how-number">02</span>
         </span>
-        <strong appFitLine>Lo revisamos con usted</strong>
+        <strong appFitLine>La revisamos con usted</strong>
         <p>
-          El equi&shy;po de Co&shy;lla&shy;bo&shy;ra&shy;tors es&shy;tu&shy;dia la pro&shy;pues&shy;ta y le ayu&shy;da a de&shy;ter&shy;mi&shy;nar si tie&shy;ne sen&shy;ti&shy;do
-          con&shy;ti&shy;nuar y de qué ma&shy;ne&shy;ra.
+          El equi&shy;po de Co&shy;lla&shy;bo&shy;ra&shy;tors es&shy;tu&shy;dia la pro&shy;pues&shy;ta, re&shy;suel&shy;ve sus du&shy;das y le in&shy;di&shy;ca si po&shy;de&shy;mos con&shy;ti&shy;nuar y qué ne&shy;ce&shy;si&shy;ta&shy;re&shy;mos pa&shy;ra ha&shy;cer&shy;lo.
         </p>
       </li>
       <li>
         <span class="locations-collaboration-how-visual is-step-03" aria-hidden="true">
           <span class="locations-collaboration-how-number">03</span>
         </span>
-        <strong appFitLine>Preparamos el siguiente paso</strong>
+        <strong appFitLine>Le indicamos cómo prepararlo</strong>
         <p>
-          Si es ne&shy;ce&shy;sa&shy;rio re&shy;ci&shy;bir una mues&shy;tra, le in&shy;di&shy;ca&shy;re&shy;mos có&shy;mo do&shy;cu&shy;men&shy;tar&shy;la, con&shy;ser&shy;var&shy;la y
-          pre&shy;pa&shy;rar&shy;la. No en&shy;víe na&shy;da an&shy;tes de re&shy;ci&shy;bir ins&shy;truc&shy;cio&shy;nes.
+          Si ne&shy;ce&shy;si&shy;ta&shy;mos re&shy;ci&shy;bir una mues&shy;tra, le ex&shy;pli&shy;ca&shy;re&shy;mos có&shy;mo do&shy;cu&shy;men&shy;tar&shy;la, con&shy;ser&shy;var&shy;la y pre&shy;pa&shy;rar&shy;la. <strong>No en&shy;víe na&shy;da an&shy;tes de re&shy;ci&shy;bir ins&shy;truc&shy;cio&shy;nes.</strong>
         </p>
       </li>
       <li>
         <span class="locations-collaboration-how-visual is-step-04" aria-hidden="true">
           <span class="locations-collaboration-how-number">04</span>
         </span>
-        <strong appFitLine>Nosotros coordinamos el resto</strong>
+        <strong appFitLine>Coordinamos el resto</strong>
         <p>
-          Or&shy;ga&shy;ni&shy;za&shy;mos con us&shy;ted la re&shy;co&shy;gi&shy;da o el en&shy;vío y se&shy;gui&shy;mos la mues&shy;tra du&shy;ran&shy;te su in&shy;cor&shy;po&shy;ra&shy;ción
-          al cir&shy;cui&shy;to de AlienMilk.
+          AlienMilk or&shy;ga&shy;ni&shy;za con us&shy;ted la re&shy;co&shy;gi&shy;da o el en&shy;vío y rea&shy;li&shy;za el se&shy;gui&shy;mien&shy;to de la mues&shy;tra des&shy;de su re&shy;cep&shy;ción has&shy;ta com&shy;ple&shy;tar su eva&shy;lua&shy;ción e in&shy;cor&shy;po&shy;ra&shy;ción.
         </p>
       </li>
     </ol>
-    <p class="locations-collaboration-how-note">
-      Sin compromiso, sin prisas y sin necesidad de saber cómo funciona todo de antemano.
-    </p>
+    <div class="locations-collaboration-how-drift is-foot" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
   </section>
 
   <div class="locations-layout" *ngIf="!collaborationMode">
@@ -279,39 +281,4 @@
       </div>
     </div>
   </div>
-
-  <div
-    class="locations-layout locations-layout-collaboration"
-    *ngIf="collaborationMode"
-    aria-label="Área de colaboradores en preparación"
-  >
-    <div class="locations-collaboration-gate" aria-hidden="true">
-      <span class="locations-collaboration-gate-fill is-left"></span>
-      <span class="locations-collaboration-gate-fill is-right"></span>
-      <span class="locations-collaboration-gate-fill is-left is-middle"></span>
-      <span class="locations-collaboration-gate-fill is-right is-middle"></span>
-      <span class="locations-collaboration-gate-fill is-left is-far"></span>
-      <span class="locations-collaboration-gate-fill is-right is-far"></span>
-      <span class="locations-collaboration-gate-line is-left is-near"></span>
-      <span class="locations-collaboration-gate-line is-left is-middle"></span>
-      <span class="locations-collaboration-gate-line is-left is-far"></span>
-      <span class="locations-collaboration-gate-line is-right is-near"></span>
-      <span class="locations-collaboration-gate-line is-right is-middle"></span>
-      <span class="locations-collaboration-gate-line is-right is-far"></span>
-    </div>
-    <app-sample-reception [panelOnly]="true" [hideActions]="true" />
-  </div>
-
-  <div class="locations-collaboration-actions" *ngIf="collaborationMode">
-    <a
-      class="locations-collaboration-action"
-      href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20muestra%20para%20evaluaci%C3%B3n"
-    >
-      <span>Acceder a AlienMilk Collaborators</span>
-      <span class="locations-collaboration-action-arrow" aria-hidden="true">
-        <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-      </span>
-    </a>
-  </div>
-
 </section>

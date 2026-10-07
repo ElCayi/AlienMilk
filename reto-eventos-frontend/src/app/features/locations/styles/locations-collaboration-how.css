@@ -113,15 +113,15 @@
 }
 
 .locations-collaboration-how-visual.is-step-02 {
-  --how-image: url('/alienmilk-collaborators-texture.webp');
+  --how-image: url('/alienmilk-collaborators-robot.webp');
 }
 
 .locations-collaboration-how-visual.is-step-03 {
-  --how-image: url('/alienmilk-about-milk.png');
+  --how-image: url('/alienmilk-collaborators-flask.webp');
 }
 
 .locations-collaboration-how-visual.is-step-04 {
-  --how-image: url('/alienmilk-showcase-texture.webp');
+  --how-image: url('/alienmilk-about-milk.png');
 }
 
 /* El número, en la placa de las sesiones, sobre el borde del círculo. */
@@ -139,7 +139,7 @@
 }
 
 /* Cada paso en una sola línea (appFitLine la encoge si no cabe). */
-.locations-collaboration-how-steps strong {
+.locations-collaboration-how-steps li > strong {
   min-width: 0;
   color: var(--how-ink);
   font: 600 clamp(1.25rem, 1.6vw, 1.85rem) / 1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;
@@ -150,6 +150,11 @@
   font-size: 0.95rem;
 }
 
+.locations-collaboration-how-steps p strong {
+  color: var(--how-ink);
+  font-weight: 700;
+}
+
 .locations-collaboration-how-close {
   display: grid;
   justify-items: start;
@@ -157,20 +162,19 @@
   font-size: var(--home-section-copy-size, 1.1rem);
 }
 
-.locations-collaboration-how-note {
-  margin: 0;
-  color: #ff7f7f;
-  font: 700 var(--home-section-copy-size, 1.1rem) / 1.5 'Nunito', sans-serif;
-}
-
-/* Al pasar el cursor, la muestra crece un poco. */
+/* Al pasar el cursor por un paso, crecen a la vez la tarjeta y su muestra. */
 @media (prefers-reduced-motion: no-preference) {
+  .locations-collaboration-how-steps li,
   .locations-collaboration-how-visual {
     transition: transform 0.45s cubic-bezier(0.33, 0, 0.2, 1);
   }
 
-  .locations-collaboration-how-visual:hover {
-    transform: scale(1.12);
+  .locations-collaboration-how-steps li:hover {
+    transform: scale(1.07);
+  }
+
+  .locations-collaboration-how-steps li:hover .locations-collaboration-how-visual {
+    transform: scale(1.08);
   }
 }
 
@@ -179,11 +183,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.85rem 1.5rem;
+  padding: 0.85rem 1.55rem;
   border: 1px solid #ff7f7f;
   border-radius: 999px;
   color: var(--how-ink);
-  font: 600 clamp(1.15rem, 1.45vw, 1.7rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font: 600 clamp(1.15rem, 1.5vw, 1.75rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
   letter-spacing: 0.03em;
   text-decoration: none;
   transition:
@@ -219,12 +223,8 @@
     display: contents;
   }
 
-  .locations-collaboration-how-note {
-    order: 1;
-  }
-
   .locations-collaboration-how-close {
-    order: 2;
+    order: 1;
   }
 }
 
@@ -247,9 +247,31 @@
     row-gap: clamp(1.25rem, 2vw, 2rem);
     align-items: start;
     /* Del gancho al bloque, algo menos de aire que en Localizaciones. */
-    margin: clamp(3.5rem, 6vw, 6.25rem) calc(-1 * clamp(24px, 4.5vw, 80px)) clamp(2.5rem, 4vw, 4rem);
-    padding: clamp(3.5rem, 5.5vw, 6rem) calc(clamp(24px, 4.5vw, 80px) + var(--how-pad));
-    border-radius: 1rem var(--how-round);
+    margin: clamp(3.5rem, 6vw, 6.25rem) calc(-1 * clamp(24px, 4.5vw, 80px)) 0;
+    /* Al pie, menos aire: la invitación cierra el bloque y la sección. */
+    padding: clamp(3.5rem, 5.5vw, 6rem) calc(clamp(24px, 4.5vw, 80px) + var(--how-pad))
+      clamp(2rem, 3vw, 3rem);
+    position: relative;
+    /* Arriba a la izquierda, sin redondeo: ahí el bloque sube en curva por debajo del blanco. */
+    border-radius: 0 var(--how-round) 1rem;
+  }
+
+  /* El blanco de la columna acaba en curva amplia sobre el bloque, arriba a la izquierda, y bajo la
+     curva asoma la misma tinta, como si el bloque siguiera por debajo del papel. Baja unos píxeles
+     dentro del bloque (tinta sobre tinta) para que no quede costura entre los dos. */
+  .locations-collaboration-how::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 4px);
+    left: 0;
+    width: var(--how-round);
+    height: calc(var(--how-round) + 4px);
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--how-round) - 0.75px),
+      var(--gallery-ink, #211e24) var(--how-round)
+    );
+    pointer-events: none;
   }
 
   .locations-collaboration-how-head {
@@ -260,6 +282,20 @@
   .locations-collaboration-how h3,
   .locations-collaboration-how-steps {
     grid-column: 1 / -1;
+  }
+
+  /* Cada pieza en su fila: las minimilks de la derecha ocupan la segunda columna de las tres primeras
+     y, sin fila fija, la cabecera se iría debajo de ellas. */
+  .locations-collaboration-how-code {
+    grid-row: 1;
+  }
+
+  .locations-collaboration-how h3 {
+    grid-row: 2;
+  }
+
+  .locations-collaboration-how-intro {
+    grid-row: 3;
   }
 
   /* La entradilla: cada frase en su línea. */
@@ -279,21 +315,15 @@
     grid-row: 4;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     column-gap: var(--how-step-gap);
-    margin-block: clamp(1.5rem, 3vw, 3.5rem);
+    /* Debajo, menos aire: la invitación, más cerca de los pasos. */
+    margin-block: clamp(1.5rem, 3vw, 3.5rem) clamp(0.25rem, 0.8vw, 1rem);
   }
 
-  /* Al pie: la frase final a la izquierda y la invitación a la derecha, a la misma altura. */
-  .locations-collaboration-how-note {
-    grid-row: 5;
-    grid-column: 1;
-    align-self: center;
-  }
-
+  /* Al pie, la invitación, a la derecha. */
   .locations-collaboration-how-close {
     grid-row: 5;
-    grid-column: 2;
+    grid-column: 1 / -1;
     justify-items: end;
-    align-self: center;
   }
 
   .locations-collaboration-how-start {
@@ -313,6 +343,12 @@
 
   .locations-collaboration-how-steps li:nth-child(even) {
     background: rgba(251, 246, 245, 0.085);
+  }
+
+  /* El número, a la escala de las muestras grandes. */
+  .locations-collaboration-how-number {
+    padding: 0.45em 0.6em;
+    font-size: clamp(0.85rem, 1vw, 1.15rem);
   }
 
   /* La muestra, centrada sobre el texto. */
@@ -335,7 +371,7 @@
   }
 
   /* Los cuatro títulos al mismo tamaño: el del más largo, que así cabe sin encoger. */
-  .locations-collaboration-how-steps strong {
+  .locations-collaboration-how-steps li > strong {
     font-size: clamp(0.85rem, 1.25vw, 1.45rem);
   }
 
@@ -345,5 +381,87 @@
     text-align-last: left;
     hyphens: auto;
     hyphenate-limit-chars: 5 2 2;
+  }
+}
+
+/* Los huecos del bloque, con unas minimilks que flotan, como en Contacto: claras y tenues sobre la
+   tinta, una en coral en cada grupo. Cuadradas, como todas. Un grupo a la derecha de la cabecera y
+   otro a la izquierda de la invitación. Solo en escritorio; quietas si se pide reducir el
+   movimiento. */
+.locations-collaboration-how-drift {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  .locations-collaboration-how-drift {
+    position: relative;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* A la derecha de la cabecera: la segunda columna, hasta el margen del bloque, del rótulo al aire
+     sobre los pasos. Ninguna fila crece por él (sus márgenes negativos no cuentan). */
+  .locations-collaboration-how-drift.is-top {
+    grid-row: 1 / 4;
+    grid-column: 2;
+    align-self: stretch;
+    margin: calc(-1 * clamp(1.5rem, 2.5vw, 3rem))
+      calc(-1 * (var(--how-pad) + clamp(24px, 4.5vw, 80px) / 2)) calc(-1 * clamp(1.5rem, 3vw, 3.5rem))
+      0;
+  }
+
+  /* A la izquierda de la invitación: ocupa también el aire bajo los pasos y el del pie del bloque. */
+  .locations-collaboration-how-drift.is-foot {
+    grid-row: 5;
+    grid-column: 1;
+    align-self: end;
+    height: calc(
+      100% + clamp(0.25rem, 0.8vw, 1rem) + clamp(1.25rem, 2vw, 2rem) + clamp(2rem, 3vw, 3rem)
+    );
+    /* Bajada sin mover la fila (relative no cambia la maqueta). */
+    top: clamp(2rem, 3vw, 3rem);
+    min-height: 7rem;
+  }
+
+  .locations-collaboration-how-drift span {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    background: var(--how-ink);
+    opacity: var(--o);
+    mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+    animation: how-drift var(--d) ease-in-out var(--delay) infinite alternate;
+  }
+
+  /* Junto a la entradilla (la mitad de abajo), solo a la derecha: no tapan el texto. */
+  .is-top span:nth-child(1) { --s: 2.6rem; --o: 0.08; --d: 12s; --delay: -3s; top: 4%; left: 6%; }
+  .is-top span:nth-child(2) { --s: 1.3rem; --o: 0.18; --d: 9s; --delay: -7s; top: 16%; left: 34%; }
+  .is-top span:nth-child(3) { --s: 3rem; --o: 0.06; --d: 14s; --delay: -1s; top: 6%; left: 62%; }
+  .is-top span:nth-child(4) { --s: 1.7rem; --o: 0.85; --d: 10s; --delay: -5s; top: 34%; left: 18%; background: #ff7f7f; }
+  .is-top span:nth-child(5) { --s: 1.5rem; --o: 0.14; --d: 11s; --delay: -9s; top: 30%; left: 84%; }
+  .is-top span:nth-child(6) { --s: 2.2rem; --o: 0.1; --d: 13s; --delay: -4s; top: 52%; left: 58%; }
+  .is-top span:nth-child(7) { --s: 1.2rem; --o: 0.2; --d: 8s; --delay: -2s; top: 78%; left: 72%; }
+  .is-top span:nth-child(8) { --s: 2.6rem; --o: 0.07; --d: 12s; --delay: -6s; top: 64%; left: 88%; }
+
+  .is-foot span:nth-child(1) { --s: 2.6rem; --o: 0.09; --d: 11s; --delay: -2s; top: 18%; left: 4%; }
+  .is-foot span:nth-child(2) { --s: 1.4rem; --o: 0.16; --d: 9s; --delay: -6s; top: 58%; left: 22%; }
+  .is-foot span:nth-child(3) { --s: 3.2rem; --o: 0.06; --d: 14s; --delay: -4s; top: 30%; left: 44%; }
+  .is-foot span:nth-child(4) { --s: 1.8rem; --o: 0.85; --d: 10s; --delay: -8s; top: 50%; left: 68%; background: #ff7f7f; }
+  .is-foot span:nth-child(5) { --s: 1.2rem; --o: 0.18; --d: 8s; --delay: -1s; top: 12%; left: 86%; }
+  .is-foot span:nth-child(6) { --s: 2rem; --o: 0.1; --d: 12s; --delay: -5s; top: 70%; left: 96%; }
+}
+
+@keyframes how-drift {
+  from {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  to {
+    transform: translate(0.6rem, -1.4rem) rotate(6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locations-collaboration-how-drift span {
+    animation: none;
   }
 }

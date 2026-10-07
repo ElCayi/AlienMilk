@@ -5,3 +5,32 @@
   width: var(--home-section-width);
   margin: 0 auto;
 }
+
+/* Del cierre al pie, el mismo aire que en Sesiones (.closing de sessions-closing.css). */
+@media (min-width: 1001px) {
+  .home-editorial-sections:has(> .final-cta-section) {
+    margin-bottom: 0;
+  }
+
+  .home-editorial-sections > .final-cta-section {
+    padding-bottom: clamp(7.5rem, 15.5vw, 14.5rem);
+  }
+}
+
+/* La imagen, en su proporción: se ve entera y casi del alto de la tarjeta. */
+.final-cta-section app-closing-cta {
+  --closing-cta-image-height: min(100%, 40vw, 600px);
+  --closing-cta-image-ratio: 1536 / 1024;
+  /* Algo más a la derecha: la roca se sale un poco por el borde. */
+  --closing-cta-image-right: -8rem;
+  /* Y algo más arriba: el pie se funde en el negro antes del borde. */
+  --closing-cta-image-bottom: 2.5rem;
+  --closing-cta-image-fade-end: 86%;
+  /* Y la esquina de abajo a la derecha de la tarjeta (la imagen sobresale 8rem), en curva. */
+  --closing-cta-image-corner: radial-gradient(
+    circle at calc(100% - 8rem) 100%,
+    transparent 0,
+    rgb(0 0 0 / 0.35) 9rem,
+    #000 18rem
+  );
+}

@@ -122,3 +122,17 @@ export interface Contacto {
 }
 
 export type ContactoPayload = Omit<Contacto, 'actualizadoEn' | 'actualizadoPor'>;
+
+/** La red de confianza de la portada (/api/red-de-confianza). */
+export interface RedConfianza {
+  premios: { sigla: string; nombre: string; otorgante: string; fecha: string }[];
+  socios: { nombre: string; estilo: string; emblema: string }[];
+  cifras: {
+    clave: string;
+    rotulo: string;
+    /** Ya calculado: la «Continuidad», por ejemplo, llega en años, no como año de fundación. */
+    valor: string;
+    unidad: string | null;
+    nota: string | null;
+  }[];
+}

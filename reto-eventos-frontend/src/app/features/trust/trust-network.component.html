@@ -1,87 +1,194 @@
 <section class="trust" aria-labelledby="trust-title">
-  <header class="trust-head">
-    <p class="trust-kicker" appFitLine>
-      <span class="trust-kicker-icon" aria-hidden="true"></span>
-      <span>Alianzas / Red de confianza · 2026</span>
-    </p>
-    <div class="trust-copy">
-      <h2 id="trust-title" appFitLine>En buenas manos</h2>
-      <p class="trust-subtitle" appFitLine [appFitLineMin]="15">Más de 1000&#8239;·&#8239;10³ clientes ya confían en AlienMIlk</p>
-      <p class="trust-intro">
-        Pro&shy;vee&shy;do&shy;res, ope&shy;ra&shy;do&shy;res, casas de co&shy;mi&shy;das,
-        la&shy;bo&shy;ra&shy;to&shy;rios e
-        <strong>ins&shy;ti&shy;tu&shy;cio&shy;nes de dis&shy;tin&shy;tos sis&shy;te&shy;mas</strong>
-        con&shy;fían en nues&shy;tra red para abas&shy;te&shy;cerse, cus&shy;to&shy;diar
-        mues&shy;tras, operar se&shy;sio&shy;nes o in&shy;te&shy;grarse en nues&shy;tra cadena
-        de su&shy;mi&shy;nis&shy;tro. Somos únicos en hacer lo nues&shy;tro, <strong>más de
-        1&nbsp;siglo de&shy;di&shy;ca&shy;dos a la leche</strong>
+  <!-- Dos hojas blancas (el fondo de la portada las pinta): la cabecera y, tras la franja de tinta,
+       las experiencias y la discreción. -->
+  <div class="trust-sheet" data-backdrop-block-sheet>
+    <header class="trust-head">
+      <p class="trust-kicker" appFitLine>
+        <span class="trust-kicker-icon" aria-hidden="true"></span>
+        <span>Alianzas / Red de confianza · 2026</span>
       </p>
-    </div>
-
-    <!-- El sello del registro, como el timbre de un documento: el rótulo en la corona y una minimilk
-         en el centro. -->
-    <div
-      class="trust-seal"
-      role="img"
-      aria-label="Sello del Registro Sanitario Interplanetario, número 0212"
-    >
-      <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
-        <defs>
-          <path id="trust-seal-ring" d="M100 21a79 79 0 1 1 0 158a79 79 0 1 1 0-158" />
-        </defs>
-        <circle cx="100" cy="100" r="97" />
-        <circle cx="100" cy="100" r="69" />
-        <text>
-          <textPath href="#trust-seal-ring" textLength="492" lengthAdjust="spacing">
-            REGISTRO SANITARIO INTERPLANETARIO · Nº 0212 ·&nbsp;
-          </textPath>
-        </text>
-      </svg>
-      <span class="trust-seal-mark"></span>
-    </div>
-  </header>
-
-  <!-- La cinta va doble para que el bucle no tenga costura; la copia no se lee. -->
-  <div class="trust-reel">
-    <div class="trust-reel-window">
-      <ul class="trust-track" aria-label="Socios de AlienMilk">
-        @for (copy of [0, 1]; track copy) {
-          @for (brand of brands; track brand.name) {
-            <li
-              [class]="'trust-brand trust-brand--' + brand.style"
-              [attr.aria-hidden]="copy ? 'true' : null"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path [attr.d]="brand.mark" />
-              </svg>
-              <span>{{ brand.name }}</span>
-            </li>
-          }
-        }
-      </ul>
-    </div>
+      <div class="trust-copy">
+        <h2 id="trust-title" appFitLine>En buenas manos</h2>
+        <p class="trust-subtitle" appFitLine [appFitLineMin]="15">Más de 1000&#8239;·&#8239;10³ clientes ya confían en AlienMIlk</p>
+        <p class="trust-intro">
+          Pro&shy;vee&shy;do&shy;res, ope&shy;ra&shy;do&shy;res, casas de co&shy;mi&shy;das,
+          la&shy;bo&shy;ra&shy;to&shy;rios e
+          <strong>ins&shy;ti&shy;tu&shy;cio&shy;nes de dis&shy;tin&shy;tos sis&shy;te&shy;mas</strong>
+          con&shy;fían en nues&shy;tra red para abas&shy;te&shy;cerse, cus&shy;to&shy;diar
+          mues&shy;tras, operar se&shy;sio&shy;nes o in&shy;te&shy;grarse en nues&shy;tra cadena
+          de su&shy;mi&shy;nis&shy;tro. Somos únicos en hacer lo nues&shy;tro, <strong>más de
+          1&nbsp;siglo de&shy;di&shy;ca&shy;dos a la leche</strong>
+        </p>
+      </div>
+    </header>
   </div>
 
-  <dl class="trust-figures">
-    <div>
-      <dt>Desde</dt>
-      <dd class="trust-figure">1962</dd>
-      <dd class="trust-note">Primera cata registrada</dd>
+  <!-- La franja de tinta entre las dos hojas, en tres tiempos: las distinciones (la de Custodia
+       Continuada, destacada con su medalla; debajo, las demás, en una ventana con scroll), la cinta
+       de socios a todo lo ancho y, al final, las cifras. Las tres cosas llegan del backend. La
+       cinta va doble para que el bucle no tenga costura; la copia no se lee. -->
+  <div class="trust-reel">
+    @if (featuredAward(); as featured) {
+      <section class="trust-awards" aria-labelledby="trust-awards-title">
+        <header class="trust-awards-head">
+          <p class="trust-awards-kicker" id="trust-awards-title" appFitLine>
+            Distinciones · Premios a AlienMilk
+          </p>
+          <p class="trust-awards-aside" appFitLine>Todas vigentes</p>
+        </header>
+
+        <!-- La destacada y, debajo, el palmarés, con su mismo ancho. -->
+        <div class="trust-awards-body">
+          <div class="trust-award-featured">
+            <div class="trust-medal" aria-hidden="true">
+              <span class="trust-medal-face"></span>
+              <svg viewBox="0 0 200 200" focusable="false">
+                <circle class="trust-medal-rim" cx="100" cy="100" r="98" />
+                <circle class="trust-medal-edge" cx="100" cy="100" r="89.5" />
+                <!-- La leyenda, muy pequeña, gira por dentro del canto; la minimilk va calada en la
+                     cara. -->
+                <path id="trust-medal-path" d="M100 34a66 66 0 1 1 0 132a66 66 0 1 1 0-132" fill="none" />
+                <g class="trust-medal-legend">
+                  <text>
+                    <textPath href="#trust-medal-path" textLength="414" lengthAdjust="spacing">{{ medalLegend() }}</textPath>
+                  </text>
+                </g>
+                <circle class="trust-medal-groove" cx="100" cy="100" r="57" />
+              </svg>
+            </div>
+            <div class="trust-award-copy">
+              <p class="trust-award-date">{{ featured.date }}</p>
+              <p class="trust-award-name">{{ featured.name }}</p>
+              <p class="trust-award-issuer" appFitLine>{{ featured.issuer }}</p>
+            </div>
+          </div>
+
+          <!-- El palmarés, en una ventana hundida en la franja, con scroll por dentro: cada
+               distinción en una franja del mismo alto, con el nombre en una sola línea. -->
+          @if (otherAwards().length) {
+            <div class="trust-awards-box">
+              <div class="trust-awards-scroll" role="region" aria-label="Palmarés de AlienMilk" tabindex="0">
+                <ol class="trust-awards-list">
+                  @for (award of otherAwards(); track award.name) {
+                    <li>
+                      <span class="trust-award-code" appFitLine>{{ award.date }} · {{ award.code }}</span>
+                      <strong appFitLine [appFitLineMin]="15">{{ award.name }}</strong>
+                      <span class="trust-award-issuer" appFitLine>{{ award.issuer }}</span>
+                    </li>
+                  }
+                </ol>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <p class="trust-reel-caption">
+      <span appFitLine>Socios acreditados · Selección pública</span>
+      <span appFitLine>El resto prefiere no figurar</span>
+    </p>
+    <div class="trust-reel-window">
+      <div class="trust-reel-fade">
+        <ul class="trust-track" aria-label="Socios de AlienMilk">
+          @for (copy of [0, 1]; track copy) {
+            @for (brand of brands(); track brand.name) {
+              <li
+                [class]="'trust-brand trust-brand--' + brand.style"
+                [attr.aria-hidden]="copy ? 'true' : null"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path [attr.d]="brandMark(brand)" />
+                </svg>
+                <span>{{ brand.name }}</span>
+              </li>
+            }
+          }
+        </ul>
+      </div>
     </div>
-    <div>
-      <dt>Socios</dt>
-      <dd class="trust-figure">64</dd>
-      <dd class="trust-note">En 19 sistemas</dd>
-    </div>
-    <div>
-      <dt>Volvería</dt>
-      <dd class="trust-figure">97&nbsp;%</dd>
-      <dd class="trust-note">El 3&nbsp;% aún no ha vuelto</dd>
-    </div>
-    <div>
-      <dt>Orígenes revelados</dt>
-      <dd class="trust-figure">0</dd>
-      <dd class="trust-note">En más de seis décadas</dd>
-    </div>
-  </dl>
+
+    <dl class="trust-figures">
+      @for (figure of figures(); track figure.label) {
+        <div>
+          <dt appFitLine>{{ figure.label }}</dt>
+          <dd class="trust-figure">
+            {{ figure.value }}@if (figure.unit) {&nbsp;<span class="trust-figure-unit">{{ figure.unit }}</span>}
+          </dd>
+          @if (figure.note) {
+            <dd class="trust-note" appFitLine>{{ figure.note }}</dd>
+          }
+        </div>
+      }
+    </dl>
+  </div>
+
+  <div class="trust-sheet trust-sheet--privacy" data-backdrop-block-sheet>
+    <!-- Las experiencias de los comensales, sin nombre: la discreción de debajo explica por
+         qué. -->
+    <section class="trust-voices" aria-labelledby="trust-voices-title">
+      <p class="trust-privacy-kicker" id="trust-voices-title">
+        <span class="trust-kicker-icon" aria-hidden="true"></span>
+        <span>Experiencias · Sin firma</span>
+      </p>
+      <ul class="trust-voices-list">
+        <li>
+          <blockquote>No sabría decir a qué sabía. Sé que he vuelto cuatro veces.</blockquote>
+          <p class="trust-voice-by" appFitLine>Comensal Nº 4471 · Sesión 0212</p>
+        </li>
+        <li>
+          <blockquote>Me pidieron que no describiera la textura. Puedo decir que la hubo.</blockquote>
+          <p class="trust-voice-by" appFitLine>Comensal Nº 0098 · Estación Pelagia</p>
+        </li>
+        <li>
+          <blockquote>Mi médico pregunta. Yo&nbsp;no.</blockquote>
+          <p class="trust-voice-by" appFitLine>
+            Comensal Nº <span class="trust-redacted" role="img" aria-label="número retirado"></span> · Datos
+            retirados
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- La discreción: el título a lo ancho, la entradilla a la izquierda y, a la
+         derecha, tres compromisos. -->
+    <section class="trust-privacy" aria-labelledby="trust-privacy-title">
+      <p class="trust-privacy-kicker">
+        <span class="trust-kicker-icon" aria-hidden="true"></span>
+        <span>Discreción · Protocolo AM-0</span>
+      </p>
+      <h3 id="trust-privacy-title" appFitLine>Lo que se comparte en la mesa no sale de la mesa.</h3>
+      <div class="trust-privacy-copy">
+        <p class="trust-privacy-intro">
+          En AlienMilk la dis&shy;cre&shy;ción no es una cláu&shy;su&shy;la: for&shy;ma parte de la
+          re&shy;ce&shy;ta. No pu&shy;bli&shy;ca&shy;mos listas de asis&shy;ten&shy;tes, no
+          con&shy;fir&shy;ma&shy;mos la pre&shy;sen&shy;cia de nadie en una sesión y no
+          aso&shy;cia&shy;mos nin&shy;gu&shy;na mues&shy;tra al nombre de quien la aporta.
+          <strong>El ano&shy;ni&shy;ma&shy;to de nues&shy;tros clien&shy;tes es parte de lo que somos</strong>,
+          y lo pro&shy;te&shy;ge&shy;mos con el mismo rigor con el que con&shy;ser&shy;va&shy;mos el
+          ar&shy;chi&shy;vo: <strong>ci&shy;fra&shy;do de ex&shy;tre&shy;mo a ex&shy;tre&shy;mo</strong>,
+          au&shy;di&shy;to&shy;rí&shy;as in&shy;de&shy;pen&shy;dien&shy;tes cada tem&shy;po&shy;ra&shy;da
+          y ser&shy;vi&shy;do&shy;res re&shy;par&shy;ti&shy;dos entre ju&shy;ris&shy;dic&shy;cio&shy;nes
+          que no se conocen entre sí.
+        </p>
+        <p class="trust-privacy-close">
+          Si alguien le pregunta si ha estado aquí, puede decir que no. Nosotros diremos lo mismo.
+        </p>
+      </div>
+      <ul class="trust-privacy-list">
+        <li>
+          <strong appFitLine>Anonimato</strong>
+          <span>Ninguna reserva lleva su nombre más allá de la taquilla.</span>
+        </li>
+        <li>
+          <strong appFitLine>Archivo cifrado</strong>
+          <span>Cada expediente, cifrado y repartido en tres sistemas.</span>
+        </li>
+        <li>
+          <strong appFitLine>Accesos registrados</strong>
+          <span>Queda constancia de cada consulta. Incluidas las nuestras.</span>
+        </li>
+      </ul>
+    </section>
+  </div>
 </section>

@@ -46,7 +46,7 @@ public class SecurityConfig {
 						.permitAll()
 						.requestMatchers("/api/eventos/**")
 						.permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/contacto", "/api/auth/demo-accounts")
+						.requestMatchers(HttpMethod.GET, "/api/contacto", "/api/red-de-confianza", "/api/auth/demo-accounts")
 						.permitAll()
 						.requestMatchers("/api/admin/**")
 						.hasRole("ADMON")

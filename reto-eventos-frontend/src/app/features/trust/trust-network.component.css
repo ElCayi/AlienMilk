@@ -1,7 +1,7 @@
 /* Portada: la red de confianza, entre Collaborators y el cierre. Una sección como Programación y
    Collaborators: sobre el blanco de la columna, la barra arriba, el rótulo, el título, el subtítulo
-   en coral y la entradilla justificada, con el sello del registro a la derecha. Debajo, la cinta de
-   socios entre dos filetes claros y la trayectoria en cuatro cifras. */
+   en coral y la entradilla justificada. Luego, una franja de tinta con las distinciones, la cinta de
+   socios y las cifras, y en otra hoja blanca, las experiencias sin firma y la discreción. */
 :host {
   --trust-line: 1px solid var(--gallery-line, rgba(55, 66, 78, 0.17));
   display: block;
@@ -12,16 +12,25 @@
 /* En escritorio, el fondo (data-backdrop-block) pinta de blanco este elemento, con las esquinas de
    los marcos, desde un corte de textura tras Collaborators. El margen deja sobre la barra el mismo
    aire blanco que en Collaborators: allí es 11,75rem + su margen − el aire y el corte del fondo bajo
-   la ficha de Localizaciones; aquí, con el mismo corte, sale con dos veces ese margen menos el aire
-   del fondo (clamp(3rem, 5.5vw, 6rem), como en liquid-backdrop). El relleno, el blanco bajo las
-   cifras. */
+   la ficha de Localizaciones; aquí, con el mismo corte, sale con ese margen menos el aire del fondo
+   (clamp(3rem, 5.5vw, 6rem), como en liquid-backdrop): el otro margen ya queda al pie de
+   Collaborators, bajo «Cómo colaborar». El fondo pinta las dos hojas (data-backdrop-block-sheet),
+   cada una con su aire blanco; entre ellas, la cinta, sobre la textura. */
 @media (min-width: 1001px) {
   :host {
     margin-top: calc(
-      2 * var(--home-collaboration-margin, calc(clamp(3.5rem, 5vw, 6rem) + 3px)) -
+      var(--home-collaboration-margin, calc(clamp(3.5rem, 5vw, 6rem) + 3px)) -
         clamp(3rem, 5.5vw, 6rem)
     );
+  }
+
+  .trust-sheet {
     padding-bottom: clamp(3rem, 5.5vw, 6rem);
+  }
+
+  .trust-sheet--privacy {
+    padding-top: clamp(3rem, 5.5vw, 6rem);
+    padding-bottom: clamp(3.5rem, 6vw, 6.5rem);
   }
 }
 
@@ -31,16 +40,13 @@
   font-family: Arial, sans-serif;
 }
 
-/* La cabecera, con las medidas de las demás secciones; el sello, a la derecha de la entradilla. */
+/* La cabecera, con las medidas de las demás secciones. */
 .trust-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .trust-kicker {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   gap: 0.5em;
@@ -98,61 +104,468 @@
   hyphens: auto;
 }
 
-/* El sello, algo torcido, como un timbre: dos coronas de trazo, el rótulo entre ellas y una minimilk
-   en el centro. */
-.trust-seal {
+/* La franja de tinta entre las dos hojas, en tres tiempos, cada uno con su forma para que la vista
+   no se pierda: arriba, las distinciones, con la medalla en coral como punto de entrada; en medio,
+   la cinta de socios, a todo lo ancho, por debajo del resto; y al final las cifras, grandes, con la
+   última en coral: la vista entra por la medalla, arriba a la izquierda, y termina en ese cero,
+   abajo a la derecha. --band-pad-x es el margen de los lados, el que la cinta atraviesa. */
+.trust-reel {
+  --trust-line: 1px solid rgba(251, 246, 245, 0.2);
+  --band-pad-x: 1.5rem;
   position: relative;
-  width: clamp(8.5rem, 11vw, 11rem);
-  aspect-ratio: 1;
-  margin-right: clamp(0rem, 2vw, 2.5rem);
-  transform: rotate(-10deg);
+  margin-block: clamp(2rem, 3.5vw, 3.75rem);
+  padding: clamp(2rem, 4vw, 3rem) var(--band-pad-x);
+  border-radius: 1rem;
+  color: #fff;
+  background: var(--gallery-ink, #211e24);
 }
 
-.trust-seal svg {
+/* Las distinciones: el rótulo en coral, como el de «Cómo colaborar»; la de Custodia Continuada,
+   destacada y centrada, con su medalla, y debajo las demás, en una ventana con scroll, del mismo
+   ancho que ella. */
+.trust-awards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.5rem, 4.5vw, 4.75rem);
+  margin-bottom: clamp(3rem, 5.5vw, 6rem);
+}
+
+.trust-awards-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.trust-awards-head p {
+  min-width: 0;
+  margin: 0;
+}
+
+.trust-awards-kicker {
+  color: #ff7f7f;
+  font: 800 clamp(0.8rem, 0.75vw, 0.95rem) / 1.5 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Una minimilk abre el rótulo, en su mismo coral. */
+.trust-awards-kicker::before {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.6em;
+  vertical-align: -0.45em;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.trust-awards-aside {
+  color: rgba(251, 246, 245, 0.6);
+  font: 800 0.66rem / normal 'Nunito', sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* La destacada y el palmarés, centrados en la franja: el ancho lo da la destacada (la medalla y, a
+   su lado, el texto) y el palmarés lo toma sin contar en él. */
+.trust-awards-body {
+  display: grid;
+  justify-self: center;
+  gap: clamp(2rem, 3.5vw, 3.75rem);
+  min-width: 0;
+}
+
+.trust-award-featured {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: clamp(1.75rem, 3vw, 3.25rem);
+}
+
+/* La medalla: el canto, fino; un moleteado que gira muy despacio; y la cara en coral, con la
+   minimilk calada en el centro, algo torcida, como en un timbre, y alrededor su leyenda, muy
+   pequeña, que gira al revés. Detrás, un halo coral apenas visible, parejo bajo la medalla: por la
+   minimilk se ve el mismo fondo que la rodea. */
+.trust-medal {
+  position: relative;
+  isolation: isolate;
+  width: clamp(9.5rem, 13vw, 14rem);
+  aspect-ratio: 1;
+}
+
+.trust-medal::before {
+  content: '';
+  position: absolute;
+  inset: -45%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 127, 127, 0.07) 52%, transparent);
+}
+
+.trust-medal svg {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
 
-.trust-seal circle {
+.trust-medal-rim,
+.trust-medal-edge,
+.trust-medal-groove {
   fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
 }
 
-.trust-seal text {
-  fill: currentColor;
-  font: 700 11px 'Nunito', sans-serif;
-  letter-spacing: 0.12em;
+.trust-medal-rim {
+  stroke: rgba(251, 246, 245, 0.85);
+  stroke-width: 1.4;
 }
 
-.trust-seal-mark {
+.trust-medal-edge {
+  stroke: rgba(251, 246, 245, 0.5);
+  stroke-width: 5;
+  stroke-dasharray: 0.9 3.1;
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  animation: trust-medal-turn 120s linear infinite reverse;
+}
+
+/* La cara, con la minimilk calada: la cara gira sin que se note, por ser redonda, y la minimilk
+   queda torcida. */
+.trust-medal-face {
   position: absolute;
-  inset: 34%;
-  background: currentColor;
-  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
-  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  inset: 10.5%;
+  border-radius: 50%;
+  background: #ff7f7f;
+  transform: rotate(-10deg);
+  -webkit-mask:
+    url('/alienmilk-ufo.svg') center / 43% 43% no-repeat,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    url('/alienmilk-ufo.svg') center / 43% 43% no-repeat exclude,
+    linear-gradient(#000 0 0);
 }
 
-/* La cinta, a la distancia de la cabecera a la que quedan la foto de Collaborators o el escaparate
-   de Programación, entre dos filetes claros; las marcas se desvanecen en los extremos. */
-.trust-reel {
-  margin-top: clamp(2rem, 3.1vw, 3.25rem);
+.trust-medal-groove {
+  stroke: rgba(33, 30, 36, 0.3);
+  stroke-width: 1;
+}
+
+.trust-medal-legend {
+  transform-box: view-box;
+  transform-origin: 100px 100px;
+  animation: trust-medal-turn 40s linear infinite;
+}
+
+.trust-medal-legend text {
+  fill: var(--gallery-ink, #211e24);
+  font: 800 9px 'Nunito', sans-serif;
+  text-transform: uppercase;
+}
+
+@keyframes trust-medal-turn {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.trust-award-copy {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.trust-award-copy p {
+  margin: 0;
+}
+
+.trust-award-date {
+  color: #ff7f7f;
+  font: 800 0.78rem / 1.4 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* El nombre, algo mayor que el título de «Cómo colaborar», en dos líneas, y la columna ceñida a él. */
+.trust-award-name {
+  max-width: 7.6em;
+  font: 400 clamp(2.2rem, 3.3vw, 4.2rem) / 0.98 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+.trust-award-copy .trust-award-issuer {
+  font-size: 0.95rem;
+}
+
+.trust-award-issuer {
+  min-width: 0;
+  color: rgba(251, 246, 245, 0.6);
+  font: 600 0.85rem / 1.4 'Nunito', sans-serif;
+}
+
+/* El palmarés, debajo de la destacada y a todo el ancho, en una ventana baja: más oscura que la
+   franja y con un filo claro solo arriba, como si le diera la luz desde lo alto. La lista se desplaza
+   por dentro y, abajo, se funde con el fondo para avisar de que sigue. */
+.trust-awards-box {
+  --box-ink: #18161b;
+  --box-fade: 2.5rem;
+  width: 0;
+  min-width: 100%;
+  overflow: hidden;
+  border-top: 1px solid rgba(251, 246, 245, 0.28);
+  border-radius: 1rem;
+  background: var(--box-ink);
+}
+
+.trust-awards-scroll {
+  height: clamp(12.5rem, 16vw, 16rem);
+  overflow: hidden auto;
+}
+
+/* La barra, un hilo claro sin flechas, apartado de las esquinas redondeadas. */
+.trust-awards-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.trust-awards-scroll::-webkit-scrollbar-track {
+  margin-block: 1rem;
+  background: transparent;
+}
+
+.trust-awards-scroll::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: rgba(251, 246, 245, 0.22);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .trust-awards-scroll {
+    scrollbar-color: rgba(251, 246, 245, 0.22) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+.trust-awards-scroll:focus-visible {
+  outline: 2px solid rgba(255, 127, 127, 0.6);
+  outline-offset: -2px;
+}
+
+/* El fundido, pegado al pie mientras la lista se desplaza; al final, la lista deja bajo él su
+   relleno y la última distinción se lee entera. */
+.trust-awards-scroll::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: var(--box-fade);
+  margin-top: calc(-1 * var(--box-fade));
+  background: linear-gradient(to bottom, transparent, var(--box-ink));
+  pointer-events: none;
+}
+
+/* Las distinciones, de la más antigua a la más reciente, en franjas alternas de dos tonos casi
+   iguales, de borde a borde de la ventana y todas del mismo alto (el de la más alta). A la izquierda
+   de cada una, un nudo a la altura de su fecha y un filamento que los une. */
+.trust-awards-list {
+  --award-node: 0.75rem;
+  --row-pad-x: clamp(1rem, 1.6vw, 1.5rem);
+  --row-pad-y: 0.9rem;
+  --node-gap: 0.9rem;
+  --node-top: calc(var(--row-pad-y) + 0.462rem - var(--award-node) / 2);
+  display: grid;
+  grid-auto-rows: 1fr;
+  margin: 0;
+  padding: 0 0 var(--box-fade);
+  list-style: none;
+}
+
+.trust-awards-list li {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: var(--row-pad-y) var(--row-pad-x) var(--row-pad-y)
+    calc(var(--row-pad-x) + var(--award-node) + var(--node-gap));
+}
+
+.trust-awards-list li:nth-child(even) {
+  background: rgba(251, 246, 245, 0.045);
+}
+
+.trust-awards-list li::before {
+  content: '';
+  position: absolute;
+  top: var(--node-top);
+  left: var(--row-pad-x);
+  box-sizing: border-box;
+  width: var(--award-node);
+  height: var(--award-node);
+  border: 1.5px solid rgba(251, 246, 245, 0.75);
+  border-radius: 50%;
+}
+
+.trust-awards-list li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--node-top) + var(--award-node) + 0.4rem);
+  bottom: calc(0.4rem - var(--node-top));
+  left: calc(var(--row-pad-x) + var(--award-node) / 2 - 0.5px);
+  width: 1px;
+  background: rgba(251, 246, 245, 0.25);
+}
+
+.trust-award-code {
+  min-width: 0;
+  color: rgba(251, 246, 245, 0.55);
+  font: 800 0.66rem / 1.4 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.trust-awards-list strong {
+  min-width: 0;
+  font: 400 clamp(1.25rem, 1.5vw, 1.65rem) / 1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+}
+
+/* Desde tablet, cada distinción en dos líneas: arriba, la fecha y la sigla y, a la derecha, el
+   organismo, a la altura del nudo; debajo, el nombre, en una sola línea (se encoge si no cabe, y con
+   el interlineado fijo la franja no cambia de alto). */
+@media (min-width: 601px) {
+  .trust-awards-list {
+    --row-size: clamp(1.2rem, 1.35vw, 1.5rem);
+  }
+
+  .trust-awards-list li {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'code issuer'
+      'name name';
+    align-items: center;
+    column-gap: 1.25rem;
+    row-gap: 0.45rem;
+  }
+
+  .trust-awards-list .trust-award-code {
+    grid-area: code;
+  }
+
+  .trust-awards-list strong {
+    grid-area: name;
+    font-size: var(--row-size);
+    line-height: calc(var(--row-size) * 1.1);
+  }
+
+  .trust-awards-list .trust-award-issuer {
+    grid-area: issuer;
+    font-size: 0.8rem;
+    line-height: 1.155;
+    text-align: right;
+  }
+}
+
+/* Sobre la cinta, un rótulo pequeño a cada lado. */
+.trust-reel-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: 0 0 clamp(0.9rem, 1.4vw, 1.25rem);
+  color: rgba(251, 246, 245, 0.6);
+  font: 800 0.66rem / normal 'Nunito', sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.trust-reel-caption span {
+  min-width: 0;
+}
+
+.trust-reel-caption span + span {
+  text-align: right;
+}
+
+/* La cinta, a todo lo ancho de la franja, por debajo del resto: sus dos raíles van de borde a borde
+   y las marcas se desvanecen en los márgenes. */
+.trust-reel-window {
+  margin-inline: calc(-1 * var(--band-pad-x));
   border-block: var(--trust-line);
 }
 
-.trust-reel-window {
+.trust-reel-fade {
+  --trust-fade: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--band-pad-x),
+    #000 calc(100% - var(--band-pad-x)),
+    transparent
+  );
   overflow: hidden;
-  padding-block: clamp(1.4rem, 2.2vw, 2rem);
-  -webkit-mask: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  mask: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  padding-block: clamp(1.75rem, 3vw, 3rem);
+  -webkit-mask: var(--trust-fade);
+  mask: var(--trust-fade);
+}
+
+/* En escritorio, la franja ocupa el ancho de la columna blanca y va pegada a las dos hojas, como la
+   tinta de «Cómo colaborar»: bajo la curva amplia de cada hoja (abajo a la izquierda la de arriba,
+   arriba a la derecha la de abajo) asoma la tinta, que se mete unos píxeles en la franja para no
+   dejar costura. */
+@media (min-width: 1001px) {
+  .trust-reel {
+    --reel-gutter: clamp(24px, 4.5vw, 80px);
+    --reel-round: clamp(64px, 7vw, 120px);
+    /* Por dentro, más margen a los lados que el texto de las hojas. */
+    --band-pad-x: calc(var(--reel-gutter) + clamp(1.5rem, 4vw, 5rem));
+    margin: 0 calc(-1 * var(--reel-gutter));
+    padding: clamp(3.5rem, 6vw, 6.5rem) var(--band-pad-x);
+    /* Como los marcos: la curva amplia arriba a la derecha y abajo a la izquierda; las otras dos
+       esquinas, rectas, bajo las curvas de las hojas. */
+    border-radius: 0 var(--reel-round);
+  }
+
+  .trust-reel::before,
+  .trust-reel::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: calc(var(--reel-round) + 4px);
+    pointer-events: none;
+  }
+
+  .trust-reel::before {
+    bottom: calc(100% - 4px);
+    background:
+      radial-gradient(
+          circle at 100% 0,
+          transparent calc(var(--reel-round) - 0.75px),
+          var(--gallery-ink, #211e24) var(--reel-round)
+        )
+        left top / var(--reel-round) calc(var(--reel-round) + 4px) no-repeat;
+  }
+
+  .trust-reel::after {
+    top: calc(100% - 4px);
+    background:
+      radial-gradient(
+          circle at 0 100%,
+          transparent calc(var(--reel-round) - 0.75px),
+          var(--gallery-ink, #211e24) var(--reel-round)
+        )
+        right bottom / var(--reel-round) calc(var(--reel-round) + 4px) no-repeat;
+  }
 }
 
 .trust-track {
   display: flex;
   align-items: center;
-  gap: clamp(2.5rem, 4.5vw, 4.5rem);
+  gap: clamp(5rem, 9vw, 9.5rem);
   width: max-content;
   margin: 0;
   padding: 0;
@@ -160,31 +573,27 @@
   animation: trust-reel 70s linear infinite;
 }
 
-.trust-reel:hover .trust-track {
-  animation-play-state: paused;
-}
-
 /* Al recorrer media cinta, la copia ocupa el sitio de la primera. El hueco entre copias es el mismo
    que entre marcas. */
 @keyframes trust-reel {
   to {
-    transform: translateX(calc(-50% - clamp(2.5rem, 4.5vw, 4.5rem) / 2));
+    transform: translateX(calc(-50% - clamp(5rem, 9vw, 9.5rem) / 2));
   }
 }
 
-/* Cada marca, con su emblema en trazo y su rótulo, a una sola tinta, algo apagada. */
+/* Cada marca, con su emblema en trazo y su rótulo, a una sola tinta, entera para leerse sobre la
+   textura. */
 .trust-brand {
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  color: rgba(33, 30, 36, 0.82);
+  gap: 0.95rem;
   white-space: nowrap;
 }
 
 .trust-brand svg {
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2.9rem;
+  height: 2.9rem;
   flex: none;
   fill: none;
   stroke: currentColor;
@@ -194,52 +603,58 @@
 }
 
 .trust-brand--serif {
-  font: 400 1.45rem 'Gloock', 'Didot', serif;
+  font: 400 2.3rem 'Gloock', 'Didot', serif;
 }
 
 .trust-brand--condensed {
-  font: 700 1.55rem 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font: 700 2.4rem 'Barlow Condensed', 'Arial Narrow', sans-serif;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .trust-brand--wide {
-  font: 800 0.95rem 'Nunito', sans-serif;
+  font: 800 1.45rem 'Nunito', sans-serif;
   letter-spacing: 0.32em;
   text-transform: uppercase;
 }
 
 .trust-brand--italic {
-  font: italic 400 1.6rem 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font: italic 400 2.5rem 'Barlow Condensed', 'Arial Narrow', sans-serif;
   letter-spacing: 0.02em;
 }
 
-/* Las cifras: cuatro casillas, separadas por filetes claros; la primera, alineada con el texto. */
+/* Las cifras, el remate de la franja: grandes y ligeras, sin filetes, de dos en dos y, en pantallas
+   anchas, repartidas a lo ancho. La última (las filtraciones, cero), en coral: ahí acaba la vista. */
 .trust-figures {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 4rem);
+  margin: clamp(3rem, 5.5vw, 6rem) 0 0;
 }
 
 .trust-figures > div {
   display: grid;
   align-content: start;
-  gap: 0.3rem;
+  gap: 0.4rem;
   min-width: 0;
-  padding: clamp(1.25rem, 2vw, 1.75rem) clamp(1rem, 2vw, 2rem) 0;
 }
 
-.trust-figures > div:first-child {
-  padding-left: 0;
+@media (min-width: 1201px) {
+  .trust-figures {
+    display: flex;
+    justify-content: space-between;
+    gap: 2.5rem;
+  }
 }
 
-.trust-figures > div + div {
-  border-left: var(--trust-line);
+.trust-figures > div:last-child .trust-figure {
+  color: #ff7f7f;
 }
 
 .trust-figures dt {
-  color: var(--gallery-muted, #68727d);
-  font: 800 0.62rem / 1.4 'Nunito', sans-serif;
+  min-width: 0;
+  color: rgba(251, 246, 245, 0.6);
+  font: 800 0.72rem / 1.4 'Nunito', sans-serif;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -249,12 +664,159 @@
 }
 
 .trust-figure {
-  font: 400 clamp(2.4rem, 3.6vw, 3.8rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font: 300 clamp(3.25rem, 6.4vw, 8rem) / 0.95 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  white-space: nowrap;
+}
+
+/* La unidad, más pequeña y más tenue, sobre la misma línea de base. */
+.trust-figure-unit {
+  color: rgba(251, 246, 245, 0.7);
+  font-size: 0.4em;
+  letter-spacing: 0.04em;
 }
 
 .trust-note {
-  font: 600 0.8rem / 1.4 'Nunito', sans-serif;
+  min-width: 0;
+  color: rgba(251, 246, 245, 0.85);
+  font: 600 0.98rem / 1.4 'Nunito', sans-serif;
   white-space: nowrap;
+}
+
+/* Las experiencias, sin firma: tres citas en fila, entre filetes, con su código de comensal. */
+.trust-voices-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3.5rem);
+  margin: clamp(1.25rem, 2vw, 1.75rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust-voices-list li {
+  display: grid;
+  align-content: space-between;
+  gap: 1.25rem;
+  padding-top: clamp(1.25rem, 2vw, 1.75rem);
+  border-top: var(--trust-line);
+}
+
+.trust-voices-list blockquote {
+  margin: 0;
+  font: 400 clamp(1.35rem, 1.9vw, 1.9rem) / 1.25 'Gloock', 'Didot', serif;
+}
+
+.trust-voices-list blockquote::before {
+  content: '«';
+}
+
+.trust-voices-list blockquote::after {
+  content: '»';
+}
+
+.trust-voice-by {
+  min-width: 0;
+  margin: 0;
+  color: var(--gallery-muted, #68727d);
+  font: 800 0.66rem / 1.6 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* El dato retirado, tachado con una barra de tinta. */
+.trust-redacted {
+  display: inline-block;
+  width: 3.2em;
+  height: 0.95em;
+  vertical-align: -0.12em;
+  background: var(--gallery-ink, #211e24);
+}
+
+/* Tras las experiencias, la discreción, separada por un filete. */
+.trust-voices + .trust-privacy {
+  margin-top: clamp(3.5rem, 6vw, 6.5rem);
+}
+
+/* La discreción, en la segunda hoja: el rótulo y el título a lo ancho; debajo, la entradilla
+   justificada y, a su derecha, tres compromisos entre filetes. */
+.trust-privacy {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  column-gap: clamp(2.5rem, 5vw, 6rem);
+}
+
+.trust-privacy-kicker {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  color: var(--gallery-muted, #68727d);
+  font: 800 0.72rem / 1.4 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.trust-privacy h3 {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0.9rem 0 0;
+  font: 600 clamp(1.9rem, 3vw, 3.1rem) / 1.05 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* La entradilla y, al pie de la columna, una frase de cierre en coral. */
+.trust-privacy-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.trust-privacy-intro {
+  margin: clamp(1.25rem, 2vw, 1.75rem) 0 0;
+  font-size: var(--home-section-copy-size, var(--home-editorial-copy-size, 1.1rem));
+  line-height: var(--home-editorial-copy-leading, 1.6);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.trust-privacy-close {
+  margin: auto 0 0;
+  color: #ff7f7f;
+  font: 700 var(--home-section-subtitle-size, clamp(1.05rem, 1.55vw, 1.3rem)) / 1.35 'Nunito', sans-serif;
+  letter-spacing: 0.015em;
+}
+
+.trust-privacy-list {
+  align-self: start;
+  margin: clamp(1.25rem, 2vw, 1.75rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust-privacy-list li {
+  display: grid;
+  gap: 0.3rem;
+  padding-block: 0.95rem;
+  border-bottom: var(--trust-line);
+}
+
+.trust-privacy-list li:first-child {
+  padding-top: 0.35rem;
+}
+
+.trust-privacy-list strong {
+  min-width: 0;
+  font: 400 clamp(1.4rem, 1.9vw, 1.85rem) / 1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.trust-privacy-list span {
+  color: var(--gallery-muted, #68727d);
+  font: 600 0.95rem / 1.45 'Nunito', sans-serif;
 }
 
 /* En móvil, la barra la pone la portada (como en las demás secciones) y las cifras van de dos en
@@ -267,78 +829,115 @@
 }
 
 @media (max-width: 1000px) {
-  .trust-seal {
-    width: 7.5rem;
-    margin-right: 0;
+  /* La franja, sin las esquinas de los marcos, recorta el halo de la medalla, que en móvil queda
+     junto al borde. */
+  .trust-reel {
+    overflow: clip;
   }
 
-  .trust-figures {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .trust-privacy {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  /* La primera de cada fila, sin filete (el selector, tan específico como el que lo pone). */
-  .trust-figures > div:nth-child(odd),
-  .trust-figures > div + div:nth-child(odd) {
-    padding-left: 0;
-    border-left: 0;
+  .trust-voices-list {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .trust-figures > div:nth-child(n + 3) {
-    margin-top: clamp(1.25rem, 2vw, 1.75rem);
-    border-top: var(--trust-line);
-  }
 }
 
-/* En móvil estrecho, la cabecera en una columna, con el sello debajo, y una cifra por fila: el número
-   a la izquierda y, a su lado, el rótulo y la nota. */
+/* En móvil estrecho: la medalla, sobre el nombre de su distinción, y una cifra por fila, con el
+   rótulo encima y la nota debajo. */
 @media (max-width: 600px) {
-  .trust-head {
+  .trust-reel {
+    --band-pad-x: 1rem;
+  }
+
+  .trust-awards-head,
+  .trust-reel-caption {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  /* En columna, a todo lo ancho: si no, el rótulo mide lo que su texto y no se encoge. */
+  .trust-awards-head {
+    align-items: stretch;
+  }
+
+  .trust-reel-caption {
+    letter-spacing: 0.14em;
+  }
+
+  .trust-reel-caption span + span {
+    text-align: left;
+  }
+
+  .trust-awards-body {
+    justify-self: stretch;
+  }
+
+  .trust-award-featured {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 2rem;
+    row-gap: 1.5rem;
+  }
+
+  .trust-medal {
+    width: 9rem;
+  }
+
+  /* El palmarés, con menos margen por dentro: a lo estrecho, los nombres largos ocuparían cuatro
+     líneas. */
+  .trust-awards-scroll {
+    height: 20rem;
+  }
+
+  .trust-awards-list {
+    --row-pad-x: 0.85rem;
+    --row-pad-y: 0.8rem;
+    --node-gap: 0.7rem;
+  }
+
+  /* Nombres y organismos se parten en líneas, todos a su tamaño: encogidos para caber en una sola,
+     cada uno saldría de una talla. La directiva de ajuste escribe en el estilo del elemento; de ahí
+     el !important. */
+  .trust-awards-list strong,
+  .trust-awards-list .trust-award-issuer {
+    white-space: normal !important;
+  }
+
+  .trust-awards-list strong {
+    font-size: 1.15rem !important;
+  }
+
+  .trust-awards-list .trust-award-issuer {
+    font-size: 0.8rem !important;
   }
 
   .trust-figures {
     grid-template-columns: minmax(0, 1fr);
+    gap: 0;
   }
 
-  .trust-figures > div,
-  .trust-figures > div:nth-child(n) {
-    grid-template-columns: 5.25rem minmax(0, 1fr);
-    grid-template-areas:
-      'figure label'
-      'figure note';
-    align-items: center;
-    column-gap: 1rem;
-    row-gap: 0.15rem;
-    margin-top: 0;
+  .trust-figures > div {
     padding: 1.1rem 0;
-    border-left: 0;
   }
 
   .trust-figures > div + div {
     border-top: var(--trust-line);
-    border-left: 0;
-  }
-
-  .trust-figures dt {
-    grid-area: label;
-    align-self: end;
   }
 
   .trust-figure {
-    grid-area: figure;
-    font-size: 2.6rem;
-  }
-
-  .trust-note {
-    grid-area: note;
-    align-self: start;
+    font-size: 3.25rem;
   }
 }
 
 /* Sin movimiento, la cinta se queda quieta y en varias filas, sin la copia. */
 @media (prefers-reduced-motion: reduce) {
-  .trust-reel-window {
+  .trust-medal-edge,
+  .trust-medal-legend {
+    animation: none;
+  }
+
+  .trust-reel-fade {
     -webkit-mask: none;
     mask: none;
   }

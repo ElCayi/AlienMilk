@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { SpecimenCultureComponent } from '../../features/about/specimen-culture.component';
 import { CollaboratorsDoorComponent } from '../../features/collaboration/collaborators-door.component';
-import { BRANDS } from '../../features/trust/brands';
+import { TrustNetworkService } from '../../features/trust/trust-network.service';
 import { FitBoxDirective } from '../../shared/fit-box/fit-box.directive';
 
 /** Las capas de la arquitectura ejecutiva, una pestaña por capa (el texto de cada una, en la plantilla). */
@@ -22,12 +22,19 @@ const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.css',
 })
-export class AboutPageComponent {
-  protected readonly brands = BRANDS;
+export class AboutPageComponent implements OnInit {
+  private readonly trust = inject(TrustNetworkService);
+
+  /** Los socios de la cinta, los mismos que en la portada (del backend). */
+  protected readonly brands = this.trust.brands;
   protected readonly architecture = ARCHITECTURE;
   protected readonly activeTab = signal(0);
   /** El bloque de la arquitectura empieza plegado: solo la cabecera y las pestañas. */
   protected readonly archOpen = signal(false);
+
+  ngOnInit(): void {
+    this.trust.load();
+  }
 
   /** Una pestaña elige su capa y, si el bloque está plegado, lo despliega. Pulsar la pestaña que ya
    *  está abierta lo repliega. */

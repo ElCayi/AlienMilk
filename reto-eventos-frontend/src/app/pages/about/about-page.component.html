@@ -526,7 +526,7 @@
       <p class="visually-hidden">Colaboran con AlienMilk:</p>
       <ul class="us-trust-track">
         @for (copy of [0, 1]; track copy) {
-          @for (brand of brands; track brand.name) {
+          @for (brand of brands(); track brand.name) {
             <li
               [class]="'us-brand us-brand--' + brand.style"
               [attr.aria-hidden]="copy ? 'true' : null"

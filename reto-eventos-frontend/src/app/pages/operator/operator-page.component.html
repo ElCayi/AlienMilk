@@ -120,10 +120,10 @@
           </dd>
         </div>
       </dl>
-      <a class="line-action" [href]="inquiryHref()">
+      <button type="button" class="line-action" aria-haspopup="dialog" (click)="requestDialog.open()">
         <span class="line-action-label">{{ operator.service.action }}</span>
         <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
-      </a>
+      </button>
     </div>
     <ol class="item-list">
       @for (item of operator.service.items; track item.code) {
@@ -195,6 +195,9 @@
       </dl>
     </fieldset>
   </section>
+
+  <!-- La solicitud al operador: el formulario lo define el backend (operador-<slug>.json). -->
+  <app-request-dialog #requestDialog [formKey]="formKey" />
 
   <footer class="secondary-footnote">
     <p>AlienMilk / Operadores asociados / <span class="nowrap">{{ operator.name }}</span></p>

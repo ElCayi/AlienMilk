@@ -1,0 +1,89 @@
+/* Diálogo del molde de formularios: panel oscuro como las tarjetas de la web, centrado y con su
+   propio desplazamiento si el formulario es más alto que la ventana. */
+.request-dialog {
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid rgba(247, 248, 249, 0.16);
+  border-radius: 1.5rem 0.6rem 0.6rem;
+  color: #f7f8f9;
+  background: #0d151e;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(247, 248, 249, 0.3) transparent;
+}
+
+.request-dialog::backdrop {
+  background: rgba(5, 10, 16, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.request-dialog[open] {
+  animation: request-dialog-in 180ms ease-out;
+}
+
+.request-dialog-panel {
+  position: relative;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.request-dialog-close {
+  position: absolute;
+  top: clamp(1rem, 3vw, 1.75rem);
+  right: clamp(1rem, 3vw, 1.75rem);
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid rgba(247, 248, 249, 0.34);
+  border-radius: 50%;
+  color: #f7f8f9;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.request-dialog-close svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.request-dialog-close:is(:hover, :focus-visible) {
+  border-color: #ff7f7f;
+  color: #ff7f7f;
+}
+
+.request-dialog-close:focus-visible {
+  outline: 2px solid #ff7f7f;
+  outline-offset: 3px;
+}
+
+/* Deja sitio al botón de cerrar junto al título. */
+.request-dialog-panel app-request-form {
+  --request-header-gap: 3rem;
+}
+
+.request-dialog-done {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+@keyframes request-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-dialog[open] {
+    animation: none;
+  }
+}

@@ -1,0 +1,155 @@
+@if (definition(); as definition) {
+  <header class="request-header">
+    <p class="request-kicker">{{ definition.organizacion }}</p>
+    <h2 class="request-title" [id]="headingId()" appFitLine>{{ definition.titulo }}</h2>
+  </header>
+}
+
+@switch (state()) {
+  @case ('loading') {
+    <p class="request-status" role="status">Preparando el formulario…</p>
+  }
+  @case ('unavailable') {
+    <div class="request-status" role="alert">
+      <p>Ahora mismo no podemos mostrar este formulario.</p>
+      <button type="button" class="request-retry" (click)="load()">Reintentar</button>
+    </div>
+  }
+  @case ('sent') {
+    @if (receipt(); as receipt) {
+      <div class="request-receipt" role="status" tabindex="-1">
+        <p class="request-receipt-label">Resguardo de solicitud</p>
+        <p class="request-receipt-code">{{ receipt.referencia }}</p>
+        <p class="request-receipt-text">{{ receipt.confirmacion }}</p>
+      </div>
+    }
+  }
+  @default {
+    @if (definition(); as definition) {
+      <form class="request-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        @if (definition.introduccion) {
+          <p class="request-intro">{{ definition.introduccion }}</p>
+        }
+
+        <div class="request-fields" formGroupName="valores">
+          @for (field of definition.campos; track field.clave) {
+            @let fieldControl = control(field);
+            @let invalid = showError(fieldControl);
+            @let describedBy =
+              invalid ? fieldId(field) + '-error' : field.ayuda ? fieldId(field) + '-help' : null;
+            <div
+              class="request-field"
+              [class.is-half]="field.ancho === 'mitad'"
+              [class.is-invalid]="invalid"
+            >
+              <label [for]="fieldId(field)">
+                {{ field.etiqueta }}
+                @if (!field.requerido) {
+                  <span class="request-optional">opcional</span>
+                }
+              </label>
+
+              @switch (field.tipo) {
+                @case ('texto-largo') {
+                  <textarea
+                    [id]="fieldId(field)"
+                    [formControlName]="field.clave"
+                    [attr.maxlength]="field.maximo ?? 1000"
+                    [attr.aria-invalid]="invalid"
+                    [attr.aria-describedby]="describedBy"
+                    [attr.aria-required]="field.requerido"
+                    rows="4"
+                  ></textarea>
+                }
+                @case ('seleccion') {
+                  <select
+                    [id]="fieldId(field)"
+                    [formControlName]="field.clave"
+                    [attr.aria-invalid]="invalid"
+                    [attr.aria-describedby]="describedBy"
+                    [attr.aria-required]="field.requerido"
+                  >
+                    <option value="">{{ field.requerido ? 'Elija una opción' : 'Ninguna' }}</option>
+                    @for (option of field.opciones; track option) {
+                      <option [value]="option">{{ option }}</option>
+                    }
+                  </select>
+                }
+                @default {
+                  <input
+                    [id]="fieldId(field)"
+                    [type]="inputType(field)"
+                    [formControlName]="field.clave"
+                    [attr.autocomplete]="field.autocompletar ?? null"
+                    [attr.maxlength]="
+                      field.tipo === 'numero' || field.tipo === 'fecha'
+                        ? null
+                        : (field.maximo ?? 120)
+                    "
+                    [attr.min]="
+                      field.tipo === 'numero' ? field.minimo : field.desdeHoy ? today : null
+                    "
+                    [attr.max]="field.tipo === 'numero' ? field.maximo : null"
+                    [attr.inputmode]="field.tipo === 'numero' ? 'numeric' : null"
+                    [attr.aria-invalid]="invalid"
+                    [attr.aria-describedby]="describedBy"
+                    [attr.aria-required]="field.requerido"
+                  />
+                }
+              }
+
+              @if (invalid) {
+                <p class="request-error" [id]="fieldId(field) + '-error'">{{ errorText(field) }}</p>
+              } @else if (field.ayuda) {
+                <p class="request-help" [id]="fieldId(field) + '-help'">{{ field.ayuda }}</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Campo trampa: fuera de la vista y del tabulador; solo lo rellenan los robots. -->
+        <div class="request-trap" aria-hidden="true">
+          <label [for]="formKey() + '-web'">Web</label>
+          <input
+            [id]="formKey() + '-web'"
+            type="text"
+            formControlName="web"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+
+        @let consent = form.controls.aceptaPrivacidad;
+        @let consentInvalid = showError(consent);
+        <div class="request-consent" [class.is-invalid]="consentInvalid">
+          <input
+            [id]="formKey() + '-privacidad'"
+            type="checkbox"
+            formControlName="aceptaPrivacidad"
+            [attr.aria-invalid]="consentInvalid"
+            [attr.aria-describedby]="consentInvalid ? formKey() + '-privacidad-error' : null"
+          />
+          <label [for]="formKey() + '-privacidad'">
+            He leído la <a routerLink="/privacidad" target="_blank">política de privacidad</a> y
+            acepto que {{ definition.organizacion }} use estos datos para responder a mi solicitud.
+          </label>
+          @if (consentInvalid) {
+            <p class="request-error" [id]="formKey() + '-privacidad-error'">
+              {{
+                consent.errors?.['server'] ?? 'Necesitamos su conformidad para tratar estos datos'
+              }}
+            </p>
+          }
+        </div>
+
+        @if (formError()) {
+          <p class="request-error request-form-error" role="alert">{{ formError() }}</p>
+        }
+
+        <button type="submit" class="ghost-btn request-submit" [disabled]="state() === 'sending'">
+          {{ state() === 'sending' ? 'Enviando…' : definition.accion }}
+        </button>
+      </form>
+    }
+  }
+}

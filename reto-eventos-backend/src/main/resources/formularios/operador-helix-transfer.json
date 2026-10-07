@@ -1,0 +1,21 @@
+{
+  "clave": "operador-helix-transfer",
+  "titulo": "Consulta de consigna y envíos",
+  "organizacion": "Helix Transfer",
+  "prefijo": "HX",
+  "introduccion": "Díganos qué necesita dejar, llevarse o enviar. Helix Transfer le responderá por correo con las condiciones de su servicio.",
+  "accion": "Enviar consulta",
+  "confirmacion": "Helix Transfer ha recibido su consulta y le responderá por correo en un plazo de dos días hábiles. Guarde este número junto a su resguardo.",
+  "campos": [
+    { "clave": "nombre", "etiqueta": "Nombre", "tipo": "texto", "requerido": true, "maximo": 80, "ancho": "mitad", "autocompletar": "name" },
+    { "clave": "email", "etiqueta": "Correo electrónico", "tipo": "email", "requerido": true, "maximo": 100, "ancho": "mitad", "autocompletar": "email" },
+    { "clave": "servicio", "etiqueta": "Servicio", "tipo": "seleccion", "requerido": true, "ancho": "mitad",
+      "opciones": ["Consigna durante la sesión", "Envases para llevar", "Traslado entre estaciones"] },
+    { "clave": "fecha", "etiqueta": "Fecha de la sesión", "tipo": "fecha", "requerido": true, "desdeHoy": true, "ancho": "mitad" },
+    { "clave": "bultos", "etiqueta": "Bultos", "tipo": "numero", "requerido": true, "minimo": 1, "maximo": 20, "ancho": "mitad" },
+    { "clave": "destino", "etiqueta": "Sede de destino", "tipo": "texto", "requerido": false, "maximo": 80, "ancho": "mitad",
+      "ayuda": "Solo para traslados entre estaciones." },
+    { "clave": "contenido", "etiqueta": "Descripción del contenido", "tipo": "texto-largo", "requerido": false, "maximo": 600,
+      "ayuda": "Helix no abre los equipajes: cuanto más precisa sea, mejor." }
+  ]
+}

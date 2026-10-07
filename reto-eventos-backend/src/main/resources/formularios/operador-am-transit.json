@@ -1,0 +1,21 @@
+{
+  "clave": "operador-am-transit",
+  "titulo": "Consulta de traslado",
+  "organizacion": "AM Transit",
+  "prefijo": "AMT",
+  "introduccion": "Cuéntenos qué trayecto necesita. AM Transit le responderá por correo con la parada y el horario que le corresponden.",
+  "accion": "Enviar consulta",
+  "confirmacion": "AM Transit ha recibido su consulta y le responderá por correo en un plazo de dos días hábiles. Conserve este número para cualquier gestión.",
+  "campos": [
+    { "clave": "nombre", "etiqueta": "Nombre", "tipo": "texto", "requerido": true, "maximo": 80, "ancho": "mitad", "autocompletar": "name" },
+    { "clave": "email", "etiqueta": "Correo electrónico", "tipo": "email", "requerido": true, "maximo": 100, "ancho": "mitad", "autocompletar": "email" },
+    { "clave": "fecha", "etiqueta": "Fecha de la sesión", "tipo": "fecha", "requerido": true, "desdeHoy": true, "ancho": "mitad" },
+    { "clave": "linea", "etiqueta": "Línea", "tipo": "seleccion", "requerido": true, "ancho": "mitad",
+      "opciones": ["A1 · Bus urbano de A Coruña", "N · Servicio nocturno", "L4 · Lanzadera de Isca", "R · Regreso"] },
+    { "clave": "pasajeros", "etiqueta": "Pasajeros", "tipo": "numero", "requerido": true, "minimo": 1, "maximo": 12, "ancho": "mitad" },
+    { "clave": "accesibilidad", "etiqueta": "Accesibilidad", "tipo": "seleccion", "requerido": false, "ancho": "mitad",
+      "opciones": ["Rampa", "Anclajes", "Asiento de otro tamaño"] },
+    { "clave": "mensaje", "etiqueta": "Su consulta", "tipo": "texto-largo", "requerido": false, "maximo": 600,
+      "ayuda": "Si ya tiene reserva, indique la parada que figura en ella." }
+  ]
+}

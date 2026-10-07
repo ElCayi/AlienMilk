@@ -1,0 +1,24 @@
+{
+  "clave": "operador-kepler-liaison",
+  "titulo": "Solicitud de coordinación",
+  "organizacion": "Kepler Liaison",
+  "prefijo": "KL",
+  "introduccion": "Presente a su delegación. El equipo de enlace le responderá por correo para preparar la recepción, la interpretación y la sala.",
+  "accion": "Enviar solicitud",
+  "confirmacion": "Kepler Liaison ha recibido su solicitud y le responderá por correo en un plazo de dos días hábiles. Los datos de su delegación no saldrán del equipo de enlace.",
+  "campos": [
+    { "clave": "nombre", "etiqueta": "Persona de contacto", "tipo": "texto", "requerido": true, "maximo": 80, "ancho": "mitad", "autocompletar": "name" },
+    { "clave": "email", "etiqueta": "Correo electrónico", "tipo": "email", "requerido": true, "maximo": 100, "ancho": "mitad", "autocompletar": "email" },
+    { "clave": "delegacion", "etiqueta": "Delegación u organismo", "tipo": "texto", "requerido": true, "maximo": 120, "ancho": "mitad", "autocompletar": "organization" },
+    { "clave": "procedencia", "etiqueta": "Procedencia", "tipo": "texto", "requerido": true, "maximo": 80, "ancho": "mitad" },
+    { "clave": "miembros", "etiqueta": "Miembros de la comitiva", "tipo": "numero", "requerido": true, "minimo": 1, "maximo": 500, "ancho": "mitad" },
+    { "clave": "tamano", "etiqueta": "Tamaño del miembro más grande", "tipo": "seleccion", "requerido": true, "ancho": "mitad",
+      "opciones": ["Hasta 2 metros", "De 2 a 12 metros", "Más de 12 metros"],
+      "ayuda": "Más de doce metros requiere una visita técnica previa." },
+    { "clave": "fecha", "etiqueta": "Fecha de la sesión", "tipo": "fecha", "requerido": true, "desdeHoy": true, "ancho": "mitad",
+      "ayuda": "Con al menos quince días de antelación." },
+    { "clave": "comunicacion", "etiqueta": "Lenguas o formas de comunicación", "tipo": "texto", "requerido": false, "maximo": 120, "ancho": "mitad" },
+    { "clave": "adaptacion", "etiqueta": "Adaptación del puesto", "tipo": "texto-largo", "requerido": false, "maximo": 600,
+      "ayuda": "Luz, temperatura, presión o gravedad que necesita la delegación." }
+  ]
+}

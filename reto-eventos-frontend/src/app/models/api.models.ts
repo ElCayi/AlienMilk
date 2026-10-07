@@ -122,3 +122,72 @@ export interface Contacto {
 }
 
 export type ContactoPayload = Omit<Contacto, 'actualizadoEn' | 'actualizadoPor'>;
+
+/**
+ * Formularios públicos. La definición llega del backend (resources/formularios/<clave>.json) y es la
+ * única fuente de verdad: el formulario se pinta a partir de ella y el backend valida contra ella.
+ */
+export type TipoCampo = 'texto' | 'email' | 'texto-largo' | 'numero' | 'fecha' | 'seleccion';
+
+export interface CampoFormulario {
+  clave: string;
+  etiqueta: string;
+  tipo: TipoCampo;
+  requerido: boolean;
+  /** En números, el valor mínimo. */
+  minimo?: number;
+  /** En números, el valor máximo; en textos, la longitud máxima. */
+  maximo?: number;
+  opciones?: string[];
+  /** En fechas, si debe ser hoy o posterior. */
+  desdeHoy?: boolean;
+  ayuda?: string;
+  /** 'mitad': comparte fila con el campo siguiente en pantallas anchas. */
+  ancho?: 'mitad';
+  autocompletar?: string;
+}
+
+export interface FormularioDefinicion {
+  clave: string;
+  titulo: string;
+  organizacion: string;
+  prefijo: string;
+  introduccion?: string;
+  accion: string;
+  confirmacion: string;
+  campos: CampoFormulario[];
+}
+
+export interface SolicitudPayload {
+  valores: Record<string, string | number>;
+  aceptaPrivacidad: boolean;
+  /** Campo trampa: oculto para las personas, solo lo rellenan los robots. */
+  web: string;
+}
+
+export interface SolicitudRecibida {
+  referencia: string;
+  organizacion: string;
+  confirmacion: string;
+}
+
+export type EstadoSolicitud = 'NUEVA' | 'ATENDIDA';
+
+export interface Solicitud {
+  idSolicitud: number;
+  referencia: string;
+  formulario: string;
+  asunto: string;
+  nombre: string;
+  email: string;
+  datos: { clave: string; etiqueta: string; valor: string }[];
+  estado: EstadoSolicitud;
+  creadaEn: string;
+  atendidaEn: string | null;
+}
+
+/** Cuerpo de error del backend; en los formularios, con un mensaje por campo. */
+export interface ApiError {
+  message?: string;
+  errores?: Record<string, string>;
+}

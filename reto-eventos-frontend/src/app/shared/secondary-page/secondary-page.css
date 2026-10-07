@@ -455,6 +455,15 @@ h1 {
   transition: color 160ms ease;
 }
 
+/* La misma pieza cuando abre algo en la página en lugar de navegar. */
+button.line-action {
+  padding-inline: 0;
+  padding-top: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
 .line-action::after {
   content: '';
   position: absolute;

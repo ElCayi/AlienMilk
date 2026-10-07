@@ -26,7 +26,6 @@ export interface Operator {
     items: { code: string; title: string; text: string; detail?: string }[];
     facts: { label: string; value: string }[];
     action: string;
-    subject: string;
   };
   conditions: {
     kicker: string;
@@ -84,7 +83,6 @@ export const OPERATORS: Operator[] = [
         { label: 'Objetos perdidos', value: 'Se conservan quince días en taquilla' },
       ],
       action: 'Consultar un traslado',
-      subject: 'AM Transit · Consulta de traslado',
     },
     conditions: {
       kicker: 'Condiciones de transporte',
@@ -146,7 +144,6 @@ export const OPERATORS: Operator[] = [
         { label: 'Objetos no retirados', value: 'Se conservan treinta días' },
       ],
       action: 'Consultar un envío',
-      subject: 'Helix Transfer · Consigna y envíos',
     },
     conditions: {
       kicker: 'Condiciones de custodia',
@@ -210,7 +207,6 @@ export const OPERATORS: Operator[] = [
         { label: 'Tarifa', value: 'Incluida en las invitaciones institucionales' },
       ],
       action: 'Solicitar coordinación',
-      subject: 'Kepler Liaison · Solicitud de coordinación',
     },
     conditions: {
       kicker: 'Condiciones de coordinación',

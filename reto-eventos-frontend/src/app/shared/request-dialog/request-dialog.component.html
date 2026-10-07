@@ -1,0 +1,17 @@
+<dialog #dialog class="request-dialog" [attr.aria-labelledby]="headingId()" (close)="onClose()">
+  <div class="request-dialog-panel">
+    <button type="button" class="request-dialog-close" aria-label="Cerrar" (click)="close()">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+    @if (opened()) {
+      <app-request-form [formKey]="formKey()" [headingId]="headingId()" (sent)="sent.set(true)" />
+      @if (sent()) {
+        <button type="button" class="ghost-btn request-dialog-done" (click)="close()">
+          Cerrar
+        </button>
+      }
+    }
+  </div>
+</dialog>

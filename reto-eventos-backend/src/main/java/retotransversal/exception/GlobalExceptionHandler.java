@@ -31,6 +31,19 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
 	}
 
+	@ExceptionHandler(DatosNoValidosException.class)
+	public ResponseEntity<ApiErrorResponse> handleInvalidForm(DatosNoValidosException ex, HttpServletRequest request) {
+		ResponseEntity<ApiErrorResponse> response = buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(),
+				request.getRequestURI());
+		response.getBody().setErrores(ex.getErrores());
+		return response;
+	}
+
+	@ExceptionHandler(DemasiadasSolicitudesException.class)
+	public ResponseEntity<ApiErrorResponse> handleTooMany(DemasiadasSolicitudesException ex, HttpServletRequest request) {
+		return buildResponse(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage(), request.getRequestURI());
+	}
+
 	@ExceptionHandler({
 			IllegalArgumentException.class,
 			MethodArgumentTypeMismatchException.class,

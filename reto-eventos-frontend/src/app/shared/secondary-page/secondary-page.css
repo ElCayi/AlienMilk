@@ -197,10 +197,6 @@ h1 {
   color: var(--paper-muted);
 }
 
-.paper-card .line-action:is(:hover, :focus-visible) {
-  color: #e0605f;
-}
-
 .card-split {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);

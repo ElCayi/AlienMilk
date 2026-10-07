@@ -3,7 +3,9 @@
     <nav class="breadcrumb" aria-label="Ruta de navegación">
       <a routerLink="/">Inicio</a>
       <span aria-hidden="true">/</span>
-      <span>Operadores<span class="crumb-tail"> asociados</span></span>
+      <a routerLink="/" fragment="operadores-asociados"
+        >Operadores<span class="crumb-tail"> asociados</span></a
+      >
       <span aria-hidden="true">/</span>
       <span aria-current="page">{{ operator.name }}</span>
     </nav>

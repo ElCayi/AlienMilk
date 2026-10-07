@@ -30,3 +30,6 @@ Thumbs.db
 
 # Material visual de trabajo; no son assets definitivos de la aplicación.
 assets/raw/
+
+# Notas personales
+TODO.md

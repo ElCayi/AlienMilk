@@ -769,7 +769,8 @@ h1 {
 }
 
 /* One column: the form stands alone under the eyebrow. The title stays for
-   screen readers only. */
+   screen readers only; the lead goes with it,
+   so no paragraph is left without its title. */
 @media (max-width: 1199.98px) {
   h1 {
     position: absolute;
@@ -779,6 +780,9 @@ h1 {
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+  .register-lead {
+    display: none;
   }
   .login-shell {
     row-gap: 2rem;
@@ -1253,12 +1257,9 @@ h1 {
   }
 }
 
-/* Phones: no lead, so the card starts right under the eyebrow with a
-   larger "Regístrate" on top, and the whole card fits in the window. */
+/* Phones: the card starts right under the eyebrow with a larger "Regístrate"
+   on top, and the whole card fits in the window. */
 @media (max-width: 800px) {
-  .register-lead {
-    display: none;
-  }
   .login-card h2 {
     margin-top: 0;
     font-size: 2.1rem;
@@ -1387,4 +1388,33 @@ h1 {
 .register-lead b {
   color: var(--ink);
   font-weight: 700;
+}
+
+/* Pantallas grandes: la entradilla ocupa exactamente el ancho del título, de su borde izquierdo
+   al punto de «Sessions.». El bloque se ajusta al título y el párrafo no aporta ancho propio
+   (width: 0), solo rellena el que deja el h1. */
+@media (min-width: 1200px) {
+  .register-heading {
+    display: grid;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .register-heading .register-lead {
+    width: 0;
+    min-width: 100%;
+    max-width: none;
+  }
+}
+
+/* Pantallas grandes: el recuadro de cliente de prueba sube hasta poco por debajo de la
+   entradilla y ocupa el hueco que quedaba en la columna; su contenido va arriba. */
+@media (min-width: 1200px) {
+  .login-shell {
+    grid-template-rows: auto 1fr;
+  }
+
+  .demo-box {
+    margin-top: clamp(1.25rem, 2.5vh, 2rem);
+  }
 }

@@ -250,11 +250,9 @@
     </div>
   </section>
 
-  <!-- 03 / El ecosistema: qué hace AlienMilk con lo que consigue. La geometría de la 02 al revés: el
-       recuadro oscuro con las fotos a la izquierda y el texto en el lienzo claro de la derecha, en dos
-       partes del mismo alto. Entre ellas, los destinos de una muestra cruzan la sección como el
-       recorrido de la 02, y abajo van los principios de trabajo, en una banda negra como la de las
-       funciones de la 01. -->
+  <!-- 03 / El ecosistema — 1: el Archivo, con la geometría de la 01. El recuadro oscuro con la foto a la
+       izquierda, el texto en el lienzo claro de la derecha y, al pie, una banda negra con los tres
+       estados de una muestra, como las funciones de la 01. -->
   <section
     class="us-ecosystem"
     id="ecosistema"
@@ -262,29 +260,35 @@
     tabindex="-1"
     aria-labelledby="us-eco-title"
   >
+    <!-- Los rótulos, arriba sobre el recuadro oscuro y sobre el lienzo claro, como los de la 01. -->
+    <p class="us-work-eyebrow us-eco-label">
+      <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 1
+    </p>
+    <p class="us-eco-label-aside">Una biblioteca reproducible</p>
     <div class="us-eco-grid">
       <div class="us-work-block us-eco-block">
-        <p class="us-work-eyebrow">
-          <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 1
-        </p>
-        <h2 id="us-eco-title">Un archivo que también se prueba.</h2>
-        <p class="us-work-subtitle">Cada muestra, con todo lo que sabemos de ella.</p>
-        <!-- Texto de la usuaria, literal. -->
-        <p class="us-work-text">
-          El <b>Archivo</b> es la memoria de <strong>AlienMilk</strong>. No es un simple depósito a
-          baja temperatura, sino un <b>sistema de conocimiento interrelacionado</b>: ontologías
-          biológicas y sensoriales, grafos de procedencia, perfiles composicionales y modelos de
-          similitud permiten cruzar cada nueva muestra con décadas de observaciones
-          acu&shy;mu&shy;la&shy;das.
-        </p>
-        <p class="us-work-text">
-          Nuestros sistemas no buscan únicamente coincidencias exactas. Comparan relaciones,
-          composición, función, respuesta sensorial y contexto de origen, identificando
-          <b>parentescos</b> que una clasificación convencional dejaría se&shy;pa&shy;ra&shy;dos.
-        </p>
+        <!-- En escritorio escala hasta llenar el recuadro claro, como el texto de la 01 (appFitBox). -->
+        <div class="us-eco-fit" appFitBox [appFitBoxMax]="1.25">
+          <h2 id="us-eco-title" class="visually-hidden">El Archivo</h2>
+          <!-- Texto de la usuaria, partido en entrada y párrafo como el de la 01. -->
+          <p class="us-eco-lead">
+            El <b>Archivo</b> es la memoria viva de <strong>AlienMilk</strong>. No es un simple
+            depósito a baja temperatura, sino un exquisito
+            <b>sistema de conocimiento in&shy;te&shy;rre&shy;la&shy;cio&shy;na&shy;do</b>.
+          </p>
+          <p class="us-work-text">
+            Ontologías biológicas y sensoriales, grafos de procedencia, perfiles composicionales y
+            modelos de similitud comparan cada nueva muestra.
+          </p>
+          <p class="us-work-text">
+            La incorporación incluye un
+            <b>protocolo de reproducción</b> que permite generar nuevos lotes sin consumir el
+            material original.
+          </p>
+        </div>
       </div>
-      <!-- Arriba, en el recuadro oscuro, la foto del Archivo (pendiente) con su ficha y, encima, el
-           expediente de la muestra de la cabecera, ya catalogada. -->
+      <!-- En el recuadro oscuro, la foto del Archivo (pendiente) con su ficha, el sello de la
+           reserva y la ficha de una replicación de la muestra de la cabecera. -->
       <figure class="us-eco-visual us-eco-visual--top">
         <span class="us-eco-pending" aria-hidden="true">Imagen pendiente · Archivo</span>
         <p class="us-station-tag us-eco-tag">
@@ -292,166 +296,174 @@
           <span>Sala de referencias · Sin luz</span>
           <span>Estación Meridiana · Gliese 667 Cc</span>
         </p>
+        <p class="us-eco-stamp">Archive original<br />Not for service</p>
         <div class="us-eco-record">
           <span class="us-eco-record-kicker"
-            ><span class="eyebrow-icon" aria-hidden="true"></span>Expediente</span
+            ><span class="eyebrow-icon" aria-hidden="true"></span>Lote de reproducción</span
           >
-          <span class="us-eco-record-id">AM-2291-F</span>
+          <span class="us-eco-record-id">AM-2291-F · R17</span>
           <span class="us-eco-record-name">Secreción láctea magnetorreactiva</span>
           <dl>
             <div>
-              <dt>Procedencia</dt>
-              <dd>Ceto IV</dd>
+              <dt>Fidelidad composicional</dt>
+              <dd>99,2 %</dd>
             </div>
             <div>
-              <dt>Linaje</dt>
-              <dd>Tercera generación</dd>
+              <dt>Fidelidad sensorial</dt>
+              <dd>97,8 %</dd>
             </div>
             <div>
-              <dt>Transformaciones</dt>
-              <dd>14 registradas</dd>
-            </div>
-            <div>
-              <dt>Resultados</dt>
-              <dd>6 estudios · 22 catas</dd>
-            </div>
-            <div>
-              <dt>Incorporada por</dt>
-              <dd>Novedad química</dd>
+              <dt>Función biológica</dt>
+              <dd>Parcialmente reproducida</dd>
             </div>
           </dl>
-          <span class="us-eco-record-note"
-            >Cata solo con autorización del organismo de origen.</span
-          >
-        </div>
-      </figure>
-      <!-- Lo que puede ser de una muestra incorporada, en cápsulas como las del recorrido de la 02:
-           del Archivo a la mesa. -->
-      <div class="us-chain us-eco-routes">
-        <p class="us-eco-routes-label">Destinos</p>
-        <ol aria-label="Destinos de una muestra">
-          <li><span>Archivo</span></li>
-          <li><span>Estudio</span></li>
-          <li><span>Conservación</span></li>
-          <li><span>Preparación sensorial</span></li>
-          <li class="us-chain-end"><span>Sesión pública</span></li>
-        </ol>
-      </div>
-      <div class="us-work-block us-eco-block us-eco-block--share">
-        <p class="us-work-eyebrow">
-          <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 2
-        </p>
-        <h3>El archivo crece cuando se comparte.</h3>
-        <p class="us-work-subtitle">La experiencia sensorial también produce conocimiento.</p>
-        <p class="us-work-text">
-          Una vez incorporada, cada muestra sigue su propio camino. Algunas se estudian durante
-          años; otras se conservan como referencia, y unas pocas se preparan para llegar a la mesa.
-          En <strong>AlienMilk</strong> la degustación no es un entretenimiento ajeno a la
-          investigación: lo que perciben los asistentes de cada sesión vuelve al Archivo como
-          <b>un registro más</b>. Y cada muestra que proponen nuestros colaboradores amplía lo que
-          podremos probar mañana.
-        </p>
-        <!-- El cierre de la segunda parte, destacado como el de la arquitectura. -->
-        <p class="us-work-text us-eco-claim">
-          El laboratorio mide lo que una muestra contiene. La mesa descubre lo que hace.
-        </p>
-      </div>
-      <!-- Abajo, la foto de una sesión (pendiente), con su ficha y, encima, los dos programas del
-           ecosistema en una tarjeta como el expediente de arriba, con su firma como en el pie. -->
-      <figure class="us-eco-visual us-eco-visual--share">
-        <span class="us-eco-pending" aria-hidden="true">Imagen pendiente · Sesión</span>
-        <p class="us-station-tag us-eco-tag">
-          <span class="us-station-tag-id">Sesión pública</span>
-          <span>Sala de degustación · Aforo limitado</span>
-          <span>Preparación servida a 6 °C</span>
-        </p>
-        <div class="us-eco-record us-eco-programs">
-          <span class="us-eco-record-kicker"
-            ><span class="eyebrow-icon" aria-hidden="true"></span>Programas</span
-          >
-          <ul class="us-eco-units">
-            <li>
-              <strong class="lockup">AlienMilk <span class="lockup-unit">Sessions</span></strong>
-              <span class="us-eco-unit-kind">Programa público</span>
-              <a routerLink="/sesiones"
-                >Explorar sesiones
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
-              ></a>
-            </li>
-            <li>
-              <strong class="lockup"
-                >AlienMilk <span class="lockup-unit">Collaborators</span></strong
-              >
-              <span class="us-eco-unit-kind">Programa de colaboración</span>
-              <a routerLink="/contacto"
-                >Hablar con el equipo
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
-              ></a>
-            </li>
-          </ul>
+          <span class="us-eco-record-note">Apta para sesión. Muestra primaria intacta.</span>
         </div>
       </figure>
     </div>
-    <!-- Los principios de trabajo, secos, en la banda negra del pie de la sección. Texto de JT. -->
-    <div class="us-eco-principles">
-      <h3 class="us-eco-principles-title">Principios de trabajo</h3>
-      <ol>
-        <li><span>P-01</span> Trazabilidad antes que velocidad.</li>
-        <li><span>P-02</span> La incertidumbre se registra, no se oculta.</li>
-        <li><span>P-03</span> Cada muestra conserva su procedencia.</li>
-        <li><span>P-04</span> No existe una preparación universal.</li>
-      </ol>
+    <!-- Los tres estados de una muestra, más la reserva de origen, en la banda negra del pie. -->
+    <dl class="us-eco-states" aria-label="Estados de una muestra">
+      <div>
+        <dt>M-01</dt>
+        <dd>Muestra primaria</dd>
+      </div>
+      <div>
+        <dt>M-02</dt>
+        <dd>Lote de reproducción</dd>
+      </div>
+      <div>
+        <dt>M-03</dt>
+        <dd>Lote de sesión</dd>
+      </div>
+      <div>
+        <dt>M-04</dt>
+        <dd>Procedencia original</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- 03 / El ecosistema — 2 y 3: la geometría de la 02, con el recuadro oscuro a la derecha, unida
+       bajo la banda de los estados igual que la 02 bajo la de las funciones de la 01. Entre las dos
+       partes, el camino de una muestra, como el recorrido. -->
+  <section
+    class="us-definition us-definition--inverse us-work us-eco-more"
+    aria-labelledby="us-eco-more-title"
+  >
+    <div class="us-label">
+      <span class="us-label-mark"
+        ><span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 2</span
+      >
+    </div>
+    <div class="us-definition-body">
+      <div class="us-definition-grid us-work-grid">
+        <div class="us-work-block">
+          <h2 id="us-eco-more-title">Ninguna copia es idéntica.</h2>
+          <p class="us-work-subtitle">Cada lote, medido frente a su original.</p>
+          <p class="us-work-text">
+            Cada muestra se caracteriza mediante <b>metabolómica, proteómica y lipidómica</b>,
+            análisis de volátiles, microbioma, reología y espectrometría. Después se reconstruye con
+            la técnica que su biología permita: fermentación de precisión, cultivos secretores,
+            consorcios microbianos o biorreactores multicelulares. Cada lote recibe un
+            <b>índice de fidelidad</b> respecto a la muestra primaria.
+          </p>
+        </div>
+        <!-- Arriba, la foto del laboratorio (pendiente), con su ficha. -->
+        <figure class="us-work-visual us-work-visual--top">
+          <span class="us-eco-pending" aria-hidden="true">Imagen pendiente · Laboratorio</span>
+          <p class="us-station-tag us-farm-tag">
+            <span class="us-station-tag-id">Laboratorio de reproducción</span>
+            <span>Biorreactores multicelulares</span>
+            <span>Estación Meridiana</span>
+          </p>
+        </figure>
+        <div class="us-chain us-eco-routes">
+          <ol aria-label="Camino de una muestra">
+            <li>
+              <span><b>01</b> Muestra primaria</span>
+            </li>
+            <li>
+              <span><b>02</b> Caracterización</span>
+            </li>
+            <li>
+              <span><b>03</b> Protocolo</span>
+            </li>
+            <li>
+              <span><b>04</b> Reproducción</span>
+            </li>
+            <li class="us-chain-end">
+              <span><b>05</b> Sesión</span>
+            </li>
+          </ol>
+        </div>
+        <div class="us-work-block us-work-block--custody">
+          <p class="us-work-eyebrow">
+            <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 3
+          </p>
+          <h3>De la mesa a la colección.</h3>
+          <p class="us-work-subtitle">Lo que no se reproduce, se custodia.</p>
+          <p class="us-work-text">
+            Las sesiones se sirven con lotes de reproducción. Algunas leches, sin embargo, no pueden
+            reconstruirse fielmente: <b>sesiones limitadas al material disponible</b>. Pequeñas
+            fracciones del material original, numeradas y con cadena de custodia completa, se
+            reservan para investigación, se prestan a instituciones o se subastan como
+            <b>piezas de colección</b>.
+          </p>
+        </div>
+        <!-- Abajo, la foto de una sesión (pendiente), con la ficha de una alícuota de origen y los
+             dos programas del ecosistema, como el expediente del Archivo. -->
+        <figure class="us-work-visual us-work-visual--custody">
+          <span class="us-eco-pending" aria-hidden="true">Imagen pendiente · Sesión</span>
+          <p class="us-station-tag us-farm-tag us-custody-tag">
+            <span class="us-station-tag-id">Certified origin aliquot 07/24</span>
+            <span>AM-2291-F · 3 ml</span>
+            <span>Recolectada en Ceto IV</span>
+          </p>
+          <div class="us-eco-record us-eco-programs">
+            <span class="us-eco-record-kicker"
+              ><span class="eyebrow-icon" aria-hidden="true"></span>Programas</span
+            >
+            <ul class="us-eco-units">
+              <li>
+                <strong class="lockup">AlienMilk <span class="lockup-unit">Sessions</span></strong>
+                <span class="us-eco-unit-kind">Programa público</span>
+                <a routerLink="/sesiones"
+                  >Explorar sesiones
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" /></svg
+                ></a>
+              </li>
+              <li>
+                <strong class="lockup"
+                  >AlienMilk <span class="lockup-unit">Collaborators</span></strong
+                >
+                <span class="us-eco-unit-kind">Programa de colaboración</span>
+                <a routerLink="/contacto"
+                  >Hablar con el equipo
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" /></svg
+                ></a>
+              </li>
+            </ul>
+          </div>
+        </figure>
+      </div>
     </div>
   </section>
 
-  <!-- Entre la 03 y la 04, sobre la textura: la trayectoria en tres cifras y la cinta de quienes
-       confían en AlienMilk. La cinta va doble para que el bucle no tenga costura; la copia no se lee. -->
-  <section class="us-trust" aria-labelledby="us-trust-title">
-    <div class="us-trust-head">
-      <p class="us-kicker">Trayectoria</p>
-      <h2 id="us-trust-title">Seis décadas llevando lo desconocido a la mesa.</h2>
-      <!-- La red y la relación con el origen, antes de las cifras. -->
-      <p class="us-trust-lead">
-        <strong>AlienMilk</strong> no se limita a encontrar leches: establece relaciones de
-        <b>suministro, acceso y documentación</b> con productores, donantes, comunidades y especies
-        de origen. Hoy esa red reúne granjas asociadas, estaciones de recepción, plantas de
-        acondicionamiento, archivos y sedes en distintos sistemas.
+  <!-- Entre la 03 y la 04, sobre la textura: la nota del equipo, centrada, con el formato de la de la
+       cabecera; debajo, su retrato. -->
+  <section class="us-team" aria-labelledby="us-team-title">
+    <h2 id="us-team-title" class="visually-hidden">Nuestro equipo</h2>
+    <!-- Nota firmada, con el mismo formato que la de la cabecera. -->
+    <figure class="us-hero-note us-team-statement">
+      <p class="us-hero-lead">
+        Creemos que el universo todavía guarda demasiadas <b>sensaciones sin descubrir</b>.
+        <strong>AlienMilk</strong> existe para <b>encontrarlas</b>, <b>preservarlas</b> y llevarlas
+        hasta la mesa. Detrás de esa búsqueda hay personas y sistemas que comparten una misma
+        curiosidad: averiguar <b>qué más queda por probar</b>.
       </p>
-    </div>
-    <dl class="us-trust-figures">
-      <div>
-        <dt>Desde</dt>
-        <dd>1962</dd>
-        <dd class="us-trust-note">Calendario terrestre</dd>
-      </div>
-      <div>
-        <dt>Comensales</dt>
-        <dd>4,8 M</dd>
-        <dd class="us-trust-note">Y otras tantas formas de vida</dd>
-      </div>
-      <div>
-        <dt>Procedencias</dt>
-        <dd>212</dd>
-        <dd class="us-trust-note">En 38 sistemas</dd>
-      </div>
-    </dl>
-    <div class="us-trust-reel">
-      <p class="visually-hidden">Colaboran con AlienMilk:</p>
-      <ul class="us-trust-track">
-        @for (copy of [0, 1]; track copy) {
-          @for (brand of brands; track brand.name) {
-            <li
-              [class]="'us-brand us-brand--' + brand.style"
-              [attr.aria-hidden]="copy ? 'true' : null"
-            >
-              {{ brand.name }}
-            </li>
-          }
-        }
-      </ul>
-    </div>
+      <figcaption class="us-hero-signature">— Cayi, CEO &amp; Founder</figcaption>
+    </figure>
   </section>
 
   <!-- 04 / Nuestra organización: cómo funciona una empresa de esta escala. Sobre la textura, el rótulo
@@ -705,23 +717,6 @@
       </section>
     </div>
   </section>
-
-  <!-- Antes de la invitación, después de tanta infraestructura, la motivación del equipo: una nota
-       firmada con el formato de la de la cabecera, centrada sobre la textura. -->
-  <section class="us-team" aria-labelledby="us-team-title">
-    <h2 id="us-team-title" class="visually-hidden">Nuestro equipo</h2>
-    <!-- Nota firmada, con el mismo formato que la de la cabecera. -->
-    <figure class="us-hero-note us-team-statement">
-      <p class="us-hero-lead">
-        Creemos que el universo todavía guarda demasiadas <b>sensaciones sin descubrir</b>.
-        <strong>AlienMilk</strong> existe para <b>encontrarlas</b>, <b>preservarlas</b> y llevarlas
-        hasta la mesa. Detrás de esa búsqueda hay personas y sistemas que comparten una misma
-        curiosidad: averiguar <b>qué más queda por probar</b>.
-      </p>
-      <figcaption class="us-hero-signature">— Cayi, CEO &amp; Founder</figcaption>
-    </figure>
-  </section>
-
   <!-- Cierre sobre la textura, en tarjeta oscura como las CTA del resto del sitio. A la izquierda, la
        portada de la 01 tal cual: el titular detrás del busto y «forma.» por delante. -->
   <section class="us-invitation" aria-labelledby="us-invitation-title">

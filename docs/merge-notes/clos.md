@@ -32,11 +32,21 @@ Sigue la estructura que propuso JT en su análisis de la página: 01 Nuestro cam
 - **02:** la foto de la custodia acaba con las dos esquinas de abajo redondeadas; antes se metía en la
   esquina del lienzo claro.
 
+### Segunda tanda (7 de octubre, tras `6c0f2b9`)
+
+- **03 partida en dos secciones:**
+  - **03 — 1, el Archivo:** con la geometría de la 01, que mide una pantalla y tiene el recuadro claro igual. Lleva el rótulo «Una biblioteca reproducible», una entrada justificada y un párrafo que escala con `appFitBox`. Sobre la foto pendiente, el sello «Archive original · Not for service» y la ficha del lote de reproducción R17. Al pie, una banda con los estados M-01 a M-04, como las funciones.
+  - **03 — 2 y 3:** con la geometría de la 02 y sus dos recuadros claros del mismo alto que los de la 02. La 03 — 2, «Ninguna copia es idéntica.», trata de la caracterización y el índice de fidelidad; en medio va el camino de una muestra, en cápsulas; la 03 — 3, «De la mesa a la colección.», lleva la alícuota de origen y la tarjeta de programas. Hay tres fotos pendientes (Archivo, Laboratorio y Sesión).
+- **Principios de trabajo y Trayectoria (cifras y cinta de marcas) retirados** de Nosotros; la Trayectoria pasa a la portada en la rama `claude`. `BRANDS` sale del `.ts`.
+- **Nota de Cayi:** vuelve entre la 03 y la 04, encima del retrato.
+- **02:** la foto de la custodia se funde con el negro también por abajo.
+
 ## Posibles choques
 
 - `about-page.component.html` y `.css` cambian mucho. Si otra rama toca Nosotros, **manda la versión de
   `clos`** y lo de la otra se reaplica encima.
-- El CSS de Nosotros pasa de 33 a 39,4 kB: sigue el aviso de 20 kB, como antes, lejos del error de
+- **Rama `claude`:** su último commit lleva la puerta de Collaborators a Nosotros y toca `about-page.component.ts`. Chocará con esta rama: se conserva la estructura de `clos` y se reaplica encima la puerta.
+- El CSS de Nosotros queda en 38,5 kB: sigue el aviso de 20 kB, como antes, lejos del error de
   48 kB.
 
 ## Después del merge, comprobar

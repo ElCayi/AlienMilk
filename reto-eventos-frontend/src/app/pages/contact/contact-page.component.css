@@ -1,7 +1,7 @@
 :host {
   --ink: #f7f8f9;
-  --muted: rgba(247, 248, 249, 0.68);
-  --faint: rgba(247, 248, 249, 0.46);
+  --muted: rgba(247, 248, 249, 0.88);
+  --faint: rgba(247, 248, 249, 0.64);
   --line: rgba(247, 248, 249, 0.16);
   --rule: rgba(247, 248, 249, 0.42);
   --coral: #ff7f7f;
@@ -134,9 +134,9 @@ h1 {
 .contact-intro {
   max-width: 48rem;
   margin: 1rem 0 0;
-  color: var(--muted);
+  color: var(--ink);
   font:
-    clamp(1rem, 1vw, 1.1rem) / 1.6 Arial,
+    clamp(1.05rem, 1vw, 1.1rem) / 1.6 Arial,
     sans-serif;
   text-align: justify;
   text-align-last: left;
@@ -353,7 +353,7 @@ h1 {
   text-decoration: none;
 }
 /* Cuatro accesos en una fila caben desde 1280 px; por debajo, dos por fila, sin partir títulos. */
-@media (min-width: 700.02px) and (max-width: 1279.98px) {
+@media (min-width: 900.02px) and (max-width: 1279.98px) {
   .contact-index {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -406,8 +406,8 @@ h1 {
 }
 .section-copy {
   max-width: 36rem;
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 .contact-index a svg {
   width: 1.5rem;
@@ -455,7 +455,7 @@ h1 {
 }
 
 .directory-intro > .section-copy {
-  color: #58636a;
+  color: #3d474e;
 }
 .direct-contact {
   display: grid;
@@ -483,8 +483,8 @@ h1 {
     sans-serif;
 }
 .direct-contact > p:not(.section-label, .direct-status) {
-  color: #58636a;
-  font-size: 0.8rem;
+  color: #3d474e;
+  font-size: 0.95rem;
   line-height: 1.65;
 }
 .directory-area {
@@ -514,13 +514,13 @@ h1 {
 }
 .directory-area p {
   margin: 0.65rem 0;
-  color: #515d64;
-  font-size: 0.98rem;
+  color: #3d484f;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
   line-height: 1.6;
 }
 .directory-area .area-preparation {
-  font-size: 0.86rem;
-  color: #687176;
+  font-size: 0.95rem;
+  color: #535d63;
 }
 .contact-visit {
   margin-top: 1.25rem;
@@ -584,7 +584,7 @@ h1 {
 }
 .hours-note {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   line-height: 1.7;
   margin-bottom: 0;
 }
@@ -612,8 +612,8 @@ h1 {
   text-align-last: left;
   hyphens: auto;
   color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 .collaborators-contact {
   display: grid;
@@ -651,9 +651,9 @@ h1 {
   text-transform: uppercase;
 }
 .collaborators-copy > p:not(.collaborators-brand) {
-  color: #515b61;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  color: #3d474d;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 .collaborators-contact a:hover {
   color: var(--coral);
@@ -813,7 +813,7 @@ h1 {
     gap: 1.5rem;
   }
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   /* En móvil el titular va pegado a su texto: 24 px más el interlineado
      del párrafo dejaban un hueco excesivo. */
   .contact-directory h2,
@@ -1055,7 +1055,7 @@ h1 {
 
 /* La segunda columna arranca a la altura del título de la primera, no de su
    antetítulo: baja lo que ocupan la etiqueta (0.66rem × 1.5) y el margen del h2. */
-@media (min-width: 700.02px) {
+@media (min-width: 900.02px) {
   .directory-areas {
     padding-top: calc(0.66rem * 1.5 + 1.5rem);
   }
@@ -1176,7 +1176,7 @@ h1 {
     transform: translate(0.6rem, -1.4rem) rotate(6deg);
   }
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .intro-drift {
     display: none;
   }
@@ -1217,7 +1217,7 @@ h1 {
 .visit-hours > .section-label {
   margin: 0;
 }
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .visit-hours {
     padding: 1.5rem;
     border: 1px solid var(--line);
@@ -1266,7 +1266,7 @@ h1 {
   margin-top: 1.25rem;
 }
 /* Dos columnas: la leyenda de la imagen y el botón terminan a la misma altura. */
-@media (min-width: 700.02px) {
+@media (min-width: 900.02px) {
   .collaborators-contact {
     align-items: end;
   }
@@ -1317,7 +1317,7 @@ h1 {
   }
 }
 /* Móvil: márgenes estrechos, minimilks más pequeñas y solo las de los bordes. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .collaborators-drift span:nth-child(1),
   .collaborators-drift span:nth-child(5) {
     display: none;
@@ -1361,7 +1361,7 @@ h1 {
 
 /* En móvil las tarjetas van a sangre (salvo Collaborators, que flota): recuperan el margen lateral del contenedor de la
    página (app.css) y lo usan de relleno, así el texto sigue alineado con el resto. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .contact-directory,
   .contact-visit {
     --gutter: clamp(1rem, 6vw, 3.75rem);
@@ -1373,7 +1373,7 @@ h1 {
 
 /* Móvil: más aire entre los accesos y la primera tarjeta, y bajo el borde superior de las
    tarjetas. El bloque del título es flex y no colapsa márgenes: el párrafo no suma el suyo. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .contact-index {
     margin-bottom: 3.5rem;
   }
@@ -1389,7 +1389,7 @@ h1 {
 
 /* Móvil: Atención y Visitas van pegadas, sin la franja de textura entre ellas; el aire
    pasa al final de la blanca y al principio de la negra. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .contact-directory {
     padding-bottom: 3.5rem;
   }
@@ -1417,7 +1417,7 @@ h1 {
 
 /* Móvil: Collaborators flota con su margen lateral. Las minimilks no caben: la firma
    toma el coral en su lugar, y el pie de foto se centra en vertical con la imagen. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .collaborators-contact {
     padding-bottom: 2.75rem;
   }
@@ -1432,7 +1432,7 @@ h1 {
   }
 }
 /* Móvil: un solo espacio entre secciones (3,5rem), el mismo que bajo los accesos. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .collaborators-contact {
     margin-block: 3.5rem;
   }
@@ -1440,7 +1440,7 @@ h1 {
 
 /* Móvil: el enlace del pie, suelto entre letra pequeña, no parecía un botón. Toma la forma
    del botón subrayado de la web (.line-action) y baja, separado de la firma. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .contact-footnote {
     flex-direction: column;
     align-items: flex-start;
@@ -1474,7 +1474,7 @@ h1 {
 }
 
 /* Móvil: el botón del mapa y el recuadro del horario necesitan más separación. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .visit-hours {
     margin-top: 1.25rem;
   }
@@ -1482,7 +1482,7 @@ h1 {
 
 /* Móvil: «Mi consulta es otra» va al final, después de las preguntas. La columna del
    título se deshace (display: contents) para poder reordenar el botón. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .contact-faq {
     display: flex;
     flex-direction: column;
@@ -1501,7 +1501,7 @@ h1 {
 
 /* Móvil: los dos botones del final, centrados y seguidos; la firma con su línea cierra
    la página. El filete pasa del pie a la firma para que el botón quede por encima. */
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .faq-intro > .line-action {
     align-self: center;
     margin-top: 3.5rem;
@@ -1523,5 +1523,39 @@ h1 {
   }
   .contact-footnote p {
     align-self: stretch;
+  }
+}
+
+/* Las ideas clave, en negrita: en blanco pleno sobre fondo oscuro y en tinta sobre el papel. */
+.contact b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+:is(.contact-directory, .collaborators-contact) b {
+  color: #1f2930;
+}
+
+/* Dos columnas: el recuadro del horario crece con la dirección en lugar de quedarse centrado,
+   así ambas columnas miden lo mismo; su enlace baja al pie del recuadro. */
+@media (min-width: 900.02px) {
+  .visit-hours {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .visit-hours .line-action {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+
+  .visit-hours .hours-note {
+    margin-bottom: 1.5rem;
+  }
+
+  /* La dirección, en una sola línea: el tope de 30rem la partía en dos en pantallas anchas. */
+  .visit-address h2 {
+    max-width: none;
   }
 }

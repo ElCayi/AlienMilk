@@ -1,0 +1,11 @@
+{
+  "clave": "prueba-sin-email",
+  "titulo": "Prueba",
+  "organizacion": "Pruebas",
+  "prefijo": "PR",
+  "accion": "Enviar",
+  "confirmacion": "Recibida.",
+  "campos": [
+    { "clave": "nombre", "etiqueta": "Nombre", "tipo": "texto", "requerido": true }
+  ]
+}

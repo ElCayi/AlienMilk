@@ -1,0 +1,246 @@
+/* Molde de formulario sobre fondo oscuro: campos como los de Registro, rótulos en Barlow
+   Condensed y el coral solo para errores y foco. */
+:host {
+  --request-ink: #f7f8f9;
+  --request-muted: rgba(247, 248, 249, 0.82);
+  --request-line: rgba(247, 248, 249, 0.16);
+  --request-field: #18222d;
+  --request-field-line: #59626c;
+  --request-coral: #ff7f7f;
+  --request-error: #ffaaaa;
+  display: block;
+  color: var(--request-ink);
+  font-family: 'Nunito', Arial, sans-serif;
+}
+
+.request-header {
+  padding-bottom: 1rem;
+  padding-right: var(--request-header-gap, 0);
+  border-bottom: 1px solid var(--request-line);
+}
+
+.request-kicker {
+  margin: 0;
+  color: var(--request-coral);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.request-title {
+  margin: 0.35rem 0 0;
+  font:
+    400 clamp(2rem, 3vw, 2.6rem) / 1.05 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+}
+
+.request-intro {
+  margin: 1.25rem 0 0;
+  color: var(--request-muted);
+  font:
+    1rem / 1.6 Arial,
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.request-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.request-field {
+  display: grid;
+  grid-column: 1 / -1;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.request-field.is-half {
+  grid-column: auto;
+}
+
+.request-field label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.request-optional {
+  color: var(--request-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.request-field :is(input, select, textarea) {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--request-field-line);
+  border-radius: 0.5rem;
+  color: var(--request-ink);
+  background: var(--request-field);
+  font:
+    1rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+  color-scheme: dark;
+}
+
+.request-field textarea {
+  resize: vertical;
+}
+
+.request-field.is-invalid :is(input, select, textarea) {
+  border-color: var(--request-error);
+}
+
+.request-help,
+.request-error {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.request-help {
+  color: var(--request-muted);
+}
+
+.request-error {
+  color: var(--request-error);
+}
+
+/* Fuera de la vista sin display: none, que algunos robots detectan. */
+.request-trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.request-consent {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.4rem 0.7rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--request-line);
+  color: var(--request-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.request-consent input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--request-coral);
+}
+
+.request-consent a {
+  color: var(--request-ink);
+  text-underline-offset: 0.2em;
+}
+
+.request-consent .request-error {
+  grid-column: 2;
+}
+
+.request-form-error {
+  margin-top: 1rem;
+}
+
+.request-submit {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+.request-submit:disabled {
+  cursor: wait;
+}
+
+.request-form :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--request-coral);
+  outline-offset: 3px;
+}
+
+.request-status {
+  margin: 1.5rem 0 0;
+  color: var(--request-muted);
+}
+
+.request-status p {
+  margin: 0;
+}
+
+.request-retry {
+  margin-top: 0.75rem;
+  padding: 0;
+  border: 0;
+  color: var(--request-ink);
+  background: none;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+/* Resguardo: el número en grande, como un billete. */
+.request-receipt {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 1px dashed rgba(247, 248, 249, 0.42);
+  border-radius: 1rem;
+  outline: none;
+}
+
+.request-receipt-label {
+  margin: 0;
+  color: var(--request-muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.request-receipt-code {
+  margin: 0.4rem 0 0;
+  font:
+    400 clamp(2rem, 4vw, 2.8rem) / 1 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.06em;
+}
+
+.request-receipt-text {
+  margin: 1rem 0 0;
+  color: var(--request-muted);
+  font:
+    1rem / 1.6 Arial,
+    sans-serif;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+@media (max-width: 560px) {
+  .request-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .request-field.is-half {
+    grid-column: 1 / -1;
+  }
+}

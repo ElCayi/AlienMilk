@@ -7,6 +7,8 @@ USE reserva_eventos_bbdd;
 DROP TABLE IF EXISTS premio;
 DROP TABLE IF EXISTS cifra_confianza;
 DROP TABLE IF EXISTS socio;
+
+DROP TABLE IF EXISTS solicitudes;
 DROP TABLE IF EXISTS contacto;
 DROP TABLE IF EXISTS reservas;
 DROP TABLE IF EXISTS eventos;
@@ -218,3 +220,18 @@ INSERT IGNORE INTO premio (sigla, nombre, otorgante, fecha, orden) VALUES
 ('CEA', 'Top Circuito de Experiencias para Adultos', 'Confederación de Espacios Alternativos', '2014', 7),
 ('SWX', 'Mención Especial en Programación Swinger Interespecie', 'Salón SWX', '2021', 8),
 ('VANTA', 'OnlyMilk', 'VANTA Alta Intensidad Sensorial', '2025', 9);
+
+-- Solicitudes de los formularios públicos (misma definición que migraciones/2026-10-07-solicitudes.sql).
+CREATE TABLE IF NOT EXISTS solicitudes (
+	id_solicitud INT AUTO_INCREMENT PRIMARY KEY,
+	referencia VARCHAR(20) UNIQUE,
+	formulario VARCHAR(60) NOT NULL,
+	asunto VARCHAR(160) NOT NULL,
+	nombre VARCHAR(120) NOT NULL,
+	email VARCHAR(120) NOT NULL,
+	datos TEXT NOT NULL,
+	estado VARCHAR(12) NOT NULL DEFAULT 'NUEVA',
+	creada_en DATETIME NOT NULL,
+	atendida_en DATETIME,
+	INDEX ix_solicitudes_creada_en (creada_en)
+);

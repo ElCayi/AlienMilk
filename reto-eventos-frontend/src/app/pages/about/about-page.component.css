@@ -1,11 +1,11 @@
 /* Tokens de la programación de sesiones: misma tinta, mismo coral, mismas esquinas. */
 :host {
   --ink: #211e24;
-  --muted: #68727d;
+  --muted: #4e5862;
   --line: rgba(55, 66, 78, 0.17);
   --coral: #ff7f7f;
   --light: #f7f8f9;
-  --light-muted: rgba(247, 248, 249, 0.68);
+  --light-muted: rgba(247, 248, 249, 0.88);
   --light-line: rgba(247, 248, 249, 0.2);
   --light-rule: rgba(247, 248, 249, 0.42);
   --night: #0d151e;
@@ -1191,9 +1191,9 @@ h2 em {
   /* Separado del título por una barra vertical, cerca de él. */
   padding-left: clamp(1.75rem, 3vw, 3rem);
   border-left: 1px solid var(--light-rule);
-  color: var(--light-muted);
+  color: rgba(247, 248, 249, 0.94);
   font:
-    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    500 clamp(1.05rem, 1.15vw, 1.25rem) / 1.62 'Nunito',
     sans-serif;
   text-align: justify;
   text-align-last: left;
@@ -1350,9 +1350,9 @@ h2 em {
 
 .us-arch-copy p {
   margin: 0.9rem 0 0;
-  color: rgba(247, 248, 249, 0.86);
+  color: rgba(247, 248, 249, 0.94);
   font:
-    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    500 clamp(1.05rem, 1.15vw, 1.25rem) / 1.62 'Nunito',
     sans-serif;
   text-align: justify;
   text-align-last: left;
@@ -1416,9 +1416,9 @@ h2 em {
 
 .us-arch-scale-copy p {
   margin: 0 0 0.9rem;
-  color: rgba(247, 248, 249, 0.86);
+  color: rgba(247, 248, 249, 0.94);
   font:
-    500 clamp(1rem, 1.15vw, 1.2rem) / 1.62 'Nunito',
+    500 clamp(1.05rem, 1.15vw, 1.25rem) / 1.62 'Nunito',
     sans-serif;
   text-align: justify;
   text-align-last: left;
@@ -2576,3 +2576,6 @@ h2 em {
     justify-content: center;
   }
 }
+
+/* Énfasis sobre la arquitectura oscura; la invitación conserva tinta sobre blanco. */
+.us-arch-head b { font-weight: 800; color: var(--light); }

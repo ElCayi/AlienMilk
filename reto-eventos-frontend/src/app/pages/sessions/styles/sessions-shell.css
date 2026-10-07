@@ -1,11 +1,11 @@
 :host {
   --ink: #211e24;
-  --muted: #68727d;
+  --muted: #4e5862;
   --line: rgba(55, 66, 78, 0.17);
   --coral: #ff7f7f;
   --slate: #536473;
   --light: #f7f8f9;
-  --light-muted: rgba(247, 248, 249, 0.68);
+  --light-muted: rgba(247, 248, 249, 0.88);
   --light-line: rgba(247, 248, 249, 0.2);
   --light-rule: rgba(247, 248, 249, 0.42);
   --slate-deep: #1f2430;
@@ -229,4 +229,13 @@ h1 {
   color: #faf9f7;
   background: var(--slate-deep);
   cursor: pointer;
+}
+
+/* Las ideas clave, en negrita y en blanco pleno: todas van sobre fondo oscuro. */
+.program-intro b,
+.booking-note b,
+.station-copy b,
+.closing b {
+  color: var(--light);
+  font-weight: 700;
 }

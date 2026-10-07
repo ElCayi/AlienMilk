@@ -3,7 +3,9 @@
     <nav class="breadcrumb" aria-label="Ruta de navegación">
       <a routerLink="/">Inicio</a>
       <span aria-hidden="true">/</span>
-      <span>Operadores<span class="crumb-tail"> asociados</span></span>
+      <a routerLink="/" fragment="operadores-asociados"
+        >Operadores<span class="crumb-tail"> asociados</span></a
+      >
       <span aria-hidden="true">/</span>
       <span aria-current="page">{{ operator.name }}</span>
     </nav>
@@ -16,7 +18,7 @@
         </p>
         <h1 id="operator-title" appFitLine>{{ operator.name }}</h1>
         <p class="secondary-subtitle">{{ operator.tagline }}</p>
-        <p class="secondary-intro">{{ operator.intro }}</p>
+        <p class="secondary-intro" [innerHTML]="operator.intro"></p>
       </div>
 
       <!-- Sello del operador: su nombre gira alrededor de un disco con su servicio dibujado. -->
@@ -99,7 +101,7 @@
           <span class="title-line">{{ line }}</span>
         }
       </h2>
-      <p class="section-copy">{{ operator.service.copy }}</p>
+      <p class="section-copy" [innerHTML]="operator.service.copy"></p>
       <dl class="fact-list">
         @for (fact of operator.service.facts; track fact.label) {
           <div>
@@ -118,10 +120,10 @@
           </dd>
         </div>
       </dl>
-      <a class="line-action" [href]="inquiryHref()">
+      <button type="button" class="line-action" aria-haspopup="dialog" (click)="requestDialog.open()">
         <span class="line-action-label">{{ operator.service.action }}</span>
         <span class="line-action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
-      </a>
+      </button>
     </div>
     <ol class="item-list">
       @for (item of operator.service.items; track item.code) {
@@ -129,7 +131,7 @@
           <span class="item-code">{{ item.code }}</span>
           <div>
             <h3 appFitLine>{{ item.title }}</h3>
-            <p>{{ item.text }}</p>
+            <p [innerHTML]="item.text"></p>
             @if (item.detail) {
               <p class="item-detail" appFitLine>{{ item.detail }}</p>
             }
@@ -152,7 +154,7 @@
         <article>
           <span class="column-number" aria-hidden="true">0{{ i + 1 }}</span>
           <h3 appFitLine>{{ item.title }}</h3>
-          <p>{{ item.text }}</p>
+          <p [innerHTML]="item.text"></p>
         </article>
       }
     </div>
@@ -168,7 +170,7 @@
       <p class="note-box">
         {{ operator.name }} presta su servicio con independencia de AlienMilk y bajo sus propias
         condiciones. AlienMilk responde exclusivamente de las actividades coordinadas por su
-        personal acreditado. {{ operator.note }}
+        personal acreditado. <span [innerHTML]="operator.note"></span>
       </p>
     </div>
     <!-- El mismo recuadro que en Localizaciones, con la ficha actual marcada. -->
@@ -193,6 +195,9 @@
       </dl>
     </fieldset>
   </section>
+
+  <!-- La solicitud al operador: el formulario lo define el backend (operador-<slug>.json). -->
+  <app-request-dialog #requestDialog [formKey]="formKey" />
 
   <footer class="secondary-footnote">
     <p>AlienMilk / Operadores asociados / <span class="nowrap">{{ operator.name }}</span></p>

@@ -1,9 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { ContactService } from '../../core/services/contact.service';
 import { OPERATORS } from '../../features/operators/operators';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
+import { RequestDialogComponent } from '../../shared/request-dialog/request-dialog.component';
 
 /**
  * Ficha de un operador asociado. Cada operador tiene su propia ruta (ver app.routes.ts), así que la
@@ -12,24 +12,16 @@ import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 @Component({
   selector: 'app-operator-page',
   standalone: true,
-  imports: [FitLineDirective, RouterLink],
+  imports: [FitLineDirective, RequestDialogComponent, RouterLink],
   templateUrl: './operator-page.component.html',
   styleUrls: ['../../shared/secondary-page/secondary-page.css', './operator-page.component.css'],
 })
 export class OperatorPageComponent {
-  private readonly contactService = inject(ContactService);
   private readonly slug = inject(ActivatedRoute).snapshot.data['operator'] as string;
 
   readonly operators = OPERATORS;
   readonly operator = OPERATORS.find(({ slug }) => slug === this.slug) ?? OPERATORS[0];
 
-  /** Las solicitudes llegan al operador a través de la oficina de atención de AlienMilk. */
-  readonly inquiryHref = computed(
-    () =>
-      `mailto:${this.contactService.contacto()?.email ?? ''}?subject=${encodeURIComponent(this.operator.service.subject)}`,
-  );
-
-  constructor() {
-    this.contactService.load();
-  }
+  /** Formulario del operador en el backend: resources/formularios/operador-<slug>.json. */
+  readonly formKey = `operador-${this.operator.slug}`;
 }

@@ -210,7 +210,7 @@
 }
 
 .fact-link:is(:hover, :focus-visible) {
-  color: #e0605f;
+  color: var(--coral);
 }
 
 /* Recuadro de la red: enlaces a los otros operadores y la ficha actual marcada. */

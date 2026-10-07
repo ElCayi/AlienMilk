@@ -3,14 +3,14 @@
    Piezas: cabecera, bloque claro (.paper-card), bloque oscuro (.ink-card), cierre y pie. */
 :host {
   --ink: #f7f8f9;
-  --muted: rgba(247, 248, 249, 0.68);
+  --muted: rgba(247, 248, 249, 0.88);
   --line: rgba(247, 248, 249, 0.16);
   --rule: rgba(247, 248, 249, 0.42);
   --coral: #ff7f7f;
   --canvas: #0d151e;
   --paper: #f8f6f2;
   --paper-ink: #28333a;
-  --paper-muted: #58636a;
+  --paper-muted: #3d474e;
   --paper-line: #c9cdca;
   --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   display: block;
@@ -137,9 +137,9 @@ h1 {
 .secondary-intro {
   max-width: 48rem;
   margin: 1rem 0 0;
-  color: var(--muted);
+  color: var(--ink);
   font:
-    clamp(1rem, 1vw, 1.1rem) / 1.6 Arial,
+    clamp(1.05rem, 1vw, 1.1rem) / 1.6 Arial,
     sans-serif;
 }
 
@@ -174,8 +174,8 @@ h1 {
 .section-copy {
   max-width: 36rem;
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 
 .section-heading {
@@ -195,10 +195,6 @@ h1 {
 .paper-card .section-label,
 .paper-card .section-copy {
   color: var(--paper-muted);
-}
-
-.paper-card .line-action:is(:hover, :focus-visible) {
-  color: #e0605f;
 }
 
 .card-split {
@@ -285,8 +281,8 @@ h1 {
 
 .item-list p {
   margin: 0.65rem 0 0;
-  color: #515d64;
-  font-size: 0.98rem;
+  color: #3d484f;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
   line-height: 1.6;
 }
 
@@ -355,8 +351,8 @@ h1 {
 .card-columns p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.98rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 
 /* Cierre sobre la textura: texto a la izquierda y un recuadro a la derecha. */
@@ -377,8 +373,8 @@ h1 {
   border-radius: 0.2rem;
   background: rgba(5, 13, 22, 0.22);
   color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
 }
 
 /* Recuadro con la leyenda cortando el trazo superior, como «Operadores asociados» en
@@ -457,6 +453,15 @@ h1 {
   text-decoration: none;
   text-transform: uppercase;
   transition: color 160ms ease;
+}
+
+/* La misma pieza cuando abre algo en la página en lugar de navegar. */
+button.line-action {
+  padding-inline: 0;
+  padding-top: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
 }
 
 .line-action::after {
@@ -774,4 +779,14 @@ h1 {
   .secondary-page a * {
     transition: none;
   }
+}
+
+/* Las ideas clave, en negrita: en blanco pleno sobre fondo oscuro y en tinta sobre el papel. */
+.secondary-page b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.paper-card b {
+  color: #1f2930;
 }

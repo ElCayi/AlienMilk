@@ -1,6 +1,9 @@
 package retotransversal.exception;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +21,8 @@ public class ApiErrorResponse {
 	private String error;
 	private String message;
 	private String path;
+
+	/** Solo en errores de validación de formularios: un mensaje por campo. */
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Map<String, String> errores;
 }

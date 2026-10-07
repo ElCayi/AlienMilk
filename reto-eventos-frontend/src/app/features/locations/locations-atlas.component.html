@@ -156,7 +156,7 @@
   </section>
 
   <div class="locations-layout" *ngIf="!collaborationMode">
-    <aside class="locations-brief" aria-label="Información para asistentes" data-backdrop-cut>
+    <aside id="informacion-asistente" class="locations-brief" data-scroll-frame aria-label="Información para asistentes" data-backdrop-cut>
       <span class="locations-brief-code" appFitLine>AM / INFORMACIÓN AL ASISTENTE</span>
       <h3 appFitLine>Antes de su visita</h3>
       <ol class="locations-brief-steps" aria-label="Procedimiento de acceso">
@@ -187,7 +187,7 @@
         La logística anterior y posterior al ingreso puede ser prestada por operadores independientes
         y queda sujeta a sus propias condiciones.
       </p>
-      <fieldset class="locations-brief-operators">
+      <fieldset id="operadores-asociados" class="locations-brief-operators">
         <legend>Operadores asociados</legend>
         <dl>
           <div>

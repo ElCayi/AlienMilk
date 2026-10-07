@@ -1,0 +1,74 @@
+<section class="admin-grid">
+  <div class="panel requests-panel">
+    <div class="block-header compact">
+      <div>
+        <h2>Solicitudes</h2>
+        <p class="block-helper">
+          Lo que llega desde los formularios públicos, como los de los operadores asociados.
+          {{ newCount() }} sin atender.
+        </p>
+      </div>
+      <button type="button" class="ghost" (click)="load()">Actualizar</button>
+    </div>
+
+    <div class="request-filters" role="group" aria-label="Filtrar solicitudes">
+      @for (option of filters; track option.value) {
+        <button
+          type="button"
+          class="ghost"
+          [attr.aria-pressed]="filter() === option.value"
+          (click)="filter.set(option.value)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    @if (feedback(); as aviso) {
+      <p class="panel-feedback" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+    }
+
+    @if (loading()) {
+      <p>Cargando solicitudes...</p>
+    } @else {
+      <div class="table-list">
+        @for (solicitud of visible(); track solicitud.idSolicitud) {
+          <article class="request-card" [class.is-new]="solicitud.estado === 'NUEVA'">
+            <div class="request-card-head">
+              <div>
+                <strong>{{ solicitud.referencia }} · {{ solicitud.asunto }}</strong>
+                <p>
+                  {{ solicitud.nombre }} ·
+                  <a [href]="replyHref(solicitud)">{{ solicitud.email }}</a> ·
+                  {{ solicitud.creadaEn | date: 'dd.MM.yyyy HH:mm' }}
+                </p>
+              </div>
+              <div class="actions">
+                @if (solicitud.estado === 'NUEVA') {
+                  <button type="button" class="ghost" (click)="setStatus(solicitud, 'ATENDIDA')">
+                    Marcar atendida
+                  </button>
+                } @else {
+                  <button type="button" class="ghost" (click)="setStatus(solicitud, 'NUEVA')">
+                    Volver a pendiente
+                  </button>
+                }
+                <button type="button" class="danger" (click)="remove(solicitud)">Borrar</button>
+              </div>
+            </div>
+            <dl class="request-data">
+              @for (dato of details(solicitud); track dato.clave) {
+                <div [class.is-wide]="dato.valor.length > 60">
+                  <dt>{{ dato.etiqueta }}</dt>
+                  <dd>{{ dato.valor }}</dd>
+                </div>
+              }
+            </dl>
+          </article>
+        } @empty {
+          <p>No hay solicitudes en esta bandeja.</p>
+        }
+      </div>
+    }
+  </div>
+</section>

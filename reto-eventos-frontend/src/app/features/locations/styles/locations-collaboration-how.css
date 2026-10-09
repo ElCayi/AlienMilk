@@ -315,8 +315,8 @@
     grid-row: 4;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     column-gap: var(--how-step-gap);
-    /* Debajo, menos aire: la invitación, más cerca de los pasos. */
-    margin-block: clamp(1.5rem, 3vw, 3.5rem) clamp(0.25rem, 0.8vw, 1rem);
+    /* Poco aire arriba y abajo: el texto y la invitación, cerca de los pasos. */
+    margin-block: clamp(0.25rem, 0.8vw, 1rem);
   }
 
   /* Al pie, la invitación, a la derecha. */

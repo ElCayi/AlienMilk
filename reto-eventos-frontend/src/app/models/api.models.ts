@@ -125,7 +125,7 @@ export type ContactoPayload = Omit<Contacto, 'actualizadoEn' | 'actualizadoPor'>
 
 /** La red de confianza de la portada (/api/red-de-confianza). */
 export interface RedConfianza {
-  premios: { sigla: string; nombre: string; otorgante: string; fecha: string }[];
+  premios: { sigla: string; nombre: string; otorgante: string; fecha: string; descripcion: string | null }[];
   socios: { nombre: string; estilo: string; emblema: string }[];
   cifras: {
     clave: string;

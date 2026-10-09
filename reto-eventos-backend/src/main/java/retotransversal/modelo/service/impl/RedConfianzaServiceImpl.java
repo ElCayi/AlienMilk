@@ -39,6 +39,7 @@ public class RedConfianzaServiceImpl implements RedConfianzaService {
 				.nombre(premio.getNombre())
 				.otorgante(premio.getOtorgante())
 				.fecha(premio.getFecha())
+				.descripcion(premio.getDescripcion())
 				.build();
 	}
 

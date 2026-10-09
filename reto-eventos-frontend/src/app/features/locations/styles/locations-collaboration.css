@@ -10,8 +10,9 @@
 
 .locations-collaboration-columns p {
   margin: 0;
-  font-size: clamp(1.05rem, 1.7vw, 2rem);
-  line-height: 1.65;
+  /* El cuerpo y el interlineado de los recuadros editoriales de la portada. */
+  font-size: var(--home-section-copy-size, 1.05rem);
+  line-height: var(--home-editorial-copy-leading, 1.6);
   text-align: justify;
   text-align-last: left;
   hyphens: auto;
@@ -22,6 +23,24 @@
 
 .locations-collaboration-columns strong {
   color: inherit;
+}
+
+/* Los titulares de las columnas, con la letra de «Cómo colaborar», en una línea y al mismo cuerpo
+   (el que deja entero el más largo); el remate, en coral. */
+.locations-collaboration-columns p.locations-collaboration-perks {
+  margin: 0 0 0.9rem;
+  font: 400 clamp(1.75rem, 2.6vw, 3.3rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.locations-collaboration-perks span {
+  color: #ff7f7f;
+}
+
+/* Cada columna: el titular y dos párrafos, con aire entre ellos. */
+.locations-collaboration-columns p:not(.locations-collaboration-perks) + p {
+  margin-top: 0.9em;
 }
 
 /* La marca y la coma que la sigue no se separan al partir la línea. */
@@ -55,7 +74,7 @@
 
   .locations-collaboration-columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(2.5rem, 5vw, 6rem);
+    gap: 0 clamp(2.5rem, 5vw, 6rem);
     /* El mismo aire que entre el párrafo de la cabecera y la foto. */
     margin-top: clamp(2rem, 3.1vw, 3.25rem);
   }

@@ -72,6 +72,30 @@ resources/formularios/<clave>.json   ← la definición: única fuente de verdad
 | `ancho` | `"mitad"` comparte fila con el campo siguiente en pantallas anchas. |
 | `autocompletar` | Valor de `autocomplete` para el navegador (`name`, `email`, `organization`…). |
 
+## Aviso por correo
+
+Cada solicitud guardada puede avisar por correo (`AvisoSolicitudes`). El correo lleva la referencia
+en el asunto, todos los datos con sus etiquetas y un enlace a la bandeja; **responderlo escribe
+directamente al visitante** (va con su dirección en `Reply-To`). Sirve igual para todos los
+formularios, sin tocar nada por formulario.
+
+Se envía en segundo plano y después de guardar: el visitante recibe su resguardo aunque el correo
+tarde o falle. Un fallo pasajero se reintenta dos veces (a los 30 s y a los 2 min); una cuenta
+rechazada no se reintenta. Pase lo que pase, la solicitud sigue en `/admin`.
+
+Se enciende con variables de entorno (ver `.env.local.example`). Sin ellas queda apagado, y al
+arrancar el log dice en qué estado está y qué falta:
+
+| Variable | Uso |
+|---|---|
+| `SPRING_MAIL_HOST` | Servidor SMTP (`smtp.gmail.com`). Puerto 587 con STARTTLS por defecto. |
+| `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` | La cuenta que envía. Con Gmail, una contraseña de aplicación. |
+| `AVISOS_CORREO_DESTINO` | A quién se avisa. |
+| `AVISOS_CORREO_PANEL` | Opcional: enlace a la bandeja que se añade al correo. |
+
+Lo que no es secreto (puerto, STARTTLS obligatorio, tiempos de espera) está en
+`resources/avisos-correo.properties`; cualquier variable de entorno lo sustituye.
+
 ## Protecciones
 
 - **Campo trampa:** un campo `web` oculto que solo rellenan los robots; esas solicitudes se

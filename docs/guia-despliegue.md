@@ -61,14 +61,37 @@ Type=simple
 User=www-data
 WorkingDirectory=/opt/reto-eventos
 ExecStart=/usr/bin/java -jar /opt/reto-eventos/app.jar --spring.profiles.active=prod
-Environment=DB_USER=retoeventos
-Environment=DB_PASS=PASSWORD_AQUI
+EnvironmentFile=/etc/reto-eventos/backend.env
 Restart=always
 RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
 ```
+
+Las credenciales van en `/etc/reto-eventos/backend.env`, legible solo por root (systemd lo lee
+antes de pasar a `www-data`), y no en la unidad, que cualquiera puede leer con `systemctl cat`:
+
+```bash
+install -d -m 755 /etc/reto-eventos
+install -m 600 /dev/null /etc/reto-eventos/backend.env
+nano /etc/reto-eventos/backend.env
+```
+
+```ini
+DB_USER=retoeventos
+DB_PASS=PASSWORD_AQUI
+
+# Aviso por correo de las solicitudes de los formularios (opcional; sin esto, solo panel de admin).
+# Con Gmail: verificación en dos pasos activada y una "contraseña de aplicación", nunca la normal.
+SPRING_MAIL_HOST=smtp.gmail.com
+SPRING_MAIL_USERNAME=cuenta-que-envia@gmail.com
+SPRING_MAIL_PASSWORD=CONTRASENA_DE_APLICACION
+AVISOS_CORREO_DESTINO=quien-recibe-los-avisos@example.com
+AVISOS_CORREO_PANEL=https://217.154.182.6/admin
+```
+
+Al arrancar, el log dice si el aviso quedó `activo` o por qué está apagado.
 
 ```bash
 systemctl daemon-reload

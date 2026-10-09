@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { SpecimenCultureComponent } from '../../features/about/specimen-culture.component';
 import { CollaboratorsDoorComponent } from '../../features/collaboration/collaborators-door.component';
 import { FitBoxDirective } from '../../shared/fit-box/fit-box.directive';
+import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 
 /** Las capas de la arquitectura ejecutiva, una pestaña por capa (el texto de cada una, en la plantilla). */
 const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
@@ -17,7 +18,13 @@ const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [RouterLink, SpecimenCultureComponent, CollaboratorsDoorComponent, FitBoxDirective],
+  imports: [
+    RouterLink,
+    SpecimenCultureComponent,
+    CollaboratorsDoorComponent,
+    FitBoxDirective,
+    FitLineDirective,
+  ],
   templateUrl: './about-page.component.html',
   styleUrl: './about-page.component.css',
 })

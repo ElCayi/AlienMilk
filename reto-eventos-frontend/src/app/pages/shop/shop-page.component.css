@@ -1,0 +1,620 @@
+/* Tienda. La base (cabecera, bloques, pie) está en shared/secondary-page/secondary-page.css y las
+   piezas de producto en features/shop/shop-shared.css; aquí, la composición de la página. Las
+   medidas repiten las de la base: filas de 1.25rem, bloques de 1.75rem y los mismos clamp entre
+   columnas, para que la tienda respire igual que el resto de páginas. */
+
+/* Cabecera: las condiciones, en el recuadro con leyenda de Localizaciones. */
+.terms-pending {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font: 400 clamp(1.05rem, 1vw, 1.25rem) var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 01 · Catálogo: título y texto en las proporciones del bloque claro partido. */
+.catalog-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  align-items: end;
+}
+
+.catalog-heading h2 {
+  margin-bottom: 0;
+}
+
+.catalog-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+  padding-bottom: 1.5rem;
+}
+
+/* Filtro: el punto de la opción vigente, como en el selector de categorías de Sesiones. */
+.catalog-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+}
+
+.catalog-filter button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  border: 0;
+  color: var(--paper-muted);
+  background: none;
+  font: 600 1.15rem / 1.2 var(--condensed);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.catalog-filter button::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.catalog-filter button:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.catalog-filter button[aria-pressed='true'] {
+  color: var(--paper-ink);
+}
+
+.catalog-filter button[aria-pressed='true']::before {
+  border-color: var(--coral);
+  background: var(--coral);
+}
+
+.catalog-count,
+.catalog-status p {
+  margin: 0;
+  color: var(--paper-muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.catalog-status {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--paper-line);
+  color: var(--paper-muted);
+}
+
+/* Rejilla: tres columnas con el filete de las columnas del bloque oscuro. Cada producto reparte sus
+   piezas en las filas de la rejilla (subgrid), así que el texto, la procedencia y el precio quedan a
+   la misma altura en toda la fila aunque un resumen sea más largo que otro. */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(2.5rem, 4vw, 3.5rem) clamp(2.5rem, 5vw, 6rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.product {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  min-width: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--paper-line);
+}
+
+.product-link {
+  display: grid;
+  justify-items: start;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-sample {
+  width: clamp(4.5rem, 5.5vw, 6rem);
+  transition: transform 240ms ease;
+}
+
+.product-kicker {
+  margin-top: 1.5rem;
+  color: var(--paper-muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.product-name {
+  width: 100%;
+  min-width: 0;
+  margin: 0.35rem 0 0;
+  font: 500 clamp(1.6rem, 2.1vw, 2.1rem) / 1.15 var(--condensed);
+  transition: color 160ms ease;
+}
+
+.product-link:is(:hover, :focus-visible) .product-name {
+  color: var(--coral);
+}
+
+.product-link:is(:hover, :focus-visible) .product-sample {
+  transform: scale(1.04);
+}
+
+/* Una frase de catálogo, sin justificar: en columnas tan estrechas el justificado abre huecos.
+   Es el mismo criterio que las tarjetas del ecosistema en el pie. */
+.product-summary {
+  margin: 0.65rem 0 0;
+  color: #3d484f;
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.product-origin {
+  min-width: 0;
+  margin: 0.85rem 0 0;
+  color: var(--paper-ink);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.product-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--paper-line);
+}
+
+.product-price {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+/* Agotado: la muestra se apaga y el precio pasa a segundo plano. */
+.product:has(.stock[data-level='out']) :is(.product-sample, .price) {
+  opacity: 0.45;
+}
+
+/* 02 · Su pedido: las líneas a la izquierda y la entrega a la derecha, con las proporciones del
+   bloque claro partido al revés. */
+.order-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(2.5rem, 6vw, 7rem);
+  align-items: start;
+}
+
+.order-empty {
+  color: var(--muted);
+}
+
+.order-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-line {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.order-line:first-child {
+  border-top: 1px solid var(--line);
+}
+
+.order-line .sample {
+  width: 3.25rem;
+}
+
+.order-line-info {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.order-line-name {
+  min-width: 0;
+  color: var(--ink);
+  font: 400 1.6rem / 1.15 var(--condensed);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.order-line-name:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.order-line-warning {
+  margin: 0;
+  color: var(--coral);
+  font-size: 0.9rem;
+}
+
+.order-line-units {
+  display: grid;
+  justify-items: end;
+  gap: 0.6rem;
+}
+
+.order-line-units .price {
+  font-size: 1.6rem;
+}
+
+.checkout {
+  display: grid;
+  gap: 1.75rem;
+}
+
+/* Entrega: las dos opciones como filas del recuadro con leyenda. */
+.delivery-option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.25rem 0.85rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.delivery-option:first-of-type {
+  padding-top: 0.5rem;
+  border-top: 0;
+}
+
+.delivery-option input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--coral);
+}
+
+.delivery-name {
+  font: 400 clamp(1.05rem, 1vw, 1.25rem) / 1.3 var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.delivery-note {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.address {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.address label {
+  font:
+    700 0.95rem 'Nunito',
+    sans-serif;
+}
+
+/* Los campos de Registro e Inicio de sesión. */
+.address textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #59626c;
+  border-radius: 0.5rem;
+  color: var(--ink);
+  background: #18222d;
+  font:
+    1rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+  resize: vertical;
+  color-scheme: dark;
+}
+
+.address.is-invalid textarea {
+  border-color: #ffaaaa;
+}
+
+.field-error {
+  margin: 0;
+  color: #ffaaaa;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* Importes: filas de rótulo y valor en una línea, como el recuadro de las condiciones. */
+.order-summary {
+  display: grid;
+  margin: 0;
+}
+
+.order-summary div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding-block: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.order-summary dt,
+.order-summary dd {
+  margin: 0;
+  font: 400 clamp(1.05rem, 1vw, 1.25rem) / 1.3 var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.order-summary dt {
+  min-width: 0;
+  color: var(--muted);
+}
+
+.order-summary dd {
+  white-space: nowrap;
+}
+
+.order-summary .order-total {
+  border-bottom: 1px solid var(--line);
+}
+
+.order-summary .order-total dt {
+  color: var(--ink);
+}
+
+.order-summary .order-total dd {
+  font-size: clamp(1.6rem, 2.1vw, 2.1rem);
+  letter-spacing: 0.02em;
+}
+
+.confirm {
+  width: 100%;
+}
+
+.confirm:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.confirm:disabled:hover {
+  border-color: rgba(241, 236, 239, 0.72);
+  color: #f1ecef;
+  background: transparent;
+  transform: none;
+}
+
+.gate {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+}
+
+.gate p,
+.demo-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.demo-note {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+
+/* Resguardo: el número en grande, como el de las solicitudes a los operadores. */
+.receipt {
+  padding: clamp(1.5rem, 2.5vw, 2.25rem);
+  border: 1px dashed rgba(247, 248, 249, 0.42);
+  border-radius: 1rem;
+  outline: none;
+}
+
+.receipt-label {
+  margin: 0;
+  color: var(--muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.receipt-code {
+  margin: 0.4rem 0 0;
+  font: 400 clamp(2.4rem, 4vw, 3.4rem) / 1 var(--condensed);
+  letter-spacing: 0.06em;
+}
+
+.receipt-text {
+  margin: 1rem 0 1.75rem;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* 03 · Historial: cada pedido, una fila del recuadro con leyenda. */
+.history-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list li {
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.history-list li:first-child {
+  padding-top: 0.5rem;
+  border-top: 0;
+}
+
+.history-list li:last-child {
+  padding-bottom: 0;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+
+.history-ref,
+.history-total {
+  font: 400 clamp(1.05rem, 1vw, 1.25rem) / 1.3 var(--condensed);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.history-detail {
+  margin: 0.35rem 0 0.65rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.history-state,
+.history-cancel {
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.history-state {
+  color: var(--muted);
+}
+
+.history-cancel {
+  padding: 0;
+  border: 0;
+  color: var(--ink);
+  background: none;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.history-cancel:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.history-cancel:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.is-cancelled :is(.history-ref, .history-total) {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* Tableta: el catálogo en dos columnas y el pedido en una, con la entrega debajo de las líneas. */
+@media (max-width: 1000px) {
+  .catalog-heading,
+  .order-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .order-layout {
+    gap: 2.5rem;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+}
+
+/* Móvil: una columna; cada producto, la muestra a la izquierda de su nombre. */
+@media (max-width: 700px) {
+  .product-grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2.5rem;
+  }
+
+  .catalog-filter {
+    column-gap: 1.25rem;
+  }
+
+  .product-link {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 1.25rem;
+    align-items: end;
+  }
+
+  .product-sample {
+    grid-row: span 2;
+    width: 4.5rem;
+  }
+
+  .product-kicker {
+    margin-top: 0;
+  }
+
+  .order-line {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .order-line .sample {
+    width: 2.75rem;
+  }
+
+  .order-line-units {
+    grid-column: 2;
+    grid-auto-flow: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-sample,
+  .product-name,
+  .catalog-filter button,
+  .order-line-name,
+  .history-cancel {
+    transition: none;
+  }
+}

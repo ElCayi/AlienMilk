@@ -1,0 +1,208 @@
+/* Ficha de producto. La base (cabecera, bloques, pie) está en shared/secondary-page/secondary-page.css
+   y la muestra, el precio y el selector de unidades en features/shop/shop-shared.css; aquí, la
+   muestra grande de la cabecera, la compra y el recuadro de la sección. */
+
+/* Muestra grande: del tamaño del sello de los operadores, con el lote debajo. La luz de la superficie
+   se mueve despacio, como un líquido que aún no se ha asentado. */
+.product-figure {
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  margin: 0;
+}
+
+.product-figure-sample {
+  width: min(100%, clamp(13rem, 14vw, 17rem));
+  box-shadow: 0 0 0 0.5rem rgba(247, 248, 249, 0.06);
+}
+
+.product-figure-sample::after {
+  animation: surface 9s ease-in-out infinite alternate;
+}
+
+@keyframes surface {
+  to {
+    background-position: 0.9rem 0.6rem;
+  }
+}
+
+.product-figure-caption {
+  color: var(--muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.16em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Compra: el precio en grande, la disponibilidad y la acción, alineados con la ficha. */
+.purchase {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  min-width: 0;
+}
+
+.purchase .section-label {
+  color: var(--paper-muted);
+}
+
+.purchase-price {
+  margin: 1rem 0 0;
+  font: 400 clamp(3rem, 4.4vw, 4.8rem) / 1 var(--condensed);
+  letter-spacing: 0.01em;
+}
+
+.purchase .stock {
+  margin-top: 1rem;
+  white-space: normal;
+}
+
+.purchase-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 2.5rem;
+  margin-top: 2.5rem;
+}
+
+.purchase-in-cart {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Advertencia: la nota con filete coral de la base, en versión papel. */
+.purchase-warning {
+  max-width: 36rem;
+  margin: 2.5rem 0 0;
+  padding: 1rem 1.15rem;
+  border-left: 2px solid var(--coral);
+  border-radius: 0.2rem;
+  color: var(--paper-muted);
+  background: rgba(40, 51, 58, 0.05);
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* Recuadro de la sección: enlaces a los demás productos y el actual marcado, como la red de
+   operadores. */
+.network-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding-bottom: 0.3rem;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.network-link::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transition: transform 180ms ease;
+}
+
+.network-link span,
+.network-link svg {
+  transition: transform 180ms ease;
+}
+
+.network-link svg {
+  display: block;
+  width: 1.2em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.network-link:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.network-link:is(:hover, :focus-visible)::after {
+  transform: scaleX(1.08);
+}
+
+.network-link:is(:hover, :focus-visible) span {
+  transform: translateX(-0.18rem);
+}
+
+.network-link:is(:hover, :focus-visible) svg {
+  transform: translateX(0.3rem);
+}
+
+.network-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.3rem;
+  color: var(--coral);
+}
+
+.network-current::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Ficha que no se encuentra o que aún carga: el título y una salida. */
+.product-missing {
+  display: grid;
+  justify-items: start;
+  gap: 1.75rem;
+  padding-top: 0.4rem;
+  border-top: 2px solid var(--rule);
+}
+
+.product-missing h1 {
+  margin-bottom: 0;
+}
+
+/* Móvil: la muestra se queda pequeña, con su lote al lado. */
+@media (max-width: 700px) {
+  .product-figure {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .product-figure-sample {
+    width: 6rem;
+    box-shadow: 0 0 0 0.35rem rgba(247, 248, 249, 0.08);
+  }
+
+  .product-figure-caption {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-figure-sample::after {
+    animation: none;
+  }
+
+  .network-link,
+  .network-link::after,
+  .network-link span,
+  .network-link svg {
+    transition: none;
+  }
+}

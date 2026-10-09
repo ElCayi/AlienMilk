@@ -1,0 +1,195 @@
+/* Piezas comunes de la tienda y la ficha de producto. Se cargan después de la base de las páginas
+   secundarias (shared/secondary-page/secondary-page.css), así que usan sus variables. */
+
+/* Muestra: el producto visto desde arriba, como una gota en su placa. El tono lo pone el producto
+   (data-tone, desde la base de datos); el borde, el fondo sobre el que está. */
+[data-tone] {
+  --tone: #f1ece2;
+  --tone-deep: #d6ccbb;
+}
+
+[data-tone='nacar'] {
+  --tone: #f6f1e7;
+  --tone-deep: #d9cebb;
+}
+
+[data-tone='glaciar'] {
+  --tone: #e2edf2;
+  --tone-deep: #a8c2d0;
+}
+
+[data-tone='liquen'] {
+  --tone: #e6ead2;
+  --tone-deep: #b3bd8c;
+}
+
+[data-tone='mantequilla'] {
+  --tone: #f7e8bb;
+  --tone-deep: #d9bd73;
+}
+
+[data-tone='piedra'] {
+  --tone: #dedbd4;
+  --tone-deep: #9b9891;
+}
+
+[data-tone='lila'] {
+  --tone: #ebe3f1;
+  --tone-deep: #b9a5cc;
+}
+
+[data-tone='cristal'] {
+  --tone: #f2f6f7;
+  --tone-deep: #c6d4d8;
+}
+
+[data-tone='grafito'] {
+  --tone: #70757b;
+  --tone-deep: #393e44;
+}
+
+[data-tone='papel'] {
+  --tone: #f1e9da;
+  --tone-deep: #c8b797;
+}
+
+.sample {
+  --sample-ring: rgba(40, 51, 58, 0.34);
+  position: relative;
+  display: block;
+  flex: none;
+  aspect-ratio: 1;
+  border: 1px solid var(--sample-ring);
+  border-radius: 50%;
+}
+
+.ink-card .sample,
+.secondary-stage .sample {
+  --sample-ring: rgba(247, 248, 249, 0.34);
+}
+
+/* El líquido y, encima, el reflejo de la luz en su superficie. */
+.sample::before,
+.sample::after {
+  content: '';
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+}
+
+.sample::before {
+  background: radial-gradient(circle at 50% 50%, var(--tone) 52%, var(--tone-deep));
+  box-shadow: inset 0 -0.3em 0.8em rgba(31, 41, 48, 0.14);
+}
+
+.sample::after {
+  background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0) 32%)
+    no-repeat;
+}
+
+/* Precio y disponibilidad */
+.price {
+  margin: 0;
+  font: 400 clamp(1.6rem, 2.1vw, 2.1rem) / 1 var(--condensed);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.stock {
+  margin: 0;
+  color: var(--paper-muted);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ink-card .stock {
+  color: var(--muted);
+}
+
+/* Pocas unidades: el punto coral de los datos destacados, el único acento de la tienda. */
+.stock[data-level='low']::before {
+  content: '';
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background: var(--coral);
+  vertical-align: 0.05em;
+}
+
+/* Botón de añadir: el subrayado de la casa con un más en lugar de la flecha. */
+.add-action .line-action-arrow svg {
+  stroke-width: 2;
+}
+
+.add-action:is(:hover, :focus-visible) .line-action-arrow {
+  transform: rotate(90deg);
+}
+
+/* Selector de unidades: dos círculos finos, como las burbujas numeradas, y la cifra en medio. */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.stepper button:is(:hover, :focus-visible):not(:disabled) {
+  color: var(--coral);
+}
+
+.stepper button:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.stepper svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.stepper output {
+  min-width: 1.6ch;
+  font: 400 1.5rem / 1 var(--condensed);
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepper button,
+  .add-action .line-action-arrow {
+    transition: none;
+  }
+}

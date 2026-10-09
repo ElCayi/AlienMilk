@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 
 import { AuthService } from './core/services/auth.service';
+import { CartService } from './features/shop/cart.service';
 import { SiteFooterComponent } from './shared/site-footer/site-footer.component';
 
 @Component({
@@ -14,6 +15,8 @@ import { SiteFooterComponent } from './shared/site-footer/site-footer.component'
 })
 export class App {
   readonly authService = inject(AuthService);
+  /** Pedido en curso de la tienda: el menú muestra cuántas unidades lleva. */
+  readonly cart = inject(CartService);
   readonly menuOpen = signal(false);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);

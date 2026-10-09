@@ -85,6 +85,21 @@
   letter-spacing: 0.01em;
 }
 
+/* Unidades del pedido en curso de la tienda: una burbuja fina, como las de las listas numeradas. */
+.nav-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  margin-left: 0.4rem;
+  padding-inline: 0.3rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  line-height: 1;
+  vertical-align: 0.1em;
+}
+
 .nav-links a.active,
 .nav-links a:hover,
 .brand:hover {
@@ -121,7 +136,9 @@
   padding: 0.6rem 0.9rem;
 }
 
-@media (min-width: 1001px) {
+/* Por encima del menú desplegable, el menú va centrado en la página. Con la Tienda son cinco enlaces:
+   por debajo de 1200px no caben con holgura junto a la marca y los botones de la cuenta. */
+@media (min-width: 1200.02px) {
   .topbar {
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   }
@@ -131,12 +148,26 @@
   }
 }
 
-  .user-pill {
-    padding: 0.55rem 0.9rem;
-    border-radius: 999px;
-    background: rgba(255, 127, 127, 0.14);
+.user-pill {
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 127, 127, 0.14);
   color: #ff7f7f;
   font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Entre el menú desplegable y las pantallas anchas no cabe el nombre junto a los dos botones de la
+   cuenta, que ya dicen que hay una sesión abierta. 1520px es lo que necesita el más largo de las
+   cuentas de demostración («Administrador · Admin») con el pedido de la tienda en el menú. */
+@media (min-width: 1200.02px) and (max-width: 1520px) {
+  .user-pill {
+    display: none;
+  }
 }
 
 .primary-btn,
@@ -265,7 +296,9 @@
 .page-container:has(app-login-page),
 .page-container:has(app-register-page),
 .page-container:has(app-operator-page),
-.page-container:has(app-documentation-page) {
+.page-container:has(app-documentation-page),
+.page-container:has(app-shop-page),
+.page-container:has(app-product-page) {
   width: min(1480px, 76vw);
 }
 
@@ -274,7 +307,9 @@
 .page-container:has(app-login-page),
 .page-container:has(app-register-page),
 .page-container:has(app-operator-page),
-.page-container:has(app-documentation-page) {
+.page-container:has(app-documentation-page),
+.page-container:has(app-shop-page),
+.page-container:has(app-product-page) {
     width: min(1800px, 76vw);
   }
 }
@@ -284,7 +319,9 @@
 .page-container:has(app-login-page),
 .page-container:has(app-register-page),
 .page-container:has(app-operator-page),
-.page-container:has(app-documentation-page) {
+.page-container:has(app-documentation-page),
+.page-container:has(app-shop-page),
+.page-container:has(app-product-page) {
     width: calc(100% - 2 * clamp(1rem, 6vw, 3.75rem));
   }
 }
@@ -294,7 +331,9 @@
   .page-container:has(app-about-page) {
     width: calc(100% - 2 * clamp(1rem, 6vw, 3.75rem));
   }
+}
 
+@media (max-width: 1200px) {
   .topbar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

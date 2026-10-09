@@ -27,6 +27,7 @@ public class RedConfianzaDto {
 		private String nombre;
 		private String otorgante;
 		private String fecha;
+		private String descripcion;
 	}
 
 	@AllArgsConstructor

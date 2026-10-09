@@ -28,66 +28,113 @@
        de socios a todo lo ancho y, al final, las cifras. Las tres cosas llegan del backend. La
        cinta va doble para que el bucle no tenga costura; la copia no se lee. -->
   <div class="trust-reel">
-    @if (featuredAward(); as featured) {
-      <section class="trust-awards" aria-labelledby="trust-awards-title">
-        <header class="trust-awards-head">
-          <p class="trust-awards-kicker" id="trust-awards-title" appFitLine>
-            Distinciones · Premios a AlienMilk
-          </p>
-          <p class="trust-awards-aside" appFitLine>Todas vigentes</p>
-        </header>
+    <!-- La tinta, arriba y abajo; en medio, la cinta, medio traslúcida sobre el fondo. -->
+    <div class="trust-reel-ink">
+      @if (featuredAward(); as featured) {
+        <section class="trust-awards" aria-labelledby="trust-awards-title">
+          <!-- El rótulo, la destacada y, debajo, el palmarés, todos con el ancho de la destacada. -->
+          <div class="trust-awards-body">
+            <header class="trust-awards-head">
+              <p class="trust-awards-kicker" id="trust-awards-title" appFitLine>
+                Distinciones · Premios a AlienMilk
+              </p>
+              <p class="trust-awards-aside" appFitLine>Todas vigentes</p>
+            </header>
 
-        <!-- La destacada y, debajo, el palmarés, con su mismo ancho. -->
-        <div class="trust-awards-body">
-          <div class="trust-award-featured">
-            <div class="trust-medal" aria-hidden="true">
-              <span class="trust-medal-face"></span>
-              <svg viewBox="0 0 200 200" focusable="false">
-                <circle class="trust-medal-rim" cx="100" cy="100" r="98" />
-                <circle class="trust-medal-edge" cx="100" cy="100" r="89.5" />
-                <!-- La leyenda, muy pequeña, gira por dentro del canto; la minimilk va calada en la
-                     cara. -->
-                <path id="trust-medal-path" d="M100 34a66 66 0 1 1 0 132a66 66 0 1 1 0-132" fill="none" />
-                <g class="trust-medal-legend">
-                  <text>
-                    <textPath href="#trust-medal-path" textLength="414" lengthAdjust="spacing">{{ medalLegend() }}</textPath>
-                  </text>
-                </g>
-                <circle class="trust-medal-groove" cx="100" cy="100" r="57" />
-              </svg>
-            </div>
-            <div class="trust-award-copy">
-              <p class="trust-award-date">{{ featured.date }}</p>
-              <p class="trust-award-name">{{ featured.name }}</p>
-              <p class="trust-award-issuer" appFitLine>{{ featured.issuer }}</p>
-            </div>
-          </div>
-
-          <!-- El palmarés, en una ventana hundida en la franja, con scroll por dentro: cada
-               distinción en una franja del mismo alto, con el nombre en una sola línea. -->
-          @if (otherAwards().length) {
-            <div class="trust-awards-box">
-              <div class="trust-awards-scroll" role="region" aria-label="Palmarés de AlienMilk" tabindex="0">
-                <ol class="trust-awards-list">
-                  @for (award of otherAwards(); track award.name) {
-                    <li>
-                      <span class="trust-award-code" appFitLine>{{ award.date }} · {{ award.code }}</span>
-                      <strong appFitLine [appFitLineMin]="15">{{ award.name }}</strong>
-                      <span class="trust-award-issuer" appFitLine>{{ award.issuer }}</span>
-                    </li>
+            <div class="trust-award-featured">
+              <!-- La cara y la leyenda se vuelven a pintar al cambiar de distinción, y entran con un
+                   fundido, a la vez que el texto. -->
+              <div class="trust-medal">
+                @for (award of [featured]; track award.code) {
+                  <span class="trust-medal-face" aria-hidden="true"></span>
+                }
+                <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+                  <circle class="trust-medal-rim" cx="100" cy="100" r="98" />
+                  <circle class="trust-medal-edge" cx="100" cy="100" r="89.5" />
+                  <!-- La leyenda, muy pequeña, gira por dentro del canto; la minimilk va calada en la
+                       cara. -->
+                  <path id="trust-medal-path" d="M100 34a66 66 0 1 1 0 132a66 66 0 1 1 0-132" fill="none" />
+                  <g class="trust-medal-legend">
+                    @for (award of [featured]; track award.code) {
+                      <text>
+                        <textPath href="#trust-medal-path" textLength="414" lengthAdjust="spacing">{{ medalLegend() }}</textPath>
+                      </text>
+                    }
+                  </g>
+                  <circle class="trust-medal-groove" cx="100" cy="100" r="57" />
+                </svg>
+              </div>
+              @for (award of [featured]; track award.code) {
+                <div class="trust-award-copy" aria-live="polite">
+                  <p class="trust-award-date">{{ featuredDate() }}</p>
+                  <p class="trust-award-name" [attr.data-size]="featuredNameSize()">{{ award.name }}</p>
+                  <p class="trust-award-issuer" appFitLine>{{ award.issuer }}</p>
+                  <!-- El (+), con su rótulo, despliega bajo la destacada la síntesis de la distinción. -->
+                  @if (award.detail) {
+                    <button
+                      class="trust-award-more"
+                      type="button"
+                      aria-controls="trust-award-detail"
+                      [attr.aria-expanded]="detailOpen()"
+                      (click)="toggleDetail()"
+                    >
+                      <span class="trust-award-more-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                          <path d="M6 12h12" />
+                          <path class="trust-award-more-bar" d="M12 6v12" />
+                        </svg>
+                      </span>
+                      <span>Síntesis</span>
+                    </button>
                   }
-                </ol>
+                </div>
+              }
+
+              <!-- El texto ampliado: una fila más de la destacada, en la columna del texto, sin hueco
+                   mientras está cerrado. -->
+              <div
+                class="trust-award-detail"
+                id="trust-award-detail"
+                [class.is-open]="detailOpen() && !!featured.detail"
+                [attr.aria-hidden]="!detailOpen()"
+              >
+                <div>
+                  @for (award of [featured]; track award.code) {
+                    <p>{{ award.detail }}</p>
+                  }
+                </div>
               </div>
             </div>
-          }
-        </div>
-      </section>
-    }
 
-    <p class="trust-reel-caption">
-      <span appFitLine>Socios acreditados · Selección pública</span>
-      <span appFitLine>El resto prefiere no figurar</span>
-    </p>
+            <!-- El palmarés, en una ventana hundida en la franja, con scroll por dentro: cada
+                 distinción en una franja del mismo alto, con el nombre en una sola línea. Al pulsar
+                 una, pasa a la destacada y su nudo se rellena. -->
+            @if (palmares().length > 1) {
+              <div class="trust-awards-box">
+                <div class="trust-awards-scroll" role="region" aria-label="Palmarés de AlienMilk">
+                  <ol class="trust-awards-list">
+                    @for (award of palmares(); track award.code) {
+                      <li [class.is-active]="award.code === featured.code">
+                        <button type="button" [attr.aria-pressed]="award.code === featured.code" (click)="select(award)">
+                          <span class="trust-award-code" appFitLine>{{ awardYear(award) }} · {{ award.code }}</span>
+                          <strong appFitLine [appFitLineMin]="15">{{ award.name }}</strong>
+                          <span class="trust-award-issuer" appFitLine>{{ award.issuer }}</span>
+                        </button>
+                      </li>
+                    }
+                  </ol>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <p class="trust-reel-caption">
+        <span appFitLine>Socios acreditados · Selección pública</span>
+        <span appFitLine>El resto prefiere no figurar</span>
+      </p>
+    </div>
     <div class="trust-reel-window">
       <div class="trust-reel-fade">
         <ul class="trust-track" aria-label="Socios de AlienMilk">
@@ -108,45 +155,83 @@
       </div>
     </div>
 
-    <dl class="trust-figures">
-      @for (figure of figures(); track figure.label) {
-        <div>
-          <dt appFitLine>{{ figure.label }}</dt>
-          <dd class="trust-figure">
-            {{ figure.value }}@if (figure.unit) {&nbsp;<span class="trust-figure-unit">{{ figure.unit }}</span>}
-          </dd>
-          @if (figure.note) {
-            <dd class="trust-note" appFitLine>{{ figure.note }}</dd>
-          }
-        </div>
-      }
-    </dl>
+    <div class="trust-reel-ink">
+      <dl class="trust-figures">
+        @for (figure of figures(); track figure.label) {
+          <div>
+            <dt appFitLine>{{ figure.label }}</dt>
+            <dd class="trust-figure">
+              {{ figure.value }}@if (figure.unit) {&nbsp;<span class="trust-figure-unit">{{ figure.unit }}</span>}
+            </dd>
+            @if (figure.note) {
+              <dd class="trust-note" appFitLine>{{ figure.note }}</dd>
+            }
+          </div>
+        }
+      </dl>
+    </div>
   </div>
 
   <div class="trust-sheet trust-sheet--privacy" data-backdrop-block-sheet>
     <!-- Las experiencias de los comensales, sin nombre: la discreción de debajo explica por
          qué. -->
-    <section class="trust-voices" aria-labelledby="trust-voices-title">
+    <section
+      class="trust-voices"
+      aria-labelledby="trust-voices-title"
+      (pointerenter)="voicesHover.set(true)"
+      (pointerleave)="voicesHover.set(false)"
+      (focusin)="onVoicesFocus($event)"
+      (focusout)="voicesFocus.set(false)"
+    >
       <p class="trust-privacy-kicker" id="trust-voices-title">
         <span class="trust-kicker-icon" aria-hidden="true"></span>
         <span>Experiencias · Sin firma</span>
       </p>
-      <ul class="trust-voices-list">
-        <li>
-          <blockquote>No sabría decir a qué sabía. Sé que he vuelto cuatro veces.</blockquote>
-          <p class="trust-voice-by" appFitLine>Comensal Nº 4471 · Sesión 0212</p>
-        </li>
-        <li>
-          <blockquote>Me pidieron que no describiera la textura. Puedo decir que la hubo.</blockquote>
-          <p class="trust-voice-by" appFitLine>Comensal Nº 0098 · Estación Pelagia</p>
-        </li>
-        <li>
-          <blockquote>Mi médico pregunta. Yo&nbsp;no.</blockquote>
-          <p class="trust-voice-by" appFitLine>
-            Comensal Nº <span class="trust-redacted" role="img" aria-label="número retirado"></span> · Datos
-            retirados
+      <!-- El paso de página, a la derecha del rótulo: la página, una raya que se llena mientras
+           espera (al llenarse, pasa la página) y las dos flechas. -->
+      @if (voicePages() > 1) {
+        <div class="trust-voices-nav" [class.is-paused]="voicesPaused()">
+          <p class="trust-voices-count">
+            <span class="trust-voices-now">{{ twoDigits(voicePage() + 1) }}</span>
+            <span class="trust-voices-progress" aria-hidden="true">
+              @for (page of [voicePage()]; track page) {
+                <span (animationend)="onVoicesProgressEnd()"></span>
+              }
+            </span>
+            <span class="trust-visually-hidden">de</span>
+            <span>{{ twoDigits(voicePages()) }}</span>
           </p>
-        </li>
+          <button class="trust-voices-arrow" type="button" aria-label="Experiencias anteriores" (click)="stepVoicePage(-1)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+          </button>
+          <button class="trust-voices-arrow" type="button" aria-label="Más experiencias" (click)="stepVoicePage(1)">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </button>
+        </div>
+      }
+      <!-- Un carrusel por páginas (tres citas en escritorio, una en móvil): pasa solo de página en
+           página, y también se arrastra con el ratón o se desliza con el dedo o el touchpad. -->
+      <ul
+        class="trust-voices-list"
+        #voicesList
+        [class.is-dragging]="dragging()"
+        (scroll)="onVoicesScroll()"
+        (pointerdown)="onVoicesPointerDown($event)"
+      >
+        @for (voice of voices; track $index) {
+          <li>
+            <blockquote>{{ voice.quote }}</blockquote>
+            <p class="trust-voice-by" appFitLine>
+              {{ voice.role }} N.º
+              @if (voice.number) {
+                {{ voice.number }}
+              } @else {
+                <span class="trust-redacted" role="img" aria-label="número retirado"></span>
+              }
+              · {{ voice.place }}
+            </p>
+          </li>
+        }
       </ul>
     </section>
 

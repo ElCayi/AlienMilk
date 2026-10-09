@@ -1,0 +1,334 @@
+/* La segunda hoja de la red de confianza: las experiencias sin firma, en su carrusel, y la
+   discreción. Hoja aparte de trust-network.component.css para no pasar el límite de tamaño por
+   hoja. */
+
+/* Las experiencias, sin firma. Arriba, el rótulo y, a su derecha, el paso de página; debajo, el
+   carrusel. */
+.trust-voices {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 2rem;
+}
+
+.trust-voices > .trust-privacy-kicker {
+  grid-column: 1;
+}
+
+/* El paso de página, en la letra del rótulo: la página en tinta y el total en gris, separados por
+   una raya que se llena mientras la página espera; al llenarse, pasa la página. Se para con el
+   cursor o el foco del teclado encima, al arrastrar y fuera de la vista. */
+.trust-voices-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trust-voices-count {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0.85rem 0 0;
+  color: var(--gallery-muted, #68727d);
+  font: 800 0.72rem / 1 'Nunito', sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.16em;
+}
+
+.trust-voices-now {
+  color: var(--gallery-ink, #211e24);
+}
+
+.trust-voices-progress {
+  position: relative;
+  width: 2.75rem;
+  height: 1px;
+  background: var(--gallery-line, rgba(55, 66, 78, 0.17));
+}
+
+.trust-voices-progress span {
+  position: absolute;
+  inset: 0;
+  background: var(--gallery-ink, #211e24);
+  transform-origin: left;
+  animation: trust-voices-wait 7s linear forwards;
+}
+
+.trust-voices-nav.is-paused .trust-voices-progress span {
+  animation-play-state: paused;
+}
+
+@keyframes trust-voices-wait {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Las flechas, como los (+) de Localizaciones: un círculo con filo gris que, con el cursor encima,
+   se llena de coral. */
+.trust-voices-arrow {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  box-sizing: border-box;
+  padding: 0;
+  border: 1px solid rgba(70, 83, 95, 0.58);
+  border-radius: 50%;
+  color: #46535f;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.trust-voices-arrow svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trust-voices-arrow:hover,
+.trust-voices-arrow:focus-visible {
+  outline: none;
+  color: #fff;
+  background-color: #ff7f7f;
+  border-color: #ff7f7f;
+  box-shadow: 0 0.35rem 0.9rem rgba(255, 127, 127, 0.24);
+}
+
+.trust-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* El carrusel, por páginas de tres citas, entre filetes, con su código de comensal. Encaja página
+   a página (solo la primera de cada tres marca dónde parar); al arrastrarlo con el ratón no encaja
+   hasta soltar. Sin barra de scroll. Se sale --voices-hang por los lados (y lo recupera con su
+   relleno) para que la comilla de apertura cuelgue fuera de la columna sin recortarse. */
+.trust-voices-list {
+  --voices-gap: clamp(1.5rem, 3vw, 3.5rem);
+  --voices-per-page: 3;
+  --voices-hang: 1rem;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc(
+    (100% - (var(--voices-per-page) - 1) * var(--voices-gap)) / var(--voices-per-page)
+  );
+  gap: var(--voices-gap);
+  margin: clamp(1.25rem, 2vw, 1.75rem) calc(-1 * var(--voices-hang)) 0;
+  padding: 0 var(--voices-hang);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--voices-hang);
+  scrollbar-width: none;
+  list-style: none;
+  cursor: grab;
+}
+
+.trust-voices-list::-webkit-scrollbar {
+  display: none;
+}
+
+.trust-voices-list > li:nth-child(3n + 1) {
+  scroll-snap-align: start;
+}
+
+.trust-voices-list.is-dragging {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Cada cita, con su código justo debajo (como las hay de una línea y de seis, al pie de la columna
+   quedaría descolgado), y las dos cosas centradas en el alto de la fila, el de la cita más larga:
+   las cortas quedan a media altura, con aire arriba y abajo. */
+.trust-voices-list li {
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding-top: clamp(1.25rem, 2vw, 1.75rem);
+  border-top: var(--trust-line);
+}
+
+/* Las líneas, equilibradas; la comilla de apertura, colgada: el texto arranca a plomo con el filete
+   y con el código de debajo. */
+.trust-voices-list blockquote {
+  margin: 0;
+  font: 400 clamp(1.25rem, 1.5vw, 1.6rem) / 1.3 'Gloock', 'Didot', serif;
+  text-indent: -0.35em;
+  text-wrap: balance;
+}
+
+.trust-voices-list blockquote::before {
+  content: '«';
+}
+
+.trust-voices-list blockquote::after {
+  content: '»';
+}
+
+.trust-voice-by {
+  min-width: 0;
+  margin: 0;
+  color: var(--gallery-muted, #68727d);
+  font: 800 0.66rem / 1.6 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* El número retirado, tachado con una barra de tinta. */
+.trust-redacted {
+  display: inline-block;
+  width: 3.2em;
+  height: 0.95em;
+  vertical-align: -0.12em;
+  background: var(--gallery-ink, #211e24);
+}
+
+/* Tras las experiencias, la discreción, separada por una barra como la de los socios en la franja:
+   el doble de gruesa que los filetes de las citas, en su mismo gris, y con el mismo aire arriba y
+   abajo, para que se lea como un cambio de apartado y no como el filete del rótulo. */
+.trust-voices + .trust-privacy {
+  margin-top: clamp(2.5rem, 4.5vw, 4.5rem);
+  padding-top: clamp(2.5rem, 4.5vw, 4.5rem);
+  border-top: 2px solid var(--gallery-line, rgba(55, 66, 78, 0.17));
+}
+
+/* La discreción, en la segunda hoja: el rótulo y el título a lo ancho; debajo, la entradilla
+   justificada y, a su derecha, tres compromisos entre filetes. */
+.trust-privacy {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  column-gap: clamp(2.5rem, 5vw, 6rem);
+}
+
+.trust-privacy-kicker {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  color: var(--gallery-muted, #68727d);
+  font: 800 0.72rem / 1.4 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Entre el rótulo, el título y la entradilla, el mismo aire que en «Cómo colaborar». */
+.trust-privacy h3 {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: clamp(1.25rem, 2vw, 2rem) 0 0;
+  font: 600 clamp(1.9rem, 3vw, 3.1rem) / 1.05 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* La entradilla y, al pie de la columna, una frase de cierre en coral. */
+.trust-privacy-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.trust-privacy-intro {
+  margin: clamp(1.25rem, 2vw, 2rem) 0 0;
+  font-size: var(--home-section-copy-size, var(--home-editorial-copy-size, 1.1rem));
+  line-height: var(--home-editorial-copy-leading, 1.6);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.trust-privacy-close {
+  margin: auto 0 0;
+  color: #ff7f7f;
+  font: 700 var(--home-section-subtitle-size, clamp(1.05rem, 1.55vw, 1.3rem)) / 1.35 'Nunito', sans-serif;
+  letter-spacing: 0.015em;
+}
+
+.trust-privacy-list {
+  align-self: start;
+  margin: clamp(1.25rem, 2vw, 2rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust-privacy-list li {
+  display: grid;
+  gap: 0.3rem;
+  padding-block: 0.95rem;
+  border-bottom: var(--trust-line);
+}
+
+.trust-privacy-list li:first-child {
+  padding-top: 0.35rem;
+}
+
+.trust-privacy-list strong {
+  min-width: 0;
+  font: 400 clamp(1.4rem, 1.9vw, 1.85rem) / 1.1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.trust-privacy-list span {
+  color: var(--gallery-muted, #68727d);
+  font: 600 0.95rem / 1.45 'Nunito', sans-serif;
+}
+
+/* Por debajo de 1000 px, una cita por página y la discreción en una columna. */
+@media (max-width: 1000px) {
+  .trust-privacy {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trust-voices-list {
+    --voices-per-page: 1;
+  }
+
+  .trust-voices-list > li {
+    scroll-snap-align: start;
+  }
+}
+
+/* En móvil estrecho, el paso de página no cabe junto al rótulo: va bajo la cita, con la página a
+   la izquierda y las flechas a la derecha, a mano del pulgar. */
+@media (max-width: 600px) {
+  .trust-voices-nav {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 1.5rem;
+  }
+
+  .trust-voices-count {
+    margin-right: auto;
+  }
+}
+
+/* Sin movimiento, no pasa sola: la raya se queda vacía y se pasa con las flechas o a mano. */
+@media (prefers-reduced-motion: reduce) {
+  .trust-voices-progress span {
+    animation: none;
+    transform: scaleX(0);
+  }
+}

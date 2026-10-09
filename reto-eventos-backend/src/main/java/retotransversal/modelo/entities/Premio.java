@@ -40,6 +40,10 @@ public class Premio {
 	@Column(nullable = false, length = 30)
 	private String fecha;
 
+	/** El texto que la portada despliega con el (+) de la destacada. */
+	@Column(length = 600)
+	private String descripcion;
+
 	@Column(nullable = false)
 	private Integer orden;
 

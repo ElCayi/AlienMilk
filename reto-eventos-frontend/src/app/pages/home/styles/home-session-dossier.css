@@ -151,6 +151,13 @@
     width: calc(100% + 2 * var(--sessions-copy-gutter));
   }
 
+  /* El párrafo, del ancho del de las demás secciones: entra en la columna del enlace, que aquí va
+     vacía (el enlace está entre las sesiones pequeñas), sin pasar del marco. */
+  .sessions-copy > p:not(.sessions-subtitle) {
+    width: calc(var(--home-section-copy-width, 56rem) - var(--sessions-copy-gutter));
+    max-width: calc(100% + var(--sessions-aside-gap) + 0.75rem + var(--sessions-aside-width));
+  }
+
   .session-featured {
     --featured-frame-overhang: clamp(-4rem, -3.5vw, -2rem);
     position: relative;
@@ -262,10 +269,12 @@
     transform: translateY(-2.3rem);
   }
 
-  /* La composición cierra la sección: mismo aire hasta la siguiente que en el resto. El bloque va
-     subido 0,9rem + 1vh (ver home-responsive.css), así que se descuenta con su relleno. */
+  /* Bajo la composición, más blanco: el relleno alarga la hoja (el fondo la corta a media distancia
+     de Localizaciones, ver liquid-backdrop) y Localizaciones baja lo mismo, así que su tinta conserva
+     el aire de arriba. El bloque va subido 0,9rem + 1vh (ver home-responsive.css), así que se
+     descuenta con su margen. */
   .sessions-block {
-    padding-bottom: 0;
+    padding-bottom: var(--sessions-end-air);
     margin-bottom: calc(-0.9rem - 1vh);
   }
 }
@@ -395,10 +404,12 @@
      (trust-network.component.css). */
   .home-editorial-sections {
     --home-collaboration-margin: calc(clamp(3.5rem, 5vw, 6rem) + 3px);
+    /* El blanco de más bajo Próximas sesiones (ver .sessions-block). */
+    --sessions-end-air: clamp(0.65rem, 0.95vw, 1.25rem);
   }
 
   .home-editorial-sections > app-locations-atlas:not(.locations-collaboration-section) {
-    margin-top: clamp(6.5rem, 9.4vw, 11.5rem);
+    margin-top: calc(clamp(6.5rem, 9.4vw, 11.5rem) + var(--sessions-end-air));
   }
 
   .home-editorial-sections > app-locations-atlas.locations-collaboration-section {

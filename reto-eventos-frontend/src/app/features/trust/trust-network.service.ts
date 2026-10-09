@@ -10,6 +10,8 @@ export interface TrustAward {
   name: string;
   issuer: string;
   date: string;
+  /** El texto que se despliega con el (+) de la destacada. */
+  detail?: string;
 }
 
 /** Las distinciones de reserva, mientras llegan las del backend o si no responde. */
@@ -19,54 +21,72 @@ export const TRUST_AWARDS: readonly TrustAward[] = [
     name: 'Distinción de Custodia Continuada',
     issuer: 'Consejo de Custodia de los Sistemas Locales',
     date: 'Renovada desde 1962',
+    detail:
+      'Se concede a quien custodia sin interrupción muestras de origen no declarado. AlienMilk la recibió en 1962 y la ha renovado en cada auditoría desde entonces: en todo este tiempo, el Consejo no ha encontrado una cámara abierta ni un registro incompleto.',
   },
   {
-    code: 'CEE',
-    name: 'Premio al Descubrimiento de Nuevas Formas de Entretenimiento Exótico',
-    issuer: 'Círculo de Experiencias Extraordinarias',
+    code: 'CATL',
+    name: 'Premio al Entretenimiento Exótico',
+    issuer: 'Confederación para el Avance del Tiempo Libre',
     date: '1849',
+    detail:
+      'Concedido a AlienMilk por convertir la exploración láctea en una categoría propia de experiencia recreativa. La Confederación destacó su capacidad para combinar descubrimiento, degustación y participación pública en un formato «suficientemente extraño para necesitar nombre propio».',
   },
   {
     code: 'CSH',
     name: 'Mención a la Hospitalidad Interespecie',
     issuer: 'Consejo de Salones y Hospedajes',
     date: '1897',
+    detail:
+      'Reconoce la labor de AlienMilk en la creación de espacios donde personas de distintas procedencias, culturas y naturalezas comparten actividades en igualdad de condiciones. El Consejo destacó especialmente su capacidad para convertir esa diversidad en parte de la experiencia, favoreciendo el intercambio y el entendimiento entre comunidades que rara vez coinciden en un mismo lugar.',
   },
   {
     code: 'CMR',
-    name: 'Certificación de Custodia de Información · Grado Militar',
+    name: 'Certificación de Resiliencia Informacional · Grado Militar',
     issuer: 'Cámara de Resiliencia y Seguridad',
     date: '1934',
+    detail:
+      'Concedida tras someter la infraestructura de AlienMilk a pruebas de intrusión, pérdida de instalaciones, compromiso interno simulado y degradación deliberada de sus sistemas. La Cámara concluyó que obtener información protegida requeriría más recursos de los que razonablemente justificaría conocerla. El informe público ocupa tres líneas. El resto permanece clasificado.',
   },
   {
     code: 'FEN',
     name: 'Premio a la Innovación Sensorial Aplicada',
     issuer: 'Foro de Experiencias No Convencionales',
     date: '1968',
+    detail:
+      'Premia el uso de la textura, la temperatura y el silencio como ingredientes. El jurado del Foro probó la sesión a ciegas y pidió repetirla con los ojos abiertos, por si acaso.',
   },
   {
     code: 'AFC',
     name: 'Miembro honorífico Furrfestigal',
     issuer: 'Aso. FurriCompostela',
     date: '1991',
+    detail:
+      'La Asociación FurriCompostela nombró a AlienMilk miembro honorífico tras varias ediciones del Furrfestigal sirviendo leche templada a asistentes de todos los pelajes. El carné no caduca.',
   },
   {
-    code: 'CEA',
-    name: 'Top Circuito de Experiencias para Adultos',
-    issuer: 'Confederación de Espacios Alternativos',
+    code: 'GV',
+    name: 'Colección de Orígenes Remotos',
+    issuer: 'Galerías Vesta',
     date: '2014',
+    detail:
+      'Primer acuerdo de distribución minorista de AlienMilk para una colección de leches seleccionadas por su interés gastronómico. La campaña introdujo sabores, texturas y propiedades culinarias desconocidas para buena parte del público de Vesta. Tres referencias permanecieron en catálogo después de que la edición limitada dejara de ser limitada.',
   },
   {
     code: 'SWX',
-    name: 'Mención Especial en Programación Swinger Interespecie',
+    name: 'Mención Especial en Programación Swinger',
     issuer: 'Salón SWX',
     date: '2021',
+    detail:
+      'Reconoce la capacidad de AlienMilk para integrar juego corporal, texturas, aromas, temperatura, brillo y puesta en escena dentro de experiencias swinger para públicos diversos. El jurado destacó especialmente aquellas sesiones en las que la leche dejó de ser algo que se sirve en una copa y pasó a formar parte del espacio, de los cuerpos y del juego. El Salón SWX subrayó además su uso de baños, látex, iluminación y contacto corporal para crear experiencias sensoriales únicas.',
   },
   {
-    code: 'VANTA',
-    name: 'OnlyMilk',
-    issuer: 'VANTA Alta Intensidad Sensorial',
+    code: 'OF',
+    name: 'Club del Millón · OnlyMilk',
+    issuer: 'OnlyFans',
     date: '2025',
+    detail:
+      'Reconocimiento concedido tras superar el millón de suscripciones activas en OnlyMilk. La plataforma destacó la producción regular de contenido exclusivo, las retransmisiones de sesiones y una comunidad particularmente participativa. AlienMilk sostiene que la mayoría está allí por razones estrictamente lácteas.',
   },
 ];
 
@@ -115,6 +135,7 @@ export class TrustNetworkService {
               name: premio.nombre,
               issuer: premio.otorgante,
               date: premio.fecha,
+              detail: premio.descripcion ?? TRUST_AWARDS.find((award) => award.code === premio.sigla)?.detail,
             })),
           );
         }

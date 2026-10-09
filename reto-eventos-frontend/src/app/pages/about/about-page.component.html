@@ -142,7 +142,7 @@
   <!-- 02 / Nuestro trabajo: una sola sección en dos partes del mismo alto. A la izquierda, el texto en el
        lienzo claro; a la derecha, el recuadro oscuro con la foto. -->
   <section
-    class="us-definition us-definition--inverse us-work"
+    class="us-definition us-definition--inverse us-work us-work--banded"
     id="trabajo"
     #trabajo
     tabindex="-1"
@@ -214,6 +214,7 @@
             </li>
           </ol>
         </div>
+
         <div class="us-work-block us-work-block--custody">
           <!-- La segunda parte de la sección, con su propio rótulo. -->
           <p class="us-work-eyebrow">
@@ -246,6 +247,30 @@
             <span>Depósitos a 4 °C · Sin luz</span>
           </p>
         </figure>
+      </div>
+      <!-- Al pie, una banda negra que nace del recuadro oscuro de la derecha y cruza hasta el borde
+           izquierdo, donde enlaza con el recuadro oscuro de la 03: las funciones de la 01 en espejo.
+           Dentro, adónde va cada incorporación: cada parte lleva encima un trazo que mide lo que ella
+           (--share) y la del Archivo, en coral, lleva a la 03. Cifras de prueba. -->
+      <div class="us-work-band">
+        <p class="us-work-meter-head">
+          <span id="us-work-meter-title" appFitLine>Destino de cada incorporación</span>
+          <span appFitLine>Media de los últimos doce ciclos</span>
+        </p>
+        <dl class="us-work-meter" aria-labelledby="us-work-meter-title">
+          <div style="--share: 71">
+            <dt>Sesiones</dt>
+            <dd>71 %</dd>
+          </div>
+          <div style="--share: 18">
+            <dt>Investigación</dt>
+            <dd>18 %</dd>
+          </div>
+          <div class="us-work-meter-archive" style="--share: 11">
+            <dt>Archivo</dt>
+            <dd>11 %</dd>
+          </div>
+        </dl>
       </div>
     </div>
   </section>
@@ -287,10 +312,16 @@
           </p>
         </div>
       </div>
-      <!-- En el recuadro oscuro, la foto del Archivo (pendiente) con su ficha, el sello de la
-           reserva y la ficha de una replicación de la muestra de la cabecera. -->
+      <!-- En el recuadro oscuro, la foto del Archivo con su ficha, el sello de la reserva y la ficha
+           de una replicación de la muestra de la cabecera. -->
       <figure class="us-eco-visual us-eco-visual--top">
-        <span class="us-eco-pending" aria-hidden="true">Imagen pendiente · Archivo</span>
+        <img
+          src="/alienmilk-about-archive.webp"
+          alt="Gradillas de cristal del Archivo de AlienMilk con viales iridiscentes de tapones de colores; las etiquetas dicen AM-2291-F, R17 y Fidelidad."
+          width="1448"
+          height="1086"
+          loading="lazy"
+        />
         <p class="us-station-tag us-eco-tag">
           <span class="us-station-tag-id">Archivo central</span>
           <span>Sala de referencias · Sin luz</span>
@@ -395,6 +426,7 @@
             </li>
           </ol>
         </div>
+
         <div class="us-work-block us-work-block--custody">
           <p class="us-work-eyebrow">
             <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 3

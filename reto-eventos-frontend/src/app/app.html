@@ -25,6 +25,12 @@
       <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
       <a routerLink="/sesiones" (click)="closeMenu()">Sesiones</a>
       <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
+      <a
+        routerLink="/tienda"
+        [attr.aria-label]="cart.units() ? 'Tienda, ' + cart.units() + ' en su pedido' : null"
+        (click)="closeMenu()"
+        >Tienda@if (cart.units(); as units) {<span class="nav-count" aria-hidden="true">{{ units }}</span>}</a
+      >
       <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
     </nav>
 

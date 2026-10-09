@@ -205,3 +205,67 @@ export interface ApiError {
   message?: string;
   errores?: Record<string, string>;
 }
+
+export type CategoriaProducto = 'LECHE' | 'DERIVADO' | 'MESA';
+
+export interface Producto {
+  slug: string;
+  nombre: string;
+  categoria: CategoriaProducto;
+  resumen: string;
+  descripcion: string;
+  procedencia: string;
+  formato: string;
+  lote: string;
+  conservacion: string;
+  distribucion: string;
+  advertencia: string | null;
+  precio: number;
+  existencias: number;
+  /** Color de la muestra; lo pinta features/shop/shop-shared.css. */
+  tono: string;
+}
+
+/** Reglas con las que el servidor calcula el pedido; llegan con el catálogo. */
+export interface CondicionesTienda {
+  gastosEnvio: number;
+  envioGratisDesde: number;
+  unidadesMaximas: number;
+}
+
+export interface CatalogoTienda {
+  condiciones: CondicionesTienda;
+  productos: Producto[];
+}
+
+export type EntregaPedido = 'ENVIO' | 'RECOGIDA';
+
+export type EstadoPedido = 'CONFIRMADO' | 'ENVIADO' | 'ENTREGADO' | 'ANULADO';
+
+export interface PedidoPayload {
+  lineas: { producto: string; cantidad: number }[];
+  entrega: EntregaPedido;
+  direccion?: string;
+}
+
+export interface LineaPedido {
+  producto: string;
+  nombre: string;
+  precioUnitario: number;
+  cantidad: number;
+  importe: number;
+}
+
+export interface Pedido {
+  idPedido: number;
+  referencia: string;
+  estado: EstadoPedido;
+  entrega: EntregaPedido;
+  direccion: string | null;
+  subtotal: number;
+  gastosEnvio: number;
+  total: number;
+  creadoEn: string;
+  anuladoEn: string | null;
+  lineas: LineaPedido[];
+}

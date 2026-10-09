@@ -1,0 +1,191 @@
+<article class="secondary-page product-page" aria-labelledby="product-title">
+  @if (product(); as product) {
+    <div class="secondary-stage" [attr.data-tone]="product.tono">
+      <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a routerLink="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a routerLink="/tienda">Tienda</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{{ product.nombre }}</span>
+      </nav>
+
+      <header class="secondary-header">
+        <div class="secondary-copy">
+          <p class="eyebrow">
+            <span class="eyebrow-icon" aria-hidden="true"></span>
+            <span>Tienda / {{ categoryLabels[product.categoria] }}</span>
+          </p>
+          <h1 id="product-title" appFitLine>{{ product.nombre }}</h1>
+          <p class="secondary-subtitle">{{ product.resumen }}</p>
+          <p class="secondary-intro">{{ product.descripcion }}</p>
+        </div>
+
+        <!-- La muestra del producto en grande, con su lote debajo como el sello de los operadores. -->
+        <figure class="product-figure">
+          <span class="sample product-figure-sample" aria-hidden="true"></span>
+          <figcaption class="product-figure-caption">
+            Lote <span class="nowrap">{{ product.lote }}</span>
+          </figcaption>
+        </figure>
+      </header>
+    </div>
+
+    <section class="paper-card card-split" aria-labelledby="sheet-title">
+      <div class="card-intro">
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          01 / Ficha
+        </p>
+        <h2 id="sheet-title">
+          <span class="title-line">Procedencia</span>
+          <span class="title-line">y conservación.</span>
+        </h2>
+        <dl class="fact-list">
+          <div>
+            <dt>Procedencia</dt>
+            <dd>{{ product.procedencia }}</dd>
+          </div>
+          <div>
+            <dt>Formato</dt>
+            <dd>{{ product.formato }}</dd>
+          </div>
+          <div>
+            <dt>Lote</dt>
+            <dd>{{ product.lote }}</dd>
+          </div>
+          <div>
+            <dt>Conservación</dt>
+            <dd>{{ product.conservacion }}</dd>
+          </div>
+          <div>
+            <dt>Distribución</dt>
+            <dd>{{ product.distribucion }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="purchase" [attr.data-tone]="product.tono">
+        <p class="section-label">Precio por unidad</p>
+        <p class="purchase-price">{{ price(product.precio) }}</p>
+        <p class="stock" [attr.data-level]="level(product)">{{ stock(product) }}</p>
+
+        @if (max() > 0 || quantity() > 0) {
+          <div class="purchase-actions">
+            @if (quantity(); as units) {
+              <div class="purchase-in-cart">
+                <div class="stepper" role="group" [attr.aria-label]="'Unidades de ' + product.nombre">
+                  <button
+                    type="button"
+                    [attr.aria-label]="'Quitar una unidad de ' + product.nombre"
+                    (click)="setQuantity(product, units - 1)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
+                  </button>
+                  <output aria-live="polite">{{ units }}</output>
+                  <button
+                    type="button"
+                    [attr.aria-label]="'Añadir una unidad de ' + product.nombre"
+                    [disabled]="units >= max()"
+                    (click)="setQuantity(product, units + 1)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                  </button>
+                </div>
+                <p class="stock">{{ units === 1 ? 'Unidad' : 'Unidades' }} en su pedido</p>
+              </div>
+              <a class="line-action" routerLink="/tienda" fragment="su-pedido">
+                <span class="line-action-label">Revisar pedido</span>
+                <span class="line-action-arrow" aria-hidden="true"
+                  ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+                ></span>
+              </a>
+            } @else {
+              <button type="button" class="line-action add-action" (click)="add(product)">
+                <span class="line-action-label">Añadir a su pedido</span>
+                <span class="line-action-arrow" aria-hidden="true"
+                  ><svg viewBox="0 0 24 24" focusable="false"><path d="M12 5v14M5 12h14" /></svg
+                ></span>
+              </button>
+            }
+          </div>
+        }
+
+        @if (product.advertencia) {
+          <p class="purchase-warning"><b>Advertencia.</b> {{ product.advertencia }}</p>
+        }
+      </div>
+    </section>
+
+    <section class="secondary-closing" aria-labelledby="related-title">
+      <div>
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          02 / {{ categoryLabels[product.categoria] }}
+        </p>
+        <h2 id="related-title">Para la misma mesa.</h2>
+        <p class="section-copy">
+          Todo lo de la tienda viaja junto y en <b>cadena de frío</b>: un mismo pedido puede reunir
+          leches, derivados y lo necesario para servirlos.
+        </p>
+      </div>
+      <!-- El mismo recuadro que la red de operadores, con la ficha actual marcada. -->
+      <fieldset class="legend-box">
+        <legend>{{ categoryLabels[product.categoria] }}</legend>
+        <dl>
+          @for (other of shelf(); track other.slug) {
+            <div>
+              <dt>{{ price(other.precio) }}</dt>
+              <dd>
+                @if (other.slug === product.slug) {
+                  <span class="network-current" aria-current="page">{{ other.nombre }}</span>
+                } @else {
+                  <a class="network-link" [routerLink]="['/tienda', other.slug]">
+                    <span>{{ other.nombre }}</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  </a>
+                }
+              </dd>
+            </div>
+          }
+        </dl>
+      </fieldset>
+    </section>
+
+    <footer class="secondary-footnote">
+      <p>AlienMilk / Tienda / <span class="nowrap">{{ product.nombre }}</span></p>
+      <p>Lote {{ product.lote }} · <span class="nowrap">Ciclo 2026</span></p>
+      <a routerLink="/tienda"
+        >Volver a la tienda
+        <span class="arrow" aria-hidden="true"
+          ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+      ></a>
+    </footer>
+  } @else {
+    <div class="secondary-stage">
+      <nav class="breadcrumb" aria-label="Ruta de navegación">
+        <a routerLink="/">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a routerLink="/tienda">Tienda</a>
+      </nav>
+      <header class="product-missing">
+        <h1 id="product-title">
+          {{ status() === 'loading' ? 'Cargando ficha…' : 'Ficha no disponible' }}
+        </h1>
+        @if (status() === 'error') {
+          <p class="secondary-intro">No hemos podido cargar el catálogo de la tienda.</p>
+          <button type="button" class="line-action" (click)="load()">
+            <span class="line-action-label">Reintentar</span>
+          </button>
+        } @else if (status() === 'ready') {
+          <p class="secondary-intro">Este producto ya no figura en el catálogo de la tienda.</p>
+          <a class="line-action" routerLink="/tienda">
+            <span class="line-action-label">Ver el catálogo</span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
+          </a>
+        }
+      </header>
+    </div>
+  }
+</article>

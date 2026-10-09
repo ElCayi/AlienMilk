@@ -1,0 +1,431 @@
+<article class="secondary-page shop-page" aria-labelledby="shop-title">
+  <div class="secondary-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Tienda</span>
+    </nav>
+
+    <header class="secondary-header">
+      <div class="secondary-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>AlienMilk / Distribución</span>
+        </p>
+        <h1 id="shop-title">Tienda</h1>
+        <p class="secondary-subtitle">Lo que se sirve en las sesiones, para su mesa.</p>
+        <p class="secondary-intro">
+          Las leches de referencia del archivo, sus derivados y lo necesario para servirlos en casa.
+          Cada producto sale del <b>centro de distribución de A Coruña</b> con su procedencia, su
+          lote y su <b>cadena de frío</b>, y llega en 48 horas a cualquier dirección de SOL-III.
+        </p>
+      </div>
+
+      <!-- Las cifras llegan con el catálogo: son las mismas con las que el servidor calcula el pedido. -->
+      <fieldset class="legend-box terms-box">
+        <legend>Condiciones</legend>
+        @if (catalog(); as catalog) {
+          <dl>
+            <div>
+              <dt>Envío refrigerado</dt>
+              <dd>{{ price(catalog.condiciones.gastosEnvio) }}</dd>
+            </div>
+            <div>
+              <dt>Desde {{ price(catalog.condiciones.envioGratisDesde) }}</dt>
+              <dd>Sin gastos</dd>
+            </div>
+            <div>
+              <dt>Recogida en sede</dt>
+              <dd>Gratuita</dd>
+            </div>
+            <div>
+              <dt>Por producto</dt>
+              <dd>Hasta {{ catalog.condiciones.unidadesMaximas }} uds.</dd>
+            </div>
+          </dl>
+        } @else {
+          <p class="terms-pending">{{ status() === 'error' ? 'No disponibles' : 'Cargando…' }}</p>
+        }
+      </fieldset>
+    </header>
+  </div>
+
+  <section class="paper-card catalog" aria-labelledby="catalog-title">
+    <div class="catalog-heading">
+      <div>
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          01 / Catálogo
+        </p>
+        <h2 id="catalog-title">
+          <span class="title-line">Del archivo</span>
+          <span class="title-line">a su mesa.</span>
+        </h2>
+      </div>
+      <p class="section-copy">
+        Cada producto lleva su <b>procedencia</b> y su <b>lote</b>, como las muestras que se sirven
+        en las sesiones. Las existencias son las del centro de distribución en este momento.
+      </p>
+    </div>
+
+    <div class="catalog-toolbar">
+      <div class="catalog-filter" role="group" aria-label="Filtrar por categoría">
+        @for (option of filters; track option.value) {
+          <button
+            type="button"
+            [attr.aria-pressed]="filter() === option.value"
+            (click)="filter.set(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        }
+      </div>
+      <p class="catalog-count" aria-live="polite">
+        {{ visible().length }} {{ visible().length === 1 ? 'producto' : 'productos' }}
+      </p>
+    </div>
+
+    @switch (status()) {
+      @case ('loading') {
+        <p class="catalog-status">Cargando el catálogo…</p>
+      }
+      @case ('error') {
+        <div class="catalog-status">
+          <p>No hemos podido cargar el catálogo.</p>
+          <button type="button" class="line-action" (click)="loadCatalog()">
+            <span class="line-action-label">Reintentar</span>
+          </button>
+        </div>
+      }
+      @default {
+        <ul class="product-grid">
+          @for (product of visible(); track product.slug) {
+            <li class="product" [attr.data-tone]="product.tono">
+              <a class="product-link" [routerLink]="['/tienda', product.slug]">
+                <span class="sample product-sample" aria-hidden="true"></span>
+                <span class="product-kicker">
+                  {{ categoryLabels[product.categoria] }} · {{ product.formato }}
+                </span>
+                <h3 class="product-name" appFitLine>{{ product.nombre }}</h3>
+              </a>
+              <p class="product-summary">{{ product.resumen }}</p>
+              <p class="product-origin" appFitLine>{{ product.procedencia }}</p>
+              <div class="product-foot">
+                <div class="product-price">
+                  <p class="price">{{ price(product.precio) }}</p>
+                  <p class="stock" [attr.data-level]="stockLevel(product)">{{ stockLabel(product) }}</p>
+                </div>
+                @if (stockLevel(product) !== 'out') {
+                  @if (quantity(product); as units) {
+                    <div class="stepper" role="group" [attr.aria-label]="'Unidades de ' + product.nombre">
+                      <button
+                        type="button"
+                        [attr.aria-label]="'Quitar una unidad de ' + product.nombre"
+                        (click)="setQuantity(product, units - 1)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
+                      </button>
+                      <output aria-live="polite">{{ units }}</output>
+                      <button
+                        type="button"
+                        [attr.aria-label]="'Añadir una unidad de ' + product.nombre"
+                        [disabled]="units >= max(product)"
+                        (click)="setQuantity(product, units + 1)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                      </button>
+                    </div>
+                  } @else {
+                    <button type="button" class="line-action add-action" (click)="add(product)">
+                      <span class="line-action-label"
+                        >Añadir<span class="visually-hidden"> {{ product.nombre }}</span></span
+                      >
+                      <span class="line-action-arrow" aria-hidden="true"
+                        ><svg viewBox="0 0 24 24" focusable="false"><path d="M12 5v14M5 12h14" /></svg
+                      ></span>
+                    </button>
+                  }
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    }
+  </section>
+
+  <section class="ink-card order" id="su-pedido" aria-labelledby="order-title">
+    <div class="section-heading">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        02 / Su pedido
+      </p>
+    </div>
+
+    @if (receipt(); as order) {
+      <h2 id="order-title">
+        <span class="title-line">Pedido</span>
+        <span class="title-line">{{ order.estado === 'ANULADO' ? 'anulado.' : 'confirmado.' }}</span>
+      </h2>
+      <div class="order-layout">
+        <div class="receipt" tabindex="-1" #receiptBox>
+          <p class="receipt-label">Número de pedido</p>
+          <p class="receipt-code">{{ order.referencia }}</p>
+          <p class="receipt-text">
+            @if (order.estado === 'ANULADO') {
+              El pedido se ha anulado y sus unidades han vuelto al centro de distribución.
+            } @else if (order.entrega === 'RECOGIDA') {
+              Lo preparamos en el centro de distribución y le esperará en la sede, en cadena de frío,
+              a partir de mañana. Conserve este número para recogerlo.
+            } @else {
+              Lo preparamos en el centro de distribución y saldrá en cadena de frío hacia
+              <b>{{ order.direccion }}</b>. Conserve este número para cualquier gestión.
+            }
+          </p>
+          <button type="button" class="line-action" (click)="newOrder()">
+            <span class="line-action-label">Hacer otro pedido</span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
+          </button>
+        </div>
+        <dl class="order-summary">
+          @for (line of order.lineas; track line.producto) {
+            <div>
+              <dt>{{ line.cantidad }} × {{ line.nombre }}</dt>
+              <dd>{{ price(line.importe) }}</dd>
+            </div>
+          }
+          <div>
+            <dt>{{ deliveryLabels[order.entrega] }}</dt>
+            <dd>{{ order.gastosEnvio ? price(order.gastosEnvio) : 'Sin gastos' }}</dd>
+          </div>
+          <div class="order-total">
+            <dt>Total</dt>
+            <dd>{{ price(order.total) }}</dd>
+          </div>
+        </dl>
+      </div>
+    } @else if (!lines().length) {
+      <h2 id="order-title">
+        <span class="title-line">Su pedido</span>
+        <span class="title-line">está vacío.</span>
+      </h2>
+      <p class="section-copy order-empty">
+        Añada productos desde el catálogo. El pedido se guarda en este navegador hasta que lo confirme,
+        aunque cierre la página.
+      </p>
+    } @else {
+      <h2 id="order-title">
+        <span class="title-line">Revise su pedido</span>
+        <span class="title-line">antes de confirmarlo.</span>
+      </h2>
+      <div class="order-layout">
+        <ul class="order-lines">
+          @for (line of lines(); track line.product.slug) {
+            <li class="order-line" [attr.data-tone]="line.product.tono">
+              <span class="sample" aria-hidden="true"></span>
+              <div class="order-line-info">
+                <a class="order-line-name" [routerLink]="['/tienda', line.product.slug]" appFitLine>{{
+                  line.product.nombre
+                }}</a>
+                <p class="stock">{{ price(line.product.precio) }} · {{ line.product.formato }}</p>
+                @if (line.quantity > line.max) {
+                  <p class="order-line-warning">
+                    {{
+                      line.max
+                        ? 'Solo puede pedir ' + line.max + (line.max === 1 ? ' unidad' : ' unidades')
+                        : 'Agotado: quítelo del pedido para continuar'
+                    }}
+                  </p>
+                }
+              </div>
+              <div class="order-line-units">
+                <p class="price">{{ price(line.amount) }}</p>
+                <div class="stepper" role="group" [attr.aria-label]="'Unidades de ' + line.product.nombre">
+                  <button
+                    type="button"
+                    [attr.aria-label]="
+                      line.quantity === 1
+                        ? 'Quitar ' + line.product.nombre + ' del pedido'
+                        : 'Quitar una unidad de ' + line.product.nombre
+                    "
+                    (click)="setQuantity(line.product, line.quantity - 1)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
+                  </button>
+                  <output aria-live="polite">{{ line.quantity }}</output>
+                  <button
+                    type="button"
+                    [attr.aria-label]="'Añadir una unidad de ' + line.product.nombre"
+                    [disabled]="line.quantity >= line.max"
+                    (click)="setQuantity(line.product, line.quantity + 1)"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                  </button>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+
+        <div class="checkout">
+          <fieldset class="legend-box delivery">
+            <legend>Entrega</legend>
+            @for (value of deliveries; track value) {
+              <label class="delivery-option">
+                <input
+                  type="radio"
+                  name="delivery"
+                  [value]="value"
+                  [checked]="delivery() === value"
+                  (change)="setDelivery(value)"
+                />
+                <span class="delivery-name">{{ deliveryLabels[value] }}</span>
+                <span class="delivery-note">
+                  @if (value === 'ENVIO') {
+                    48 horas, en cadena de frío. Sin gastos desde
+                    {{ price(freeShippingFrom()) }}.
+                  } @else if (sede(); as sede) {
+                    {{ sede.direccion }}, {{ sede.ciudad }}. En horario de apertura.
+                  } @else {
+                    En la sede de A Coruña, en horario de apertura.
+                  }
+                </span>
+              </label>
+            }
+            @if (delivery() === 'ENVIO') {
+              <div class="address" [class.is-invalid]="addressError()">
+                <label for="shop-address">Dirección de entrega</label>
+                <textarea
+                  id="shop-address"
+                  #addressField
+                  rows="2"
+                  maxlength="200"
+                  autocomplete="street-address"
+                  [value]="address()"
+                  [attr.aria-invalid]="addressError() ? true : null"
+                  [attr.aria-describedby]="addressError() ? 'shop-address-error' : null"
+                  (input)="onAddressInput($event)"
+                ></textarea>
+                @if (addressError(); as message) {
+                  <p class="field-error" id="shop-address-error">{{ message }}</p>
+                }
+              </div>
+            }
+          </fieldset>
+
+          <dl class="order-summary">
+            <div>
+              <dt>Subtotal</dt>
+              <dd>{{ price(subtotal()) }}</dd>
+            </div>
+            <div>
+              <dt>{{ deliveryLabels[delivery()] }}</dt>
+              <dd>{{ shipping() ? price(shipping()) : 'Sin gastos' }}</dd>
+            </div>
+            <div class="order-total">
+              <dt>Total</dt>
+              <dd>{{ price(total()) }}</dd>
+            </div>
+          </dl>
+
+          @if (orderError(); as message) {
+            <p class="field-error order-error" role="alert">{{ message }}</p>
+          }
+
+          @if (auth.isAuthenticated()) {
+            <button
+              type="button"
+              class="ghost-btn confirm"
+              [disabled]="sending() || shortLines().length > 0"
+              (click)="confirm()"
+            >
+              {{ sending() ? 'Confirmando…' : 'Confirmar pedido' }}
+            </button>
+          } @else {
+            <div class="gate">
+              <p>Para confirmar el pedido necesita una cuenta. Su pedido se conserva mientras tanto.</p>
+              <a
+                class="ghost-btn confirm"
+                routerLink="/login"
+                [queryParams]="{ redirectTo: '/tienda#su-pedido' }"
+                >Iniciar sesión</a
+              >
+              <a class="line-action" routerLink="/registro">
+                <span class="line-action-label">Crear una cuenta</span>
+                <span class="line-action-arrow" aria-hidden="true"
+                  ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+                ></span>
+              </a>
+            </div>
+          }
+
+          <p class="demo-note">
+            Tienda de demostración: el pedido se registra y descuenta existencias, pero no se cobra
+            ni se envía nada.
+          </p>
+        </div>
+      </div>
+    }
+  </section>
+
+  @if (orders().length) {
+    <section class="secondary-closing history" aria-labelledby="history-title">
+      <div>
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          03 / Historial
+        </p>
+        <h2 id="history-title">Sus pedidos.</h2>
+        <p class="section-copy">
+          Un pedido se puede anular mientras no haya salido del centro de distribución. Sus
+          unidades vuelven al almacén en ese mismo momento.
+        </p>
+      </div>
+      <fieldset class="legend-box history-box">
+        <legend>Pedidos</legend>
+        <ol class="history-list">
+          @for (order of orders(); track order.idPedido) {
+            <li [class.is-cancelled]="order.estado === 'ANULADO'">
+              <div class="history-row">
+                <span class="history-ref">{{ order.referencia }}</span>
+                <span class="history-total">{{ price(order.total) }}</span>
+              </div>
+              <p class="history-detail">
+                {{ orderDate(order.creadoEn) }} · {{ units(order) }}
+                {{ units(order) === 1 ? 'unidad' : 'unidades' }} · {{ deliveryLabels[order.entrega] }}
+              </p>
+              <div class="history-row">
+                <span class="history-state" [attr.data-state]="order.estado">{{
+                  stateLabels[order.estado]
+                }}</span>
+                @if (order.estado === 'CONFIRMADO') {
+                  <button
+                    type="button"
+                    class="history-cancel"
+                    [disabled]="cancelling() === order.idPedido"
+                    (click)="cancel(order)"
+                  >
+                    {{ cancelling() === order.idPedido ? 'Anulando…' : 'Anular' }}
+                    <span class="visually-hidden"> el pedido {{ order.referencia }}</span>
+                  </button>
+                }
+              </div>
+            </li>
+          }
+        </ol>
+      </fieldset>
+    </section>
+  }
+
+  <footer class="secondary-footnote">
+    <p>AlienMilk / Distribución / Tienda</p>
+    <p>Precios con impuestos incluidos · <span class="nowrap">Ciclo 2026</span></p>
+    <a routerLink="/sesiones"
+      >Explorar sesiones
+      <span class="arrow" aria-hidden="true"
+        ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+    ></a>
+  </footer>
+</article>

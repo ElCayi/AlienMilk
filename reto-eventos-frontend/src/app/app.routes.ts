@@ -27,6 +27,18 @@ export const routes: Routes = [
         ({ ContactPageComponent }) => ContactPageComponent,
       ),
   },
+  {
+    path: 'tienda',
+    loadComponent: () =>
+      import('./pages/shop/shop-page.component').then(({ ShopPageComponent }) => ShopPageComponent),
+  },
+  {
+    path: 'tienda/:slug',
+    loadComponent: () =>
+      import('./pages/product/product-page.component').then(
+        ({ ProductPageComponent }) => ProductPageComponent,
+      ),
+  },
   // Una ruta por operador asociado: una dirección desconocida cae en la redirección final.
   ...['am-transit', 'helix-transfer', 'kepler-liaison'].map((operator) => ({
     path: `operadores/${operator}`,

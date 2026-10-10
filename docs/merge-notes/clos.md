@@ -1,56 +1,43 @@
 # Notas de merge — rama `clos`
 
-Tanda del 8 y el 9 de octubre de 2026, sobre `main` en `029584c`. Las notas anteriores de esta rama ya
-están integradas (la última, `b1579ad`, en la integración del 7 de octubre); quedan en el historial de
-git.
+Tanda del 10 de octubre de 2026, sobre `main` en `e3eedad`. Las notas anteriores de esta rama ya
+están integradas (la última, en la integración del 9 de octubre); quedan en el historial de git.
 
-## Qué trae: el paso de la 02 a la 03 de Nosotros
+## Qué trae: la 03 de Nosotros
 
-- **Foto del Archivo** en la 03 — 1 (`public/alienmilk-about-archive.webp`, 165 kB): viales
-  iridiscentes con las etiquetas AM-2291-F, R17 y AlienMilk. La etiqueta «Fideldad» de un vial, que
-  salió con artefactos, está borrada en la foto. Va casi a su brillo natural y nace del negro por
-  arriba con un fundido en curva. Siguen pendientes Laboratorio y Sesión (03 — 2 y 3).
-- **Banda al pie de la 02** (`.us-work-band`; la sección lleva `us-work--banded`): las funciones de la
-  01 en espejo. Nace del recuadro oscuro de la derecha, con el remate cóncavo en la esquina del lienzo
-  claro, cruza hasta el borde izquierdo y enlaza con el recuadro oscuro de la 03. Sustituye al cruce
-  en diagonal con degradado.
-- **Dentro de la banda, el destino de cada incorporación** (cifras de prueba): Sesiones 71 %,
-  Investigación 18 % y Archivo 11 %, con la media de los últimos doce ciclos.
-  - Como en las funciones, cada parte lleva su trazo encima, pero aquí el trazo es una cápsula que
-    mide lo que la parte (`style="--share: …"` en cada `div` del `dl`). Gris de contexto, salvo la
-    del Archivo, en coral, que lleva a la 03.
-  - En escritorio la franja mide lo mismo que la de las funciones de la 01: el negro sube 1,5 rem
-    sobre el medidor y baja el 60 % del margen, como allí, y la cifra va al lado del nombre (solo
-    baja a otra línea si no cabe, a unos 1001 px).
-  - En móvil, una barra por destino que crece desde la izquierda, con el nombre y la cifra debajo.
-  - Las dos líneas de la cabecera del medidor no se parten: `appFitLine` (`FitLineDirective`, nueva
-    en los `imports` de `about-page.component.ts`).
-- **02, «Bajo custodia»:** vuelve a medir lo mismo que «Del origen a la mesa» (la banda baja lo justo).
-  La foto de la custodia llega hasta la banda con un fundido corto y la esquina de abajo a la
-  izquierda redondeada, junto a la del lienzo claro.
-- **03 — 1:** el rótulo «03 / El ecosistema — 1» lleva un halo oscuro solo en escritorio, donde va
-  sobre la foto.
-- **Los dos recorridos** (`.us-chain`, el de la 02 y el de la 03 — 2): las mismas chips, pero más
-  discretas. Son translúcidas sobre el negro, con un borde fino, el texto claro en Nunito 600 y los
-  números en coral. La última pierde el relleno coral macizo y lleva solo el borde y un velo en coral.
-  Solo cambia el CSS.
+- **03 — 1:** la esquina de arriba a la derecha de la foto del Archivo se redondea en paralelo a la
+  del recuadro claro de al lado (un remate oscuro cóncavo, `.us-eco-visual--top::after`; solo
+  escritorio).
+- **La parte de en medio de la 03 (antes «03 / El ecosistema — 2»)**, con el texto nuevo de la
+  usuaria, literal:
+  - Rótulo «03 / El Archivo», título «Conservar lo imposible.» y subtítulo «Distinción de Custodia
+    Continuada.».
+  - Dos párrafos: el primero abre con «AlienMilk ha sido galardonada…» en negrita; el segundo, sobre
+    las tecnologías de conservación del Archivo.
+  - Sigue con su hueco de foto pendiente (Laboratorio) y su ficha.
+- **Recuadros claros de la 03 de alto fijo** (escritorio): las dos partes miden siempre lo que las de
+  la 02 (`grid-template-rows: 21.3em auto 21.3em`). Si el texto no cabe, se desplaza dentro del
+  recuadro, con una barra fina y un fundido abajo que se va al llegar al final (`--us-more-fade`, con
+  `animation-timeline: scroll(self)`). Hoy solo desborda «El Archivo».
+- **03 — 3, «De la mesa a la colección»:** la foto del sistema quirúrgico con la bioesfera
+  (`public/alienmilk-about-laboratory.webp`, 1145×1374, 167 kB, recortada con transparencia) va
+  entera y centrada sobre el negro, sin fundidos (`.us-lab-visual`). Se quitan el hueco «Imagen
+  pendiente · Sesión», la ficha de la alícuota y la tarjeta de «Programas» (con sus enlaces a
+  Sesiones y Contacto) y sus estilos (`.us-eco-units`…).
 
 ## Posibles choques
 
-- `about-page.component.html`, `.css` y `.ts`. Si otra rama toca Nosotros, **manda la versión de
-  `clos`** y lo de la otra se reaplica encima. En el `.ts` solo cambia la lista de `imports`.
-- El CSS de Nosotros queda en 42,00 kB: sigue el aviso de 20 kB, como antes, por debajo del error de
-  48 kB.
+- `about-page.component.html` y `.css`. Si otra rama toca Nosotros, **manda la versión de `clos`** y
+  lo de la otra se reaplica encima.
+- El CSS de Nosotros baja a 41,5 kB: sigue el aviso de 20 kB, por debajo del error de 48 kB.
 
 ## Después del merge, comprobar
 
-1. `pnpm check` (22 pruebas).
+1. `pnpm check` (29 pruebas).
 2. `/nosotros` a 390, 1280×720, 1536×750 y 1920×1080:
-   - La banda de la 02 nace del recuadro oscuro de la derecha, con las esquinas redondeadas, y enlaza
-     sin hueco con el negro de la 03.
-   - Las dos partes de la 02 miden lo mismo.
-   - La franja del medidor mide lo mismo que la de las funciones de la 01; el medidor va en una fila
-     en escritorio y en tres barras en móvil.
-   - El rótulo de la 03 — 1 se lee sobre la foto del Archivo.
-3. El bloque de la arquitectura se despliega con una pestaña o el botón y se repliega con el botón o
-   pulsando otra vez la pestaña abierta.
+   - La esquina de arriba a la derecha de la foto del Archivo, redondeada junto a la del recuadro
+     claro.
+   - «El Archivo» mide lo mismo que las partes de la 02; su texto se desplaza dentro, con el fundido
+     abajo, y el fundido desaparece al final.
+   - El robot de la 03 — 3, entero, con la base por encima de la esquina grande; en móvil, entero y
+     con su proporción.

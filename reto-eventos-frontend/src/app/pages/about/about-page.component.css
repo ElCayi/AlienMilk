@@ -1622,69 +1622,6 @@ h2 em {
   text-transform: uppercase;
 }
 
-/* Los dos programas, en una tarjeta gemela del expediente, sobre la foto de la sesión: cada uno bajo
-   su filete, con su firma, su tipo y un enlace como el de la cabecera. */
-.us-eco-units {
-  margin: 0.55rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.us-eco-units li {
-  display: grid;
-  justify-items: start;
-  padding: 0.55rem 0 0.6rem;
-  border-top: 1px solid var(--line);
-}
-
-.us-eco-units li:last-child {
-  padding-bottom: 0.1rem;
-}
-
-.us-eco-units .lockup {
-  font-size: 1.15rem;
-  font-weight: 800;
-}
-
-.us-eco-unit-kind {
-  margin-top: 0.2rem;
-  color: var(--coral);
-  font-size: 0.5rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.us-eco-units a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  margin-top: 0.55rem;
-  padding-bottom: 0.2em;
-  border-bottom: 1px solid currentColor;
-  color: var(--ink);
-  font: 700 0.78rem var(--condensed);
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 160ms ease;
-}
-
-.us-eco-units a:hover,
-.us-eco-units a:focus-visible {
-  color: var(--coral);
-}
-
-.us-eco-units svg {
-  width: 1.1em;
-  height: 1.1em;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 /* Los estados de una muestra, en la banda negra del pie de la sección: cada uno bajo su filete, con
    el código en coral, como las funciones de la 01. Sobre la banda, el aire de la 02 hasta su recorrido. */
 .us-eco-states {
@@ -1976,6 +1913,12 @@ h2 em {
   .us-work-visual img {
     height: auto;
     aspect-ratio: 4 / 3;
+  }
+
+  /* El sistema quirúrgico, recortado, va entero y con su proporción. */
+  .us-lab-visual img {
+    aspect-ratio: 1145 / 1374;
+    object-fit: contain;
   }
 
   .us-work-visual .us-farm-tag {
@@ -2429,6 +2372,22 @@ h2 em {
     border-radius: calc(var(--seam) + 1px) 0 0 0;
   }
 
+  /* La esquina de arriba a la derecha se redondea en paralelo a la del recuadro claro de al lado. */
+  .us-eco-visual--top::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    width: var(--corner);
+    height: var(--corner);
+    background: radial-gradient(
+      circle var(--corner) at 0 100%,
+      transparent calc(100% - 0.5px),
+      var(--night) 100%
+    );
+  }
+
   .us-eco-visual > :is(img, .us-eco-pending) {
     position: absolute;
     inset: 0;
@@ -2531,36 +2490,55 @@ h2 em {
     padding-top: 22%;
   }
 
+  /* El sistema quirúrgico viene recortado: entero sobre el negro, sin fundidos, con la base por
+     encima de la esquina grande. */
+  .us-eco-more .us-lab-visual img {
+    box-sizing: border-box;
+    padding: 1.25rem 1.5rem 2.75rem;
+    object-fit: contain;
+    object-position: 50% 100%;
+    mask: none;
+  }
+
   .us-eco-more .us-work-visual--top > .us-eco-pending {
     mask: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), #000 6rem, #000 62%, transparent);
   }
-
-  /* Los programas, abajo a la izquierda de la foto de la sesión, sobre el recorrido. */
-  .us-eco-more .us-eco-record {
-    left: clamp(1.25rem, 2.5vw, 2.5rem);
-    bottom: calc(2.75em + clamp(1.25rem, 4%, 2rem));
-  }
 }
 
-/* Las dos partes, al menos del alto de las de la 02: los recuadros claros son iguales aunque aquí el
-   texto sea más corto. */
+/* Las dos partes miden siempre lo que las de la 02: los recuadros claros son iguales y no crecen con
+   el texto. Si el texto no cabe, se desplaza dentro de su recuadro. */
 @media (min-width: 1001px) {
   .us-eco-more .us-definition-grid.us-work-grid {
-    grid-template-rows: minmax(21.3em, 1fr) auto minmax(21.3em, 1fr);
+    grid-template-rows: 21.3em auto 21.3em;
+  }
+
+  .us-eco-more .us-work-block {
+    align-self: stretch;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(13, 21, 30, 0.22) transparent;
+    /* Abajo, el texto que queda por leer se funde con el lienzo; el fundido se va al llegar al final.
+       Si el texto cabe, no hay desplazamiento ni fundido. */
+    mask: linear-gradient(to bottom, #000 calc(100% - var(--us-more-fade)), transparent);
+    animation: us-more-fade linear both;
+    animation-timeline: scroll(self);
   }
 }
 
-/* El hueco de la foto de abajo ocupa lo mismo que ocupará la foto: el recuadro oscuro hasta el pie de
-   la sección, a sangre por la derecha, con sus esquinas de abajo. */
-@media (min-width: 1001px) {
-  .us-eco-more .us-work-visual--custody > .us-eco-pending {
-    inset: auto;
-    top: -2.75em;
-    left: calc(-1 * clamp(2rem, 6vw, 6rem));
-    width: calc(100% + clamp(2rem, 6vw, 6rem) + var(--inset) + 1px);
-    height: calc(100% + 2.75em + clamp(1.5rem, 2.5vw, 2.5rem) + 1.85rem);
-    border-radius: 0 0 calc(var(--corner) * 1.6) var(--corner);
-    mask: linear-gradient(to bottom, transparent, #000 28%);
+@property --us-more-fade {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes us-more-fade {
+  from {
+    --us-more-fade: 3.5em;
+  }
+
+  to {
+    --us-more-fade: 0px;
   }
 }
 

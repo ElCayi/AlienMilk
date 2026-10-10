@@ -22,10 +22,11 @@ void main() {
 // textura gana presencia y vuelve a aclararse al asentarse.
 // Desde uDepthStart, a la vez y en tres cuartos de pantalla, los márgenes (fuera de la columna de
 // uDepthColumn, con borde neto) ganan textura y el centro se blanquea; el remolino del cursor sigue
-// asomando sobre ese blanco. Entre la primera sección y la segunda, la franja uDepthCut corta el
-// blanco de lado a lado, como si fueran dos bloques. El de abajo es de tinta, con una ventana blanca
-// para el planetario, hasta uDepthCut3, el corte antes de Collaborators. Tras Collaborators, otro corte
-// y los bloques blancos de la red de confianza (uBlock y uBlock2), partidos por la franja de las marcas.
+// asomando sobre ese blanco. Entre la primera sección y la segunda (Próximas sesiones y Localizaciones,
+// las dos de Sessions) no hay corte: en uInkTop empieza un bloque de tinta, con una ventana blanca
+// para el planetario, hasta uDepthCut3, el corte antes de AlienMilk Distribution; tras ella, uDepthCut4
+// y Collaborators. Tras Collaborators, otro corte y los bloques blancos de la red de confianza (uBlock
+// y uBlock2), partidos por la franja de las marcas.
 const FRAGMENT = `
 precision mediump float;
 uniform sampler2D uTexture;
@@ -41,13 +42,15 @@ uniform vec2 uView;
 uniform float uDepthStart;
 uniform vec2 uDepthColumn;
 uniform vec2 uDepth;
-uniform vec2 uDepthCut;
+uniform float uInkTop;
 uniform vec2 uDepthCut3;
+uniform vec2 uDepthCut4;
 uniform float uDepthEnd;
 uniform vec2 uBlock;
 uniform vec2 uBlock2;
 uniform vec2 uDark2;
 uniform float uDepthRound;
+uniform float uJoinRound;
 uniform vec2 uDark;
 uniform vec3 uInk;
 varying vec2 vUv;
@@ -84,23 +87,26 @@ void main() {
   // solo aparecen si les queda ancho: en móvil serían dos filos sueltos junto al borde.
   float gutter = clamp(uView.x * 0.045, 24.0, 80.0);
   float column = uDepthColumn.y + gutter;
-  // El blanco, recortado por la franja del corte, con las esquinas apenas redondeadas salvo dos en
-  // diagonal, con una curva amplia: abajo a la derecha del bloque de arriba y arriba a la izquierda
-  // del de abajo. Cada mitad de la franja toma el radio de su bloque, para que el borde suavizado
-  // no deje una fila a medio blanquear bajo la curva.
+  // El blanco de la columna, recortado por las franjas de los cortes. En cada corte, las esquinas
+  // apenas redondeadas salvo dos en diagonal, con una curva amplia: abajo a la derecha del bloque de
+  // arriba y arriba a la izquierda del de abajo. Cada mitad de la franja toma el radio de su bloque,
+  // para que el borde suavizado no deje una fila a medio blanquear bajo la curva. Borde suavizado un
+  // par de px: el lienzo va a media resolución y la curva grande se escalonaba.
   float wide = step(40.0, uDepthColumn.x - column);
   float outside = abs(px.x - uDepthColumn.x) - column;
-  float away = max(uDepthCut.x - px.y, px.y - uDepthCut.y);
-  bool lower = px.y > (uDepthCut.x + uDepthCut.y) * 0.5;
-  float r = (px.x < uDepthColumn.x) == lower ? uDepthRound : 16.0;
-  // Borde suavizado un par de px: el lienzo va a media resolución y la curva grande se escalonaba.
-  float block = 1.0 - smoothstep(r - 1.5, r + 1.5, length(max(vec2(outside + r, r - away), 0.0)));
-  // El tercer corte, antes de Collaborators, en diagonal como el primero: la curva amplia abajo a
-  // la derecha del bloque de tinta y arriba a la izquierda del siguiente.
+  float block = 1.0 - smoothstep(-1.5, 1.5, outside);
+  // El corte tras la ficha de Localizaciones, antes de AlienMilk Distribution.
   float away3 = max(uDepthCut3.x - px.y, px.y - uDepthCut3.y);
   bool above3 = px.y < (uDepthCut3.x + uDepthCut3.y) * 0.5;
   float r3 = (px.x > uDepthColumn.x) == above3 ? uDepthRound : 16.0;
   block *= 1.0 - smoothstep(r3 - 1.5, r3 + 1.5, length(max(vec2(outside + r3, r3 - away3), 0.0)));
+  // El de tras AlienMilk Distribution, en la otra diagonal, como entre Collaborators y la red de
+  // confianza: arriba, las esquinas del bloque de tinta que la cierra (la curva amplia abajo a la
+  // izquierda); abajo, el blanco de Collaborators con la amplia arriba a la derecha.
+  float away4 = max(uDepthCut4.x - px.y, px.y - uDepthCut4.y);
+  bool above4 = px.y < (uDepthCut4.x + uDepthCut4.y) * 0.5;
+  float r5 = (px.x < uDepthColumn.x) == above4 ? uDepthRound : 16.0;
+  block *= 1.0 - smoothstep(r5 - 1.5, r5 + 1.5, length(max(vec2(outside + r5, r5 - away4), 0.0)));
   // El final, tras Collaborators: el blanco acaba justo donde el bloque de tinta que lo cierra, con sus
   // mismas esquinas (la curva amplia abajo a la izquierda), así no asoma blanco por debajo ni por la
   // curva; debajo solo queda la textura.
@@ -113,7 +119,7 @@ void main() {
   float side = (1.0 - block) * wide;
   float white = t * (1.0 - side) * uDepth.y;
   vec3 base = mix(uBase, vec3(1.0), white);
-  // Del segundo bloque hasta el tercer corte, tinta, salvo una ventana blanca entre la cabecera
+  // De uInkTop hasta el corte tras la ficha, tinta, salvo una ventana blanca entre la cabecera
   // (uDark.x) y la ficha (uDark2.x): el planetario, con columnas finas de tinta (rim) a los lados y
   // la curva amplia arriba a la derecha y abajo a la izquierda, como los marcos; las otras dos
   // esquinas, con el redondeo pequeño.
@@ -122,7 +128,16 @@ void main() {
   float rw = (px.x > uDepthColumn.x) == (px.y < mid) ? uDepthRound : 16.0;
   vec2 q = vec2(outside + rim, max(uDark.x - px.y, px.y - uDark2.x)) + rw;
   float pane = 1.0 - smoothstep(-1.5, 1.5, length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rw);
-  float ink = block * float(lower) * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
+  // Arriba, la tinta no tiene corte; el cambio de subsección, como el de «Cómo colaborar» y con su
+  // curva (uJoinRound, algo más abierta que las demás): a la izquierda, el blanco de Próximas
+  // sesiones acaba en curva sobre la tinta, que asoma bajo ella; a la derecha, la tinta sube en curva
+  // y el blanco sigue por detrás.
+  vec2 qw = vec2(outside + uJoinRound, px.y - uInkTop + uJoinRound);
+  float underWhite = smoothstep(-1.5, 1.5, length(max(qw, 0.0)) + min(max(qw.x, qw.y), 0.0) - uJoinRound);
+  vec2 qi = vec2(outside + uJoinRound, uInkTop - px.y + uJoinRound);
+  float inkCorner = 1.0 - smoothstep(-1.5, 1.5, length(max(qi, 0.0)) + min(max(qi.x, qi.y), 0.0) - uJoinRound);
+  float inked = px.x < uDepthColumn.x ? underWhite : inkCorner;
+  float ink = block * inked * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
   base = mix(base, uInk, ink);
   float amount = uAmount * (1.0 - white) + t * side * uDepth.x;
   gl_FragColor = vec4(mix(base, color, amount + thicken), 1.0);
@@ -211,13 +226,15 @@ export class LiquidBackdropComponent {
       depthStart: uniform('uDepthStart'),
       depthColumn: uniform('uDepthColumn'),
       depth: uniform('uDepth'),
-      depthCut: uniform('uDepthCut'),
+      inkTop: uniform('uInkTop'),
       depthCut3: uniform('uDepthCut3'),
+      depthCut4: uniform('uDepthCut4'),
       depthEnd: uniform('uDepthEnd'),
       block: uniform('uBlock'),
       block2: uniform('uBlock2'),
       dark2: uniform('uDark2'),
       depthRound: uniform('uDepthRound'),
+      joinRound: uniform('uJoinRound'),
       dark: uniform('uDark'),
       ink: uniform('uInk'),
     };
@@ -251,11 +268,10 @@ export class LiquidBackdropComponent {
         gl.uniform1f(uniforms.depthStart, first.top);
         gl.uniform2f(uniforms.depthColumn, (first.left + first.right) / 2, first.width / 2);
         gl.uniform2f(uniforms.depth, this.depth, 1);
-        // El corte, de grosor fijo, va en medio del hueco entre las dos secciones.
-        const gap = second ? second.top - first.bottom : 0;
-        const cut = first.bottom + gap / 2;
-        const half = Math.min(Math.max(window.innerWidth * 0.024, 24), 48, gap / 3);
-        gl.uniform2f(uniforms.depthCut, gap > 0 ? cut - half : -2, gap > 0 ? cut + half : -1);
+        // Entre las dos secciones no hay corte: la tinta empieza con la segunda (Localizaciones), que
+        // deja su propio aire sobre el título. Los cortes de más abajo miden 2 × half.
+        const half = Math.min(Math.max(window.innerWidth * 0.024, 24), 48);
+        gl.uniform1f(uniforms.inkTop, second ? second.top : 1e4);
         // El elemento marcado empieza la tinta de abajo; otro corte igual lo cierra, con algo de
         // aire. Con las columnas, como sus estilos.
         const brief = wideLayout.matches
@@ -265,6 +281,13 @@ export class LiquidBackdropComponent {
         const cut3 = brief ? brief.bottom + air + half : 0;
         gl.uniform2f(uniforms.depthCut3, brief ? cut3 - half : -2, brief ? cut3 + half : -1);
         gl.uniform2f(uniforms.dark2, brief?.top ?? 0, brief ? cut3 : -1);
+        // El elemento marcado (el bloque de tinta que cierra AlienMilk Distribution) acaba el blanco,
+        // un píxel antes de su borde como el final de Collaborators; tras un corte igual que los
+        // demás, empieza el blanco de Collaborators.
+        const split = wideLayout.matches
+          ? this.deepen?.querySelector('[data-backdrop-split]')?.getBoundingClientRect()
+          : undefined;
+        gl.uniform2f(uniforms.depthCut4, split ? split.bottom - 1 : -2, split ? split.bottom + 2 * half : -1);
         // El blanco acaba con el elemento marcado (un píxel antes, para que el borde suavizado no asome).
         const end = wideLayout.matches
           ? this.deepen?.querySelector('[data-backdrop-end]')?.getBoundingClientRect()
@@ -285,6 +308,8 @@ export class LiquidBackdropComponent {
         gl.uniform2f(uniforms.block2, sheet2 ? sheet2.top - tuck : -1e4, sheet2 ? sheet2.bottom : -1e4 + 1);
         // La esquina grande, más abierta que la de los marcos.
         gl.uniform1f(uniforms.depthRound, Math.min(Math.max(window.innerWidth * 0.07, 64), 120));
+        // La del cambio de subsección, algo más abierta (como --how-join en «Cómo colaborar»).
+        gl.uniform1f(uniforms.joinRound, Math.min(Math.max(window.innerWidth * 0.09, 80), 152));
         // La tinta llega hasta el final del elemento marcado; con las columnas, como sus estilos.
         const dark = wideLayout.matches
           ? this.deepen?.querySelector('[data-backdrop-dark]')?.getBoundingClientRect()

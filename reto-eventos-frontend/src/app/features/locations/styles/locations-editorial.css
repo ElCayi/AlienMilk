@@ -24,7 +24,10 @@
        subtítulo se parta. */
     --subsection-gap: clamp(2rem, 3.25vw, 4rem);
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr);
-    padding: clamp(0.25rem, 0.75vw, 1rem) clamp(1.5rem, 3vw, 3.5rem) clamp(3.5rem, 6vw, 6rem);
+    /* La tinta empieza en el borde de la sección, sin corte sobre Próximas sesiones: de ahí al
+       título, unos 6vw (lo que suman la barra y este relleno). */
+    padding: calc(clamp(3.75rem, 6vw, 7rem) - 0.5rem) clamp(1.5rem, 3vw, 3.5rem)
+      clamp(3.5rem, 6vw, 6rem);
   }
 
   :host(:not(.locations-collaboration-section)) .locations-subsection-title,
@@ -52,10 +55,13 @@
     z-index: 1;
     grid-row: 3;
     grid-column: 1;
-    margin-top: clamp(3rem, 5.3vw, 5.5rem);
+    /* Algo más de aire entre los (+) del planetario y el final de la hoja blanca. */
+    margin-top: clamp(3.5rem, 6vw, 6.5rem);
     border: 0;
     border-radius: 0;
-    padding: clamp(2.75rem, 4vw, 4.5rem) 0 clamp(0.5rem, 1vw, 1rem);
+    /* Arriba, entre el final de la hoja blanca y el rótulo de la ficha, los mismos 6vw que a cada
+       lado del borde de la tinta sobre Próximas sesiones. */
+    padding: clamp(3.75rem, 6vw, 7rem) 0 clamp(0.5rem, 1vw, 1rem);
   }
 
   :host(:not(.locations-collaboration-section)) .locations-brief-step-body,

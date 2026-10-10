@@ -10,6 +10,7 @@ import { LiquidVideoDirective } from '../../features/ambient/liquid-video.direct
 import { LiquidBackdropComponent } from '../../features/ambient/liquid-backdrop.component';
 import { LocationsAtlasComponent } from '../../features/locations/locations-atlas.component';
 import { SessionsProgramComponent } from '../../features/sessions/sessions-program.component';
+import { DistributionComponent } from '../../features/distribution/distribution.component';
 import { TrustNetworkComponent } from '../../features/trust/trust-network.component';
 import { ClosingCtaComponent } from '../../shared/closing-cta/closing-cta.component';
 
@@ -23,6 +24,7 @@ import { ClosingCtaComponent } from '../../shared/closing-cta/closing-cta.compon
     LiquidVideoDirective,
     SessionsProgramComponent,
     LocationsAtlasComponent,
+    DistributionComponent,
     TrustNetworkComponent,
     ClosingCtaComponent,
   ],

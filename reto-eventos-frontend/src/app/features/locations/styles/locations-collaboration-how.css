@@ -240,6 +240,9 @@
   .locations-collaboration-how {
     --how-pad: clamp(1.5rem, 3vw, 3.5rem);
     --how-round: clamp(4rem, 7vw, 7.5rem);
+    /* El cambio de subsección (arriba), algo más redondeado que las demás esquinas, como en el resto
+       de la portada (ver liquid-backdrop). */
+    --how-join: clamp(5rem, 9vw, 9.5rem);
     --how-orb: clamp(8.5rem, 10.5vw, 13rem);
     --how-step-gap: clamp(0.75rem, 1.1vw, 1.25rem);
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
@@ -253,7 +256,7 @@
       clamp(2rem, 3vw, 3rem);
     position: relative;
     /* Arriba a la izquierda, sin redondeo: ahí el bloque sube en curva por debajo del blanco. */
-    border-radius: 0 var(--how-round) 1rem;
+    border-radius: 0 var(--how-join) 1rem var(--how-round);
   }
 
   /* El blanco de la columna acaba en curva amplia sobre el bloque, arriba a la izquierda, y bajo la
@@ -264,12 +267,12 @@
     position: absolute;
     bottom: calc(100% - 4px);
     left: 0;
-    width: var(--how-round);
-    height: calc(var(--how-round) + 4px);
+    width: var(--how-join);
+    height: calc(var(--how-join) + 4px);
     background: radial-gradient(
       circle at 100% 0,
-      transparent calc(var(--how-round) - 0.75px),
-      var(--gallery-ink, #211e24) var(--how-round)
+      transparent calc(var(--how-join) - 0.75px),
+      var(--gallery-ink, #211e24) var(--how-join)
     );
     pointer-events: none;
   }

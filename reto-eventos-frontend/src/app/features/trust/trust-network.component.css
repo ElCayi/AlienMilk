@@ -22,6 +22,8 @@
       var(--home-collaboration-margin, calc(clamp(3.5rem, 5vw, 6rem) + 3px)) -
         clamp(3rem, 5.5vw, 6rem)
     );
+    /* Algo más de aire entre la hoja blanca y la tarjeta del cierre que el hueco entre secciones. */
+    margin-bottom: clamp(5rem, 9.5vw, 10rem);
   }
 
   .trust-sheet {

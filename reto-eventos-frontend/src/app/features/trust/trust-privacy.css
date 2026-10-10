@@ -204,11 +204,11 @@
 }
 
 /* Tras las experiencias, la discreción, separada por una barra como la de los socios en la franja:
-   el doble de gruesa que los filetes de las citas, en su mismo gris, y con el mismo aire arriba y
-   abajo, para que se lea como un cambio de apartado y no como el filete del rótulo. */
+   el doble de gruesa que los filetes de las citas, en su mismo gris, y con algo más de aire abajo
+   que arriba, para que se lea como un cambio de apartado y no como el filete del rótulo. */
 .trust-voices + .trust-privacy {
   margin-top: clamp(2.5rem, 4.5vw, 4.5rem);
-  padding-top: clamp(2.5rem, 4.5vw, 4.5rem);
+  padding-top: clamp(3rem, 5.5vw, 5.5rem);
   border-top: 2px solid var(--gallery-line, rgba(55, 66, 78, 0.17));
 }
 

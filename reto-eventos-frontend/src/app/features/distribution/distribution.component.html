@@ -1,0 +1,77 @@
+<section class="distribution" aria-labelledby="distribution-title">
+  <header>
+    <p class="distribution-kicker" appFitLine>
+      <span class="distribution-kicker-icon" aria-hidden="true"></span>
+      <span>Distribución gastronómica · 2026</span>
+    </p>
+    <div class="distribution-copy">
+      <h2 id="distribution-title" class="distribution-title">
+        <span class="distribution-brand">AlienMilk</span>
+        <span class="distribution-label">Distribution</span>
+      </h2>
+      <p class="distribution-subtitle">
+        <strong>AlienMilk</strong> también se sirve en casa. <em>Con moderación.</em>
+      </p>
+      <p class="distribution-intro">
+        AlienMilk Distribution es la división del ecosistema AlienMilk que, tras más de dos siglos de
+        investigación, pone algunas de sus leches <strong>al alcance del público</strong>. Selecciona
+        lotes del Archivo, derivados y piezas de servicio, y los hace llegar con
+        <strong>procedencia y cadena de frío</strong> a restaurantes, a algunos supermercados y a
+        <strong>su mesa</strong>.
+      </p>
+    </div>
+  </header>
+
+  <!-- La parte oscura, como «Cómo colaborar» en Collaborators, cierra la sección: empieza con el
+       anuncio (la foto, que nace de la tinta, con el titular, una frase y la letra pequeña en claro)
+       y sigue con la selección y el enlace. El fondo acaba el blanco con este bloque (ver
+       liquid-backdrop.component.ts). -->
+  <section class="distribution-picks" data-backdrop-split aria-labelledby="distribution-picks-title">
+    <div class="distribution-ad">
+      <div class="distribution-photo">
+        <img
+          src="/alienmilk-distribution-gallery.webp"
+          alt="Visitantes con traje espacial recorren una galería de vitrinas con piezas de cristal lechoso y corales."
+          width="1672"
+          height="941"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="distribution-ad-copy">
+        <h3 appFitLine><span>Lo extraordinario,</span>&ngsp;<span>a diario.</span></h3>
+        <p class="distribution-tagline">Densa, fría y de un azul pálido que se aclara con el aire.*</p>
+        <p class="distribution-note">
+          *Leche de Pelagia. Si la botella se agita con energía, emite un zumbido breve. Es&nbsp;normal.
+        </p>
+      </div>
+    </div>
+
+    <div class="distribution-picks-head">
+      <span class="distribution-picks-code" appFitLine>AM / Selección de la casa</span>
+      <h3 id="distribution-picks-title" appFitLine>Para una primera cata</h3>
+      <p>Una leche, un fermento y algo con lo que servirlos: lo justo para empezar en casa.</p>
+    </div>
+
+    <ul class="distribution-picks-list">
+      @for (pick of picks(); track pick.slug) {
+        <li class="distribution-pick" [attr.data-tone]="pick.tono">
+          <a [routerLink]="['/tienda', pick.slug]">
+            <span class="sample" aria-hidden="true"></span>
+            <span class="distribution-pick-origin" appFitLine>{{ pick.procedencia }}</span>
+            <span class="distribution-pick-name" appFitLine>{{ pick.nombre }}</span>
+          </a>
+          <p class="distribution-pick-summary">{{ pick.resumen }}</p>
+          <p class="distribution-pick-lot">{{ pick.formato }} · Lote {{ pick.lote }}</p>
+        </li>
+      }
+    </ul>
+
+    <p class="distribution-picks-close">
+      <a class="distribution-cta" routerLink="/tienda">
+        Descubrir la tienda
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </a>
+    </p>
+  </section>
+</section>

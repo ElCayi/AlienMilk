@@ -1,0 +1,470 @@
+/* Portada: AlienMilk Distribution, entre Localizaciones y Collaborators. Una sección como las demás:
+   sobre el blanco de la columna, la barra arriba, el rótulo, la firma, el subtítulo en coral y la
+   entradilla justificada. Debajo, en tinta, el anuncio de la tienda, como una página de revista (la
+   foto, que nace de la tinta, con el titular y la letra pequeña en claro y la frase en coral), y la
+   selección. */
+:host {
+  display: block;
+  min-width: 0;
+  color: var(--gallery-ink, #211e24);
+}
+
+.distribution {
+  padding-top: 0.35rem;
+  border-top: 2px solid var(--gallery-muted, #68727d);
+  font-family: Arial, sans-serif;
+}
+
+/* La cabecera, con las medidas de las demás secciones; la firma, con las de la de Collaborators. */
+.distribution-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  min-width: 0;
+  margin: 0 0 var(--home-eyebrow-gap, 3.25rem);
+  color: var(--gallery-muted, #68727d);
+  font: 700 0.66rem / normal 'Nunito', sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.distribution-kicker-icon {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.distribution-copy {
+  min-width: 0;
+  max-width: calc(var(--home-section-copy-width, 56rem) - 1.8rem);
+  padding-top: 2.35rem;
+}
+
+.distribution-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.16em;
+  min-width: 0;
+  margin: 0.17em 0 0;
+  font: 800 var(--home-section-title-size, clamp(2.6rem, 11vw, 3.8rem)) / 0.85 'Barlow Condensed',
+    'Arial Narrow', sans-serif;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+/* Sin el atajo font, para que las dos partes hereden el interlineado del título. */
+.distribution-brand {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9em;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.distribution-label {
+  font-size: 0.72em;
+  font-weight: 400;
+  letter-spacing: 0.025em;
+}
+
+.distribution-subtitle {
+  min-width: 0;
+  margin: 0.9rem 0 0;
+  color: #ff7f7f;
+  font: 700 var(--home-section-subtitle-size, clamp(1.05rem, 1.55vw, 1.3rem)) / 1.3 'Nunito',
+    sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.distribution-subtitle em {
+  font-weight: 600;
+}
+
+.distribution-intro {
+  margin: 1rem 0 0;
+  font-size: var(--home-section-copy-size, var(--home-editorial-copy-size, 1.1rem));
+  line-height: var(--home-editorial-copy-leading, 1.6);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+/* El anuncio abre la parte oscura: la foto nace de la tinta (se disuelve en ella, sin bordes) y el
+   titular, la frase y la letra pequeña quedan sobre esa parte. La foto es muy clara: con el
+   contraste oscuro se ve con toda su fuerza. En móvil, la foto arriba, hasta los bordes del bloque,
+   y el texto debajo, entrando en ella. */
+.distribution-ad {
+  display: grid;
+  margin: -2.25rem -1.5rem 0;
+}
+
+.distribution-photo {
+  overflow: hidden;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.distribution-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: 50% 60%;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
+  mask-image: linear-gradient(180deg, #000 55%, transparent);
+}
+
+.distribution-ad-copy {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+  margin-top: -3rem;
+  padding: 0 1.5rem;
+}
+
+/* El titular y la frase, con las letras de la página: el titular en Barlow Condensed, como los
+   títulos sobre la tinta (más grande que el de la selección), y la frase como los subtítulos de
+   las secciones, en Nunito y en coral, con las líneas equilibradas. */
+.distribution-ad h3 {
+  min-width: 0;
+  margin: 0;
+  color: var(--picks-ink);
+  font: 400 clamp(2.6rem, 4.2vw, 4.75rem) / 0.95 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.distribution-tagline {
+  margin: 0;
+  color: #ff7f7f;
+  font: 700 var(--home-section-subtitle-size, clamp(1.05rem, 1.55vw, 1.3rem)) / 1.3 'Nunito',
+    sans-serif;
+  letter-spacing: 0.025em;
+  text-wrap: balance;
+}
+
+/* La letra pequeña, como en los anuncios: más tenue y sin justificar. */
+.distribution-note {
+  margin: 0;
+  color: rgba(251, 246, 245, 0.75);
+  font: 600 0.8rem / 1.5 'Nunito', sans-serif;
+}
+
+/* La parte oscura cierra la sección como «Cómo colaborar» cierra Collaborators, con sus medidas.
+   Tras el anuncio, el rótulo en coral, el título y la entradilla; debajo, tres productos de la
+   tienda, cada uno con su muestra (la de la tienda, en shop-shared.css), su procedencia, su nombre,
+   su resumen y su lote; al pie, el único enlace a la tienda. */
+.distribution-picks {
+  --picks-ink: #fbf6f5;
+  display: grid;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  padding: 2.25rem 1.5rem;
+  border-radius: 1rem;
+  color: rgba(251, 246, 245, 0.82);
+  background: var(--gallery-ink, #211e24);
+}
+
+.distribution-picks-head {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* El rótulo y el título, como los de «Cómo colaborar» y «Antes de su visita». */
+.distribution-picks-code {
+  min-width: 0;
+  color: #ff7f7f;
+  font: 800 clamp(0.8rem, 0.75vw, 0.95rem) / 1.5 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Una minimilk abre el rótulo, en su mismo coral. */
+.distribution-picks-code::before {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.6em;
+  vertical-align: -0.45em;
+  background: currentColor;
+  -webkit-mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.distribution-picks-head h3 {
+  min-width: 0;
+  margin: 0;
+  color: var(--picks-ink);
+  font: 400 clamp(2.4rem, 2.9vw, 3.7rem) / 0.95 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  white-space: nowrap;
+}
+
+.distribution-picks-head p {
+  margin: 0;
+  font-size: var(--home-section-copy-size, 1.1rem);
+  line-height: 1.6;
+}
+
+.distribution-picks-list {
+  display: grid;
+  gap: 2.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Cada producto: la muestra y, debajo, la procedencia, el nombre, el resumen y el lote. La muestra,
+   la procedencia y el nombre llevan a su ficha. El resumen, sin justificar, como en la tienda: en
+   columnas estrechas abría huecos. El lote, al pie, a la misma altura en las tres. */
+.distribution-pick {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.distribution-pick a {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  color: var(--picks-ink);
+  text-decoration: none;
+}
+
+.distribution-pick .sample {
+  /* Sobre la tinta, el aro en claro, como en las fichas oscuras de la tienda. */
+  --sample-ring: rgba(247, 248, 249, 0.34);
+  justify-self: start;
+  width: clamp(4.5rem, 6vw, 6.5rem);
+  margin-bottom: 0.65rem;
+}
+
+.distribution-pick-origin,
+.distribution-pick-lot {
+  min-width: 0;
+  margin: 0;
+  color: rgba(251, 246, 245, 0.6);
+  font: 800 0.66rem / 1.5 'Nunito', sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.distribution-pick-name {
+  min-width: 0;
+  font: 400 clamp(1.6rem, 1.9vw, 2.1rem) / 1.05 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+}
+
+.distribution-pick-summary {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.distribution-pick a:hover .distribution-pick-name,
+.distribution-pick a:focus-visible .distribution-pick-name {
+  color: #ff7f7f;
+}
+
+.distribution-pick a:focus-visible {
+  outline: 1px solid #ff7f7f;
+  outline-offset: 0.45rem;
+}
+
+/* Al pasar el cursor, la muestra crece un poco, como los pasos de «Cómo colaborar». */
+@media (prefers-reduced-motion: no-preference) {
+  .distribution-pick .sample {
+    transition: transform 0.45s cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .distribution-pick a:hover .sample {
+    transform: scale(1.06);
+  }
+}
+
+.distribution-picks-close {
+  margin: 0;
+}
+
+/* El único enlace a la tienda, como la invitación de «Cómo colaborar». */
+.distribution-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.55rem;
+  border: 1px solid #ff7f7f;
+  border-radius: 999px;
+  color: var(--picks-ink);
+  font: 600 clamp(1.15rem, 1.5vw, 1.75rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.distribution-cta svg {
+  width: 1.3em;
+  height: 1.3em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.distribution-cta:hover,
+.distribution-cta:focus-visible {
+  outline: none;
+  color: var(--gallery-ink, #211e24);
+  background: #ff7f7f;
+}
+
+.distribution-cta:hover svg,
+.distribution-cta:focus-visible svg {
+  transform: translateX(0.25rem);
+}
+
+@media (min-width: 1001px) {
+  /* Arriba, sobre la barra, el aire blanco que tenía Collaborators. Abajo, tras el bloque de tinta,
+     el fondo corta la columna (2 × 2,4vw) y Collaborators deja sobre su barra ese mismo aire: el
+     margen es lo que queda de los 11,75rem bajo la ficha de Localizaciones tras el aire de tinta del
+     fondo y el hueco entre secciones (ver liquid-backdrop). */
+  :host {
+    margin-top: var(--home-collaboration-margin, calc(clamp(3.5rem, 5vw, 6rem) + 3px));
+    margin-bottom: calc(11.75rem - clamp(48px, 5.5vw, 96px) - var(--home-section-gap, 6rem));
+  }
+
+  /* El anuncio, hasta los bordes del bloque arriba y a los lados (su relleno, en negativo) y con su
+     esquina de arriba a la derecha. La foto nace de la tinta por arriba y se disuelve en ella al pie,
+     donde sigue la selección. El texto, abajo a la derecha, sobre las vitrinas que ya se oscurecen,
+     y a plomo con el enlace del pie: los astronautas y la sala rosa del fondo quedan a la vista. */
+  .distribution-ad {
+    --ad-pad: calc(clamp(24px, 4.5vw, 80px) + var(--picks-pad));
+    grid-template-areas: 'ad';
+    margin: calc(-1 * clamp(3.5rem, 5.5vw, 6rem)) calc(-1 * var(--ad-pad)) 0;
+  }
+
+  .distribution-photo {
+    position: relative;
+    grid-area: ad;
+    border-radius: 0 var(--picks-join) 0 0;
+  }
+
+  /* Detrás del texto, la tinta entra también por la derecha: la letra clara se lee sobre los blancos
+     de las vitrinas sin apagar a los astronautas. */
+  .distribution-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 55% 95% at 100% 50%,
+      rgb(33 30 36 / 0.88),
+      rgb(33 30 36 / 0.6) 50%,
+      transparent 82%
+    );
+    pointer-events: none;
+  }
+
+  .distribution-photo img {
+    aspect-ratio: 2.2 / 1;
+    object-position: 50% 58%;
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent,
+      rgb(0 0 0 / 0.45) 12%,
+      #000 32%,
+      #000 70%,
+      rgb(0 0 0 / 0.55) 84%,
+      rgb(0 0 0 / 0.2) 93%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      180deg,
+      transparent,
+      rgb(0 0 0 / 0.45) 12%,
+      #000 32%,
+      #000 70%,
+      rgb(0 0 0 / 0.55) 84%,
+      rgb(0 0 0 / 0.2) 93%,
+      transparent
+    );
+  }
+
+  .distribution-ad-copy {
+    grid-area: ad;
+    align-self: end;
+    margin-top: 0;
+    padding: 0 var(--ad-pad) clamp(3rem, 6vw, 6.5rem) 64%;
+  }
+
+  /* En esa columna estrecha, el titular en dos líneas, como en móvil. */
+  .distribution-ad h3 span {
+    display: block;
+  }
+
+  /* El bloque de tinta, a lo ancho de la columna blanca y con las esquinas de «Cómo colaborar»: sin
+     redondeo arriba a la izquierda, donde el blanco acaba en curva sobre él; la amplia arriba a la
+     derecha y abajo a la izquierda. Arriba, la cabecera; en medio, los tres productos en fila; al
+     pie, a la derecha, el enlace. */
+  .distribution-picks {
+    --picks-pad: clamp(1.5rem, 3vw, 3.5rem);
+    --picks-round: clamp(4rem, 7vw, 7.5rem);
+    /* El cambio de subsección (arriba), algo más redondeado, como en «Cómo colaborar». */
+    --picks-join: clamp(5rem, 9vw, 9.5rem);
+    position: relative;
+    row-gap: clamp(2.25rem, 3.5vw, 3.5rem);
+    margin: clamp(3.5rem, 6vw, 6.25rem) calc(-1 * clamp(24px, 4.5vw, 80px)) 0;
+    padding: clamp(3.5rem, 5.5vw, 6rem) calc(clamp(24px, 4.5vw, 80px) + var(--picks-pad))
+      clamp(2rem, 3vw, 3rem);
+    border-radius: 0 var(--picks-join) 1rem var(--picks-round);
+  }
+
+  /* El blanco de la columna acaba en curva amplia sobre el bloque, arriba a la izquierda, y bajo la
+     curva asoma la misma tinta, como en «Cómo colaborar». */
+  .distribution-picks::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 4px);
+    left: 0;
+    width: var(--picks-join);
+    height: calc(var(--picks-join) + 4px);
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--picks-join) - 0.75px),
+      var(--gallery-ink, #211e24) var(--picks-join)
+    );
+    pointer-events: none;
+  }
+
+  .distribution-picks-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(2rem, 4vw, 4.5rem);
+  }
+
+  .distribution-picks-close {
+    justify-self: end;
+  }
+}
+
+/* En móvil, la barra la pone la portada, como en las demás secciones. */
+@media (max-width: 900px) {
+  .distribution {
+    padding-top: 0.85rem;
+    border-top: 0;
+  }
+}
+
+/* En móvil, el titular del anuncio en una línea quedaría casi del cuerpo del texto: va en dos, a
+   propósito, y cada una tan grande como quepa. */
+@media (max-width: 600px) {
+  .distribution-ad h3 span {
+    display: block;
+  }
+}

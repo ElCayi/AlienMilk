@@ -280,7 +280,11 @@ CREATE TABLE IF NOT EXISTS productos (
 CREATE TABLE IF NOT EXISTS pedidos (
 	id_pedido INT AUTO_INCREMENT PRIMARY KEY,
 	referencia VARCHAR(20) UNIQUE,
-	username VARCHAR(45) NOT NULL,
+	-- Sin usuario es un pedido de invitado: nombre, correo y la huella de la clave de su enlace.
+	username VARCHAR(45),
+	nombre VARCHAR(80),
+	correo VARCHAR(120),
+	clave_hash CHAR(64),
 	estado VARCHAR(12) NOT NULL,
 	entrega VARCHAR(12) NOT NULL,
 	direccion VARCHAR(200),
@@ -292,6 +296,8 @@ CREATE TABLE IF NOT EXISTS pedidos (
 	CONSTRAINT fk_pedidos_usuarios FOREIGN KEY (username) REFERENCES usuarios(username),
 	CONSTRAINT ck_pedido_estado CHECK (estado IN ('CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'ANULADO')),
 	CONSTRAINT ck_pedido_entrega CHECK (entrega IN ('ENVIO', 'RECOGIDA')),
+	CONSTRAINT ck_pedido_comprador CHECK (
+		username IS NOT NULL OR (nombre IS NOT NULL AND correo IS NOT NULL AND clave_hash IS NOT NULL)),
 	INDEX idx_pedidos_usuario (username, creado_en)
 );
 

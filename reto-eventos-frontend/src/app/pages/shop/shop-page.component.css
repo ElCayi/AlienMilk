@@ -200,15 +200,6 @@
   opacity: 0.45;
 }
 
-/* 02 · Su pedido: las líneas a la izquierda y la entrega a la derecha, con las proporciones del
-   bloque claro partido al revés. */
-.order-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: clamp(2.5rem, 6vw, 7rem);
-  align-items: start;
-}
-
 .order-empty {
   color: var(--muted);
 }
@@ -310,21 +301,29 @@
   line-height: 1.5;
 }
 
-.address {
+/* Campos: una fila del recuadro, como las opciones de entrega. */
+.field {
   display: grid;
   gap: 0.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--line);
 }
 
-.address label {
+/* En Sus datos, el primer campo abre el recuadro sin filete, como la primera opción de entrega. */
+.buyer .field:first-of-type {
+  padding-top: 0.5rem;
+  border-top: 0;
+}
+
+.field label {
   font:
     700 0.95rem 'Nunito',
     sans-serif;
 }
 
 /* Los campos de Registro e Inicio de sesión. */
-.address textarea {
+.field :is(input, textarea),
+.guest-link input {
   width: 100%;
   min-width: 0;
   padding: 0.8rem 0.9rem;
@@ -336,11 +335,14 @@
     1rem / 1.4 'Nunito',
     Arial,
     sans-serif;
-  resize: vertical;
   color-scheme: dark;
 }
 
-.address.is-invalid textarea {
+.field textarea {
+  resize: vertical;
+}
+
+.field.is-invalid :is(input, textarea) {
   border-color: #ffaaaa;
 }
 
@@ -349,51 +351,6 @@
   color: #ffaaaa;
   font-size: 0.9rem;
   line-height: 1.45;
-}
-
-/* Importes: filas de rótulo y valor en una línea, como el recuadro de las condiciones. */
-.order-summary {
-  display: grid;
-  margin: 0;
-}
-
-.order-summary div {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1.5rem;
-  padding-block: 0.85rem;
-  border-top: 1px solid var(--line);
-}
-
-.order-summary dt,
-.order-summary dd {
-  margin: 0;
-  font: 400 clamp(1.05rem, 1vw, 1.25rem) / 1.3 var(--condensed);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.order-summary dt {
-  min-width: 0;
-  color: var(--muted);
-}
-
-.order-summary dd {
-  white-space: nowrap;
-}
-
-.order-summary .order-total {
-  border-bottom: 1px solid var(--line);
-}
-
-.order-summary .order-total dt {
-  color: var(--ink);
-}
-
-.order-summary .order-total dd {
-  font-size: clamp(1.6rem, 2.1vw, 2.1rem);
-  letter-spacing: 0.02em;
 }
 
 .confirm {
@@ -424,6 +381,7 @@
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.5;
+  text-wrap: pretty;
 }
 
 .demo-note {
@@ -432,38 +390,32 @@
   font-size: 0.85rem;
 }
 
-/* Resguardo: el número en grande, como el de las solicitudes a los operadores. */
-.receipt {
-  padding: clamp(1.5rem, 2.5vw, 2.25rem);
-  border: 1px dashed rgba(247, 248, 249, 0.42);
-  border-radius: 1rem;
-  outline: none;
+/* Enlace privado del invitado, dentro del resguardo: el aviso y el enlace con su botón de copiar. */
+.guest-link {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
 }
 
-.receipt-label {
+.guest-link p {
   margin: 0;
   color: var(--muted);
-  font:
-    800 0.66rem / 1.5 'Nunito',
-    sans-serif;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
-.receipt-code {
-  margin: 0.4rem 0 0;
-  font: 400 clamp(2.4rem, 4vw, 3.4rem) / 1 var(--condensed);
-  letter-spacing: 0.06em;
+.guest-link-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
 }
 
-.receipt-text {
-  margin: 1rem 0 1.75rem;
-  color: var(--muted);
-  font-size: clamp(1.05rem, 1vw, 1.1rem);
-  line-height: 1.6;
-  text-align: justify;
-  text-align-last: left;
-  hyphens: auto;
+.guest-link input {
+  flex: 1;
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
 }
 
 /* 03 · Historial: cada pedido, una fila del recuadro con leyenda. */
@@ -510,7 +462,8 @@
 }
 
 .history-state,
-.history-cancel {
+.history-cancel,
+.guest-link-copy {
   font:
     800 0.62rem / 1.5 'Nunito',
     sans-serif;
@@ -522,7 +475,8 @@
   color: var(--muted);
 }
 
-.history-cancel {
+.history-cancel,
+.guest-link-copy {
   padding: 0;
   border: 0;
   color: var(--ink);
@@ -533,7 +487,8 @@
   transition: color 160ms ease;
 }
 
-.history-cancel:is(:hover, :focus-visible) {
+.history-cancel:is(:hover, :focus-visible),
+.guest-link-copy:is(:hover, :focus-visible) {
   color: var(--coral);
 }
 
@@ -548,16 +503,11 @@
   text-decoration-thickness: 1px;
 }
 
-/* Tableta: el catálogo en dos columnas y el pedido en una, con la entrega debajo de las líneas. */
+/* Tableta: el catálogo en dos columnas (el pedido pasa a una en shop-shared.css). */
 @media (max-width: 1000px) {
-  .catalog-heading,
-  .order-layout {
+  .catalog-heading {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-  }
-
-  .order-layout {
-    gap: 2.5rem;
   }
 
   .product-grid {
@@ -614,7 +564,8 @@
   .product-name,
   .catalog-filter button,
   .order-line-name,
-  .history-cancel {
+  .history-cancel,
+  .guest-link-copy {
     transition: none;
   }
 }

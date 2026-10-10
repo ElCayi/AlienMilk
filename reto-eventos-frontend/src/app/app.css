@@ -298,7 +298,8 @@
 .page-container:has(app-operator-page),
 .page-container:has(app-documentation-page),
 .page-container:has(app-shop-page),
-.page-container:has(app-product-page) {
+.page-container:has(app-product-page),
+.page-container:has(app-guest-order-page) {
   width: min(1480px, 76vw);
 }
 
@@ -309,7 +310,8 @@
 .page-container:has(app-operator-page),
 .page-container:has(app-documentation-page),
 .page-container:has(app-shop-page),
-.page-container:has(app-product-page) {
+.page-container:has(app-product-page),
+.page-container:has(app-guest-order-page) {
     width: min(1800px, 76vw);
   }
 }
@@ -321,7 +323,8 @@
 .page-container:has(app-operator-page),
 .page-container:has(app-documentation-page),
 .page-container:has(app-shop-page),
-.page-container:has(app-product-page) {
+.page-container:has(app-product-page),
+.page-container:has(app-guest-order-page) {
     width: calc(100% - 2 * clamp(1rem, 6vw, 3.75rem));
   }
 }

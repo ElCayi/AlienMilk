@@ -1,0 +1,92 @@
+<article class="secondary-page guest-order-page" aria-labelledby="guest-order-title">
+  <div class="secondary-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/tienda">Tienda</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ reference }}</span>
+    </nav>
+
+    <header class="secondary-header">
+      <div class="secondary-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>Tienda / Pedido sin cuenta</span>
+        </p>
+        @switch (status()) {
+          @case ('ready') {
+            @let pedido = order()!;
+            <h1 id="guest-order-title">Su pedido</h1>
+            <p class="secondary-subtitle">A nombre de {{ pedido.nombre }}.</p>
+            <p class="secondary-intro">
+              Hecho el {{ orderDate(pedido.creadoEn) }}. Esta página solo se abre con su
+              <b>enlace privado</b>: guárdelo para volver a ella y para anular el pedido mientras no
+              haya salido del centro de distribución.
+            </p>
+          }
+          @case ('loading') {
+            <h1 id="guest-order-title">Cargando pedido…</h1>
+          }
+          @case ('missing') {
+            <h1 id="guest-order-title">Pedido no encontrado</h1>
+            <p class="secondary-intro">
+              Compruebe que el enlace está completo: la clave del pedido es la parte que va después
+              de la almohadilla (#). Si lo hizo con su cuenta, lo encontrará en su historial de la
+              tienda.
+            </p>
+          }
+          @case ('error') {
+            <h1 id="guest-order-title">Pedido no disponible</h1>
+            <p class="secondary-intro">No hemos podido conectar con la tienda.</p>
+            <button type="button" class="line-action" (click)="load()">
+              <span class="line-action-label">Reintentar</span>
+            </button>
+          }
+        }
+      </div>
+    </header>
+  </div>
+
+  @if (order(); as pedido) {
+    <section class="ink-card" aria-labelledby="guest-order-state">
+      <div class="section-heading">
+        <p class="section-label section-kicker">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          01 / Estado
+        </p>
+      </div>
+      <h2 id="guest-order-state">
+        <span class="title-line">Pedido</span>
+        <span class="title-line">{{ stateLabels[pedido.estado].toLowerCase() }}.</span>
+      </h2>
+      <app-order-receipt [order]="pedido">
+        @if (pedido.estado === 'CONFIRMADO') {
+          @if (cancelError(); as message) {
+            <p class="field-error" role="alert">{{ message }}</p>
+          }
+          <button type="button" class="line-action" [disabled]="cancelling()" (click)="cancel(pedido)">
+            <span class="line-action-label">{{ cancelling() ? 'Anulando…' : 'Anular el pedido' }}</span>
+          </button>
+        } @else {
+          <a class="line-action" routerLink="/tienda">
+            <span class="line-action-label">Volver a la tienda</span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
+          </a>
+        }
+      </app-order-receipt>
+    </section>
+  }
+
+  <footer class="secondary-footnote">
+    <p>AlienMilk / Tienda / <span class="nowrap">{{ reference }}</span></p>
+    <p>Pedido sin cuenta · <span class="nowrap">Ciclo 2026</span></p>
+    <a routerLink="/tienda"
+      >Volver a la tienda
+      <span class="arrow" aria-hidden="true"
+        ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span
+    ></a>
+  </footer>
+</article>

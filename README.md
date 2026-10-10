@@ -129,7 +129,7 @@ cuatro que aparecen hoy están en `false` a conciencia: se comprobó que el buil
 - [Trabajar en paralelo](docs/colaboracion.md) — worktrees, merges, migraciones de base de
   datos, servicios y CSS; leer antes de editar o fusionar
 - [Formularios públicos](docs/formularios.md) — el molde: un JSON por formulario, sin código
-- [Tienda](docs/tienda.md) — catálogo, carrito y pedidos con existencias calculadas en el servidor
+- [Tienda](docs/tienda.md) — catálogo, carrito y pedidos con o sin cuenta, con existencias calculadas en el servidor
 - [Entrega de la integración](docs/merge-notes/integracion-2026-10-07.md) —
   cambios incorporados, comprobaciones y puntos pendientes para colaboradores
 - [Guía de despliegue](docs/guia-despliegue.md) — puesta en producción

@@ -44,11 +44,28 @@ public class Pedido {
 	@Column(unique = true, length = 20)
 	private String referencia;
 
+	/** Quien compró con su cuenta; vacío en los pedidos de invitado. */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "username", nullable = false)
+	@JoinColumn(name = "username")
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private Usuario usuario;
+
+	/** Invitado: a nombre de quién va el pedido. */
+	@Column(length = 80)
+	private String nombre;
+
+	/** Invitado: dónde avisarle del pedido. */
+	@Column(length = 120)
+	private String correo;
+
+	/**
+	 * Invitado: huella SHA-256 de la clave de su enlace privado. La clave en claro solo la recibe el
+	 * comprador; quien lea la base de datos no puede abrir ni anular el pedido con lo que hay aquí.
+	 */
+	@Column(name = "clave_hash", length = 64)
+	@ToString.Exclude
+	private String claveHash;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 12)

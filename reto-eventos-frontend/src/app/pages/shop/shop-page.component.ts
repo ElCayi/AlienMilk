@@ -13,8 +13,9 @@ import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { ContactService } from '../../core/services/contact.service';
-import { ShopService } from '../../core/services/shop.service';
+import { guestOrderLink, ShopService } from '../../core/services/shop.service';
 import { CartService } from '../../features/shop/cart.service';
+import { OrderReceiptComponent } from '../../features/shop/order-receipt/order-receipt.component';
 import {
   CATEGORY_FILTERS,
   CATEGORY_LABELS,
@@ -48,11 +49,12 @@ interface CartLine {
 /**
  * Tienda: catálogo con filtro por categoría, pedido en curso y pedidos anteriores. El carrito vive
  * en el navegador (CartService); los importes que se cobran los calcula el servidor al confirmar.
+ * Se compra con cuenta o como invitado; el invitado se lleva un enlace privado a su pedido.
  */
 @Component({
   selector: 'app-shop-page',
   standalone: true,
-  imports: [FitLineDirective, RouterLink],
+  imports: [FitLineDirective, OrderReceiptComponent, RouterLink],
   templateUrl: './shop-page.component.html',
   styleUrls: [
     '../../shared/secondary-page/secondary-page.css',
@@ -110,6 +112,8 @@ export class ShopPageComponent {
   readonly deliveries: EntregaPedido[] = ['ENVIO', 'RECOGIDA'];
   readonly delivery = signal<EntregaPedido>('ENVIO');
   readonly address = signal('');
+  readonly name = signal('');
+  readonly email = signal('');
   readonly freeShippingFrom = computed(() => this.catalog()?.condiciones.envioGratisDesde ?? 0);
   readonly subtotal = computed(() => this.lines().reduce((total, line) => total + line.amount, 0));
   readonly shipping = computed(() => {
@@ -121,12 +125,17 @@ export class ShopPageComponent {
   readonly sending = signal(false);
   readonly orderError = signal<string | null>(null);
   readonly addressError = signal<string | null>(null);
+  readonly nameError = signal<string | null>(null);
+  readonly emailError = signal<string | null>(null);
   readonly receipt = signal<Pedido | null>(null);
   readonly orders = signal<Pedido[]>([]);
   readonly cancelling = signal<number | null>(null);
+  readonly linkCopied = signal(false);
 
   private readonly addressField = viewChild<ElementRef<HTMLTextAreaElement>>('addressField');
-  private readonly receiptBox = viewChild<ElementRef<HTMLElement>>('receiptBox');
+  private readonly nameField = viewChild<ElementRef<HTMLInputElement>>('nameField');
+  private readonly emailField = viewChild<ElementRef<HTMLInputElement>>('emailField');
+  private readonly receiptView = viewChild(OrderReceiptComponent);
 
   constructor() {
     this.loadCatalog();
@@ -141,7 +150,7 @@ export class ShopPageComponent {
     // El resguardo toma el foco al aparecer, como en los formularios.
     effect(() => {
       if (this.receipt()) {
-        setTimeout(() => this.receiptBox()?.nativeElement.focus());
+        setTimeout(() => this.receiptView()?.focus());
       }
     });
   }
@@ -196,15 +205,50 @@ export class ShopPageComponent {
     }
   }
 
+  onNameInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.name.set(value);
+    if (value.trim()) {
+      this.nameError.set(null);
+    }
+  }
+
+  onEmailInput(event: Event): void {
+    this.email.set((event.target as HTMLInputElement).value);
+    this.emailError.set(null);
+  }
+
   confirm(): void {
     const lines = this.lines();
     if (!lines.length || this.sending()) {
       return;
     }
+    const guest = !this.auth.isAuthenticated();
+    const name = this.name().trim();
+    const email = this.email().trim();
     const address = this.address().trim();
-    if (this.delivery() === 'ENVIO' && !address) {
-      this.addressError.set('Indique la dirección de entrega');
-      this.addressField()?.nativeElement.focus();
+
+    // Todos los avisos a la vez, y el foco en el primer campo que falta, en el orden de la página.
+    this.nameError.set(guest && !name ? 'Indique a nombre de quién va el pedido' : null);
+    this.emailError.set(
+      !guest
+        ? null
+        : !email
+          ? 'Indique un correo para avisarle del pedido'
+          : EMAIL.test(email)
+            ? null
+            : 'Escriba un correo válido',
+    );
+    this.addressError.set(
+      this.delivery() === 'ENVIO' && !address ? 'Indique la dirección de entrega' : null,
+    );
+    const invalid = [
+      { message: this.nameError(), field: this.nameField() },
+      { message: this.emailError(), field: this.emailField() },
+      { message: this.addressError(), field: this.addressField() },
+    ].find((entry) => entry.message);
+    if (invalid) {
+      invalid.field?.nativeElement.focus();
       return;
     }
 
@@ -215,14 +259,18 @@ export class ShopPageComponent {
         lineas: lines.map((line) => ({ producto: line.product.slug, cantidad: line.quantity })),
         entrega: this.delivery(),
         direccion: this.delivery() === 'ENVIO' ? address : undefined,
+        ...(guest ? { nombre: name, correo: email } : {}),
       })
       .subscribe({
         next: (pedido) => {
           this.sending.set(false);
           this.cart.clear();
           this.address.set('');
+          this.linkCopied.set(false);
           this.receipt.set(pedido);
-          this.orders.update((orders) => [pedido, ...orders]);
+          if (!pedido.invitado) {
+            this.orders.update((orders) => [pedido, ...orders]);
+          }
           this.loadCatalog(true);
         },
         error: (error: HttpErrorResponse) => {
@@ -230,6 +278,18 @@ export class ShopPageComponent {
           this.showOrderError(error);
         },
       });
+  }
+
+  /** El enlace privado de un pedido de invitado, mientras su resguardo está en pantalla. */
+  guestLink(order: Pedido): string | null {
+    return order.clave ? guestOrderLink(order, order.clave) : null;
+  }
+
+  copyLink(link: string): void {
+    navigator.clipboard.writeText(link).then(
+      () => this.linkCopied.set(true),
+      () => this.linkCopied.set(false),
+    );
   }
 
   /** Vuelve del resguardo al catálogo para empezar otro pedido. */
@@ -281,9 +341,11 @@ export class ShopPageComponent {
     }
     const body = error.error as ApiError | null;
     const errores = body?.errores ?? {};
-    if (errores['direccion']) {
-      // El error de la dirección va junto al campo; arriba solo lo que no tiene campo propio.
-      this.addressError.set(errores['direccion']);
+    if (errores['nombre'] || errores['correo'] || errores['direccion']) {
+      // Los errores de los campos van junto a cada uno; arriba solo lo que no tiene campo propio.
+      this.nameError.set(errores['nombre'] ?? null);
+      this.emailError.set(errores['correo'] ?? null);
+      this.addressError.set(errores['direccion'] ?? null);
       this.orderError.set(errores['lineas'] ?? errores['entrega'] ?? null);
     } else {
       this.orderError.set(
@@ -301,3 +363,6 @@ export class ShopPageComponent {
     }
   }
 }
+
+/** La misma comprobación que hace el servidor: algo, una arroba, algo, un punto y algo. */
+const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;

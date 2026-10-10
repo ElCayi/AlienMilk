@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.http.MediaType;
@@ -44,6 +45,7 @@ import retotransversal.modelo.entities.Usuario;
 import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ProductoRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
+import retotransversal.modelo.service.LimitadorSolicitudes;
 import retotransversal.modelo.service.TiendaService;
 import retotransversal.restcontroller.TiendaRestController;
 
@@ -53,6 +55,7 @@ class TiendaContractTest {
 	private final ProductoRepository productos = mock(ProductoRepository.class);
 	private final PedidoRepository pedidos = mock(PedidoRepository.class);
 	private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
+	private final LimitadorSolicitudes limitador = mock(LimitadorSolicitudes.class);
 
 	private final Producto ceto = producto(3, "leche-entera-ceto-iv", "Leche entera de Ceto IV", "6.40", 148);
 	private final Producto pelagia = producto(1, "leche-de-pelagia", "Leche de Pelagia", "9.80", 3);
@@ -75,7 +78,7 @@ class TiendaContractTest {
 			return pedido;
 		});
 		Clock reloj = Clock.fixed(Instant.parse("2026-10-09T10:00:00Z"), ZoneId.of("Europe/Madrid"));
-		TiendaServiceImpl servicio = new TiendaServiceImpl(productos, pedidos, usuarios, reloj);
+		TiendaServiceImpl servicio = new TiendaServiceImpl(productos, pedidos, usuarios, limitador, reloj);
 		mvc = MockMvcBuilders.standaloneSetup(new TiendaRestController(servicio))
 				.setControllerAdvice(new GlobalExceptionHandler()).build();
 	}
@@ -180,6 +183,96 @@ class TiendaContractTest {
 	}
 
 	@Test
+	void aGuestBuysWithNameAndEmailAndGetsTheKeyOnlyOnce() throws Exception {
+		mvc.perform(post("/api/tienda/pedidos").contentType(MediaType.APPLICATION_JSON).content("""
+				{"lineas": [{"producto": "copa-de-degustacion", "cantidad": 1}], "entrega": "RECOGIDA",
+				 "nombre": " ", "correo": "ripley@nostromo"}
+				"""))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errores.nombre").value("Indique a nombre de quién va el pedido"))
+				.andExpect(jsonPath("$.errores.correo").value("Escriba un correo válido"));
+		verify(limitador, never()).registrar(any());
+
+		String respuesta = mvc.perform(post("/api/tienda/pedidos").contentType(MediaType.APPLICATION_JSON).content("""
+				{"lineas": [{"producto": "copa-de-degustacion", "cantidad": 1}], "entrega": "RECOGIDA",
+				 "nombre": "  Ellen Ripley ", "correo": "ripley@nostromo.space"}
+				"""))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.invitado").value(true))
+				.andExpect(jsonPath("$.nombre").value("Ellen Ripley"))
+				.andExpect(jsonPath("$.clave").isString())
+				.andReturn().getResponse().getContentAsString();
+		verify(limitador).registrar("127.0.0.1");
+
+		// La base guarda la huella, no la clave.
+		String clave = respuesta.replaceAll(".*\"clave\":\"([^\"]+)\".*", "$1");
+		ArgumentCaptor<Pedido> guardado = ArgumentCaptor.forClass(Pedido.class);
+		verify(pedidos).save(guardado.capture());
+		assertThat(clave).hasSize(43);
+		assertThat(guardado.getValue().getUsuario()).isNull();
+		assertThat(guardado.getValue().getCorreo()).isEqualTo("ripley@nostromo.space");
+		assertThat(guardado.getValue().getClaveHash()).isEqualTo(TiendaServiceImpl.huella(clave)).isNotEqualTo(clave);
+	}
+
+	@Test
+	void anAccountOrderIsNotAGuestOrderAndCarriesNoKey() throws Exception {
+		pedir("""
+				{"lineas": [{"producto": "copa-de-degustacion", "cantidad": 1}], "entrega": "RECOGIDA",
+				 "nombre": "Otra persona", "correo": "otra@ejemplo.es"}
+				""")
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.invitado").value(false))
+				.andExpect(jsonPath("$.nombre").doesNotExist())
+				.andExpect(jsonPath("$.clave").doesNotExist());
+		verify(limitador, never()).registrar(any());
+	}
+
+	@Test
+	void aGuestOrderOpensOnlyWithItsKey() throws Exception {
+		Pedido invitado = pedidoDe(null, EstadoPedido.CONFIRMADO);
+		invitado.setNombre("Ellen Ripley");
+		invitado.setClaveHash(TiendaServiceImpl.huella("la-buena"));
+		when(pedidos.findByReferencia("AMD-2026-0042")).thenReturn(Optional.of(invitado));
+		Pedido deCuenta = pedidoDe(ripley, EstadoPedido.CONFIRMADO);
+		when(pedidos.findByReferencia("AMD-2026-0043")).thenReturn(Optional.of(deCuenta));
+
+		mvc.perform(get("/api/tienda/consulta/AMD-2026-0042").header("X-Clave-Pedido", "la-buena"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.nombre").value("Ellen Ripley"))
+				.andExpect(jsonPath("$.clave").doesNotExist());
+
+		// Clave equivocada, sin clave, pedido de una cuenta o referencia inventada: la misma respuesta.
+		for (var consulta : List.of(
+				get("/api/tienda/consulta/AMD-2026-0042").header("X-Clave-Pedido", "la-mala"),
+				get("/api/tienda/consulta/AMD-2026-0042"),
+				get("/api/tienda/consulta/AMD-2026-0043").header("X-Clave-Pedido", "la-buena"),
+				get("/api/tienda/consulta/AMD-2026-9999").header("X-Clave-Pedido", "la-buena"))) {
+			mvc.perform(consulta)
+					.andExpect(status().isNotFound())
+					.andExpect(jsonPath("$.message").value("No encontramos ese pedido. Compruebe que el enlace está completo."));
+		}
+	}
+
+	@Test
+	void aGuestCancelsWithTheKeyButNotThroughAnAccount() throws Exception {
+		Pedido invitado = pedidoDe(null, EstadoPedido.CONFIRMADO);
+		invitado.setClaveHash(TiendaServiceImpl.huella("la-buena"));
+		when(pedidos.findByReferencia("AMD-2026-0042")).thenReturn(Optional.of(invitado));
+		when(pedidos.findById(42)).thenReturn(Optional.of(invitado));
+
+		mvc.perform(post("/api/tienda/pedidos/42/anulacion").principal(como("ripley")))
+				.andExpect(status().isForbidden());
+		mvc.perform(post("/api/tienda/consulta/AMD-2026-0042/anulacion").header("X-Clave-Pedido", "la-mala"))
+				.andExpect(status().isNotFound());
+		verify(productos, never()).devolverExistencias(anyInt(), anyInt());
+
+		mvc.perform(post("/api/tienda/consulta/AMD-2026-0042/anulacion").header("X-Clave-Pedido", "la-buena"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("ANULADO"));
+		verify(productos).devolverExistencias(3, 2);
+	}
+
+	@Test
 	void theCatalogueCarriesTheRulesItIsChargedBy() throws Exception {
 		when(productos.findAllByActivoTrueOrderByOrdenAsc()).thenReturn(List.of(ceto, copa));
 
@@ -197,6 +290,7 @@ class TiendaContractTest {
 				.withBean(ProductoRepository.class, () -> productos)
 				.withBean(PedidoRepository.class, () -> pedidos)
 				.withBean(UsuarioRepository.class, () -> usuarios)
+				.withBean(LimitadorSolicitudes.class, () -> limitador)
 				.withBean(TiendaServiceImpl.class)
 				.run(context -> assertThat(context).hasNotFailed().hasSingleBean(TiendaService.class));
 	}

@@ -1,0 +1,46 @@
+@let pedido = order();
+<div class="order-layout">
+  <div class="receipt" tabindex="-1" #box>
+    <p class="receipt-label">Número de pedido</p>
+    <p class="receipt-code">{{ pedido.referencia }}</p>
+    <p class="receipt-text">
+      @switch (pedido.estado) {
+        @case ('ANULADO') {
+          El pedido se ha anulado y sus unidades han vuelto al centro de distribución.
+        }
+        @case ('ENVIADO') {
+          Ha salido del centro de distribución en cadena de frío hacia <b>{{ pedido.direccion }}</b>.
+        }
+        @case ('ENTREGADO') {
+          Entregado. Que lo disfrute.
+        }
+        @default {
+          @if (pedido.entrega === 'RECOGIDA') {
+            Lo preparamos en el centro de distribución y le esperará en la sede, en cadena de frío,
+            a partir de mañana. Conserve este número para recogerlo.
+          } @else {
+            Lo preparamos en el centro de distribución y saldrá en cadena de frío hacia
+            <b>{{ pedido.direccion }}</b>. Conserve este número para cualquier gestión.
+          }
+        }
+      }
+    </p>
+    <ng-content />
+  </div>
+  <dl class="order-summary">
+    @for (line of pedido.lineas; track line.producto) {
+      <div>
+        <dt>{{ line.cantidad }} × {{ line.nombre }}</dt>
+        <dd>{{ price(line.importe) }}</dd>
+      </div>
+    }
+    <div>
+      <dt>{{ deliveryLabels[pedido.entrega] }}</dt>
+      <dd>{{ pedido.gastosEnvio ? price(pedido.gastosEnvio) : 'Sin gastos' }}</dd>
+    </div>
+    <div class="order-total">
+      <dt>Total</dt>
+      <dd>{{ price(pedido.total) }}</dd>
+    </div>
+  </dl>
+</div>

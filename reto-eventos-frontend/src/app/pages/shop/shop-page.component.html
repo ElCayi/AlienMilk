@@ -167,45 +167,35 @@
         <span class="title-line">Pedido</span>
         <span class="title-line">{{ order.estado === 'ANULADO' ? 'anulado.' : 'confirmado.' }}</span>
       </h2>
-      <div class="order-layout">
-        <div class="receipt" tabindex="-1" #receiptBox>
-          <p class="receipt-label">Número de pedido</p>
-          <p class="receipt-code">{{ order.referencia }}</p>
-          <p class="receipt-text">
-            @if (order.estado === 'ANULADO') {
-              El pedido se ha anulado y sus unidades han vuelto al centro de distribución.
-            } @else if (order.entrega === 'RECOGIDA') {
-              Lo preparamos en el centro de distribución y le esperará en la sede, en cadena de frío,
-              a partir de mañana. Conserve este número para recogerlo.
-            } @else {
-              Lo preparamos en el centro de distribución y saldrá en cadena de frío hacia
-              <b>{{ order.direccion }}</b>. Conserve este número para cualquier gestión.
-            }
-          </p>
-          <button type="button" class="line-action" (click)="newOrder()">
-            <span class="line-action-label">Hacer otro pedido</span>
-            <span class="line-action-arrow" aria-hidden="true"
-              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
-            ></span>
-          </button>
-        </div>
-        <dl class="order-summary">
-          @for (line of order.lineas; track line.producto) {
-            <div>
-              <dt>{{ line.cantidad }} × {{ line.nombre }}</dt>
-              <dd>{{ price(line.importe) }}</dd>
+      <app-order-receipt [order]="order">
+        <!-- Sin cuenta no hay historial: el enlace privado es la única forma de volver al pedido. -->
+        @if (guestLink(order); as link) {
+          <div class="guest-link">
+            <p>
+              Guarde este enlace privado: con él puede consultar o anular el pedido desde cualquier
+              dispositivo. No lo comparta.
+            </p>
+            <div class="guest-link-row">
+              <input
+                type="text"
+                readonly
+                aria-label="Enlace privado del pedido"
+                [value]="link"
+                (focus)="$any($event.target).select()"
+              />
+              <button type="button" class="guest-link-copy" aria-live="polite" (click)="copyLink(link)">
+                {{ linkCopied() ? 'Copiado' : 'Copiar' }}
+              </button>
             </div>
-          }
-          <div>
-            <dt>{{ deliveryLabels[order.entrega] }}</dt>
-            <dd>{{ order.gastosEnvio ? price(order.gastosEnvio) : 'Sin gastos' }}</dd>
           </div>
-          <div class="order-total">
-            <dt>Total</dt>
-            <dd>{{ price(order.total) }}</dd>
-          </div>
-        </dl>
-      </div>
+        }
+        <button type="button" class="line-action" (click)="newOrder()">
+          <span class="line-action-label">Hacer otro pedido</span>
+          <span class="line-action-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+          ></span>
+        </button>
+      </app-order-receipt>
     } @else if (!lines().length) {
       <h2 id="order-title">
         <span class="title-line">Su pedido</span>
@@ -270,6 +260,46 @@
         </ul>
 
         <div class="checkout">
+          @if (!auth.isAuthenticated()) {
+            <fieldset class="legend-box buyer">
+              <legend>Sus datos</legend>
+              <div class="field" [class.is-invalid]="nameError()">
+                <label for="shop-name">Nombre</label>
+                <input
+                  id="shop-name"
+                  #nameField
+                  type="text"
+                  maxlength="80"
+                  autocomplete="name"
+                  [value]="name()"
+                  [attr.aria-invalid]="nameError() ? true : null"
+                  [attr.aria-describedby]="nameError() ? 'shop-name-error' : null"
+                  (input)="onNameInput($event)"
+                />
+                @if (nameError(); as message) {
+                  <p class="field-error" id="shop-name-error">{{ message }}</p>
+                }
+              </div>
+              <div class="field" [class.is-invalid]="emailError()">
+                <label for="shop-email">Correo</label>
+                <input
+                  id="shop-email"
+                  #emailField
+                  type="email"
+                  maxlength="120"
+                  autocomplete="email"
+                  [value]="email()"
+                  [attr.aria-invalid]="emailError() ? true : null"
+                  [attr.aria-describedby]="emailError() ? 'shop-email-error' : null"
+                  (input)="onEmailInput($event)"
+                />
+                @if (emailError(); as message) {
+                  <p class="field-error" id="shop-email-error">{{ message }}</p>
+                }
+              </div>
+            </fieldset>
+          }
+
           <fieldset class="legend-box delivery">
             <legend>Entrega</legend>
             @for (value of deliveries; track value) {
@@ -295,7 +325,7 @@
               </label>
             }
             @if (delivery() === 'ENVIO') {
-              <div class="address" [class.is-invalid]="addressError()">
+              <div class="field address" [class.is-invalid]="addressError()">
                 <label for="shop-address">Dirección de entrega</label>
                 <textarea
                   id="shop-address"
@@ -334,26 +364,25 @@
             <p class="field-error order-error" role="alert">{{ message }}</p>
           }
 
-          @if (auth.isAuthenticated()) {
-            <button
-              type="button"
-              class="ghost-btn confirm"
-              [disabled]="sending() || shortLines().length > 0"
-              (click)="confirm()"
-            >
-              {{ sending() ? 'Confirmando…' : 'Confirmar pedido' }}
-            </button>
-          } @else {
+          <button
+            type="button"
+            class="ghost-btn confirm"
+            [disabled]="sending() || shortLines().length > 0"
+            (click)="confirm()"
+          >
+            {{ sending() ? 'Confirmando…' : 'Confirmar pedido' }}
+          </button>
+
+          <!-- La cuenta es opcional: lo que aporta es el historial, no el permiso para comprar. -->
+          @if (!auth.isAuthenticated()) {
             <div class="gate">
-              <p>Para confirmar el pedido necesita una cuenta. Su pedido se conserva mientras tanto.</p>
+              <p>¿Tiene cuenta? Inicie sesión y el pedido quedará en su historial.</p>
               <a
-                class="ghost-btn confirm"
+                class="line-action"
                 routerLink="/login"
                 [queryParams]="{ redirectTo: '/tienda#su-pedido' }"
-                >Iniciar sesión</a
               >
-              <a class="line-action" routerLink="/registro">
-                <span class="line-action-label">Crear una cuenta</span>
+                <span class="line-action-label">Iniciar sesión</span>
                 <span class="line-action-arrow" aria-hidden="true"
                   ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
                 ></span>

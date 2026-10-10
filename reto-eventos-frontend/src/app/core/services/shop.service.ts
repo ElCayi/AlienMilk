@@ -1,11 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, shareReplay, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { CatalogoTienda, Pedido, PedidoPayload } from '../../models/api.models';
 
-/** Tienda: el catálogo es público; los pedidos van con la sesión del usuario. */
+/**
+ * Tienda: el catálogo es público y se compra con cuenta o sin ella. El historial es de las cuentas;
+ * un pedido de invitado se abre con su referencia y su clave, que va en una cabecera y no en la
+ * dirección, para que no quede en los registros del servidor.
+ */
 @Injectable({ providedIn: 'root' })
 export class ShopService {
   private readonly http = inject(HttpClient);
@@ -29,6 +33,7 @@ export class ShopService {
     return this.catalogRequest;
   }
 
+  /** Con sesión, el pedido va a la cuenta; sin ella, el servidor lo crea como pedido de invitado. */
   placeOrder(payload: PedidoPayload): Observable<Pedido> {
     return this.http.post<Pedido>(`${this.apiUrl}/pedidos`, payload);
   }
@@ -40,4 +45,28 @@ export class ShopService {
   cancelOrder(idPedido: number): Observable<Pedido> {
     return this.http.post<Pedido>(`${this.apiUrl}/pedidos/${idPedido}/anulacion`, {});
   }
+
+  guestOrder(reference: string, key: string): Observable<Pedido> {
+    return this.http.get<Pedido>(this.guestUrl(reference), { headers: guestHeaders(key) });
+  }
+
+  cancelGuestOrder(reference: string, key: string): Observable<Pedido> {
+    return this.http.post<Pedido>(`${this.guestUrl(reference)}/anulacion`, {}, { headers: guestHeaders(key) });
+  }
+
+  private guestUrl(reference: string): string {
+    return `${this.apiUrl}/consulta/${encodeURIComponent(reference)}`;
+  }
+}
+
+/**
+ * Dirección privada de un pedido de invitado. La clave va tras la almohadilla: el navegador no la
+ * envía a ningún servidor ni la pasa como procedencia a otras páginas.
+ */
+export function guestOrderLink(order: Pedido, key: string): string {
+  return `${window.location.origin}/tienda/pedido/${encodeURIComponent(order.referencia)}#${key}`;
+}
+
+function guestHeaders(key: string): HttpHeaders {
+  return new HttpHeaders({ 'X-Clave-Pedido': key });
 }

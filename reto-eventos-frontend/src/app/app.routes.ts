@@ -32,6 +32,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/shop/shop-page.component').then(({ ShopPageComponent }) => ShopPageComponent),
   },
+  // El pedido de un invitado, con la clave tras la almohadilla; antes que las fichas de producto.
+  {
+    path: 'tienda/pedido/:referencia',
+    loadComponent: () =>
+      import('./pages/guest-order/guest-order-page.component').then(
+        ({ GuestOrderPageComponent }) => GuestOrderPageComponent,
+      ),
+  },
   {
     path: 'tienda/:slug',
     loadComponent: () =>

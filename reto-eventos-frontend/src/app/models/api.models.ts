@@ -246,6 +246,9 @@ export interface PedidoPayload {
   lineas: { producto: string; cantidad: number }[];
   entrega: EntregaPedido;
   direccion?: string;
+  /** Solo sin sesión: el pedido es de invitado. */
+  nombre?: string;
+  correo?: string;
 }
 
 export interface LineaPedido {
@@ -268,4 +271,9 @@ export interface Pedido {
   creadoEn: string;
   anuladoEn: string | null;
   lineas: LineaPedido[];
+  /** Pedido sin cuenta: se abre con su enlace privado, no está en ningún historial. */
+  invitado: boolean;
+  nombre: string | null;
+  /** La clave del enlace privado. Solo llega una vez, al crear un pedido de invitado. */
+  clave?: string;
 }

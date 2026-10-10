@@ -1,0 +1,13 @@
+/* Pedido de invitado. La base está en shared/secondary-page/secondary-page.css, el resguardo en
+   features/shop/order-receipt; aquí solo el aviso de error de la anulación. */
+.field-error {
+  margin: 0 0 1.25rem;
+  color: #ffaaaa;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.line-action:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}

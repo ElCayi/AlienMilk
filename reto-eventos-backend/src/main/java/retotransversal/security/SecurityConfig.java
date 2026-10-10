@@ -54,6 +54,11 @@ public class SecurityConfig {
 						.permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/tienda/catalogo", "/api/tienda/productos/*")
 						.permitAll()
+						// Comprar como invitado y abrir ese pedido con su clave; el servicio frena los envíos masivos.
+						.requestMatchers(HttpMethod.POST, "/api/tienda/pedidos")
+						.permitAll()
+						.requestMatchers("/api/tienda/consulta/**")
+						.permitAll()
 						.requestMatchers("/api/tienda/pedidos", "/api/tienda/pedidos/**")
 						.hasAnyRole("CLIENTE", "ADMON")
 						.requestMatchers("/api/admin/**")

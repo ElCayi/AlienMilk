@@ -1,10 +1,11 @@
 # Notas de merge — rama `claude`
 
-Tanda del 10 de octubre de 2026, sobre `main` en `e3eedad`.
-Comprobado el 10 de octubre tras actualizar `origin`:
+Tanda del 10 y 11 de octubre de 2026, sobre `main` en `e3eedad`.
+Comprobado el 11 de octubre tras actualizar `origin`:
 - `pnpm check` en verde (lint, 29 pruebas y build).
-- Todas las ramas remotas siguen en `e3eedad`.
-- `git merge-tree --write-tree` no da conflictos con `clos` local (`a663201`, sin subir).
+- `main` sigue en `e3eedad`.
+- `git merge-tree --write-tree` no da conflictos con `origin/clos` (`a663201`) ni con
+  `origin/MegaClos` (`8c63082`).
 
 ## Qué trae
 
@@ -14,11 +15,15 @@ Comprobado el 10 de octubre tras actualizar `origin`:
   Collaborators. Sigue las notas de JT: un anuncio de marca de lujo, no un bloque de tienda.
   - **Cabecera** con el formato de las demás secciones: barra, rótulo «Distribución gastronómica ·
     2026», la firma «AlienMilk Distribution», el subtítulo en coral y la entradilla.
-  - **Parte oscura**, que abre el anuncio. La foto nace de la tinta y el texto va abajo a la derecha:
-    el titular en Barlow Condensed, la frase en Nunito coral y la letra pequeña.
-  - **Foto:** `alienmilk-distribution-gallery.webp`, nueva; hay que subirla con la sección.
-  - **«Para una primera cata»:** tres productos de la tienda (liquen, kéfir y copa), con su muestra,
-    procedencia, resumen y lote. Sin precios.
+  - **Parte oscura**, que abre el anuncio: solo la foto, que nace de la tinta y se funde en ella, sin
+    texto encima.
+  - **Foto:** `alienmilk-distribution-gallery.webp` (la galería en tonos coral), nueva; hay que subirla
+    con la sección.
+  - **«Para una primera cata»:** tres productos de la tienda (liquen, kéfir y copa), con procedencia,
+    resumen y lote. Sin precios.
+  - **Muestras:** en vez del círculo de la tienda, una molécula en SVG sobre una placa: el cultivo de
+    la cabecera de Nosotros reducido a su forma, con el tono del producto. El brote se aleja y vuelve
+    despacio; quieta con `prefers-reduced-motion`.
   - **Datos:** llegan de `/api/tienda/catalogo` (`ShopService.catalog()`). Si no responde, se ven los
     tres del catálogo inicial.
   - **Enlace:** uno solo, «Descubrir la tienda».
@@ -45,10 +50,10 @@ Comprobado el 10 de octubre tras actualizar `origin`:
 
 ## Posibles choques
 
-- **`clos`:** su commit local toca Nosotros y sus notas; no se pisa con nada de esta tanda.
-- **`MegaClos`:** tiene sin commitear los pedidos de invitado de la tienda. En `shop.service.ts`,
+- **`clos`:** su commit toca Nosotros y sus notas; no se pisa con nada de esta tanda.
+- **`MegaClos`:** trae los pedidos de invitado de la tienda. En `shop.service.ts`,
   `shop-shared.css` y `api.models.ts` solo añade cosas.
-  - Distribution usa `catalog()`, `.sample` y `[data-tone]`, que no cambian.
+  - Distribution usa `catalog()` y `[data-tone]`, que no cambian.
   - Al fusionar, `shop-shared.css` crece; Distribution la carga, así que conviene mirar el aviso de
     tamaño de hojas en el build.
 
@@ -58,8 +63,8 @@ Comprobado el 10 de octubre tras actualizar `origin`:
    1 MB.
 2. **`/`** a 390, 1280×720, 1536×750 y 1920×1080:
    - Próximas sesiones → Localizaciones, sin corte y con las curvas del cambio de subsección.
-   - Distribution: el texto del anuncio no tapa la sala rosa del fondo, los tres productos salen del
-     catálogo y el corte bajo el bloque oscuro casa con sus esquinas.
+   - Distribution: los tres productos salen del catálogo, las moléculas se mueven y el corte bajo el
+     bloque oscuro casa con sus esquinas.
    - Collaborators conserva unos 110 px de blanco sobre su barra.
 3. **Imágenes:** subir `alienmilk-distribution-gallery.webp`. Las cuatro `alienmilk-closing-*.webp`
    siguen sin usarse y fuera de los commits.

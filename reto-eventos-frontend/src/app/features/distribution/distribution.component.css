@@ -91,10 +91,8 @@
   hyphens: auto;
 }
 
-/* El anuncio abre la parte oscura: la foto nace de la tinta (se disuelve en ella, sin bordes) y el
-   titular, la frase y la letra pequeña quedan sobre esa parte. La foto es muy clara: con el
-   contraste oscuro se ve con toda su fuerza. En móvil, la foto arriba, hasta los bordes del bloque,
-   y el texto debajo, entrando en ella. */
+/* La foto abre la parte oscura: nace de la tinta y se disuelve en ella, sin bordes. Sola, sin texto
+   encima: la imagen ya es el anuncio. En móvil, arriba, hasta los bordes del bloque. */
 .distribution-ad {
   display: grid;
   margin: -2.25rem -1.5rem 0;
@@ -114,42 +112,6 @@
   object-position: 50% 60%;
   -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent);
   mask-image: linear-gradient(180deg, #000 55%, transparent);
-}
-
-.distribution-ad-copy {
-  position: relative;
-  display: grid;
-  gap: 1.25rem;
-  min-width: 0;
-  margin-top: -3rem;
-  padding: 0 1.5rem;
-}
-
-/* El titular y la frase, con las letras de la página: el titular en Barlow Condensed, como los
-   títulos sobre la tinta (más grande que el de la selección), y la frase como los subtítulos de
-   las secciones, en Nunito y en coral, con las líneas equilibradas. */
-.distribution-ad h3 {
-  min-width: 0;
-  margin: 0;
-  color: var(--picks-ink);
-  font: 400 clamp(2.6rem, 4.2vw, 4.75rem) / 0.95 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  letter-spacing: 0.01em;
-}
-
-.distribution-tagline {
-  margin: 0;
-  color: #ff7f7f;
-  font: 700 var(--home-section-subtitle-size, clamp(1.05rem, 1.55vw, 1.3rem)) / 1.3 'Nunito',
-    sans-serif;
-  letter-spacing: 0.025em;
-  text-wrap: balance;
-}
-
-/* La letra pequeña, como en los anuncios: más tenue y sin justificar. */
-.distribution-note {
-  margin: 0;
-  color: rgba(251, 246, 245, 0.75);
-  font: 600 0.8rem / 1.5 'Nunito', sans-serif;
 }
 
 /* La parte oscura cierra la sección como «Cómo colaborar» cierra Collaborators, con sus medidas.
@@ -235,12 +197,44 @@
   text-decoration: none;
 }
 
-.distribution-pick .sample {
-  /* Sobre la tinta, el aro en claro, como en las fichas oscuras de la tienda. */
-  --sample-ring: rgba(247, 248, 249, 0.34);
+/* La muestra, en forma de cultivo (ver MOLECULES en el componente), con el tono del producto. */
+.distribution-pick .molecule {
   justify-self: start;
-  width: clamp(4.5rem, 6vw, 6.5rem);
-  margin-bottom: 0.65rem;
+  width: clamp(7rem, 9vw, 9.5rem);
+  height: auto;
+  margin-bottom: 0.35rem;
+  overflow: visible;
+}
+
+/* El filtro, sin sitio en la maqueta. */
+.distribution-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.molecule-tone {
+  stop-color: var(--tone);
+}
+
+.molecule-tone-deep {
+  stop-color: var(--tone-deep);
+}
+
+/* La placa, con el aro claro de las muestras sobre tinta y un fondo apenas más claro que ella. */
+.molecule-plate {
+  fill: rgba(251, 246, 245, 0.04);
+  stroke: rgba(247, 248, 249, 0.3);
+  stroke-width: 1;
+}
+
+.molecule-shadow {
+  fill: #0d0b10;
+  opacity: 0.55;
+}
+
+.molecule-shine {
+  fill: rgba(255, 255, 255, 0.7);
 }
 
 .distribution-pick-origin,
@@ -276,14 +270,40 @@
   outline-offset: 0.45rem;
 }
 
-/* Al pasar el cursor, la muestra crece un poco, como los pasos de «Cómo colaborar». */
+/* El brote se aleja de la célula y vuelve, despacio, y el cuello se estira con él; las esporas
+   flotan. Al pasar el cursor, la muestra crece un poco, como los pasos de «Cómo colaborar». */
 @media (prefers-reduced-motion: no-preference) {
-  .distribution-pick .sample {
+  .distribution-pick .molecule {
     transition: transform 0.45s cubic-bezier(0.33, 0, 0.2, 1);
   }
 
-  .distribution-pick a:hover .sample {
+  .distribution-pick a:hover .molecule {
     transform: scale(1.06);
+  }
+
+  .molecule-bud {
+    animation: molecule-bud var(--bud-period, 8s) ease-in-out infinite alternate;
+  }
+
+  .molecule-spore {
+    animation: molecule-spore 5s ease-in-out infinite alternate;
+  }
+
+  .molecule-spore:nth-of-type(2n) {
+    animation-duration: 6.5s;
+    animation-delay: -2s;
+  }
+}
+
+@keyframes molecule-bud {
+  to {
+    transform: translate(var(--bud-x, 4px), var(--bud-y, -3px));
+  }
+}
+
+@keyframes molecule-spore {
+  to {
+    transform: translateY(-3px);
   }
 }
 
@@ -343,33 +363,17 @@
 
   /* El anuncio, hasta los bordes del bloque arriba y a los lados (su relleno, en negativo) y con su
      esquina de arriba a la derecha. La foto nace de la tinta por arriba y se disuelve en ella al pie,
-     donde sigue la selección. El texto, abajo a la derecha, sobre las vitrinas que ya se oscurecen,
-     y a plomo con el enlace del pie: los astronautas y la sala rosa del fondo quedan a la vista. */
+     donde sigue la selección. */
   .distribution-ad {
     --ad-pad: calc(clamp(24px, 4.5vw, 80px) + var(--picks-pad));
     grid-template-areas: 'ad';
-    margin: calc(-1 * clamp(3.5rem, 5.5vw, 6rem)) calc(-1 * var(--ad-pad)) 0;
+    margin: calc(-1 * clamp(3.5rem, 5.5vw, 6rem)) calc(-1 * var(--ad-pad)) clamp(1.5rem, 3vw, 3.5rem);
   }
 
   .distribution-photo {
     position: relative;
     grid-area: ad;
     border-radius: 0 var(--picks-join) 0 0;
-  }
-
-  /* Detrás del texto, la tinta entra también por la derecha: la letra clara se lee sobre los blancos
-     de las vitrinas sin apagar a los astronautas. */
-  .distribution-photo::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 55% 95% at 100% 50%,
-      rgb(33 30 36 / 0.88),
-      rgb(33 30 36 / 0.6) 50%,
-      transparent 82%
-    );
-    pointer-events: none;
   }
 
   .distribution-photo img {
@@ -397,18 +401,6 @@
     );
   }
 
-  .distribution-ad-copy {
-    grid-area: ad;
-    align-self: end;
-    margin-top: 0;
-    padding: 0 var(--ad-pad) clamp(3rem, 6vw, 6.5rem) 64%;
-  }
-
-  /* En esa columna estrecha, el titular en dos líneas, como en móvil. */
-  .distribution-ad h3 span {
-    display: block;
-  }
-
   /* El bloque de tinta, a lo ancho de la columna blanca y con las esquinas de «Cómo colaborar»: sin
      redondeo arriba a la izquierda, donde el blanco acaba en curva sobre él; la amplia arriba a la
      derecha y abajo a la izquierda. Arriba, la cabecera; en medio, los tres productos en fila; al
@@ -421,8 +413,10 @@
     position: relative;
     row-gap: clamp(2.25rem, 3.5vw, 3.5rem);
     margin: clamp(3.5rem, 6vw, 6.25rem) calc(-1 * clamp(24px, 4.5vw, 80px)) 0;
+    /* Al pie, del enlace al borde, el aire de final de sección, un pelín más
+       que el estándar: el bloque es alto y el enlace quedaba justo. */
     padding: clamp(3.5rem, 5.5vw, 6rem) calc(clamp(24px, 4.5vw, 80px) + var(--picks-pad))
-      clamp(2rem, 3vw, 3rem);
+      clamp(4.75rem, 7.25vw, 8.25rem);
     border-radius: 0 var(--picks-join) 1rem var(--picks-round);
   }
 
@@ -443,13 +437,17 @@
     pointer-events: none;
   }
 
+  /* Entre la entradilla y los productos, algo más de aire que entre las demás piezas. */
   .distribution-picks-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: clamp(2rem, 4vw, 4.5rem);
+    margin-top: clamp(1rem, 2vw, 2.5rem);
   }
 
+  /* Y entre los productos y el enlace, el mismo aire de más. */
   .distribution-picks-close {
     justify-self: end;
+    margin-top: clamp(1rem, 2vw, 2.5rem);
   }
 }
 
@@ -458,13 +456,5 @@
   .distribution {
     padding-top: 0.85rem;
     border-top: 0;
-  }
-}
-
-/* En móvil, el titular del anuncio en una línea quedaría casi del cuerpo del texto: va en dos, a
-   propósito, y cada una tan grande como quepa. */
-@media (max-width: 600px) {
-  .distribution-ad h3 span {
-    display: block;
   }
 }

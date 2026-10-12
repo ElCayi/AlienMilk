@@ -76,4 +76,15 @@ public class TiendaRestController {
 			@RequestHeader(name = CABECERA_CLAVE, required = false) String clave) {
 		return tiendaService.anularPedidoInvitado(referencia, clave);
 	}
+
+	/**
+	 * Aviso de Stripe (webhook). El cuerpo se lee tal cual llega: la firma se calcula sobre esos bytes
+	 * y cualquier cambio (reformatear el JSON) la invalidaría.
+	 */
+	@PostMapping("/pagos/aviso")
+	public ResponseEntity<Void> avisoPago(@RequestBody String cuerpo,
+			@RequestHeader(name = "Stripe-Signature", required = false) String firma) {
+		tiendaService.recibirAvisoPago(cuerpo, firma);
+		return ResponseEntity.ok().build();
+	}
 }

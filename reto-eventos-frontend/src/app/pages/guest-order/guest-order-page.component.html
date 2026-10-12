@@ -61,7 +61,15 @@
         <span class="title-line">{{ stateLabels[pedido.estado].toLowerCase() }}.</span>
       </h2>
       <app-order-receipt [order]="pedido">
-        @if (pedido.estado === 'CONFIRMADO') {
+        @if (pedido.estado === 'PENDIENTE_PAGO' && pedido.pagoUrl) {
+          <button type="button" class="line-action pay-action" (click)="pay(pedido)">
+            <span class="line-action-label">Pagar el pedido</span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
+          </button>
+        }
+        @if (pedido.estado === 'CONFIRMADO' || pedido.estado === 'PENDIENTE_PAGO') {
           @if (cancelError(); as message) {
             <p class="field-error" role="alert">{{ message }}</p>
           }

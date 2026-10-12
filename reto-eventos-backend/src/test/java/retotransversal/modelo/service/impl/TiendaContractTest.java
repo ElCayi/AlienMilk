@@ -34,6 +34,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import jakarta.persistence.EntityManager;
+
 import retotransversal.exception.GlobalExceptionHandler;
 import retotransversal.modelo.entities.CategoriaProducto;
 import retotransversal.modelo.entities.EntregaPedido;
@@ -78,7 +80,8 @@ class TiendaContractTest {
 			return pedido;
 		});
 		Clock reloj = Clock.fixed(Instant.parse("2026-10-09T10:00:00Z"), ZoneId.of("Europe/Madrid"));
-		TiendaServiceImpl servicio = new TiendaServiceImpl(productos, pedidos, usuarios, limitador, reloj);
+		TiendaServiceImpl servicio = new TiendaServiceImpl(productos, pedidos, usuarios, limitador, null,
+				mock(EntityManager.class), reloj);
 		mvc = MockMvcBuilders.standaloneSetup(new TiendaRestController(servicio))
 				.setControllerAdvice(new GlobalExceptionHandler()).build();
 	}
@@ -281,6 +284,7 @@ class TiendaContractTest {
 				.andExpect(jsonPath("$.condiciones.gastosEnvio").value(4.90))
 				.andExpect(jsonPath("$.condiciones.envioGratisDesde").value(40.00))
 				.andExpect(jsonPath("$.condiciones.unidadesMaximas").value(6))
+				.andExpect(jsonPath("$.condiciones.pagoConTarjeta").value(false))
 				.andExpect(jsonPath("$.productos[1].slug").value("copa-de-degustacion"));
 	}
 
@@ -291,6 +295,7 @@ class TiendaContractTest {
 				.withBean(PedidoRepository.class, () -> pedidos)
 				.withBean(UsuarioRepository.class, () -> usuarios)
 				.withBean(LimitadorSolicitudes.class, () -> limitador)
+				.withBean(EntityManager.class, () -> mock(EntityManager.class))
 				.withBean(TiendaServiceImpl.class)
 				.run(context -> assertThat(context).hasNotFailed().hasSingleBean(TiendaService.class));
 	}

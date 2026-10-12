@@ -68,7 +68,7 @@ public class Pedido {
 	private String claveHash;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 12)
+	@Column(nullable = false, length = 16)
 	private EstadoPedido estado;
 
 	@Enumerated(EnumType.STRING)
@@ -92,6 +92,27 @@ public class Pedido {
 
 	@Column(name = "anulado_en")
 	private LocalDateTime anuladoEn;
+
+	/** Sesión de Stripe Checkout del pedido, mientras se paga y después, para consultarla. */
+	@Column(name = "pago_sesion")
+	private String pagoSesion;
+
+	/** Página de pago, válida hasta {@link #pagoCaducaEn}. */
+	@Column(name = "pago_url", length = 1024)
+	private String pagoUrl;
+
+	@Column(name = "pago_caduca_en")
+	private LocalDateTime pagoCaducaEn;
+
+	/** El cobro hecho (PaymentIntent de Stripe), para poder devolverlo. */
+	@Column(name = "pago_id")
+	private String pagoId;
+
+	@Column(name = "pagado_en")
+	private LocalDateTime pagadoEn;
+
+	@Column(name = "reembolso_id")
+	private String reembolsoId;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)

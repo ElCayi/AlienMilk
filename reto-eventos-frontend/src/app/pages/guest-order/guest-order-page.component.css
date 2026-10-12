@@ -11,3 +11,8 @@
   cursor: wait;
   opacity: 0.6;
 }
+
+/* Pagar va primero y separado de la anulación. */
+.pay-action {
+  margin-bottom: 1.75rem;
+}

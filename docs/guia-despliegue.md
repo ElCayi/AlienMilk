@@ -89,9 +89,20 @@ SPRING_MAIL_USERNAME=cuenta-que-envia@gmail.com
 SPRING_MAIL_PASSWORD=CONTRASENA_DE_APLICACION
 AVISOS_CORREO_DESTINO=quien-recibe-los-avisos@example.com
 AVISOS_CORREO_PANEL=https://217.154.182.6/admin
+
+# Cobro de la tienda con Stripe Checkout (opcional; sin clave, la tienda confirma sin cobrar).
+# Mientras sea un portfolio, las claves del entorno de prueba (sk_test_…), nunca las de modo activo.
+STRIPE_SECRET_KEY=sk_test_…
+# Secreto del webhook de producción: Stripe › Desarrolladores › Webhooks, destino
+# https://DOMINIO/api/tienda/pagos/aviso con los eventos checkout.session.completed,
+# checkout.session.expired, checkout.session.async_payment_succeeded y async_payment_failed.
+STRIPE_WEBHOOK_SECRET=whsec_…
+# Adónde vuelve el comprador desde la página de pago.
+TIENDA_URL=https://DOMINIO
 ```
 
 Al arrancar, el log dice si el aviso quedó `activo` o por qué está apagado.
+También dice si el pago de la tienda está activo.
 
 ```bash
 systemctl daemon-reload

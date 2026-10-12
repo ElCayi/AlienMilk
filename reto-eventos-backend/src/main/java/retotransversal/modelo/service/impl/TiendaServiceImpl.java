@@ -19,9 +19,15 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.DatosNoValidosException;
@@ -40,6 +46,11 @@ import retotransversal.modelo.entities.LineaPedido;
 import retotransversal.modelo.entities.Pedido;
 import retotransversal.modelo.entities.Producto;
 import retotransversal.modelo.entities.Usuario;
+import retotransversal.modelo.pagos.AvisoPago;
+import retotransversal.modelo.pagos.EstadoSesionPago;
+import retotransversal.modelo.pagos.PagoNoDisponibleException;
+import retotransversal.modelo.pagos.PasarelaPago;
+import retotransversal.modelo.pagos.SesionPago;
 import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ProductoRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
@@ -60,34 +71,45 @@ public class TiendaServiceImpl implements TiendaService {
 	private static final Pattern CORREO = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 	private static final SecureRandom AZAR = new SecureRandom();
 
-	private static final CondicionesTiendaDto CONDICIONES = new CondicionesTiendaDto(GASTOS_ENVIO,
-			ENVIO_GRATIS_DESDE, UNIDADES_MAXIMAS);
+	private static final Logger log = LoggerFactory.getLogger(TiendaServiceImpl.class);
 
 	private final ProductoRepository productoRepository;
 	private final PedidoRepository pedidoRepository;
 	private final UsuarioRepository usuarioRepository;
 	private final LimitadorSolicitudes limitador;
+	/** Sin pasarela (sin clave de Stripe) la tienda es de demostración: confirma sin cobrar. */
+	private final PasarelaPago pasarela;
+	private final EntityManager entityManager;
 	private final Clock reloj;
 
 	@Autowired
 	public TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
-			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador) {
-		this(productoRepository, pedidoRepository, usuarioRepository, limitador, Clock.systemDefaultZone());
+			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador, ObjectProvider<PasarelaPago> pasarela,
+			EntityManager entityManager) {
+		this(productoRepository, pedidoRepository, usuarioRepository, limitador, pasarela.getIfAvailable(),
+				entityManager, Clock.systemDefaultZone());
+		log.info(this.pasarela == null
+				? "Tienda: pago apagado (sin STRIPE_SECRET_KEY); los pedidos se confirman sin cobrar"
+				: "Tienda: pago con Stripe Checkout activo");
 	}
 
 	TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
-			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador, Clock reloj) {
+			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador, PasarelaPago pasarela,
+			EntityManager entityManager, Clock reloj) {
 		this.productoRepository = productoRepository;
 		this.pedidoRepository = pedidoRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.limitador = limitador;
+		this.pasarela = pasarela;
+		this.entityManager = entityManager;
 		this.reloj = reloj;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public CatalogoTiendaDto catalogo() {
-		return new CatalogoTiendaDto(CONDICIONES,
+		return new CatalogoTiendaDto(
+				new CondicionesTiendaDto(GASTOS_ENVIO, ENVIO_GRATIS_DESDE, UNIDADES_MAXIMAS, pasarela != null),
 				productoRepository.findAllByActivoTrueOrderByOrdenAsc().stream().map(ProductoDto::fromEntity).toList());
 	}
 
@@ -104,7 +126,8 @@ public class TiendaServiceImpl implements TiendaService {
 		Map<String, Integer> cantidades = validar(datos, false);
 		Usuario usuario = usuarioRepository.findById(username)
 				.orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
-		return aDto(guardar(datos, cantidades, pedido -> pedido.setUsuario(usuario)), null);
+		Pedido pedido = guardar(datos, cantidades, nuevo -> nuevo.setUsuario(usuario));
+		return aDto(abrirPago(pedido, usuario.getEmail()), null);
 	}
 
 	@Override
@@ -119,14 +142,15 @@ public class TiendaServiceImpl implements TiendaService {
 			nuevo.setCorreo(datos.correo().strip());
 			nuevo.setClaveHash(huella(clave));
 		});
-		return aDto(pedido, clave);
+		return aDto(abrirPago(pedido, pedido.getCorreo()), clave);
 	}
 
+	/** Los pedidos pendientes de pago se ponen al día antes de enseñarlos (ver {@link #alDia}). */
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public List<PedidoDto> pedidosDe(String username) {
 		return pedidoRepository.findAllByUsuarioUsernameOrderByCreadoEnDesc(username).stream()
-				.map(pedido -> aDto(pedido, null)).toList();
+				.map(pedido -> aDto(alDia(pedido), null)).toList();
 	}
 
 	@Override
@@ -141,15 +165,102 @@ public class TiendaServiceImpl implements TiendaService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public PedidoDto pedidoInvitado(String referencia, String clave) {
-		return aDto(conClave(referencia, clave), null);
+		return aDto(alDia(conClave(referencia, clave)), null);
 	}
 
 	@Override
 	@Transactional
 	public PedidoDto anularPedidoInvitado(String referencia, String clave) {
 		return aDto(anular(conClave(referencia, clave)), null);
+	}
+
+	@Override
+	@Transactional
+	public void recibirAvisoPago(String cuerpo, String firma) {
+		if (pasarela == null) {
+			throw new RecursoNoEncontradoException("La tienda no tiene el pago activado");
+		}
+		AvisoPago aviso = pasarela.leerAviso(cuerpo, firma);
+		log.info("Aviso de pago {} de la sesión {}", aviso.tipo(), aviso.sesion());
+		if (aviso.sesion() != null) {
+			// Aquí sí se deja salir el error de la pasarela: el aviso falla y Stripe lo vuelve a enviar.
+			pedidoRepository.findByPagoSesion(aviso.sesion()).ifPresent(this::sincronizar);
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Integer> pagosVencidos() {
+		if (pasarela == null) {
+			return List.of();
+		}
+		return pedidoRepository.findAllByEstadoAndPagoCaducaEnBefore(EstadoPedido.PENDIENTE_PAGO,
+				LocalDateTime.now(reloj)).stream().map(Pedido::getIdPedido).toList();
+	}
+
+	@Override
+	@Transactional
+	public void repasarPago(Integer idPedido) {
+		pedidoRepository.findById(idPedido).ifPresent(this::sincronizar);
+	}
+
+	/** Con pasarela, abre el pago del pedido recién guardado; si no se puede, el pedido entero se deshace. */
+	private Pedido abrirPago(Pedido pedido, String correo) {
+		if (pasarela != null) {
+			SesionPago sesion = pasarela.abrir(pedido, correo);
+			pedido.setPagoSesion(sesion.id());
+			pedido.setPagoUrl(sesion.url());
+			pedido.setPagoCaducaEn(LocalDateTime.ofInstant(sesion.caducaEn(), reloj.getZone()));
+		}
+		return pedido;
+	}
+
+	/**
+	 * Pone al día un pedido pendiente de pago preguntando a la pasarela, para quien vuelve de pagar
+	 * antes de que llegue el aviso (o cuando no llega). Si la pasarela no contesta, se enseña como estaba.
+	 */
+	private Pedido alDia(Pedido pedido) {
+		if (pedido.getEstado() != EstadoPedido.PENDIENTE_PAGO) {
+			return pedido;
+		}
+		try {
+			return sincronizar(pedido);
+		} catch (PagoNoDisponibleException e) {
+			log.warn("No se ha podido consultar el pago del pedido {}", pedido.getReferencia(), e);
+			return pedido;
+		}
+	}
+
+	/**
+	 * Lleva un pedido pendiente al estado de su sesión de pago: pagado, confirmado; caducado, anulado y
+	 * con sus unidades de vuelta. Bloquea antes la fila: el aviso, la consulta y una anulación pueden
+	 * llegar a la vez, y solo el primero cambia el estado.
+	 */
+	private Pedido sincronizar(Pedido pedido) {
+		bloquear(pedido);
+		if (pasarela == null || pedido.getEstado() != EstadoPedido.PENDIENTE_PAGO || pedido.getPagoSesion() == null) {
+			return pedido;
+		}
+		EstadoSesionPago sesion = pasarela.consultar(pedido.getPagoSesion());
+		switch (sesion.estado()) {
+			case PAGADA -> {
+				pedido.setEstado(EstadoPedido.CONFIRMADO);
+				pedido.setPagoId(sesion.pago());
+				pedido.setPagadoEn(LocalDateTime.now(reloj));
+				pedido.setPagoUrl(null);
+				log.info("Pedido {} pagado", pedido.getReferencia());
+			}
+			case CADUCADA -> {
+				devolverUnidades(pedido);
+				log.info("Pedido {} anulado: nadie lo pagó a tiempo", pedido.getReferencia());
+			}
+			case ABIERTA -> {
+				// Aún se puede pagar.
+			}
+		}
+		return pedido;
 	}
 
 	/**
@@ -174,7 +285,7 @@ public class TiendaServiceImpl implements TiendaService {
 		});
 
 		Pedido pedido = Pedido.builder()
-				.estado(EstadoPedido.CONFIRMADO)
+				.estado(pasarela == null ? EstadoPedido.CONFIRMADO : EstadoPedido.PENDIENTE_PAGO)
 				.entrega(datos.entrega())
 				.direccion(datos.entrega() == EntregaPedido.ENVIO ? datos.direccion().strip() : null)
 				.creadoEn(LocalDateTime.now(reloj))
@@ -203,15 +314,54 @@ public class TiendaServiceImpl implements TiendaService {
 		return guardado;
 	}
 
+	/**
+	 * Anula un pedido que aún no ha salido. Si estaba pendiente, primero se cierra su página de pago
+	 * para que nadie pueda pagarlo después; si ya estaba pagado, primero se devuelve el dinero. Si la
+	 * pasarela falla, el pedido se queda como estaba.
+	 */
 	private Pedido anular(Pedido pedido) {
-		if (pedido.getEstado() != EstadoPedido.CONFIRMADO) {
+		bloquear(pedido);
+		if (pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO && pasarela != null) {
+			try {
+				pasarela.caducar(pedido.getPagoSesion());
+			} catch (PagoNoDisponibleException e) {
+				// La sesión ya no estaba abierta. Lo normal es que se haya pagado justo ahora, y entonces se
+				// sigue como un pedido pagado; si había caducado, sincronizar ya lo ha anulado.
+				sincronizar(pedido);
+				if (pedido.getEstado() == EstadoPedido.ANULADO) {
+					return pedido;
+				}
+				if (pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO) {
+					throw e;
+				}
+			}
+		}
+		if (pedido.getEstado() == EstadoPedido.CONFIRMADO && pedido.getPagoId() != null) {
+			if (pasarela == null) {
+				throw new ConflictoNegocioException("Ahora mismo no podemos devolver el pago. Inténtelo más tarde.");
+			}
+			pedido.setReembolsoId(pasarela.reembolsar(pedido.getPagoId()));
+		}
+		if (pedido.getEstado() != EstadoPedido.CONFIRMADO && pedido.getEstado() != EstadoPedido.PENDIENTE_PAGO) {
 			throw new ConflictoNegocioException("Este pedido ya no se puede anular");
 		}
+		devolverUnidades(pedido);
+		return pedido;
+	}
+
+	private void devolverUnidades(Pedido pedido) {
 		pedido.getLineas().forEach(linea -> productoRepository
 				.devolverExistencias(linea.getProducto().getIdProducto(), linea.getCantidad()));
 		pedido.setEstado(EstadoPedido.ANULADO);
 		pedido.setAnuladoEn(LocalDateTime.now(reloj));
-		return pedido;
+		pedido.setPagoUrl(null);
+	}
+
+	/** Vuelve a leer el pedido con su fila bloqueada hasta el final de la transacción (SELECT … FOR UPDATE). */
+	private void bloquear(Pedido pedido) {
+		if (pedido.getIdPedido() != null && entityManager.contains(pedido)) {
+			entityManager.refresh(pedido, LockModeType.PESSIMISTIC_WRITE);
+		}
 	}
 
 	/**
@@ -331,8 +481,9 @@ public class TiendaServiceImpl implements TiendaService {
 		return importe.setScale(2, RoundingMode.HALF_UP);
 	}
 
-	/** `clave` solo va en la respuesta que crea un pedido de invitado; en las demás, null. */
+	/** `clave` solo va en la respuesta que crea un pedido de invitado; la página de pago, mientras está pendiente. */
 	private PedidoDto aDto(Pedido pedido, String clave) {
+		boolean pendiente = pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO;
 		List<LineaPedidoDto> lineas = pedido.getLineas().stream()
 				.map(linea -> new LineaPedidoDto(linea.getProducto().getSlug(), linea.getNombre(),
 						linea.getPrecioUnitario(), linea.getCantidad(), linea.getImporte()))
@@ -340,6 +491,6 @@ public class TiendaServiceImpl implements TiendaService {
 		return new PedidoDto(pedido.getIdPedido(), pedido.getReferencia(), pedido.getEstado(), pedido.getEntrega(),
 				pedido.getDireccion(), pedido.getSubtotal(), pedido.getGastosEnvio(), pedido.getTotal(),
 				pedido.getCreadoEn(), pedido.getAnuladoEn(), lineas, pedido.getUsuario() == null, pedido.getNombre(),
-				clave);
+				pendiente ? pedido.getPagoUrl() : null, pendiente ? pedido.getPagoCaducaEn() : null, clave);
 	}
 }

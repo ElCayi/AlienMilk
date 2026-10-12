@@ -418,6 +418,24 @@
   text-overflow: ellipsis;
 }
 
+/* Aviso al volver de Stripe sin pagar: la nota con filete coral de la base, en versión oscura. */
+.order-notice {
+  max-width: 44rem;
+  margin: -1rem 0 2.5rem;
+  padding: 1rem 1.15rem;
+  border-left: 2px solid var(--coral);
+  border-radius: 0.2rem;
+  color: var(--muted);
+  background: rgba(247, 248, 249, 0.04);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* En el resguardo, pagar va primero y separado de lo demás. */
+.pay-action {
+  margin-bottom: 1.75rem;
+}
+
 /* 03 · Historial: cada pedido, una fila del recuadro con leyenda. */
 .history-list {
   margin: 0;
@@ -444,6 +462,11 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 1.5rem;
+}
+
+.history-actions {
+  display: flex;
+  gap: 1.25rem;
 }
 
 .history-ref,

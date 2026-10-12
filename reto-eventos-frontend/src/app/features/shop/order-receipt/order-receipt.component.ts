@@ -1,7 +1,7 @@
 import { Component, ElementRef, input, viewChild } from '@angular/core';
 
 import { Pedido } from '../../../models/api.models';
-import { DELIVERY_LABELS, formatPrice } from '../shop-format';
+import { DELIVERY_LABELS, formatPrice, formatTime } from '../shop-format';
 
 /**
  * Resguardo de un pedido: el número en grande, qué pasa ahora y los importes. Lo usan la tienda, al
@@ -18,6 +18,7 @@ export class OrderReceiptComponent {
 
   readonly deliveryLabels = DELIVERY_LABELS;
   readonly price = formatPrice;
+  readonly time = formatTime;
 
   private readonly box = viewChild.required<ElementRef<HTMLElement>>('box');
 

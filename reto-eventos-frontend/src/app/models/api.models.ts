@@ -231,6 +231,8 @@ export interface CondicionesTienda {
   gastosEnvio: number;
   envioGratisDesde: number;
   unidadesMaximas: number;
+  /** Se paga con tarjeta en Stripe; si no, la tienda confirma sin cobrar (demostración). */
+  pagoConTarjeta: boolean;
 }
 
 export interface CatalogoTienda {
@@ -240,7 +242,7 @@ export interface CatalogoTienda {
 
 export type EntregaPedido = 'ENVIO' | 'RECOGIDA';
 
-export type EstadoPedido = 'CONFIRMADO' | 'ENVIADO' | 'ENTREGADO' | 'ANULADO';
+export type EstadoPedido = 'PENDIENTE_PAGO' | 'CONFIRMADO' | 'ENVIADO' | 'ENTREGADO' | 'ANULADO';
 
 export interface PedidoPayload {
   lineas: { producto: string; cantidad: number }[];
@@ -274,6 +276,9 @@ export interface Pedido {
   /** Pedido sin cuenta: se abre con su enlace privado, no está en ningún historial. */
   invitado: boolean;
   nombre: string | null;
+  /** Mientras está pendiente de pago: la página de Stripe y hasta cuándo se puede pagar. */
+  pagoUrl?: string;
+  pagoCaducaEn?: string;
   /** La clave del enlace privado. Solo llega una vez, al crear un pedido de invitado. */
   clave?: string;
 }

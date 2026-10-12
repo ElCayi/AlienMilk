@@ -12,6 +12,7 @@ import retotransversal.modelo.entities.EstadoPedido;
 /**
  * Un pedido tal como lo ve su comprador. `invitado` distingue los pedidos sin cuenta; `clave` solo
  * viaja una vez, en la respuesta que crea un pedido de invitado, porque el servidor no la guarda.
+ * `pagoUrl` y `pagoCaducaEn`: dónde y hasta cuándo se puede pagar, solo mientras está pendiente.
  */
 public record PedidoDto(
 		Integer idPedido,
@@ -27,5 +28,7 @@ public record PedidoDto(
 		List<LineaPedidoDto> lineas,
 		boolean invitado,
 		String nombre,
+		@JsonInclude(JsonInclude.Include.NON_NULL) String pagoUrl,
+		@JsonInclude(JsonInclude.Include.NON_NULL) LocalDateTime pagoCaducaEn,
 		@JsonInclude(JsonInclude.Include.NON_NULL) String clave) {
 }

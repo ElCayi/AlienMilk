@@ -1,7 +1,12 @@
 import { CondicionesTienda, Producto } from '../../models/api.models';
 import { formatPrice, maxUnits, shippingCost, stockLabel, stockLevel } from './shop-format';
 
-const terms: CondicionesTienda = { gastosEnvio: 4.9, envioGratisDesde: 40, unidadesMaximas: 6 };
+const terms: CondicionesTienda = {
+  gastosEnvio: 4.9,
+  envioGratisDesde: 40,
+  unidadesMaximas: 6,
+  pagoConTarjeta: false,
+};
 
 function product(existencias: number): Producto {
   return {

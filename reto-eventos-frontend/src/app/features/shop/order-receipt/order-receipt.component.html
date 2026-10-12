@@ -5,6 +5,11 @@
     <p class="receipt-code">{{ pedido.referencia }}</p>
     <p class="receipt-text">
       @switch (pedido.estado) {
+        @case ('PENDIENTE_PAGO') {
+          Sus unidades están reservadas a la espera del pago@if (pedido.pagoCaducaEn) {, hasta las
+            <b>{{ time(pedido.pagoCaducaEn) }}</b>}. Si no se paga a tiempo, el pedido se anula solo y
+          vuelven al centro de distribución.
+        }
         @case ('ANULADO') {
           El pedido se ha anulado y sus unidades han vuelto al centro de distribución.
         }

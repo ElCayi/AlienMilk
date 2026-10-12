@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
 	nombre VARCHAR(80),
 	correo VARCHAR(120),
 	clave_hash CHAR(64),
-	estado VARCHAR(12) NOT NULL,
+	estado VARCHAR(16) NOT NULL,
 	entrega VARCHAR(12) NOT NULL,
 	direccion VARCHAR(200),
 	subtotal DECIMAL(9,2) NOT NULL,
@@ -293,11 +293,20 @@ CREATE TABLE IF NOT EXISTS pedidos (
 	total DECIMAL(9,2) NOT NULL,
 	creado_en DATETIME NOT NULL,
 	anulado_en DATETIME,
+	-- Cobro con Stripe Checkout: la sesión de pago, hasta cuándo se puede pagar, el pago y su devolución.
+	pago_sesion VARCHAR(255),
+	pago_url VARCHAR(1024),
+	pago_caduca_en DATETIME,
+	pago_id VARCHAR(255),
+	pagado_en DATETIME,
+	reembolso_id VARCHAR(255),
 	CONSTRAINT fk_pedidos_usuarios FOREIGN KEY (username) REFERENCES usuarios(username),
-	CONSTRAINT ck_pedido_estado CHECK (estado IN ('CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'ANULADO')),
+	CONSTRAINT ck_pedido_estado CHECK (estado IN ('PENDIENTE_PAGO', 'CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'ANULADO')),
 	CONSTRAINT ck_pedido_entrega CHECK (entrega IN ('ENVIO', 'RECOGIDA')),
 	CONSTRAINT ck_pedido_comprador CHECK (
 		username IS NOT NULL OR (nombre IS NOT NULL AND correo IS NOT NULL AND clave_hash IS NOT NULL)),
+	UNIQUE INDEX uk_pedidos_pago_sesion (pago_sesion),
+	INDEX idx_pedidos_pendientes (estado, pago_caduca_en),
 	INDEX idx_pedidos_usuario (username, creado_en)
 );
 

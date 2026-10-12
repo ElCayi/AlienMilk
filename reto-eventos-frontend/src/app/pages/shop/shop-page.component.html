@@ -165,9 +165,17 @@
     @if (receipt(); as order) {
       <h2 id="order-title">
         <span class="title-line">Pedido</span>
-        <span class="title-line">{{ order.estado === 'ANULADO' ? 'anulado.' : 'confirmado.' }}</span>
+        <span class="title-line">{{ stateLabels[order.estado].toLowerCase() }}.</span>
       </h2>
       <app-order-receipt [order]="order">
+        @if (order.estado === 'PENDIENTE_PAGO' && order.pagoUrl) {
+          <button type="button" class="line-action pay-action" (click)="pay(order, order.clave)">
+            <span class="line-action-label">Pagar el pedido</span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
+          </button>
+        }
         <!-- Sin cuenta no hay historial: el enlace privado es la única forma de volver al pedido. -->
         @if (guestLink(order); as link) {
           <div class="guest-link">
@@ -210,6 +218,9 @@
         <span class="title-line">Revise su pedido</span>
         <span class="title-line">antes de confirmarlo.</span>
       </h2>
+      @if (notice(); as message) {
+        <p class="order-notice" role="status">{{ message }}</p>
+      }
       <div class="order-layout">
         <ul class="order-lines">
           @for (line of lines(); track line.product.slug) {
@@ -370,7 +381,15 @@
             [disabled]="sending() || shortLines().length > 0"
             (click)="confirm()"
           >
-            {{ sending() ? 'Confirmando…' : 'Confirmar pedido' }}
+            {{
+              sending()
+                ? payByCard()
+                  ? 'Abriendo el pago…'
+                  : 'Confirmando…'
+                : payByCard()
+                  ? 'Pagar con tarjeta'
+                  : 'Confirmar pedido'
+            }}
           </button>
 
           <!-- La cuenta es opcional: lo que aporta es el historial, no el permiso para comprar. -->
@@ -391,8 +410,13 @@
           }
 
           <p class="demo-note">
-            Tienda de demostración: el pedido se registra y descuenta existencias, pero no se cobra
-            ni se envía nada.
+            @if (payByCard()) {
+              Pago de prueba con Stripe: use la tarjeta <span class="nowrap">4242 4242 4242 4242</span>,
+              cualquier fecha futura y cualquier CVC. No se cobra nada ni se envía nada.
+            } @else {
+              Tienda de demostración: el pedido se registra y descuenta existencias, pero no se cobra
+              ni se envía nada.
+            }
           </p>
         </div>
       </div>
@@ -429,17 +453,24 @@
                 <span class="history-state" [attr.data-state]="order.estado">{{
                   stateLabels[order.estado]
                 }}</span>
-                @if (order.estado === 'CONFIRMADO') {
-                  <button
-                    type="button"
-                    class="history-cancel"
-                    [disabled]="cancelling() === order.idPedido"
-                    (click)="cancel(order)"
-                  >
-                    {{ cancelling() === order.idPedido ? 'Anulando…' : 'Anular' }}
-                    <span class="visually-hidden"> el pedido {{ order.referencia }}</span>
-                  </button>
-                }
+                <span class="history-actions">
+                  @if (order.estado === 'PENDIENTE_PAGO' && order.pagoUrl) {
+                    <button type="button" class="history-cancel history-pay" (click)="pay(order)">
+                      Pagar<span class="visually-hidden"> el pedido {{ order.referencia }}</span>
+                    </button>
+                  }
+                  @if (order.estado === 'CONFIRMADO' || order.estado === 'PENDIENTE_PAGO') {
+                    <button
+                      type="button"
+                      class="history-cancel"
+                      [disabled]="cancelling() === order.idPedido"
+                      (click)="cancel(order)"
+                    >
+                      {{ cancelling() === order.idPedido ? 'Anulando…' : 'Anular' }}
+                      <span class="visually-hidden"> el pedido {{ order.referencia }}</span>
+                    </button>
+                  }
+                </span>
               </div>
             </li>
           }

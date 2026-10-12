@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { ShopService } from '../../core/services/shop.service';
 import { OrderReceiptComponent } from '../../features/shop/order-receipt/order-receipt.component';
+import { rememberPayment } from '../../features/shop/pending-payment';
 import { formatOrderDate, ORDER_STATE_LABELS } from '../../features/shop/shop-format';
 import { ApiError, Pedido } from '../../models/api.models';
 
@@ -55,6 +56,14 @@ export class GuestOrderPageComponent {
       },
       error: (error: HttpErrorResponse) => this.status.set(error.status === 404 ? 'missing' : 'error'),
     });
+  }
+
+  /** A la página de pago de Stripe; al volver, la tienda reconoce el pedido (pending-payment). */
+  pay(order: Pedido): void {
+    if (order.pagoUrl) {
+      rememberPayment(order, this.key);
+      window.location.assign(order.pagoUrl);
+    }
   }
 
   cancel(order: Pedido): void {

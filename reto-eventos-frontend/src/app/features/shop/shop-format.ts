@@ -27,6 +27,7 @@ export const DELIVERY_LABELS: Record<EntregaPedido, string> = {
 };
 
 export const ORDER_STATE_LABELS: Record<EstadoPedido, string> = {
+  PENDIENTE_PAGO: 'Pendiente de pago',
   CONFIRMADO: 'Confirmado',
   ENVIADO: 'En camino',
   ENTREGADO: 'Entregado',
@@ -35,6 +36,7 @@ export const ORDER_STATE_LABELS: Record<EstadoPedido, string> = {
 
 const PRICE = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
 const ORDER_DATE = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const ORDER_TIME = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' });
 
 export function formatPrice(amount: number): string {
   return PRICE.format(amount);
@@ -42,6 +44,11 @@ export function formatPrice(amount: number): string {
 
 export function formatOrderDate(isoDate: string): string {
   return ORDER_DATE.format(new Date(isoDate));
+}
+
+/** Hora y minutos, para el plazo de pago: «12:30». */
+export function formatTime(isoDate: string): string {
+  return ORDER_TIME.format(new Date(isoDate));
 }
 
 export type StockLevel = 'out' | 'low' | 'ok';

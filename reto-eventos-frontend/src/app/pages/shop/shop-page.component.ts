@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -9,13 +10,15 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { map, Observable } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
 import { ContactService } from '../../core/services/contact.service';
 import { guestOrderLink, ShopService } from '../../core/services/shop.service';
 import { CartService } from '../../features/shop/cart.service';
 import { OrderReceiptComponent } from '../../features/shop/order-receipt/order-receipt.component';
+import { PendingPayment, rememberPayment, takePayment } from '../../features/shop/pending-payment';
 import {
   CATEGORY_FILTERS,
   CATEGORY_LABELS,
@@ -67,6 +70,8 @@ export class ShopPageComponent {
   private readonly contact = inject(ContactService);
   readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly filters = CATEGORY_FILTERS;
   readonly categoryLabels = CATEGORY_LABELS;
@@ -131,6 +136,9 @@ export class ShopPageComponent {
   readonly orders = signal<Pedido[]>([]);
   readonly cancelling = signal<number | null>(null);
   readonly linkCopied = signal(false);
+  /** Aviso informativo sobre el pedido en curso (al volver de Stripe sin pagar). */
+  readonly notice = signal<string | null>(null);
+  readonly payByCard = computed(() => this.catalog()?.condiciones.pagoConTarjeta ?? false);
 
   private readonly addressField = viewChild<ElementRef<HTMLTextAreaElement>>('addressField');
   private readonly nameField = viewChild<ElementRef<HTMLInputElement>>('nameField');
@@ -140,12 +148,23 @@ export class ShopPageComponent {
   constructor() {
     this.loadCatalog();
     this.contact.load();
+    this.handlePaymentReturn();
 
     // La sesión puede llegar después que la página (al recargar con la sesión guardada).
     effect(() => {
       const user = this.auth.currentUser();
       untracked(() => (user ? this.loadOrders() : this.orders.set([])));
     });
+
+    // Vuelta con «Atrás» desde Stripe: el navegador restaura la página tal como se fue, con el botón
+    // aún en «Abriendo el pago…».
+    const restored = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.sending.set(false);
+      }
+    };
+    window.addEventListener('pageshow', restored);
+    inject(DestroyRef).onDestroy(() => window.removeEventListener('pageshow', restored));
 
     // El resguardo toma el foco al aparecer, como en los formularios.
     effect(() => {
@@ -254,6 +273,7 @@ export class ShopPageComponent {
 
     this.sending.set(true);
     this.orderError.set(null);
+    this.notice.set(null);
     this.shop
       .placeOrder({
         lineas: lines.map((line) => ({ producto: line.product.slug, cantidad: line.quantity })),
@@ -263,6 +283,11 @@ export class ShopPageComponent {
       })
       .subscribe({
         next: (pedido) => {
+          // Con pago: a la página de Stripe. El carrito se vacía al volver pagado (handlePaymentReturn).
+          if (pedido.pagoUrl) {
+            this.pay(pedido, pedido.clave);
+            return;
+          }
           this.sending.set(false);
           this.cart.clear();
           this.address.set('');
@@ -290,6 +315,69 @@ export class ShopPageComponent {
       () => this.linkCopied.set(true),
       () => this.linkCopied.set(false),
     );
+  }
+
+  /** A la página de pago de Stripe, recordando el pedido para reconocerlo al volver. */
+  pay(order: Pedido, key?: string): void {
+    if (!order.pagoUrl) {
+      return;
+    }
+    rememberPayment(order, key);
+    window.location.assign(order.pagoUrl);
+  }
+
+  /**
+   * Vuelta de Stripe: /tienda?pago=hecho o ?pago=cancelado. Pagado, se enseña el resguardo y se vacía
+   * el carrito; sin pagar, se anula ese intento (sus unidades vuelven al almacén) y el carrito sigue
+   * ahí para volver a intentarlo.
+   */
+  private handlePaymentReturn(): void {
+    const result = this.route.snapshot.queryParamMap.get('pago');
+    if (!result) {
+      return;
+    }
+    // Fuera ?pago= de la dirección: recargar la página no debe repetir nada.
+    void this.router.navigate([], {
+      queryParams: { pago: null },
+      queryParamsHandling: 'merge',
+      fragment: 'su-pedido',
+      replaceUrl: true,
+    });
+    const pending = takePayment();
+    if (!pending) {
+      return;
+    }
+    if (result === 'hecho') {
+      this.findOrder(pending).subscribe({
+        next: (order) => {
+          if (order) {
+            this.cart.clear();
+            this.receipt.set(pending.clave ? { ...order, clave: pending.clave } : order);
+            this.loadCatalog(true);
+          }
+        },
+        error: () => this.orderError.set('No hemos podido comprobar el pago. Revise sus pedidos en unos minutos.'),
+      });
+    } else {
+      const cancel = pending.clave
+        ? this.shop.cancelGuestOrder(pending.referencia, pending.clave)
+        : this.shop.cancelOrder(pending.idPedido);
+      const done = () => {
+        this.notice.set('Ha vuelto sin pagar. Su pedido sigue aquí, listo para cuando quiera pagarlo.');
+        this.loadCatalog(true);
+        if (this.auth.isAuthenticated()) {
+          this.loadOrders();
+        }
+      };
+      // Si no se puede anular (ya se había pagado en otra pestaña, por ejemplo), lo dirá el historial.
+      cancel.subscribe({ next: done, error: done });
+    }
+  }
+
+  private findOrder(pending: PendingPayment): Observable<Pedido | undefined> {
+    return pending.clave
+      ? this.shop.guestOrder(pending.referencia, pending.clave)
+      : this.shop.myOrders().pipe(map((orders) => orders.find((order) => order.referencia === pending.referencia)));
   }
 
   /** Vuelve del resguardo al catálogo para empezar otro pedido. */

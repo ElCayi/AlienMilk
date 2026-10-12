@@ -59,6 +59,9 @@ public class SecurityConfig {
 						.permitAll()
 						.requestMatchers("/api/tienda/consulta/**")
 						.permitAll()
+						// Avisos de Stripe: sin sesión, los autentica su firma (TiendaService.recibirAvisoPago).
+						.requestMatchers(HttpMethod.POST, "/api/tienda/pagos/aviso")
+						.permitAll()
 						.requestMatchers("/api/tienda/pedidos", "/api/tienda/pedidos/**")
 						.hasAnyRole("CLIENTE", "ADMON")
 						.requestMatchers("/api/admin/**")

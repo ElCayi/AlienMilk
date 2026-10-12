@@ -53,6 +53,11 @@ uniform float uDepthRound;
 uniform float uJoinRound;
 uniform vec2 uDark;
 uniform vec3 uInk;
+uniform float uPieces;
+uniform vec4 uPieceRect[8];
+uniform vec4 uPieceRadii[8];
+uniform vec4 uPieceShape[8];
+uniform vec3 uPieceColor[8];
 varying vec2 vUv;
 
 // Un bloque blanco de la red de confianza entre y.x e y.y, con las esquinas de los marcos: la curva
@@ -61,6 +66,17 @@ float sheet(vec2 px, vec2 y, float outside, float radius) {
   float rb = (px.x > uDepthColumn.x) == (px.y < (y.x + y.y) * 0.5) ? radius : 16.0;
   vec2 qb = vec2(outside, max(y.x - px.y, px.y - y.y)) + rb;
   return 1.0 - smoothstep(-1.5, 1.5, length(max(qb, 0.0)) + min(max(qb.x, qb.y), 0.0) - rb);
+}
+
+// Distancia a una caja (arriba, abajo, izquierda y derecha, en y.x, y.y, z y w) con una esquina
+// distinta en cada lado: arriba a la izquierda, arriba a la derecha, abajo a la derecha y abajo a la
+// izquierda.
+float roundBox(vec2 px, vec4 rect, vec4 r) {
+  vec2 p = px - vec2(rect.z + rect.w, rect.x + rect.y) * 0.5;
+  vec2 b = vec2(rect.w - rect.z, rect.y - rect.x) * 0.5;
+  float rr = p.x > 0.0 ? (p.y < 0.0 ? r.y : r.z) : (p.y < 0.0 ? r.x : r.w);
+  vec2 q = abs(p) - b + rr;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rr;
 }
 
 vec2 cover(vec2 uv) {
@@ -139,8 +155,54 @@ void main() {
   float inked = px.x < uDepthColumn.x ? underWhite : inkCorner;
   float ink = block * inked * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
   base = mix(base, uInk, ink);
-  float amount = uAmount * (1.0 - white) + t * side * uDepth.x;
-  gl_FragColor = vec4(mix(base, color, amount + thicken), 1.0);
+  // Las piezas de tinta de las secciones (data-backdrop-ink): las pinta el fondo y no su CSS, para
+  // que el remolino del cursor asome también sobre ellas, como sobre la tinta de Localizaciones.
+  // Cada una, una caja con sus esquinas; con la curva del blanco sobre ella arriba a la izquierda
+  // (shape.x, la tinta sube por el borde) o abajo a la derecha (shape.y, baja); y con un hueco
+  // (shape.z, metido a los lados) de tinta traslúcida (shape.w), la ventana de la cinta.
+  float solid = 0.0;
+  float glass = 0.0;
+  vec3 glassColor = uInk;
+  for (int i = 0; i < 8; i++) {
+    if (float(i) >= uPieces) {
+      break;
+    }
+    vec4 rect = uPieceRect[i];
+    vec4 shape = uPieceShape[i];
+    vec4 radii = uPieceRadii[i];
+    float fill = 1.0 - smoothstep(-1.0, 1.0, roundBox(px, rect, radii));
+    if (shape.x > 0.0) {
+      float n = shape.x;
+      float d = length(px - vec2(rect.z + n, rect.x - n));
+      fill = max(fill, smoothstep(n - 1.0, n + 1.0, d) * smoothstep(rect.z - 1.0, rect.z + 1.0, px.x)
+        * step(rect.x - n, px.y) * step(px.y, rect.x + 1.0) * step(px.x, rect.z + n));
+    }
+    if (shape.y > 0.0) {
+      float n = shape.y;
+      float d = length(px - vec2(rect.w - n, rect.y + n));
+      fill = max(fill, smoothstep(n - 1.0, n + 1.0, d) * (1.0 - smoothstep(rect.w - 1.0, rect.w + 1.0, px.x))
+        * step(px.y, rect.y + n) * step(rect.y - 1.0, px.y) * step(rect.w - n, px.x));
+    }
+    float hole = 0.0;
+    if (shape.z > 0.0) {
+      vec4 inner = vec4(rect.x + 1.0, rect.y - 1.0, rect.z + shape.z, rect.w - shape.z);
+      hole = (1.0 - smoothstep(-1.0, 1.0, roundBox(px, inner, vec4(16.0)))) * fill;
+    }
+    float c = fill - hole;
+    base = mix(base, uPieceColor[i], c);
+    solid = max(solid, c);
+    if (hole > glass) {
+      glass = hole * shape.w;
+      glassColor = uPieceColor[i];
+    }
+  }
+  // Sobre la tinta, la textura solo asoma con el remolino, como en la de Localizaciones.
+  float amount = (uAmount * (1.0 - white) + t * side * uDepth.x) * (1.0 - solid);
+  // Sobre las secciones (la columna blanca y la tinta), el remolino asoma algo más leve que en los
+  // márgenes, para que no moleste al leer.
+  float calm = 1.0 - 0.45 * max(1.0 - side, solid);
+  vec3 lit = mix(base, color, amount + thicken * calm);
+  gl_FragColor = vec4(mix(lit, glassColor, glass), 1.0);
 }`;
 
 /**
@@ -237,6 +299,61 @@ export class LiquidBackdropComponent {
       joinRound: uniform('uJoinRound'),
       dark: uniform('uDark'),
       ink: uniform('uInk'),
+      pieces: uniform('uPieces'),
+      pieceRect: uniform('uPieceRect'),
+      pieceRadii: uniform('uPieceRadii'),
+      pieceShape: uniform('uPieceShape'),
+      pieceColor: uniform('uPieceColor'),
+    };
+    const MAX_PIECES = 8;
+    const pieceRect = new Float32Array(MAX_PIECES * 4);
+    const pieceRadii = new Float32Array(MAX_PIECES * 4);
+    const pieceShape = new Float32Array(MAX_PIECES * 4);
+    const pieceColor = new Float32Array(MAX_PIECES * 3);
+    const parseColor = (value: string): [number, number, number] => {
+      const hex = /^#([0-9a-f]{6})$/i.exec(value.trim())?.[1];
+      // #211e24, la tinta de la casa.
+      return hex
+        ? [0, 2, 4].map((at) => parseInt(hex.slice(at, at + 2), 16) / 255) as [number, number, number]
+        : [0.129, 0.118, 0.141];
+    };
+
+    // Las piezas de tinta que pinta el fondo (ver el shader): su caja, sus esquinas (las de su CSS),
+    // las curvas del blanco que la rodean (data-backdrop-ink="notch-top" o "notch-bottom", solo en
+    // escritorio, donde las ponen sus ::before y ::after) y, en la ventana de la cinta
+    // ("window"), el hueco traslúcido, metido a los lados como su hijo data-backdrop-ink-hole.
+    const setPieces = () => {
+      const pieces = this.deepen ? [...this.deepen.querySelectorAll<HTMLElement>('[data-backdrop-ink]')] : [];
+      const wide = wideLayout.matches;
+      let count = 0;
+      for (const piece of pieces.slice(0, MAX_PIECES)) {
+        const box = piece.getBoundingClientRect();
+        if (box.bottom < -200 || box.top > window.innerHeight + 200 || !box.width) {
+          continue;
+        }
+        const style = getComputedStyle(piece);
+        const radii = [
+          style.borderTopLeftRadius,
+          style.borderTopRightRadius,
+          style.borderBottomRightRadius,
+          style.borderBottomLeftRadius,
+        ].map((value) => parseFloat(value) || 0);
+        const kind = piece.dataset['backdropInk'];
+        const notchTop = wide && kind === 'notch-top' ? Math.max(radii[0], radii[1]) : 0;
+        const notchBottom = wide && kind === 'notch-bottom' ? Math.max(radii[2], radii[3]) : 0;
+        const holeChild = wide && kind === 'window' ? piece.querySelector('[data-backdrop-ink-hole]') : null;
+        const inset = holeChild ? holeChild.getBoundingClientRect().left - box.left : 0;
+        pieceRect.set([box.top, box.bottom, box.left, box.right], count * 4);
+        pieceRadii.set(radii, count * 4);
+        pieceShape.set([notchTop, notchBottom, inset, 0.5], count * 4);
+        pieceColor.set(parseColor(style.getPropertyValue('--backdrop-ink')), count * 3);
+        count++;
+      }
+      gl.uniform1f(uniforms.pieces, count);
+      gl.uniform4fv(uniforms.pieceRect, pieceRect);
+      gl.uniform4fv(uniforms.pieceRadii, pieceRadii);
+      gl.uniform4fv(uniforms.pieceShape, pieceShape);
+      gl.uniform3fv(uniforms.pieceColor, pieceColor);
     };
 
     const wideLayout = window.matchMedia('(min-width: 1001px)');
@@ -317,6 +434,7 @@ export class LiquidBackdropComponent {
         gl.uniform2f(uniforms.dark, dark?.bottom ?? 0, dark ? 1 : 0);
         // #211e24, la tinta de la casa.
         gl.uniform3f(uniforms.ink, 0.129, 0.118, 0.141);
+        setPieces();
       } else {
         gl.uniform2f(uniforms.dark, 0, 0);
         gl.uniform1f(uniforms.depthEnd, 1e4);
@@ -324,6 +442,7 @@ export class LiquidBackdropComponent {
         gl.uniform2f(uniforms.block2, -1e4, -1e4 + 1);
         gl.uniform2f(uniforms.dark2, 0, -1);
         gl.uniform2f(uniforms.depth, 0, 0);
+        gl.uniform1f(uniforms.pieces, 0);
       }
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
@@ -397,6 +516,9 @@ export class LiquidBackdropComponent {
       }
       ready = true;
       draw(performance.now());
+      // Desde aquí, la tinta de las piezas la pinta el fondo: sus estilos dejan de pintarla (ver
+      // styles.css), así no tapan el remolino.
+      this.deepen?.classList.add('backdrop-inked');
     };
     image.src = this.src;
 
@@ -419,6 +541,7 @@ export class LiquidBackdropComponent {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('scroll', redraw);
       blockResize?.disconnect();
+      this.deepen?.classList.remove('backdrop-inked');
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     });
   }

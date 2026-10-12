@@ -256,19 +256,27 @@
   cursor: pointer;
 }
 
-/* Intro: la presentación del programa, del ancho del escaparate que viene detrás y con mucho aire
-   arriba y abajo. El texto flota solo en una columna centrada, como una nota firmada: unas
+/* Intro: la presentación del programa, del ancho del escaparate que viene detrás. Ocupa la pantalla
+   entera: mientras se lee, no asoma ni el héroe ni la barra de la sección siguiente. El texto flota
+   solo, centrado en lo que deja la barra de arriba, en una columna como una nota firmada: unas
    comillas colgadas al margen y la firma de quien la escribe. */
 .home-intro {
   box-sizing: border-box;
+  display: grid;
+  align-content: center;
   width: var(--home-section-width, 100%);
+  min-height: 100vh;
+  min-height: 100svh;
   margin: 0 auto;
-  padding-block: clamp(7rem, 24vh, 15rem) clamp(8rem, 27vh, 17rem);
+  padding-block: calc(var(--topbar-height, 4rem) + 3rem) 3rem;
 }
 
+/* El ancho, en em de la letra del texto: crece con ella, así el párrafo queda siempre en unas cinco
+   líneas y no se estira a cuatro en pantallas anchas. */
 .home-intro-note {
   position: relative;
-  max-width: 54rem;
+  max-width: 35em;
+  font-size: clamp(1.2rem, 1.6vw, 1.85rem);
   margin: 0 auto;
 }
 
@@ -290,7 +298,6 @@
   margin: 0;
   color: var(--gallery-ink);
   font-family: 'Nunito', sans-serif;
-  font-size: clamp(1.2rem, 1.6vw, 1.85rem);
   font-weight: 500;
   line-height: 1.6;
   text-align: justify;
@@ -339,7 +346,7 @@
 
 @media (max-width: 900px) {
   .home-intro {
-    padding: 5rem 1.4rem;
+    padding-inline: 1.4rem;
   }
 
   .home-intro-note {

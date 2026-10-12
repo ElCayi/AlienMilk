@@ -1,5 +1,6 @@
-/* Localizaciones como segunda parte de Próximas sesiones: sin eyebrow ni raya de sección. */
-@media (min-width: 901px) {
+/* Localizaciones como segunda parte de Próximas sesiones: sin eyebrow ni raya de sección, también
+   en móvil. */
+@media all {
   :host(:not(.locations-collaboration-section)) .locations-atlas {
     border-top: 0;
   }
@@ -242,7 +243,7 @@
   display: none;
 }
 
-@media (min-width: 1001px) {
+@media all {
   /* La esfera sobresale un poco por arriba: se le devuelve ese hueco al aire con la cabecera. */
   .locations-chart {
     margin-top: calc(var(--orbit) * 0.08);
@@ -386,7 +387,7 @@
    su rumbo. Al desplegarse el cajón salen del norte: un arranque que se suma a la órbita y las
    lleva hasta ella con un pequeño rebote; hasta entonces esperan quietas en el norte. Con el cursor
    encima, la de esa estación saluda creciendo con un saltito, sin dejar de orbitar. */
-@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   .location-node {
     --orbit-period: 32s;
   }
@@ -505,7 +506,7 @@
 
 /* Tramos exteriores fuera: la primera estación solo tiene eje hacia la derecha y la última hacia la
    izquierda. Minimilks en tinta oscura, como las líneas del planetario. */
-@media (min-width: 1001px) {
+@media all {
   .location-node:first-of-type::after {
     -webkit-mask: linear-gradient(
       to right,
@@ -540,7 +541,7 @@
 /* En las placas estrechas del cajón los datos de la estación van en filas (etiqueta a la izquierda,
    valor a la derecha, separadas por una línea), como en la ficha de sesión: cada valor tiene todo
    el ancho y no hace falta encogerlo. */
-@media (min-width: 1001px) {
+@media all {
   .location-data-details dl {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
@@ -572,12 +573,12 @@
 }
 
 /* Coordenadas de cada estación, centradas sobre el índice del norte de su esfera: un pie técnico
-   mínimo, en el gris de las líneas. Solo en el planetario horizontal. */
+   mínimo, en el gris de las líneas. */
 .location-coordinates {
   display: none;
 }
 
-@media (min-width: 1001px) {
+@media all {
   .locations-chart {
     margin-top: calc(var(--orbit) * 0.08 + 1.75rem);
   }
@@ -598,7 +599,7 @@
 /* Etiquetas de estación: recuadro claro con el marco gris del planetario, para que no pesen más
    que él; el nombre va en una chip oscura. Al desplegarse, los datos salen en la placa oscura de
    siempre. */
-@media (min-width: 1001px) {
+@media all {
   .location-data summary {
     gap: 0.55rem;
     border: 2px solid #394654;
@@ -637,7 +638,7 @@
 /* Etiquetas sin chip: el nombre, grande y en tinta, y todo centrado en el recuadro claro (el botón
    reserva su hueco a los dos lados para que el centro sea el del recuadro). El desplegable no se
    centra, pero su texto va justificado. */
-@media (min-width: 1001px) {
+@media all {
   .location-data summary {
     justify-items: center;
     text-align: center;
@@ -681,7 +682,7 @@
 /* Etiquetas flotando, sin recuadro: la matrícula de la estación en su chip, centrada; el
    nombre del sitio, grande y centrado (appFitLine lo encoge si no cabe en una línea); sistema ·
    planeta debajo y, al pie, el botón del desplegable centrado. */
-@media (min-width: 1001px) {
+@media all {
   .location-data summary {
     padding: 0;
     border: 0;
@@ -722,7 +723,7 @@
 
 /* Botón del desplegable: al abrir, la barra vertical del «+» se recoge mientras el botón da media
    vuelta, y queda el «−»; al cerrar, el camino inverso. Con el cursor encima se llena de coral. */
-@media (min-width: 1001px) {
+@media all {
   .location-data summary::after {
     transition:
       color 220ms ease,
@@ -748,7 +749,7 @@
 /* Apertura del desplegable: el panel crece en altura (y con él baja suave todo lo de debajo) y su
    contenido aparece un instante después, subiendo apenas. Al cerrar, el mismo camino al revés.
    Donde el navegador no sabe animar <details> se abre como siempre, sin transición. */
-@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   .locations-chart {
     interpolate-size: allow-keywords;
   }

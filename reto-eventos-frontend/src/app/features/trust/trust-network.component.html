@@ -27,9 +27,9 @@
        Continuada, destacada con su medalla; debajo, las demás, en una ventana con scroll), la cinta
        de socios a todo lo ancho y, al final, las cifras. Las tres cosas llegan del backend. La
        cinta va doble para que el bucle no tenga costura; la copia no se lee. -->
-  <div class="trust-reel">
+  <div class="trust-reel" data-backdrop-ink-filler>
     <!-- La tinta, arriba y abajo; en medio, la cinta, medio traslúcida sobre el fondo. -->
-    <div class="trust-reel-ink">
+    <div class="trust-reel-ink" data-backdrop-ink="notch-top">
       @if (featuredAward(); as featured) {
         <section class="trust-awards" aria-labelledby="trust-awards-title">
           <!-- El rótulo, la destacada y, debajo, el palmarés, todos con el ancho de la destacada. -->
@@ -135,8 +135,8 @@
         <span appFitLine>El resto prefiere no figurar</span>
       </p>
     </div>
-    <div class="trust-reel-window">
-      <div class="trust-reel-fade">
+    <div class="trust-reel-window" data-backdrop-ink="window">
+      <div class="trust-reel-fade" data-backdrop-ink-hole>
         <ul class="trust-track" aria-label="Socios de AlienMilk">
           @for (copy of [0, 1]; track copy) {
             @for (brand of brands(); track brand.name) {
@@ -155,7 +155,7 @@
       </div>
     </div>
 
-    <div class="trust-reel-ink">
+    <div class="trust-reel-ink" data-backdrop-ink="notch-bottom">
       <dl class="trust-figures">
         @for (figure of figures(); track figure.label) {
           <div>

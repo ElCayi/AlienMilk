@@ -9,6 +9,7 @@ import {
   Input,
   Output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -36,6 +37,9 @@ export class SessionsProgramComponent {
   @Input() error = '';
   @Output() readonly retry = new EventEmitter<void>();
   readonly featuredSessionIndex = signal(0);
+  /** Ficha de las sesiones desplegada (solo en móvil, donde llega plegada). */
+  readonly specsOpen = signal(false);
+  private readonly sessionsTrack = viewChild<ElementRef<HTMLElement>>('sessionsTrack');
 
   readonly sessionImage = sessionImage;
   readonly archiveCode = archiveCode;
@@ -67,6 +71,20 @@ export class SessionsProgramComponent {
 
   nextSession(): void {
     this.changeFeaturedSession(1);
+  }
+
+  /** Lleva la pista de fichas de móvil a la sesión elegida en los puntos. */
+  showMobileSession(index: number): void {
+    const track = this.sessionsTrack()?.nativeElement;
+    const cards = track ? [...track.children] as HTMLElement[] : [];
+    if (!track || !cards[index]) {
+      return;
+    }
+
+    track.scrollTo({
+      left: cards[index].offsetLeft - cards[0].offsetLeft,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
   }
 
   goToSession(session: EventoListado): void {

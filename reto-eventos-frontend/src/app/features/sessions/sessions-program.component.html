@@ -200,6 +200,102 @@
       </div>
     </div>
 
+    <!-- Móvil y tableta: una ficha por sesión en una pista que se desliza con el dedo, como el
+         planetario y la tienda. Cada ficha lleva sus puntos bajo la foto. -->
+    <div class="sessions-track" #sessionsTrack>
+      <article
+        class="session-featured"
+        *ngFor="let session of sessions; let index = index; trackBy: trackSession"
+      >
+        <div class="session-visual">
+          <a class="session-image-link" routerLink="/sesiones" [queryParams]="{ sesion: session.idEvento }">
+            <img [src]="sessionImage(session)" [alt]="'Sesión ' + session.nombre" />
+          </a>
+        </div>
+        <div class="session-featured-info">
+          <div class="session-file-heading">
+            <span>{{ archiveCode(session) }}</span>
+            <span>{{ typeLabel(session.tipoEvento) }}</span>
+          </div>
+          <h3 class="session-title-compact">
+            <span class="session-title-current">{{ session.nombre }}</span>
+            <!-- Todos los títulos apilados e invisibles: el título reserva la altura del más largo y
+                 las fichas miden lo mismo. -->
+            <span class="session-title-ghost" aria-hidden="true" *ngFor="let other of sessions">{{
+              other.nombre
+            }}</span>
+          </h3>
+          <div class="session-featured-details">
+            <!-- La ficha llega plegada para que la tarjeta quepa en la pantalla. -->
+            <button
+              class="session-specs-toggle"
+              type="button"
+              [attr.aria-controls]="'session-specs-' + session.idEvento"
+              [attr.aria-expanded]="specsOpen()"
+              (click)="specsOpen.set(!specsOpen())"
+            >
+              <span>Características</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+            <dl
+              class="session-file-data"
+              [id]="'session-specs-' + session.idEvento"
+              [class.is-open]="specsOpen()"
+            >
+              <div>
+                <dt>Muestra</dt>
+                <dd>{{ sampleCode(session) }}</dd>
+              </div>
+              <div>
+                <dt>Procedencia</dt>
+                <dd>No declarada</dd>
+              </div>
+              <div>
+                <dt>Fecha</dt>
+                <dd>{{ session.fechaInicio | date: 'dd.MM.yy' }}</dd>
+              </div>
+              <div>
+                <dt>Compatibilidad</dt>
+                <dd>{{ compatibility(session) }}</dd>
+              </div>
+            </dl>
+            <div class="session-featured-footer">
+              <span>{{ session.precio | currency: 'EUR' }}</span>
+              <a class="session-action" routerLink="/sesiones" [queryParams]="{ sesion: session.idEvento }">
+                <span class="session-action-label">Explorar</span>
+                <span class="session-action-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <nav class="sessions-carousel-pagination" *ngIf="hasMultipleSessions" aria-label="Elegir sesión">
+          <button
+            *ngFor="let other of sessions; let i = index; trackBy: trackSession"
+            type="button"
+            [class.is-active]="i === index"
+            [attr.aria-current]="i === index ? 'true' : null"
+            [attr.aria-label]="'Mostrar ' + other.nombre"
+            (click)="showMobileSession(i)"
+          ></button>
+        </nav>
+      </article>
+    </div>
   </div>
 
+  <!-- En móvil el enlace cierra la sección, bajo el carrusel; en escritorio va en la cabecera. -->
+  <a class="sessions-explore sessions-explore-end" routerLink="/sesiones">
+    <span class="sessions-explore-label">Explorar todas las sesiones</span>
+    <span class="sessions-explore-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </span>
+  </a>
 </section>

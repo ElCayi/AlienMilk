@@ -7,6 +7,7 @@ import {
   inject,
   Input,
   OnDestroy,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -28,6 +29,8 @@ const COLLABORATION_REVEAL_MS = 1850;
     './styles/locations-collaboration.css',
     './styles/locations-collaboration-how.css',
     './styles/locations-collaboration-reveal.css',
+    // Después de todo lo demás: el planetario en carrusel de móvil y tableta.
+    './styles/locations-mobile-chart.css',
   ],
   host: { '[class.locations-collaboration-section]': 'collaborationMode' },
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +41,9 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
   private revealTimer?: ReturnType<typeof setTimeout>;
   private panelObserver?: ResizeObserver;
   private readonly revealPanel = (event: Event) => this.scrollToPanel(event.target);
+  private stationFrame = 0;
+  /** La estación centrada en el carrusel de móvil y tableta. */
+  readonly activeStation = signal(0);
   @Input() stations: Estacion[] = [];
   @Input() loading = false;
   @Input() collaborationMode = false;
@@ -135,9 +141,54 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
     this.host.nativeElement
       .querySelector('.locations-chart')
       ?.removeEventListener('toggle', this.revealPanel, true);
+    cancelAnimationFrame(this.stationFrame);
     this.deployObserver?.disconnect();
     this.panelObserver?.disconnect();
     clearTimeout(this.revealTimer);
+  }
+
+  /** Centra en el carrusel de móvil la estación elegida en los puntos. */
+  showStation(index: number): void {
+    const chart = this.host.nativeElement.querySelector<HTMLElement>('.locations-chart');
+    const node = chart?.querySelectorAll<HTMLElement>('.location-node')[index];
+    if (!chart || !node) {
+      return;
+    }
+
+    chart.scrollTo({
+      left: node.offsetLeft - (chart.clientWidth - node.offsetWidth) / 2,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  }
+
+  // La estación activa es la más cercana al centro del carrusel. Al cambiar, se pliegan los datos de
+  // las demás: abiertos fuera de la vista solo harían crecer la tarjeta sin que se vea por qué.
+  trackActiveStation(): void {
+    cancelAnimationFrame(this.stationFrame);
+    this.stationFrame = requestAnimationFrame(() => {
+      const chart = this.host.nativeElement.querySelector<HTMLElement>('.locations-chart');
+      const nodes = chart ? [...chart.querySelectorAll<HTMLElement>('.location-node')] : [];
+      if (!chart || !nodes.length) {
+        return;
+      }
+
+      const center = chart.scrollLeft + chart.clientWidth / 2;
+      const distances = nodes.map((node) =>
+        Math.abs(node.offsetLeft + node.offsetWidth / 2 - center),
+      );
+      const index = distances.indexOf(Math.min(...distances));
+      if (index === this.activeStation()) {
+        return;
+      }
+
+      this.activeStation.set(index);
+      nodes.forEach((node, i) => {
+        const data = node.querySelector<HTMLDetailsElement>('.location-data');
+        if (data && i !== index) {
+          data.open = false;
+        }
+      });
+    });
   }
 
   // Los desplegables de las tres estaciones miden siempre lo mismo, estén abiertos uno o varios: el

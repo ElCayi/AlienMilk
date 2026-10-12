@@ -458,3 +458,156 @@
     border-top: 0;
   }
 }
+
+/* Móvil y tableta: la selección, como Localizaciones, en una banda de tinta de borde a borde con las
+   esquinas en diagonal de las fichas, y el blanco de antes y de después acabando en curva sobre ella
+   (arriba a la izquierda, abajo a la derecha). La foto llega a los bordes de la banda. */
+@media (max-width: 1000px) {
+  .distribution-picks {
+    --picks-join: 3.5rem;
+    position: relative;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: calc(50vw - 50%);
+    border-radius: 0 var(--picks-join) 0 var(--picks-join);
+  }
+
+  .distribution-ad {
+    margin-inline: calc(50% - 50vw);
+    /* Más aire entre la foto y el rótulo de la selección. */
+    margin-bottom: 1.5rem;
+  }
+
+  .distribution-photo {
+    border-radius: 0 var(--picks-join) 0 0;
+  }
+
+  /* Como en escritorio, la foto nace de la tinta por arriba (y bajo la curva del blanco no queda un
+     corte) y se disuelve en ella al pie. */
+  .distribution-photo img {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent,
+      rgb(0 0 0 / 0.45) 9%,
+      #000 24%,
+      #000 55%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      180deg,
+      transparent,
+      rgb(0 0 0 / 0.45) 9%,
+      #000 24%,
+      #000 55%,
+      transparent
+    );
+  }
+
+  /* Fuera de escritorio el fondo pinta la banda pero no estas curvas: se dejan ver aunque la hoja
+     global oculte los rellenos de las piezas de tinta (de ahí el selector más largo). */
+  .distribution .distribution-picks::before,
+  .distribution .distribution-picks::after {
+    content: '';
+    position: absolute;
+    width: var(--picks-join);
+    /* Solapadas 3px con la banda: el fondo suaviza su borde y sin solape asoma una raya. */
+    height: calc(var(--picks-join) + 3px);
+    visibility: visible;
+    pointer-events: none;
+  }
+
+  .distribution-picks::before {
+    bottom: calc(100% - 3px);
+    left: 0;
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--picks-join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--picks-join)
+    );
+  }
+
+  .distribution-picks::after {
+    top: calc(100% - 3px);
+    right: 0;
+    background: radial-gradient(
+      circle at 0 100%,
+      transparent calc(var(--picks-join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--picks-join)
+    );
+  }
+}
+
+/* Móvil y tableta: los productos, en un carrusel que se desliza con el dedo, como el planetario.
+   Cada uno ocupa todo el ancho; debajo, los puntos, en claro sobre la tinta. */
+@media (max-width: 1000px) {
+  .distribution-picks-list {
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    gap: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    /* Con anchos de medio píxel asomaba la primera letra del siguiente producto. */
+    clip-path: inset(0 1px 0 0);
+  }
+
+  .distribution-picks-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .distribution-pick {
+    scroll-snap-align: start;
+  }
+
+  .distribution-pick-name {
+    font-size: 2.1rem;
+  }
+
+  /* El enlace a la tienda, más separado de los puntos. */
+  .distribution-picks-close {
+    margin-top: 1.25rem;
+  }
+
+  /* Fin de sección: bajo el enlace, el aire de cierre, algo más que el estándar como en escritorio. */
+  .distribution-picks {
+    padding-bottom: 6.25rem;
+  }
+
+  .distribution-picks-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .distribution-picks-pagination button {
+    width: 0.82rem;
+    height: 0.82rem;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 1px solid rgba(251, 246, 245, 0.5);
+    border-radius: 999px;
+    background: rgba(251, 246, 245, 0.14);
+    cursor: pointer;
+    transition:
+      width 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .distribution-picks-pagination button.is-active {
+    width: 2.45rem;
+    border-color: #fbf6f5;
+    background: #fbf6f5;
+  }
+
+  .distribution-picks-pagination button:focus-visible {
+    outline: 2px solid #ff7f7f;
+    outline-offset: 0.2rem;
+  }
+}
+
+@media (min-width: 1001px) {
+  .distribution-picks-pagination {
+    display: none;
+  }
+}

@@ -43,7 +43,10 @@ export class HomePageComponent implements OnInit {
   readonly sessionsError = signal('');
   readonly isFavorite = signal(localStorage.getItem('alienmilk-favorite') === 'true');
   readonly actionFeedback = signal('');
+  /** Destello del icono de compartir al tocarlo: en táctil no hay :hover que lo marque. */
+  readonly shareFlash = signal(false);
   private feedbackTimer: number | undefined;
+  private flashTimer: number | undefined;
 
   ngOnInit(): void {
     this.loadSessions();
@@ -85,6 +88,7 @@ export class HomePageComponent implements OnInit {
   }
 
   async sharePage(): Promise<void> {
+    this.flashShare();
     const shareData = {
       title: 'AlienMilk Sessions',
       text: 'Descubre las experiencias sensoriales de AlienMilk Sessions.',
@@ -116,6 +120,16 @@ export class HomePageComponent implements OnInit {
     this.isFavorite.set(nextValue);
     localStorage.setItem('alienmilk-favorite', String(nextValue));
     this.showActionFeedback(nextValue ? 'Guardado en favoritos' : 'Eliminado de favoritos');
+  }
+
+  private flashShare(): void {
+    // Se apaga un fotograma antes para que un segundo toque reinicie la animación.
+    this.shareFlash.set(false);
+    window.clearTimeout(this.flashTimer);
+    requestAnimationFrame(() => {
+      this.shareFlash.set(true);
+      this.flashTimer = window.setTimeout(() => this.shareFlash.set(false), 700);
+    });
   }
 
   private showActionFeedback(message: string): void {

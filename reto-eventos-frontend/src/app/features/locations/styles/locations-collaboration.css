@@ -176,3 +176,39 @@
     font-size: clamp(0.56rem, 0.6vw, 0.72rem);
   }
 }
+
+/* Móvil y tableta: la foto, algo más alta que ancha, recortada por los lados (allí solo hay paisaje)
+   para que el grupo se vea grande. Con la forma de la ventana del planetario: una columna blanca fina
+   a cada lado y las esquinas en diagonal. La etiqueta, pegada debajo como pie de foto. */
+@media (max-width: 1000px) {
+  /* Entre el texto y la foto, solo el margen de esta (como en escritorio): con el relleno del
+     recuadro sumado quedaba un hueco. */
+  :host(.locations-collaboration-section) .locations-copy {
+    padding-bottom: 0;
+  }
+
+  .locations-collaboration-team {
+    --team-rim: 0.75rem;
+    display: grid;
+    width: calc(100vw - 2 * var(--team-rim));
+    max-width: none;
+    margin-inline: calc(50% - 50vw + var(--team-rim)) 0;
+    overflow: hidden;
+    border-radius: 1rem 3.5rem;
+  }
+
+  .locations-collaboration-team img {
+    aspect-ratio: 5 / 6;
+    border-radius: 0;
+    object-position: 52% 85%;
+  }
+
+  .locations-collaboration-team-tag {
+    justify-self: stretch;
+    max-width: none;
+    margin: 0;
+    /* Abajo, más relleno: la curva amplia de la esquina izquierda no muerde la última línea. */
+    padding: 0.9rem 1.25rem 1.4rem;
+    font-size: 0.66rem;
+  }
+}

@@ -13,7 +13,8 @@
           <span class="locations-collaborators-brand">AlienMilk</span>
           <span class="locations-collaborators-label">Collaborators</span>
         </h2>
-        <p class="locations-subtitle" *ngIf="!collaborationMode" appFitLine>
+        <!-- En móvil, en dos líneas como los demás subtítulos, antes que encogido. -->
+        <p class="locations-subtitle" *ngIf="!collaborationMode" appFitLine [appFitLineMin]="15">
           Cada estación responde a un entorno distinto.
         </p>
         <p class="locations-subtitle locations-collaborators-subtitle" *ngIf="collaborationMode">
@@ -106,6 +107,8 @@
     class="locations-collaboration-how"
     *ngIf="collaborationMode"
     data-backdrop-end
+    data-backdrop-ink="notch-top"
+    data-backdrop-ink-filler
     aria-labelledby="collaboration-how-title"
   >
     <!-- A la derecha de la cabecera y en el hueco junto a la invitación, unas minimilks flotan (como en
@@ -249,7 +252,7 @@
     </aside>
 
     <div class="locations-chart-viewport">
-      <div class="locations-chart" [class.is-loading]="loading">
+      <div class="locations-chart" [class.is-loading]="loading" (scroll)="trackActiveStation()">
         <article
           class="location-node"
           *ngFor="let station of stations | slice: 0 : 3; let index = index; trackBy: trackStation"
@@ -302,6 +305,22 @@
 
         <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
       </div>
+
+      <!-- Solo en móvil y tableta, donde las estaciones se pasan deslizando. -->
+      <nav
+        class="locations-chart-pagination"
+        *ngIf="!loading && stations.length > 1"
+        aria-label="Elegir estación"
+      >
+        <button
+          *ngFor="let station of stations | slice: 0 : 3; let index = index; trackBy: trackStation"
+          type="button"
+          [class.is-active]="index === activeStation()"
+          [attr.aria-current]="index === activeStation() ? 'true' : null"
+          [attr.aria-label]="'Mostrar ' + station.sitio"
+          (click)="showStation(index)"
+        ></button>
+      </nav>
     </div>
   </div>
 </section>

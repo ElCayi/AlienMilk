@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
@@ -127,4 +134,32 @@ export class DistributionComponent {
     ),
     { initialValue: FALLBACK_PICKS },
   );
+
+  private readonly picksList = viewChild<ElementRef<HTMLElement>>('picksList');
+  private pickFrame = 0;
+  /** El producto a la vista en el carrusel de móvil y tableta. */
+  readonly activePick = signal(0);
+
+  /** Lleva el carrusel de móvil al producto elegido en los puntos. */
+  showPick(index: number): void {
+    const list = this.picksList()?.nativeElement;
+    // Cada producto ocupa todo el ancho del carrusel.
+    list?.scrollTo({
+      left: index * list.clientWidth,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  }
+
+  /** El producto activo, el que ocupa el carrusel (o el más cercano, a mitad de gesto). */
+  trackActivePick(): void {
+    cancelAnimationFrame(this.pickFrame);
+    this.pickFrame = requestAnimationFrame(() => {
+      const list = this.picksList()?.nativeElement;
+      if (!list?.clientWidth) {
+        return;
+      }
+
+      this.activePick.set(Math.round(list.scrollLeft / list.clientWidth));
+    });
+  }
 }

@@ -28,6 +28,8 @@
   <section
     class="distribution-picks"
     data-backdrop-split
+    data-backdrop-ink="notch-top"
+    data-backdrop-ink-filler
     aria-labelledby="distribution-picks-title"
   >
     <div class="distribution-ad">
@@ -58,7 +60,7 @@
       </filter>
     </svg>
 
-    <ul class="distribution-picks-list">
+    <ul class="distribution-picks-list" #picksList (scroll)="trackActivePick()">
       @for (pick of picks(); track pick.slug; let i = $index) {
         <li class="distribution-pick" [attr.data-tone]="pick.tono">
           <a [routerLink]="['/tienda', pick.slug]">
@@ -142,6 +144,21 @@
         </li>
       }
     </ul>
+
+    <!-- Solo en móvil y tableta, donde los productos se pasan deslizando. -->
+    @if (picks().length > 1) {
+      <nav class="distribution-picks-pagination" aria-label="Elegir producto">
+        @for (pick of picks(); track pick.slug; let i = $index) {
+          <button
+            type="button"
+            [class.is-active]="i === activePick()"
+            [attr.aria-current]="i === activePick() ? 'true' : null"
+            [attr.aria-label]="'Mostrar ' + pick.nombre"
+            (click)="showPick(i)"
+          ></button>
+        }
+      </nav>
+    }
 
     <p class="distribution-picks-close">
       <a class="distribution-cta" routerLink="/tienda">

@@ -16,6 +16,7 @@ import { Router, RouterLink } from '@angular/router';
 import { ContactService } from '../../core/services/contact.service';
 import { describeDays, formatHour, siteStatus } from '../../features/contact/opening-hours';
 import { SOCIAL_LINKS } from '../../features/contact/social-links';
+import { RequestDialogComponent } from '../request-dialog/request-dialog.component';
 
 /**
  * Pie común de la web. No deja margen propio: cada página decide cómo termina su último bloque,
@@ -24,7 +25,7 @@ import { SOCIAL_LINKS } from '../../features/contact/social-links';
 @Component({
   selector: 'app-site-footer',
   standalone: true,
-  imports: [NgTemplateOutlet, RouterLink],
+  imports: [NgTemplateOutlet, RequestDialogComponent, RouterLink],
   templateUrl: './site-footer.component.html',
   styleUrl: './site-footer.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,12 +55,6 @@ export class SiteFooterComponent {
     const arroba = email.lastIndexOf('@');
     return [email.slice(0, arroba), email.slice(arroba + 1)];
   });
-  /** Mismo canal que usa la portada para las propuestas de Collaborators. */
-  readonly proposalHref = computed(
-    () =>
-      `mailto:${this.contacto()?.email ?? ''}?subject=${encodeURIComponent('Propuesta de muestra para evaluación')}`,
-  );
-
   readonly socials = SOCIAL_LINKS;
 
   readonly status = computed(() => {

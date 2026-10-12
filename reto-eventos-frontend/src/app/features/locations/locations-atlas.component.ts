@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 
 import { Estacion } from '../../models/station.models';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
+import { RequestDialogComponent } from '../../shared/request-dialog/request-dialog.component';
 
 // Lo que dura la entrada de Collaborators, del primer trazo a la última raya apagada (la más tardía
 // empieza a 120 ms y dura 1600 ms; ver locations-collaboration-reveal.css), con un margen.
@@ -20,7 +21,7 @@ const COLLABORATION_REVEAL_MS = 1850;
 @Component({
   selector: 'app-locations-atlas',
   standalone: true,
-  imports: [CommonModule, FitLineDirective, RouterLink],
+  imports: [CommonModule, FitLineDirective, RequestDialogComponent, RouterLink],
   templateUrl: './locations-atlas.component.html',
   styleUrls: [
     './locations-atlas.component.css',

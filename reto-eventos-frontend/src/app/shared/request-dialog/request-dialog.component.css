@@ -1,5 +1,11 @@
 /* Diálogo del molde de formularios: panel oscuro como las tarjetas de la web, centrado y con su
    propio desplazamiento si el formulario es más alto que la ventana. */
+
+/* Sin caja propia: cerrado no ocupa sitio, aunque viva dentro de una rejilla o un flex. */
+:host {
+  display: contents;
+}
+
 .request-dialog {
   width: min(42rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);

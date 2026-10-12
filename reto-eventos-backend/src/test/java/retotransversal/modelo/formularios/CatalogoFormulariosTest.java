@@ -14,7 +14,7 @@ class CatalogoFormulariosTest {
 		CatalogoFormularios catalogo = new CatalogoFormularios(new ObjectMapper());
 
 		assertThat(catalogo.claves()).contains("operador-am-transit", "operador-helix-transfer",
-				"operador-kepler-liaison");
+				"operador-kepler-liaison", "collaborators-propuesta");
 		assertThat(catalogo.buscar("operador-am-transit")).get()
 				.extracting(FormularioDefinicion::prefijo).isEqualTo("AMT");
 	}

@@ -725,6 +725,19 @@ h1 {
   color: var(--ink);
   text-underline-offset: 0.2em;
 }
+
+/* Abre el formulario de Collaborators: un botón con aspecto de enlace dentro del texto. */
+.faq-answer .faq-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
 .contact-footnote {
   display: flex;
   flex-wrap: wrap;

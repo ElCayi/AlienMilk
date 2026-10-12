@@ -405,10 +405,17 @@ h3 {
 /* Mismo enlace que "Acceder a AlienMilk Collaborators" en la portada, en tinta clara. */
 .footer-unit-action {
   position: relative;
+  padding-inline: 0;
+  border: 0;
+  background: none;
+  color: var(--footer-ink);
+  cursor: pointer;
+  transition: color 0.2s ease;
   justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  padding-top: 0;
   padding-bottom: 0.25rem;
   font:
     800 0.72rem 'Barlow Condensed',

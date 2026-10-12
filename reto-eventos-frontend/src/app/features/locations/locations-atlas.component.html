@@ -124,15 +124,18 @@
         </p>
       </div>
       <p class="locations-collaboration-how-close">
-        <a
+        <button
+          type="button"
           class="locations-collaboration-how-start"
-          href="mailto:contacto@alienmilksessions.com?subject=Propuesta%20de%20colaboraci%C3%B3n"
+          aria-haspopup="dialog"
+          (click)="proposalDialog.open()"
         >
           Cuéntenos su propuesta.
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
-        </a>
+        </button>
+        <app-request-dialog #proposalDialog formKey="collaborators-propuesta" />
       </p>
     </div>
     <ol class="locations-collaboration-how-steps">

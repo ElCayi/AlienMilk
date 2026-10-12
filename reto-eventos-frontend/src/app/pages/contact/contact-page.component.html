@@ -401,11 +401,16 @@
           <div class="faq-answer">
             <p>
               Primero,
-              <a [href]="inquiryHref('Collaborators · Propuesta de muestra')"
-                >presente su propuesta a Collaborators</a
+              <button
+                type="button"
+                class="faq-link"
+                aria-haspopup="dialog"
+                (click)="proposalDialog.open()"
+              >presente su propuesta a Collaborators</button
               >. El equipo le orientará sobre la documentación, la preparación y las condiciones de
               recepción. La persona remitente no tiene por qué coincidir con el organismo de origen.
             </p>
+            <app-request-dialog #proposalDialog formKey="collaborators-propuesta" />
           </div>
         </details>
         <details>

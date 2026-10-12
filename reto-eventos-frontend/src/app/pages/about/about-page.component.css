@@ -872,6 +872,11 @@ h2 em {
   font-size: clamp(0.9rem, 1.146vw, 1.4rem);
 }
 
+/* El bloque no se ensancha con un titular en una línea (appFitLine): el titular encoge dentro. */
+.us-work-block {
+  min-width: 0;
+}
+
 /* Titulares como los del resto de la página: condensada gruesa y aplastada, a un tamaño contenido. */
 .us-work-block :is(h2, h3) {
   margin: 0;
@@ -920,11 +925,6 @@ h2 em {
 
 .us-work-text strong {
   color: var(--coral);
-}
-
-/* El AlienMilk que abre la sección, un poco mayor. */
-.us-work-text .us-work-name {
-  font-size: 1.12em;
 }
 
 /* El recorrido de una muestra cruza la sección de lado a lado en su propio recuadro oscuro, que en
@@ -1474,27 +1474,6 @@ h2 em {
   letter-spacing: 0.06em;
 }
 
-/* Hueco de una foto que está por llegar: el negro del recuadro con un brillo leve y el aviso en la
-   letra de las fichas. Al llegar la foto, un img ocupa su sitio. */
-.us-eco-pending {
-  display: grid;
-  /* El aviso, en el tercio de arriba: abajo va el expediente. */
-  place-items: start center;
-  padding-top: 18%;
-  width: 100%;
-  height: 100%;
-  min-height: 12rem;
-  color: var(--light-muted);
-  background:
-    radial-gradient(circle at 32% 38%, rgba(255, 127, 127, 0.14), transparent 55%),
-    radial-gradient(circle at 72% 68%, rgba(120, 190, 200, 0.1), transparent 50%), var(--night);
-  font:
-    800 0.62rem 'Nunito',
-    sans-serif;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
 .us-eco-visual {
   position: relative;
   margin: 0;
@@ -1599,27 +1578,90 @@ h2 em {
   line-height: 1.4;
 }
 
-/* Los destinos, como el recorrido de la 02 pero sin números: no son etapas, sino lo que puede llegar a
-   ser una muestra. Delante, su rótulo. */
+/* La equivalencia del último lote, en la franja del recorrido: delante, su rótulo en dos líneas; luego
+   cada análisis con su nombre y su cifra sobre un medidor fino, como el destino de cada incorporación
+   en la banda de la 02. Gris de contexto, salvo el último, en coral. */
 .us-chain.us-eco-routes {
   display: flex;
-  align-items: center;
-  gap: 1.2em;
-}
-
-.us-eco-routes ol {
-  flex: 1 1 auto;
+  align-items: flex-end;
+  gap: 2.5em;
+  /* El medidor es algo más alto que las cápsulas: menos aire, para que la franja mida lo que la de la
+     02. */
+  padding-block: 1.35em;
+  padding-right: 2.3em;
 }
 
 .us-eco-routes-label {
   flex: none;
   margin: 0;
-  color: var(--coral);
+  color: var(--light-muted);
   font:
-    800 0.66rem 'Nunito',
+    800 0.66rem / 1.6 'Nunito',
     sans-serif;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+.us-eco-routes-label span {
+  display: block;
+  opacity: 0.65;
+}
+
+.us-eco-equiv {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.5em;
+  margin: 0;
+  color: var(--light);
+}
+
+.us-eco-equiv div {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75em;
+  padding-bottom: calc(0.55rem + 4px);
+}
+
+.us-eco-equiv div::before,
+.us-eco-equiv div::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.us-eco-equiv div::before {
+  right: 0;
+  background: rgba(247, 248, 249, 0.14);
+}
+
+.us-eco-equiv div::after {
+  width: calc(var(--match) * 1%);
+  background: rgba(247, 248, 249, 0.55);
+}
+
+.us-eco-equiv dt {
+  font: 400 clamp(1.2rem, 1.8vw, 2rem) / 1 var(--condensed);
+  white-space: nowrap;
+}
+
+.us-eco-equiv dd {
+  margin: 0;
+  font: 400 clamp(1rem, 1.4vw, 1.5rem) / 1 var(--condensed);
+  white-space: nowrap;
+}
+
+.us-eco-equiv-last dd {
+  color: var(--coral);
+}
+
+.us-eco-equiv div.us-eco-equiv-last::after {
+  background: var(--coral);
 }
 
 /* Los estados de una muestra, en la banda negra del pie de la sección: cada uno bajo su filete, con
@@ -1915,7 +1957,7 @@ h2 em {
     aspect-ratio: 4 / 3;
   }
 
-  /* El sistema quirúrgico, recortado, va entero y con su proporción. */
+  /* El manipulador, entero y con su proporción. */
   .us-lab-visual img {
     aspect-ratio: 1145 / 1374;
     object-fit: contain;
@@ -1977,13 +2019,6 @@ h2 em {
     background: var(--night);
   }
 
-  .us-eco-pending {
-    aspect-ratio: 4 / 3;
-    height: auto;
-    place-items: center;
-    padding-top: 0;
-  }
-
   .us-eco-visual .us-eco-tag {
     position: static;
     max-width: none;
@@ -2000,7 +2035,14 @@ h2 em {
   }
 
   .us-chain.us-eco-routes {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+
+  .us-eco-equiv {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
   }
 
   .us-eco-states {
@@ -2264,7 +2306,7 @@ h2 em {
   }
 
   .us-chain::after,
-  .us-chain ol::before {
+  .us-chain > :last-child::before {
     content: '';
     position: absolute;
     left: calc((100% - clamp(2rem, 6vw, 6rem)) * 0.625 - var(--seam));
@@ -2283,7 +2325,7 @@ h2 em {
     );
   }
 
-  .us-chain ol::before {
+  .us-chain > :last-child::before {
     top: calc(100% - 1px);
     background: radial-gradient(
       circle var(--seam) at 0 100%,
@@ -2388,7 +2430,7 @@ h2 em {
     );
   }
 
-  .us-eco-visual > :is(img, .us-eco-pending) {
+  .us-eco-visual > img {
     position: absolute;
     inset: 0;
     display: grid;
@@ -2399,7 +2441,7 @@ h2 em {
   }
 
   /* Arriba nace del negro, como la custodia acaba en él: las dos fotos se funden en el cruce. */
-  .us-eco-visual--top > :is(img, .us-eco-pending) {
+  .us-eco-visual--top > img {
     mask:
       linear-gradient(to bottom, transparent, #000 4.5rem, #000 70%, transparent),
       radial-gradient(circle at 100% 0, transparent 1.5rem, #000 11rem);
@@ -2452,11 +2494,6 @@ h2 em {
   .us-chain li {
     flex-basis: 25%;
   }
-
-  /* Los cinco destinos sí caben en una fila. */
-  .us-chain.us-eco-routes li {
-    flex-basis: auto;
-  }
 }
 
 /* En escritorio estrecho «Dirección fundadora» no cabe en su cuarto: las pestañas pueden partirse. */
@@ -2478,41 +2515,34 @@ h2 em {
     border-radius: 0 0 calc(var(--corner) * 1.6 + 3px) 0;
   }
 
-  .us-eco-more .us-work-visual img {
+  .us-eco-more .us-work-visual--custody img {
     border-radius: 0 0 calc(var(--corner) * 1.6) var(--corner);
   }
 
-  .us-eco-more .us-work-visual > .us-eco-pending {
-    position: absolute;
-    inset: 0;
-    height: 100%;
-    min-height: 0;
-    padding-top: 22%;
+  /* El manipulador, recortado, cuelga de la franja de la equivalencia y va por delante: un poco mayor
+     que su recuadro, sin fundidos ni esquinas, con la esfera casi al pie de la sección. */
+  .us-eco-more .us-lab-visual {
+    z-index: 1;
   }
 
-  /* El sistema quirúrgico viene recortado: entero sobre el negro, sin fundidos, con la base por
-     encima de la esquina grande. */
   .us-eco-more .us-lab-visual img {
-    box-sizing: border-box;
-    padding: 1.25rem 1.5rem 2.75rem;
     object-fit: contain;
-    object-position: 50% 100%;
+    object-position: 50% 0;
+    border-radius: 0;
     mask: none;
-  }
-
-  .us-eco-more .us-work-visual--top > .us-eco-pending {
-    mask: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), #000 6rem, #000 62%, transparent);
+    transform: scale(1.05);
+    transform-origin: 50% 0;
   }
 }
 
-/* Las dos partes miden siempre lo que las de la 02: los recuadros claros son iguales y no crecen con
-   el texto. Si el texto no cabe, se desplaza dentro de su recuadro. */
+/* Los recuadros claros de la 02 y la 03 miden siempre lo mismo (lo que medía la 02 con su primer
+   texto) y no crecen con el texto: si no cabe, se desplaza dentro de su recuadro. */
 @media (min-width: 1001px) {
-  .us-eco-more .us-definition-grid.us-work-grid {
+  .us-work .us-definition-grid.us-work-grid {
     grid-template-rows: 21.3em auto 21.3em;
   }
 
-  .us-eco-more .us-work-block {
+  .us-work .us-work-block {
     align-self: stretch;
     min-height: 0;
     overflow-y: auto;

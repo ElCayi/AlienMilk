@@ -1,0 +1,348 @@
+/* Móvil y tableta: el mismo planetario que en escritorio, en un carrusel que se desliza con el dedo.
+   Cada estación ocupa todo el ancho: sus coordenadas, la esfera con su minimilk y, debajo, la
+   matrícula, el nombre, sistema · planeta y el botón del desplegable. */
+@media (max-width: 1000px) {
+  .locations-chart-viewport {
+    --orbit: min(13rem, 56vw);
+    --drop: 2.25rem;
+    height: auto;
+    min-height: 0;
+    display: block;
+    padding: 0;
+  }
+
+  /* El carrusel llega a los bordes de la ventana blanca (el ancho de pantalla menos las columnas de
+     tinta) y cada estación la ocupa entera, sin asomar las vecinas: se pasa con los puntos o el dedo. En vw y no en %: cada contenedor tiene su
+     propio ancho y el porcentaje no casaría. */
+  .locations-chart {
+    width: calc(100vw - 2 * var(--locations-rim, 0px));
+    box-sizing: border-box;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    gap: 0;
+    margin-top: 0;
+    margin-inline: calc(50% - 50vw + var(--locations-rim, 0px)) 0;
+    /* Arriba, relleno y no margen: el carrusel recorta lo que sobresale y las coordenadas van por
+       encima de la esfera. Abajo, el sitio que gana el botón al crecer con el cursor o el toque. */
+    padding: calc(var(--orbit) * 0.08 + 1.75rem)
+      0 0.75rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .locations-chart::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Sin eje entre esferas: en el carrusel no se lee como una línea que las une. */
+  .locations-chart::before,
+  .locations-chart::after,
+  .location-node::before,
+  .location-node::after {
+    content: none;
+  }
+
+  .location-node {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--orbit) auto;
+    justify-items: center;
+    gap: var(--drop);
+    min-height: 0;
+    padding: 0;
+    scroll-snap-align: center;
+    /* Arriba: si la vecina tiene los datos abiertos, las demás no se descuelgan al centro. */
+    align-content: start;
+  }
+
+  /* Los puntos, como los del carrusel de sesiones. */
+  .locations-chart-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .locations-chart-pagination button {
+    width: 0.82rem;
+    height: 0.82rem;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 1px solid rgba(33, 30, 36, 0.5);
+    border-radius: 999px;
+    background: rgba(33, 30, 36, 0.12);
+    cursor: pointer;
+    transition:
+      width 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .locations-chart-pagination button.is-active {
+    width: 2.45rem;
+    border-color: var(--gallery-ink, #211e24);
+    background: var(--gallery-ink, #211e24);
+  }
+
+  .locations-chart-pagination button:focus-visible {
+    outline: 2px solid #ff7f7f;
+    outline-offset: 0.2rem;
+  }
+
+  .location-orbit {
+    width: var(--orbit);
+  }
+
+  .location-data {
+    --location-card-right-air: 0rem;
+    justify-self: stretch;
+    /* Con el margen de la página a los lados: la estación ocupa toda la ventana y, desplegado, el
+       texto llegaba a sus bordes. */
+    width: min(100% - 4.4rem, 24rem);
+    margin-inline: auto;
+    padding: 0;
+  }
+
+  .location-data::before {
+    content: none;
+  }
+
+  .location-data summary,
+  .location-data-details {
+    margin-inline: 0;
+  }
+
+  .location-data strong {
+    min-height: 0;
+    font-size: clamp(2.6rem, 12vw, 3.3rem);
+  }
+
+  /* El botón, el «+» redondo de escritorio, no la flecha de la lista antigua. */
+  .location-data summary::after {
+    width: 2.25rem;
+    height: 2.25rem;
+    color: #394654;
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(currentColor, currentColor);
+    background-size: 36% 1.5px, 1.5px 36%;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid rgba(57, 70, 84, 0.55);
+    border-radius: 50%;
+    transform: none;
+  }
+
+  .location-data[open] summary::after {
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(currentColor, currentColor);
+    background-size: 36% 1.5px, 0 36%;
+    transform: none;
+  }
+
+  /* El coral, con el cursor o el teclado; en táctil se quedaba pegado tras el toque. */
+  .location-data summary:focus-visible::after,
+  .location-data[open] summary:focus-visible::after {
+    color: #fff;
+    background-color: #ff7f7f;
+    border-color: #ff7f7f;
+    transform: none;
+  }
+
+  @media (hover: hover) {
+    .location-data summary:hover::after,
+    .location-data[open] summary:hover::after {
+      color: #fff;
+      background-color: #ff7f7f;
+      border-color: #ff7f7f;
+      transform: none;
+    }
+  }
+
+  /* Más aire entre matrícula, nombre, sistema y botón. */
+  .location-data summary {
+    gap: 0.95rem;
+  }
+
+  .location-data summary::after {
+    margin-top: 0.6rem;
+  }
+}
+
+/* Como en escritorio, la sección va sobre tinta (allí la pinta el fondo; aquí, una banda de borde a
+   borde con las esquinas en diagonal de las fichas): la cabecera y la ficha en claro, y el
+   planetario en una ventana blanca con una columna fina de tinta a cada lado. */
+@media (max-width: 1000px) {
+  :host(:not(.locations-collaboration-section)) .locations-atlas {
+    --locations-rim: 0.75rem;
+    position: relative;
+    isolation: isolate;
+    /* De 901 a 1000 quedaba un diseño intermedio a dos columnas y descentrado: aquí, como en móvil. */
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-atlas::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 50vw);
+    z-index: -1;
+    width: 100vw;
+    border-radius: 0 3.5rem 0 3.5rem;
+    background: var(--gallery-ink, #211e24);
+    pointer-events: none;
+  }
+
+  /* La unión con Próximas sesiones, como en escritorio: el blanco de arriba acaba en curva por la
+     izquierda y la tinta sube a rellenar la esquina. */
+  :host(:not(.locations-collaboration-section)) .locations-atlas::after {
+    --join: 3.5rem;
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--join));
+    left: calc(50% - 50vw);
+    z-index: -1;
+    width: var(--join);
+    /* Un píxel de más, solapado con la banda: sin él asoma una raya en la costura. */
+    height: calc(var(--join) + 1px);
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--join)
+    );
+    pointer-events: none;
+  }
+
+  /* Y en espejo al final: el blanco que sigue empieza en curva por la derecha y la tinta baja a
+     rellenar la esquina. Cuelga del anfitrión porque la sección ya usa sus dos pseudoelementos. */
+  :host(:not(.locations-collaboration-section))::after {
+    --join: 3.5rem;
+    content: '';
+    position: absolute;
+    top: calc(100% - 1px);
+    right: calc(50% - 50vw);
+    z-index: -1;
+    width: var(--join);
+    height: calc(var(--join) + 1px);
+    background: radial-gradient(
+      circle at 0 100%,
+      transparent calc(var(--join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--join)
+    );
+    pointer-events: none;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-copy {
+    padding-block: 3.25rem 2.25rem;
+    background: transparent;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-copy::before,
+  :host(:not(.locations-collaboration-section)) .locations-copy::after {
+    content: none;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-subsection-title,
+  :host(:not(.locations-collaboration-section)) .locations-intro {
+    border-color: rgba(251, 246, 245, 0.6);
+    color: #fbf6f5;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-chart-viewport {
+    box-sizing: border-box;
+    width: calc(100vw - 2 * var(--locations-rim));
+    max-width: none;
+    margin-inline: calc(50% - 50vw + var(--locations-rim)) 0;
+    padding: 3rem calc(50vw - 50% - var(--locations-rim)) 3.5rem;
+    /* Otra regla la deja en «end», que Chrome ya aplica a bloques y pegaría todo a la derecha. */
+    justify-items: normal;
+    border-radius: 1rem 3.5rem;
+    background-color: var(--gallery-surface, #ffffff);
+  }
+
+  /* La ficha, ya sobre la tinta: sin tarjeta propia, alineada con la cabecera. */
+  :host(:not(.locations-collaboration-section)) .locations-brief {
+    padding-inline: 0;
+    padding-top: 0.5rem;
+    order: 2;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  /* El enlace a la documentación, bien separado de la lista de operadores. */
+  :host(:not(.locations-collaboration-section)) .locations-brief-cta-external {
+    margin-top: 3rem;
+  }
+}
+
+@media (min-width: 1001px) {
+  .locations-chart-pagination {
+    display: none;
+  }
+}
+
+/* En táctil, el saludo de la minimilk (crece al tocar la estación) salta con cada toque y la imagen
+   pierde nitidez al ampliarse: aquí se queda en su tamaño. */
+@media (max-width: 1000px) {
+  .location-node:hover .location-marker > span,
+  .location-node:focus-within .location-marker > span {
+    scale: none;
+  }
+}
+
+/* Móvil y tableta: «Antes de su visita» con más aire entre bloques (pasos, aviso, operadores y
+   enlace) y la letra al tamaño de las demás secciones: con la de escritorio, el rótulo, el aviso y
+   los operadores se quedaban en 11-14 px. */
+@media (max-width: 1000px) {
+  :host(:not(.locations-collaboration-section)) .locations-brief {
+    gap: 2.25rem;
+  }
+
+  /* El rótulo y el título, juntos, como en las demás cabeceras. */
+  :host(:not(.locations-collaboration-section)) .locations-brief h3 {
+    margin-top: -1.25rem;
+    font-size: 2.6rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-code,
+  :host(:not(.locations-collaboration-section)) .locations-brief-operators legend {
+    font-size: 0.8rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-time {
+    font-size: 1.25rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-body {
+    font-size: 1.05rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-number {
+    font-size: 0.85rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief > .locations-brief-disclaimer {
+    /* Con !important: la hoja de la ficha fija el del aviso así. */
+    font-size: 1rem !important;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-operators dt,
+  :host(:not(.locations-collaboration-section)) .locations-operator-link {
+    font-size: 1.05rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-cta-external {
+    font-size: 1.35rem;
+  }
+}

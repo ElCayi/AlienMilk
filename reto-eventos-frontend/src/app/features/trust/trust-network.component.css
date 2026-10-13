@@ -22,6 +22,8 @@
       var(--home-collaboration-margin, calc(clamp(3.5rem, 5vw, 6rem) + 3px)) -
         clamp(3rem, 5.5vw, 6rem)
     );
+    /* Algo más de aire entre la hoja blanca y la tarjeta del cierre que el hueco entre secciones. */
+    margin-bottom: clamp(5rem, 9.5vw, 10rem);
   }
 
   .trust-sheet {
@@ -1156,5 +1158,241 @@
 
   .trust-brand[aria-hidden='true'] {
     display: none;
+  }
+}
+
+/* Móvil y tableta: la franja, como las demás secciones oscuras de la portada, una banda de borde a
+   borde con las esquinas en diagonal y el blanco de antes y de después acabando en curva sobre ella
+   (arriba a la izquierda, abajo a la derecha). El contenido, alineado con el texto de la página: el
+   margen de los lados es el que hay hasta la columna (en el porcentaje, la franja y sus tramos miden
+   lo mismo). La cinta lo sigue atravesando entero. */
+@media (max-width: 1000px) {
+  .trust-reel {
+    --band-pad-x: calc(50vw - 50%);
+    --reel-join: 3.5rem;
+    margin-inline: calc(50% - 50vw);
+    /* Las curvas salen por encima y por debajo: el margen las separa del texto, apenas por arriba. */
+    margin-block: calc(var(--reel-join) - 0.5rem) calc(var(--reel-join) + 3rem);
+    border-radius: 0;
+    /* Solo a lo ancho: el halo de la medalla no ensancha la página, y las curvas salen por arriba y
+       por abajo. */
+    overflow: visible;
+    overflow-x: clip;
+  }
+
+  /* La cinta se desvanece en los márgenes de la página. En vw: dentro de la cinta, el porcentaje de
+     --band-pad-x se resuelve contra su propio ancho (toda la pantalla) y el fundido desaparecía. */
+  .trust-reel-fade {
+    --trust-fade: linear-gradient(
+      to right,
+      transparent 1rem,
+      #000 14vw,
+      #000 86vw,
+      transparent calc(100% - 1rem)
+    );
+  }
+
+  /* La cinta, como en escritorio: un rectángulo redondeado, metido un poco en la tinta, por el que
+     asoma el fondo líquido bajo media tinta. Aquí el fondo no lo pinta (detrás solo hay lienzo), así
+     que va la misma textura como imagen. */
+  .trust-reel-window {
+    position: relative;
+    border-block: 0;
+  }
+
+  .trust .trust-reel-window::before {
+    content: '';
+    position: absolute;
+    inset: 0 0.75rem;
+    border-radius: 1rem;
+    /* Algo más de tinta que en escritorio: la textura fija, sin el líquido, distraía. */
+    background:
+      linear-gradient(rgba(33, 30, 36, 0.66), rgba(33, 30, 36, 0.66)),
+      url('/alienmilk-showcase-texture.webp') center / cover;
+    pointer-events: none;
+  }
+
+  .trust-reel-fade {
+    position: relative;
+  }
+
+  .trust-reel-ink:first-child {
+    padding-top: 4.5rem;
+    border-radius: 0 var(--reel-join) 0 0;
+  }
+
+  .trust-reel-ink:last-child {
+    padding-bottom: 4.5rem;
+    border-radius: 0 0 0 var(--reel-join);
+  }
+
+  /* Fuera de escritorio el fondo no pinta estas curvas: se dejan ver aunque la hoja global oculte
+     los rellenos de las piezas de tinta (de ahí el selector más largo). */
+  .trust .trust-reel::before,
+  .trust .trust-reel::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    width: var(--reel-join);
+    /* Solapadas 3px con la banda: sin solape asoma una raya en la costura. */
+    height: calc(var(--reel-join) + 3px);
+    visibility: visible;
+    pointer-events: none;
+  }
+
+  .trust-reel::before {
+    bottom: calc(100% - 3px);
+    left: 0;
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--reel-join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--reel-join)
+    );
+  }
+
+  .trust-reel::after {
+    top: calc(100% - 3px);
+    right: 0;
+    background: radial-gradient(
+      circle at 0 100%,
+      transparent calc(var(--reel-join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--reel-join)
+    );
+  }
+}
+
+/* Móvil estrecho: la destacada, centrada, con el rótulo encima: la medalla y, debajo, su fecha, su
+   nombre, el organismo y el (+). La síntesis desplegada sigue justificada. */
+@media (max-width: 600px) {
+  .trust-awards-head {
+    text-align: center;
+  }
+
+  .trust-award-featured {
+    justify-items: center;
+  }
+
+  .trust-award-copy {
+    justify-items: center;
+    text-align: center;
+    /* A todo lo ancho: centrada y con su ancho, el organismo largo se salía del margen. */
+    justify-self: stretch;
+  }
+
+  /* Los textos, a todo lo ancho y centrados por dentro: así appFitLine encoge el organismo largo. */
+  .trust-award-copy > p {
+    justify-self: stretch;
+  }
+
+  .trust-award-copy > .trust-award-more {
+    justify-self: center;
+  }
+}
+
+/* Móvil estrecho: las distinciones, más grandes; con los cuerpos de escritorio, la medalla, los
+   rótulos y el palmarés se quedaban pequeños en la pantalla. */
+@media (max-width: 600px) {
+  .trust-awards-body {
+    --medal-size: 12.5rem;
+  }
+
+  .trust-award-featured {
+    --name-size: 2.5rem;
+  }
+
+  /* Los nombres medianos y largos, menos reducidos que en escritorio: aquí caben igual en dos líneas. */
+  .trust-award-name[data-size='medium'] {
+    font-size: calc(var(--name-size) * 0.82);
+  }
+
+  .trust-award-name[data-size='long'] {
+    font-size: calc(var(--name-size) * 0.7);
+  }
+
+  .trust-awards-kicker {
+    font-size: 0.9rem;
+  }
+
+  .trust-awards-aside {
+    font-size: 0.78rem;
+  }
+
+  .trust-medal {
+    margin-bottom: 2rem;
+  }
+
+  .trust-award-date {
+    font-size: 0.9rem;
+  }
+
+  .trust-award-copy .trust-award-issuer {
+    font-size: 1.05rem;
+  }
+
+  .trust-award-more {
+    font-size: 0.85rem;
+  }
+
+  .trust-award-more-icon {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .trust-award-copy > .trust-award-more {
+    /* Arriba, más el hueco de la rejilla del texto; abajo, más el que la separa del palmarés: los dos
+       aires quedan iguales. */
+    margin-block: 2.4rem 1rem;
+  }
+
+  .trust-awards-scroll {
+    height: 24rem;
+  }
+
+  .trust-awards-list {
+    --code-size: 0.78rem;
+    /* Cada franja a su alto: igualadas a la más alta (tres líneas), las cortas dejaban un hueco. */
+    grid-auto-rows: auto;
+  }
+
+  /* La síntesis, al cuerpo del texto de las demás secciones. */
+  .trust-award-detail p {
+    font-size: 1.05rem;
+  }
+
+  /* Y menos fundido al pie, que es también el hueco tras la última. */
+  .trust-awards-box {
+    --box-fade: 1.5rem;
+  }
+
+  .trust-awards-list strong {
+    font-size: 1.45rem !important;
+  }
+
+  .trust-awards-list .trust-award-issuer {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Móvil estrecho: más aire entre el palmarés y la cinta; el rótulo de la cinta, centrado como lo de
+   encima y algo mayor; y el organismo de la destacada, a cuerpo de texto aunque ocupe dos líneas
+   (en una, se encogía a 14 px). La directiva de ajuste escribe en el estilo; de ahí el !important. */
+@media (max-width: 600px) {
+  .trust-awards {
+    margin-bottom: 4.5rem;
+  }
+
+  .trust-reel-caption {
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  .trust-reel-caption span + span {
+    text-align: center;
+  }
+
+  .trust-award-copy .trust-award-issuer {
+    font-size: 1.05rem !important;
+    white-space: normal !important;
+    text-wrap: balance;
   }
 }

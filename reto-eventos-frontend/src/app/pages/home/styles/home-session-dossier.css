@@ -397,8 +397,12 @@
   }
 }
 
-/* El fondo corta la columna blanca entre Próximas sesiones y Localizaciones, y entre la ficha de
-   Localizaciones y Collaborators: más hueco para que a cada lado del corte quede aire blanco. */
+/* Próximas sesiones y Localizaciones son la misma sección: entre ellas el fondo no corta, la tinta
+   empieza con Localizaciones. A cada lado de su borde, unos 6vw: de las tarjetas a la tinta (el
+   margen de abajo de Próximas sesiones, con su blanco de más y el hueco entre secciones descontados)
+   y de la tinta al título (en locations-editorial.css). El margen va en Próximas sesiones y no en
+   Localizaciones: allí, negativo, no subiría lo que viene detrás (su caja mide el alto de su fila).
+   Tras la ficha de Localizaciones sí hay corte, con aire blanco a cada lado. */
 @media (min-width: 1001px) {
   /* El margen de Collaborators: la red de confianza lo usa para dejar sobre su barra el mismo aire
      (trust-network.component.css). */
@@ -408,8 +412,10 @@
     --sessions-end-air: clamp(0.65rem, 0.95vw, 1.25rem);
   }
 
-  .home-editorial-sections > app-locations-atlas:not(.locations-collaboration-section) {
-    margin-top: calc(clamp(6.5rem, 9.4vw, 11.5rem) + var(--sessions-end-air));
+  .home-editorial-sections > app-sessions-program {
+    margin-bottom: calc(
+      clamp(3.75rem, 6vw, 7rem) - var(--sessions-end-air) - var(--home-section-gap, 6rem)
+    );
   }
 
   .home-editorial-sections > app-locations-atlas.locations-collaboration-section {

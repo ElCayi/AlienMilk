@@ -125,6 +125,7 @@
       color: #faf9f7;
       background: #1f2430;
       box-shadow: 0 6px 18px rgba(31, 36, 48, 0.18);
+      font-family: 'Nunito', sans-serif;
       font-size: 0.72rem;
       line-height: 1.2;
       white-space: nowrap;
@@ -169,10 +170,27 @@
       right: 11.2rem;
     }
 
-.hero-icon-actions button:hover,
-.hero-icon-actions button:focus-visible,
-.hero-icon-actions button:active {
+/* En táctil el :hover se queda pegado tras el toque y taparía el estado de favorito. */
+@media (hover: hover) {
+  .hero-icon-actions button:hover {
+    color: #ff7f7f;
+  }
+}
+
+.hero-icon-actions button:focus-visible {
   color: #ff7f7f;
+}
+
+.hero-icon-actions button.is-flashing {
+  animation: hero-icon-flash 0.7s ease-out;
+}
+
+@keyframes hero-icon-flash {
+  0%,
+  25% {
+    color: #faf9f7;
+    transform: scale(1.15);
+  }
 }
 
 .hero-icon-actions .is-favorite {

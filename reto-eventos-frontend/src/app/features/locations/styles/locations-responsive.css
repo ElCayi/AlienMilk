@@ -1,6 +1,7 @@
 @media (max-width: 900px) {
   :host {
-    --mobile-section-canvas: #eef5f7;
+    /* Sin lienzo propio: la sección va sobre el fondo de la portada, como las demás. */
+    --mobile-section-canvas: transparent;
     background: var(--mobile-section-canvas);
   }
 
@@ -12,10 +13,13 @@
     background: var(--mobile-section-canvas);
   }
 
+  /* minmax(0, 1fr): sin él, la columna toma el ancho mínimo de su contenido y el texto se sale por
+     la derecha. */
   .locations-atlas {
     border-top: 0;
     background: var(--mobile-section-canvas);
     width: 100%;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
     min-height: auto;
     gap: 0.9rem;
@@ -27,6 +31,12 @@
   .locations-copy::before,
   .locations-copy::after {
     background: var(--mobile-section-canvas);
+  }
+
+  /* Y lo mismo en las rejillas de dentro: las líneas que encoge appFitLine no deben ensancharlas. */
+  .locations-editorial-main,
+  .locations-collaboration-columns {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .locations-copy {
@@ -45,27 +55,20 @@
     font-size: clamp(2.6rem, 11vw, 3.8rem);
   }
 
+  /* La ficha, una tarjeta de tinta como la parte oscura de Distribution y «Cómo colaborar». */
+  /* Como en escritorio, después del planetario. */
   .locations-brief {
     position: relative;
-    z-index: 0;
-    background: transparent;
+    border-radius: 1rem;
+    order: 2;
+    min-width: 0;
+    background: var(--gallery-ink, #211e24);
   }
 
-  .locations-brief::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    z-index: 0;
-    width: 100vw;
-    background: #536473;
-    transform: translateX(-50%);
-  }
-
-  .locations-brief > * {
-    position: relative;
-    z-index: 1;
+  /* Sin el escaparate de textura del primer diseño: el planetario va sobre el fondo, como en
+     escritorio. */
+  .locations-layout::before {
+    content: none;
   }
 
   .locations-layout {
@@ -93,7 +96,7 @@
 
   .locations-brief {
     height: auto;
-    padding: 1.5rem;
+    padding: 2.25rem 1.5rem;
     transform: none;
   }
 

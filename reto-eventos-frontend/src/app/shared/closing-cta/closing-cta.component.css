@@ -12,6 +12,8 @@
   border-radius: 1.25rem;
   color: #f1ecef;
   font-family: Arial, sans-serif;
+  /* Su tinta, la que pinta el fondo de la portada en su lugar (data-backdrop-ink). */
+  --backdrop-ink: #050d16;
   background: #050d16;
   box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
 }

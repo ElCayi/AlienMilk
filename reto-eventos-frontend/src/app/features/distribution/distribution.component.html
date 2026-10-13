@@ -1,0 +1,172 @@
+<section class="distribution" aria-labelledby="distribution-title">
+  <header>
+    <p class="distribution-kicker" appFitLine>
+      <span class="distribution-kicker-icon" aria-hidden="true"></span>
+      <span>Distribución gastronómica · 2026</span>
+    </p>
+    <div class="distribution-copy">
+      <h2 id="distribution-title" class="distribution-title">
+        <span class="distribution-brand">AlienMilk</span>
+        <span class="distribution-label">Distribution</span>
+      </h2>
+      <p class="distribution-subtitle">
+        <strong>AlienMilk</strong> también se sirve en casa. <em>Con moderación.</em>
+      </p>
+      <p class="distribution-intro">
+        AlienMilk Distribution es la división del ecosistema AlienMilk que, tras más de dos siglos
+        de investigación, pone algunas de sus leches <strong>al alcance del público</strong>.
+        Selecciona lotes del Archivo, derivados y piezas de servicio, y los hace llegar con
+        <strong>procedencia y cadena de frío</strong> a restaurantes, a algunos supermercados y a
+        <strong>su mesa</strong>.
+      </p>
+    </div>
+  </header>
+
+  <!-- La parte oscura, como «Cómo colaborar» en Collaborators, cierra la sección: empieza con la
+       foto, que nace de la tinta, y sigue con la selección y el enlace. El fondo acaba el blanco con
+       este bloque (ver liquid-backdrop.component.ts). -->
+  <section
+    class="distribution-picks"
+    data-backdrop-split
+    data-backdrop-ink="notch-top"
+    data-backdrop-ink-filler
+    aria-labelledby="distribution-picks-title"
+  >
+    <div class="distribution-ad">
+      <div class="distribution-photo">
+        <img
+          src="/alienmilk-distribution-gallery.webp"
+          alt="Visitantes con traje espacial recorren una galería de vitrinas con piezas de cristal lechoso y corales."
+          width="1671"
+          height="941"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <div class="distribution-picks-head">
+      <span class="distribution-picks-code" appFitLine>AM / Selección de la casa</span>
+      <h3 id="distribution-picks-title" appFitLine>Para una primera cata</h3>
+      <p>Una leche, un fermento y algo con lo que servirlos: lo justo para empezar en casa.</p>
+    </div>
+
+    <!-- El filtro que une la célula y el brote de las muestras: desenfoca las formas y vuelve a
+         recortar el borde, así lo que estaba cerca queda unido por un cuello. -->
+    <svg class="distribution-defs" aria-hidden="true" focusable="false">
+      <filter id="distribution-goo" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+        <feColorMatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" />
+      </filter>
+    </svg>
+
+    <ul class="distribution-picks-list" #picksList (scroll)="trackActivePick()">
+      @for (pick of picks(); track pick.slug; let i = $index) {
+        <li class="distribution-pick" [attr.data-tone]="pick.tono">
+          <a [routerLink]="['/tienda', pick.slug]">
+            @let m = molecules[i % molecules.length];
+            <svg
+              class="molecule"
+              viewBox="0 0 120 120"
+              aria-hidden="true"
+              focusable="false"
+              [style.--bud-x.px]="m.bud.dx"
+              [style.--bud-y.px]="m.bud.dy"
+              [style.--bud-period.s]="m.bud.period"
+            >
+              <defs>
+                <!-- Cada gota con su tono: claro en el centro y más hondo hacia el borde. -->
+                <radialGradient [attr.id]="'molecule-tone-' + i" cx="0.42" cy="0.4" r="0.62">
+                  <stop offset="0.45" class="molecule-tone" />
+                  <stop offset="1" class="molecule-tone-deep" />
+                </radialGradient>
+              </defs>
+              <!-- La placa: un círculo tenue bajo el cultivo, que lo asienta. -->
+              <circle
+                class="molecule-plate"
+                cx="60"
+                cy="60"
+                r="56"
+                vector-effect="non-scaling-stroke"
+              />
+              <g transform="translate(0 10)">
+                <!-- Detrás, la sombra: la misma silueta en oscuro, desplazada abajo a la derecha. -->
+                <g class="molecule-shadow" filter="url(#distribution-goo)">
+                  <circle [attr.cx]="m.cell.x + 5" [attr.cy]="m.cell.y + 5" [attr.r]="m.cell.r" />
+                  <circle
+                    class="molecule-bud"
+                    [attr.cx]="m.bud.x + 5"
+                    [attr.cy]="m.bud.y + 5"
+                    [attr.r]="m.bud.r"
+                  />
+                </g>
+                <!-- La célula y el brote, unidos por el filtro en un cuello que se estira. -->
+                <g [attr.fill]="'url(#molecule-tone-' + i + ')'" filter="url(#distribution-goo)">
+                  <circle [attr.cx]="m.cell.x" [attr.cy]="m.cell.y" [attr.r]="m.cell.r" />
+                  <circle
+                    class="molecule-bud"
+                    [attr.cx]="m.bud.x"
+                    [attr.cy]="m.bud.y"
+                    [attr.r]="m.bud.r"
+                  />
+                </g>
+                @for (spore of m.spores; track $index) {
+                  <circle
+                    class="molecule-spore"
+                    [attr.cx]="spore.x"
+                    [attr.cy]="spore.y"
+                    [attr.r]="spore.r"
+                    [attr.fill]="'url(#molecule-tone-' + i + ')'"
+                  />
+                }
+                <!-- El reflejo de la luz, arriba a la izquierda de cada gota. -->
+                <ellipse
+                  class="molecule-shine"
+                  [attr.cx]="m.cell.x - m.cell.r * 0.36"
+                  [attr.cy]="m.cell.y - m.cell.r * 0.42"
+                  [attr.rx]="m.cell.r * 0.26"
+                  [attr.ry]="m.cell.r * 0.16"
+                />
+                <ellipse
+                  class="molecule-shine molecule-bud"
+                  [attr.cx]="m.bud.x - m.bud.r * 0.36"
+                  [attr.cy]="m.bud.y - m.bud.r * 0.42"
+                  [attr.rx]="m.bud.r * 0.26"
+                  [attr.ry]="m.bud.r * 0.16"
+                />
+              </g>
+            </svg>
+            <span class="distribution-pick-origin" appFitLine>{{ pick.procedencia }}</span>
+            <span class="distribution-pick-name" appFitLine>{{ pick.nombre }}</span>
+          </a>
+          <p class="distribution-pick-summary">{{ pick.resumen }}</p>
+          <p class="distribution-pick-lot">{{ pick.formato }} · Lote {{ pick.lote }}</p>
+        </li>
+      }
+    </ul>
+
+    <!-- Solo en móvil y tableta, donde los productos se pasan deslizando. -->
+    @if (picks().length > 1) {
+      <nav class="distribution-picks-pagination" aria-label="Elegir producto">
+        @for (pick of picks(); track pick.slug; let i = $index) {
+          <button
+            type="button"
+            [class.is-active]="i === activePick()"
+            [attr.aria-current]="i === activePick() ? 'true' : null"
+            [attr.aria-label]="'Mostrar ' + pick.nombre"
+            (click)="showPick(i)"
+          ></button>
+        }
+      </nav>
+    }
+
+    <p class="distribution-picks-close">
+      <a class="distribution-cta" routerLink="/tienda">
+        Descubrir la tienda
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </p>
+  </section>
+</section>

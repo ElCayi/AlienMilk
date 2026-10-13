@@ -22,10 +22,11 @@ void main() {
 // textura gana presencia y vuelve a aclararse al asentarse.
 // Desde uDepthStart, a la vez y en tres cuartos de pantalla, los márgenes (fuera de la columna de
 // uDepthColumn, con borde neto) ganan textura y el centro se blanquea; el remolino del cursor sigue
-// asomando sobre ese blanco. Entre la primera sección y la segunda, la franja uDepthCut corta el
-// blanco de lado a lado, como si fueran dos bloques. El de abajo es de tinta, con una ventana blanca
-// para el planetario, hasta uDepthCut3, el corte antes de Collaborators. Tras Collaborators, otro corte
-// y los bloques blancos de la red de confianza (uBlock y uBlock2), partidos por la franja de las marcas.
+// asomando sobre ese blanco. Entre la primera sección y la segunda (Próximas sesiones y Localizaciones,
+// las dos de Sessions) no hay corte: en uInkTop empieza un bloque de tinta, con una ventana blanca
+// para el planetario, hasta uDepthCut3, el corte antes de AlienMilk Distribution; tras ella, uDepthCut4
+// y Collaborators. Tras Collaborators, otro corte y los bloques blancos de la red de confianza (uBlock
+// y uBlock2), partidos por la franja de las marcas.
 const FRAGMENT = `
 precision mediump float;
 uniform sampler2D uTexture;
@@ -41,15 +42,22 @@ uniform vec2 uView;
 uniform float uDepthStart;
 uniform vec2 uDepthColumn;
 uniform vec2 uDepth;
-uniform vec2 uDepthCut;
+uniform float uInkTop;
 uniform vec2 uDepthCut3;
+uniform vec2 uDepthCut4;
 uniform float uDepthEnd;
 uniform vec2 uBlock;
 uniform vec2 uBlock2;
 uniform vec2 uDark2;
 uniform float uDepthRound;
+uniform float uJoinRound;
 uniform vec2 uDark;
 uniform vec3 uInk;
+uniform float uPieces;
+uniform vec4 uPieceRect[8];
+uniform vec4 uPieceRadii[8];
+uniform vec4 uPieceShape[8];
+uniform vec3 uPieceColor[8];
 varying vec2 vUv;
 
 // Un bloque blanco de la red de confianza entre y.x e y.y, con las esquinas de los marcos: la curva
@@ -58,6 +66,17 @@ float sheet(vec2 px, vec2 y, float outside, float radius) {
   float rb = (px.x > uDepthColumn.x) == (px.y < (y.x + y.y) * 0.5) ? radius : 16.0;
   vec2 qb = vec2(outside, max(y.x - px.y, px.y - y.y)) + rb;
   return 1.0 - smoothstep(-1.5, 1.5, length(max(qb, 0.0)) + min(max(qb.x, qb.y), 0.0) - rb);
+}
+
+// Distancia a una caja (arriba, abajo, izquierda y derecha, en y.x, y.y, z y w) con una esquina
+// distinta en cada lado: arriba a la izquierda, arriba a la derecha, abajo a la derecha y abajo a la
+// izquierda.
+float roundBox(vec2 px, vec4 rect, vec4 r) {
+  vec2 p = px - vec2(rect.z + rect.w, rect.x + rect.y) * 0.5;
+  vec2 b = vec2(rect.w - rect.z, rect.y - rect.x) * 0.5;
+  float rr = p.x > 0.0 ? (p.y < 0.0 ? r.y : r.z) : (p.y < 0.0 ? r.x : r.w);
+  vec2 q = abs(p) - b + rr;
+  return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rr;
 }
 
 vec2 cover(vec2 uv) {
@@ -84,23 +103,26 @@ void main() {
   // solo aparecen si les queda ancho: en móvil serían dos filos sueltos junto al borde.
   float gutter = clamp(uView.x * 0.045, 24.0, 80.0);
   float column = uDepthColumn.y + gutter;
-  // El blanco, recortado por la franja del corte, con las esquinas apenas redondeadas salvo dos en
-  // diagonal, con una curva amplia: abajo a la derecha del bloque de arriba y arriba a la izquierda
-  // del de abajo. Cada mitad de la franja toma el radio de su bloque, para que el borde suavizado
-  // no deje una fila a medio blanquear bajo la curva.
+  // El blanco de la columna, recortado por las franjas de los cortes. En cada corte, las esquinas
+  // apenas redondeadas salvo dos en diagonal, con una curva amplia: abajo a la derecha del bloque de
+  // arriba y arriba a la izquierda del de abajo. Cada mitad de la franja toma el radio de su bloque,
+  // para que el borde suavizado no deje una fila a medio blanquear bajo la curva. Borde suavizado un
+  // par de px: el lienzo va a media resolución y la curva grande se escalonaba.
   float wide = step(40.0, uDepthColumn.x - column);
   float outside = abs(px.x - uDepthColumn.x) - column;
-  float away = max(uDepthCut.x - px.y, px.y - uDepthCut.y);
-  bool lower = px.y > (uDepthCut.x + uDepthCut.y) * 0.5;
-  float r = (px.x < uDepthColumn.x) == lower ? uDepthRound : 16.0;
-  // Borde suavizado un par de px: el lienzo va a media resolución y la curva grande se escalonaba.
-  float block = 1.0 - smoothstep(r - 1.5, r + 1.5, length(max(vec2(outside + r, r - away), 0.0)));
-  // El tercer corte, antes de Collaborators, en diagonal como el primero: la curva amplia abajo a
-  // la derecha del bloque de tinta y arriba a la izquierda del siguiente.
+  float block = 1.0 - smoothstep(-1.5, 1.5, outside);
+  // El corte tras la ficha de Localizaciones, antes de AlienMilk Distribution.
   float away3 = max(uDepthCut3.x - px.y, px.y - uDepthCut3.y);
   bool above3 = px.y < (uDepthCut3.x + uDepthCut3.y) * 0.5;
   float r3 = (px.x > uDepthColumn.x) == above3 ? uDepthRound : 16.0;
   block *= 1.0 - smoothstep(r3 - 1.5, r3 + 1.5, length(max(vec2(outside + r3, r3 - away3), 0.0)));
+  // El de tras AlienMilk Distribution, en la otra diagonal, como entre Collaborators y la red de
+  // confianza: arriba, las esquinas del bloque de tinta que la cierra (la curva amplia abajo a la
+  // izquierda); abajo, el blanco de Collaborators con la amplia arriba a la derecha.
+  float away4 = max(uDepthCut4.x - px.y, px.y - uDepthCut4.y);
+  bool above4 = px.y < (uDepthCut4.x + uDepthCut4.y) * 0.5;
+  float r5 = (px.x < uDepthColumn.x) == above4 ? uDepthRound : 16.0;
+  block *= 1.0 - smoothstep(r5 - 1.5, r5 + 1.5, length(max(vec2(outside + r5, r5 - away4), 0.0)));
   // El final, tras Collaborators: el blanco acaba justo donde el bloque de tinta que lo cierra, con sus
   // mismas esquinas (la curva amplia abajo a la izquierda), así no asoma blanco por debajo ni por la
   // curva; debajo solo queda la textura.
@@ -113,7 +135,7 @@ void main() {
   float side = (1.0 - block) * wide;
   float white = t * (1.0 - side) * uDepth.y;
   vec3 base = mix(uBase, vec3(1.0), white);
-  // Del segundo bloque hasta el tercer corte, tinta, salvo una ventana blanca entre la cabecera
+  // De uInkTop hasta el corte tras la ficha, tinta, salvo una ventana blanca entre la cabecera
   // (uDark.x) y la ficha (uDark2.x): el planetario, con columnas finas de tinta (rim) a los lados y
   // la curva amplia arriba a la derecha y abajo a la izquierda, como los marcos; las otras dos
   // esquinas, con el redondeo pequeño.
@@ -122,10 +144,65 @@ void main() {
   float rw = (px.x > uDepthColumn.x) == (px.y < mid) ? uDepthRound : 16.0;
   vec2 q = vec2(outside + rim, max(uDark.x - px.y, px.y - uDark2.x)) + rw;
   float pane = 1.0 - smoothstep(-1.5, 1.5, length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rw);
-  float ink = block * float(lower) * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
+  // Arriba, la tinta no tiene corte; el cambio de subsección, como el de «Cómo colaborar» y con su
+  // curva (uJoinRound, algo más abierta que las demás): a la izquierda, el blanco de Próximas
+  // sesiones acaba en curva sobre la tinta, que asoma bajo ella; a la derecha, la tinta sube en curva
+  // y el blanco sigue por detrás.
+  vec2 qw = vec2(outside + uJoinRound, px.y - uInkTop + uJoinRound);
+  float underWhite = smoothstep(-1.5, 1.5, length(max(qw, 0.0)) + min(max(qw.x, qw.y), 0.0) - uJoinRound);
+  vec2 qi = vec2(outside + uJoinRound, uInkTop - px.y + uJoinRound);
+  float inkCorner = 1.0 - smoothstep(-1.5, 1.5, length(max(qi, 0.0)) + min(max(qi.x, qi.y), 0.0) - uJoinRound);
+  float inked = px.x < uDepthColumn.x ? underWhite : inkCorner;
+  float ink = block * inked * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
   base = mix(base, uInk, ink);
-  float amount = uAmount * (1.0 - white) + t * side * uDepth.x;
-  gl_FragColor = vec4(mix(base, color, amount + thicken), 1.0);
+  // Las piezas de tinta de las secciones (data-backdrop-ink): las pinta el fondo y no su CSS, para
+  // que el remolino del cursor asome también sobre ellas, como sobre la tinta de Localizaciones.
+  // Cada una, una caja con sus esquinas; con la curva del blanco sobre ella arriba a la izquierda
+  // (shape.x, la tinta sube por el borde) o abajo a la derecha (shape.y, baja); y con un hueco
+  // (shape.z, metido a los lados) de tinta traslúcida (shape.w), la ventana de la cinta.
+  float solid = 0.0;
+  float glass = 0.0;
+  vec3 glassColor = uInk;
+  for (int i = 0; i < 8; i++) {
+    if (float(i) >= uPieces) {
+      break;
+    }
+    vec4 rect = uPieceRect[i];
+    vec4 shape = uPieceShape[i];
+    vec4 radii = uPieceRadii[i];
+    float fill = 1.0 - smoothstep(-1.0, 1.0, roundBox(px, rect, radii));
+    if (shape.x > 0.0) {
+      float n = shape.x;
+      float d = length(px - vec2(rect.z + n, rect.x - n));
+      fill = max(fill, smoothstep(n - 1.0, n + 1.0, d) * smoothstep(rect.z - 1.0, rect.z + 1.0, px.x)
+        * step(rect.x - n, px.y) * step(px.y, rect.x + 1.0) * step(px.x, rect.z + n));
+    }
+    if (shape.y > 0.0) {
+      float n = shape.y;
+      float d = length(px - vec2(rect.w - n, rect.y + n));
+      fill = max(fill, smoothstep(n - 1.0, n + 1.0, d) * (1.0 - smoothstep(rect.w - 1.0, rect.w + 1.0, px.x))
+        * step(px.y, rect.y + n) * step(rect.y - 1.0, px.y) * step(rect.w - n, px.x));
+    }
+    float hole = 0.0;
+    if (shape.z > 0.0) {
+      vec4 inner = vec4(rect.x + 1.0, rect.y - 1.0, rect.z + shape.z, rect.w - shape.z);
+      hole = (1.0 - smoothstep(-1.0, 1.0, roundBox(px, inner, vec4(16.0)))) * fill;
+    }
+    float c = fill - hole;
+    base = mix(base, uPieceColor[i], c);
+    solid = max(solid, c);
+    if (hole > glass) {
+      glass = hole * shape.w;
+      glassColor = uPieceColor[i];
+    }
+  }
+  // Sobre la tinta, la textura solo asoma con el remolino, como en la de Localizaciones.
+  float amount = (uAmount * (1.0 - white) + t * side * uDepth.x) * (1.0 - solid);
+  // Sobre las secciones (la columna blanca y la tinta), el remolino asoma algo más leve que en los
+  // márgenes, para que no moleste al leer.
+  float calm = 1.0 - 0.45 * max(1.0 - side, solid);
+  vec3 lit = mix(base, color, amount + thicken * calm);
+  gl_FragColor = vec4(mix(lit, glassColor, glass), 1.0);
 }`;
 
 /**
@@ -211,15 +288,72 @@ export class LiquidBackdropComponent {
       depthStart: uniform('uDepthStart'),
       depthColumn: uniform('uDepthColumn'),
       depth: uniform('uDepth'),
-      depthCut: uniform('uDepthCut'),
+      inkTop: uniform('uInkTop'),
       depthCut3: uniform('uDepthCut3'),
+      depthCut4: uniform('uDepthCut4'),
       depthEnd: uniform('uDepthEnd'),
       block: uniform('uBlock'),
       block2: uniform('uBlock2'),
       dark2: uniform('uDark2'),
       depthRound: uniform('uDepthRound'),
+      joinRound: uniform('uJoinRound'),
       dark: uniform('uDark'),
       ink: uniform('uInk'),
+      pieces: uniform('uPieces'),
+      pieceRect: uniform('uPieceRect'),
+      pieceRadii: uniform('uPieceRadii'),
+      pieceShape: uniform('uPieceShape'),
+      pieceColor: uniform('uPieceColor'),
+    };
+    const MAX_PIECES = 8;
+    const pieceRect = new Float32Array(MAX_PIECES * 4);
+    const pieceRadii = new Float32Array(MAX_PIECES * 4);
+    const pieceShape = new Float32Array(MAX_PIECES * 4);
+    const pieceColor = new Float32Array(MAX_PIECES * 3);
+    const parseColor = (value: string): [number, number, number] => {
+      const hex = /^#([0-9a-f]{6})$/i.exec(value.trim())?.[1];
+      // #211e24, la tinta de la casa.
+      return hex
+        ? [0, 2, 4].map((at) => parseInt(hex.slice(at, at + 2), 16) / 255) as [number, number, number]
+        : [0.129, 0.118, 0.141];
+    };
+
+    // Las piezas de tinta que pinta el fondo (ver el shader): su caja, sus esquinas (las de su CSS),
+    // las curvas del blanco que la rodean (data-backdrop-ink="notch-top" o "notch-bottom", solo en
+    // escritorio, donde las ponen sus ::before y ::after) y, en la ventana de la cinta
+    // ("window"), el hueco traslúcido, metido a los lados como su hijo data-backdrop-ink-hole.
+    const setPieces = () => {
+      const pieces = this.deepen ? [...this.deepen.querySelectorAll<HTMLElement>('[data-backdrop-ink]')] : [];
+      const wide = wideLayout.matches;
+      let count = 0;
+      for (const piece of pieces.slice(0, MAX_PIECES)) {
+        const box = piece.getBoundingClientRect();
+        if (box.bottom < -200 || box.top > window.innerHeight + 200 || !box.width) {
+          continue;
+        }
+        const style = getComputedStyle(piece);
+        const radii = [
+          style.borderTopLeftRadius,
+          style.borderTopRightRadius,
+          style.borderBottomRightRadius,
+          style.borderBottomLeftRadius,
+        ].map((value) => parseFloat(value) || 0);
+        const kind = piece.dataset['backdropInk'];
+        const notchTop = wide && kind === 'notch-top' ? Math.max(radii[0], radii[1]) : 0;
+        const notchBottom = wide && kind === 'notch-bottom' ? Math.max(radii[2], radii[3]) : 0;
+        const holeChild = wide && kind === 'window' ? piece.querySelector('[data-backdrop-ink-hole]') : null;
+        const inset = holeChild ? holeChild.getBoundingClientRect().left - box.left : 0;
+        pieceRect.set([box.top, box.bottom, box.left, box.right], count * 4);
+        pieceRadii.set(radii, count * 4);
+        pieceShape.set([notchTop, notchBottom, inset, 0.5], count * 4);
+        pieceColor.set(parseColor(style.getPropertyValue('--backdrop-ink')), count * 3);
+        count++;
+      }
+      gl.uniform1f(uniforms.pieces, count);
+      gl.uniform4fv(uniforms.pieceRect, pieceRect);
+      gl.uniform4fv(uniforms.pieceRadii, pieceRadii);
+      gl.uniform4fv(uniforms.pieceShape, pieceShape);
+      gl.uniform3fv(uniforms.pieceColor, pieceColor);
     };
 
     const wideLayout = window.matchMedia('(min-width: 1001px)');
@@ -251,11 +385,10 @@ export class LiquidBackdropComponent {
         gl.uniform1f(uniforms.depthStart, first.top);
         gl.uniform2f(uniforms.depthColumn, (first.left + first.right) / 2, first.width / 2);
         gl.uniform2f(uniforms.depth, this.depth, 1);
-        // El corte, de grosor fijo, va en medio del hueco entre las dos secciones.
-        const gap = second ? second.top - first.bottom : 0;
-        const cut = first.bottom + gap / 2;
-        const half = Math.min(Math.max(window.innerWidth * 0.024, 24), 48, gap / 3);
-        gl.uniform2f(uniforms.depthCut, gap > 0 ? cut - half : -2, gap > 0 ? cut + half : -1);
+        // Entre las dos secciones no hay corte: la tinta empieza con la segunda (Localizaciones), que
+        // deja su propio aire sobre el título. Los cortes de más abajo miden 2 × half.
+        const half = Math.min(Math.max(window.innerWidth * 0.024, 24), 48);
+        gl.uniform1f(uniforms.inkTop, second ? second.top : 1e4);
         // El elemento marcado empieza la tinta de abajo; otro corte igual lo cierra, con algo de
         // aire. Con las columnas, como sus estilos.
         const brief = wideLayout.matches
@@ -265,6 +398,13 @@ export class LiquidBackdropComponent {
         const cut3 = brief ? brief.bottom + air + half : 0;
         gl.uniform2f(uniforms.depthCut3, brief ? cut3 - half : -2, brief ? cut3 + half : -1);
         gl.uniform2f(uniforms.dark2, brief?.top ?? 0, brief ? cut3 : -1);
+        // El elemento marcado (el bloque de tinta que cierra AlienMilk Distribution) acaba el blanco,
+        // un píxel antes de su borde como el final de Collaborators; tras un corte igual que los
+        // demás, empieza el blanco de Collaborators.
+        const split = wideLayout.matches
+          ? this.deepen?.querySelector('[data-backdrop-split]')?.getBoundingClientRect()
+          : undefined;
+        gl.uniform2f(uniforms.depthCut4, split ? split.bottom - 1 : -2, split ? split.bottom + 2 * half : -1);
         // El blanco acaba con el elemento marcado (un píxel antes, para que el borde suavizado no asome).
         const end = wideLayout.matches
           ? this.deepen?.querySelector('[data-backdrop-end]')?.getBoundingClientRect()
@@ -285,6 +425,8 @@ export class LiquidBackdropComponent {
         gl.uniform2f(uniforms.block2, sheet2 ? sheet2.top - tuck : -1e4, sheet2 ? sheet2.bottom : -1e4 + 1);
         // La esquina grande, más abierta que la de los marcos.
         gl.uniform1f(uniforms.depthRound, Math.min(Math.max(window.innerWidth * 0.07, 64), 120));
+        // La del cambio de subsección, algo más abierta (como --how-join en «Cómo colaborar»).
+        gl.uniform1f(uniforms.joinRound, Math.min(Math.max(window.innerWidth * 0.09, 80), 152));
         // La tinta llega hasta el final del elemento marcado; con las columnas, como sus estilos.
         const dark = wideLayout.matches
           ? this.deepen?.querySelector('[data-backdrop-dark]')?.getBoundingClientRect()
@@ -292,6 +434,7 @@ export class LiquidBackdropComponent {
         gl.uniform2f(uniforms.dark, dark?.bottom ?? 0, dark ? 1 : 0);
         // #211e24, la tinta de la casa.
         gl.uniform3f(uniforms.ink, 0.129, 0.118, 0.141);
+        setPieces();
       } else {
         gl.uniform2f(uniforms.dark, 0, 0);
         gl.uniform1f(uniforms.depthEnd, 1e4);
@@ -299,6 +442,7 @@ export class LiquidBackdropComponent {
         gl.uniform2f(uniforms.block2, -1e4, -1e4 + 1);
         gl.uniform2f(uniforms.dark2, 0, -1);
         gl.uniform2f(uniforms.depth, 0, 0);
+        gl.uniform1f(uniforms.pieces, 0);
       }
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
@@ -372,6 +516,9 @@ export class LiquidBackdropComponent {
       }
       ready = true;
       draw(performance.now());
+      // Desde aquí, la tinta de las piezas la pinta el fondo: sus estilos dejan de pintarla (ver
+      // styles.css), así no tapan el remolino.
+      this.deepen?.classList.add('backdrop-inked');
     };
     image.src = this.src;
 
@@ -394,6 +541,7 @@ export class LiquidBackdropComponent {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('scroll', redraw);
       blockResize?.disconnect();
+      this.deepen?.classList.remove('backdrop-inked');
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     });
   }

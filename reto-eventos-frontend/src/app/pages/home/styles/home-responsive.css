@@ -280,7 +280,9 @@
         margin-bottom: var(--home-section-gap);
       }
 
-      .home-editorial-sections > app-locations-atlas,
+      /* Localizaciones es la segunda parte de Próximas sesiones: sin barra. */
+      .home-editorial-sections > app-locations-atlas.locations-collaboration-section,
+      .home-editorial-sections > app-distribution,
       .home-editorial-sections > app-trust-network,
       .home-editorial-sections > app-sample-reception {
         box-sizing: border-box;
@@ -306,8 +308,9 @@
         isolation: isolate;
       }
 
+      /* Sin la franja de textura del primer diseño: la ficha va sobre el fondo, como en escritorio. */
       .sessions-carousel::before {
-        content: '';
+        content: none;
         position: absolute;
         top: -2.5rem;
         right: auto;
@@ -391,7 +394,8 @@
 
       .hero-mobile-actions {
         position: absolute;
-        z-index: 1;
+        /* Por encima de .hero-copy, que ocupa todo el hero y se llevaba los toques. */
+        z-index: 2;
         top: 1.25rem;
         right: 1.4rem;
         display: flex;

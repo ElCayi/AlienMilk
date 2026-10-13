@@ -13,7 +13,8 @@
           <span class="locations-collaborators-brand">AlienMilk</span>
           <span class="locations-collaborators-label">Collaborators</span>
         </h2>
-        <p class="locations-subtitle" *ngIf="!collaborationMode" appFitLine>
+        <!-- En móvil, en dos líneas como los demás subtítulos, antes que encogido. -->
+        <p class="locations-subtitle" *ngIf="!collaborationMode" appFitLine [appFitLineMin]="15">
           Cada estación responde a un entorno distinto.
         </p>
         <p class="locations-subtitle locations-collaborators-subtitle" *ngIf="collaborationMode">
@@ -59,46 +60,55 @@
 
   <!-- Collaborators: el gancho, bajo la foto, en dos columnas. -->
   <div class="locations-collaboration-columns" *ngIf="collaborationMode">
-    <!-- Cada columna, con su titular: que se vea sin tener que leer. -->
-    <div>
-      <p class="locations-collaboration-perks" appFitLine>
-        Conozca y participe en la <span>comunidad.</span>
-      </p>
-      <p>
-        Con
-        <span class="locations-collaboration-nowrap"
-          ><span class="locations-collaboration-lockup"
+    <!-- Cada columna, con su titular: que se vea sin tener que leer. En móvil y tableta llegan
+         plegadas, solo con el titular; en escritorio se ven siempre abiertas. -->
+    <details>
+      <summary>
+        <span class="locations-collaboration-perks" appFitLine>
+          Conozca y participe en la <span>comunidad.</span>
+        </span>
+      </summary>
+      <div class="locations-collaboration-body">
+        <p>
+          Con
+          <span class="locations-collaboration-nowrap"
+            ><span class="locations-collaboration-lockup"
+              ><span class="locations-collaborators-brand">AlienMilk</span
+              ><span class="locations-collaborators-label">Collaborators</span></span
+            >,</span
+          >
+          cada aportación abre la puerta a mucho más que el Archivo: alimenta nuevas investigaciones y
+          sesiones, y le conecta con <strong>una comunidad de procedencias, culturas y mundos
+          extraordinariamente distintos</strong>.
+        </p>
+        <p>
+          Colaborar es entrar en una <strong>red de intercambio</strong> donde una propuesta puede
+          terminar en una mesa compartida, una expedición o una experiencia que no existiría fuera de
+          AlienMilk. Muchas empezaron con una idea como la suya.
+        </p>
+      </div>
+    </details>
+    <details>
+      <summary>
+        <span class="locations-collaboration-perks" appFitLine>
+          Viajes, estancias y experiencias. <span>Gratis.</span>
+        </span>
+      </summary>
+      <div class="locations-collaboration-body">
+        <p>
+          <span class="locations-collaboration-lockup"
             ><span class="locations-collaborators-brand">AlienMilk</span
             ><span class="locations-collaborators-label">Collaborators</span></span
-          >,</span
-        >
-        cada aportación abre la puerta a mucho más que el Archivo: alimenta nuevas investigaciones y
-        sesiones, y le conecta con <strong>una comunidad de procedencias, culturas y mundos
-        extraordinariamente distintos</strong>.
-      </p>
-      <p>
-        Colaborar es entrar en una <strong>red de intercambio</strong> donde una propuesta puede
-        terminar en una mesa compartida, una expedición o una experiencia que no existiría fuera de
-        AlienMilk. Muchas empezaron con una idea como la suya.
-      </p>
-    </div>
-    <div>
-      <p class="locations-collaboration-perks" appFitLine>
-        Viajes, estancias y experiencias. <span>Gratis.</span>
-      </p>
-      <p>
-        <span class="locations-collaboration-lockup"
-          ><span class="locations-collaborators-brand">AlienMilk</span
-          ><span class="locations-collaborators-label">Collaborators</span></span
-        >&ngsp;<strong>organiza viajes, estancias y actividades reservadas en distintos sistemas</strong>:
-        visitas a instalaciones, encuentros privados, cosechas y proyectos de campo. Una colaboración
-        puede empezar con una muestra y terminar <strong>durmiendo bajo otro cielo</strong>, en espacios normalmente cerrados al público.
-      </p>
-      <p>
-        Cuando su propuesta sale adelante, <strong>AlienMilk cubre transporte, alojamiento y
-        organización</strong>. Usted solo tiene que decidir hasta dónde quiere llegar.
-      </p>
-    </div>
+          >&ngsp;<strong>organiza viajes, estancias y actividades reservadas en distintos sistemas</strong>:
+          visitas a instalaciones, encuentros privados, cosechas y proyectos de campo. Una colaboración
+          puede empezar con una muestra y terminar <strong>durmiendo bajo otro cielo</strong>, en espacios normalmente cerrados al público.
+        </p>
+        <p>
+          Cuando su propuesta sale adelante, <strong>AlienMilk cubre transporte, alojamiento y
+          organización</strong>. Usted solo tiene que decidir hasta dónde quiere llegar.
+        </p>
+      </div>
+    </details>
   </div>
 
   <!-- Collaborators: «Cómo colaborar» (texto de JT), en tinta, cierra la sección. -->
@@ -106,6 +116,8 @@
     class="locations-collaboration-how"
     *ngIf="collaborationMode"
     data-backdrop-end
+    data-backdrop-ink="notch-top"
+    data-backdrop-ink-filler
     aria-labelledby="collaboration-how-title"
   >
     <!-- A la derecha de la cabecera y en el hueco junto a la invitación, unas minimilks flotan (como en
@@ -117,7 +129,7 @@
       <span class="locations-collaboration-how-code" appFitLine>AM / INFORMACIÓN AL COLABORADOR</span>
       <h3 id="collaboration-how-title">Cómo colaborar</h3>
       <div class="locations-collaboration-how-intro">
-        <p>¡Participar es más sencillo de lo que cree!</p>
+        <p>Participar es muy sencillo.</p>
         <p>
           <strong>No necesita preparar un envío ni tener todos los detalles re&shy;suel&shy;tos an&shy;tes de
           es&shy;cri&shy;bir&shy;nos.</strong>
@@ -135,44 +147,93 @@
         </a>
       </p>
     </div>
-    <ol class="locations-collaboration-how-steps">
+    <ol class="locations-collaboration-how-steps" (scroll)="trackActiveStep()">
       <li>
-        <span class="locations-collaboration-how-visual is-step-01" aria-hidden="true">
+        <button
+          class="locations-collaboration-how-visual is-step-01"
+          type="button"
+          aria-label="Ampliar la imagen del paso 1"
+          (click)="zoomStep(stepZoom, 1)"
+        >
           <span class="locations-collaboration-how-number">01</span>
-        </span>
-        <strong appFitLine>Cuéntenos su propuesta</strong>
+        </button>
+        <!-- En móvil, en dos líneas y grande; en escritorio, en una. -->
+        <strong appFitLine>Cuéntenos <span>su propuesta</span></strong>
         <p>
           Ex&shy;plí&shy;que&shy;nos bre&shy;ve&shy;men&shy;te qué quie&shy;re apor&shy;tar. No ne&shy;ce&shy;si&shy;ta pre&shy;pa&shy;rar do&shy;cu&shy;men&shy;ta&shy;ción ni rea&shy;li&shy;zar nin&shy;gún en&shy;vío pa&shy;ra em&shy;pe&shy;zar.
         </p>
       </li>
       <li>
-        <span class="locations-collaboration-how-visual is-step-02" aria-hidden="true">
+        <button
+          class="locations-collaboration-how-visual is-step-02"
+          type="button"
+          aria-label="Ampliar la imagen del paso 2"
+          (click)="zoomStep(stepZoom, 2)"
+        >
           <span class="locations-collaboration-how-number">02</span>
-        </span>
-        <strong appFitLine>La revisamos con usted</strong>
+        </button>
+        <strong appFitLine>La revisamos <span>con usted</span></strong>
         <p>
           El equi&shy;po de Co&shy;lla&shy;bo&shy;ra&shy;tors es&shy;tu&shy;dia la pro&shy;pues&shy;ta, re&shy;suel&shy;ve sus du&shy;das y le in&shy;di&shy;ca si po&shy;de&shy;mos con&shy;ti&shy;nuar y qué ne&shy;ce&shy;si&shy;ta&shy;re&shy;mos pa&shy;ra ha&shy;cer&shy;lo.
         </p>
       </li>
       <li>
-        <span class="locations-collaboration-how-visual is-step-03" aria-hidden="true">
+        <button
+          class="locations-collaboration-how-visual is-step-03"
+          type="button"
+          aria-label="Ampliar la imagen del paso 3"
+          (click)="zoomStep(stepZoom, 3)"
+        >
           <span class="locations-collaboration-how-number">03</span>
-        </span>
-        <strong appFitLine>Le indicamos cómo prepararlo</strong>
+        </button>
+        <strong appFitLine>Le indicamos <span>cómo prepararlo</span></strong>
         <p>
           Si ne&shy;ce&shy;si&shy;ta&shy;mos re&shy;ci&shy;bir una mues&shy;tra, le ex&shy;pli&shy;ca&shy;re&shy;mos có&shy;mo do&shy;cu&shy;men&shy;tar&shy;la, con&shy;ser&shy;var&shy;la y pre&shy;pa&shy;rar&shy;la. <strong>No en&shy;víe na&shy;da an&shy;tes de re&shy;ci&shy;bir ins&shy;truc&shy;cio&shy;nes.</strong>
         </p>
       </li>
       <li>
-        <span class="locations-collaboration-how-visual is-step-04" aria-hidden="true">
+        <button
+          class="locations-collaboration-how-visual is-step-04"
+          type="button"
+          aria-label="Ampliar la imagen del paso 4"
+          (click)="zoomStep(stepZoom, 4)"
+        >
           <span class="locations-collaboration-how-number">04</span>
-        </span>
-        <strong appFitLine>Coordinamos el resto</strong>
+        </button>
+        <strong appFitLine>Coordinamos <span>el resto</span></strong>
         <p>
           AlienMilk or&shy;ga&shy;ni&shy;za con us&shy;ted la re&shy;co&shy;gi&shy;da o el en&shy;vío y rea&shy;li&shy;za el se&shy;gui&shy;mien&shy;to de la mues&shy;tra des&shy;de su re&shy;cep&shy;ción has&shy;ta com&shy;ple&shy;tar su eva&shy;lua&shy;ción e in&shy;cor&shy;po&shy;ra&shy;ción.
         </p>
       </li>
     </ol>
+    <!-- Móvil y tableta: los pasos, en un carrusel; los puntos, como los de la selección de Distribution. -->
+    <!-- La muestra de cada paso, ampliada al pulsarla con su círculo y su número. Se cierra pulsando
+         en cualquier sitio o con Esc. -->
+    <dialog
+      #stepZoom
+      class="locations-collaboration-how-zoom"
+      closedby="any"
+      (close)="zoomedStep.set(null)"
+    >
+      <button type="button" aria-label="Cerrar la imagen" (click)="stepZoom.close()">
+        @if (zoomedStep(); as step) {
+          <span [class]="'locations-collaboration-how-visual is-step-0' + step">
+            <span class="locations-collaboration-how-number">0{{ step }}</span>
+          </span>
+        }
+      </button>
+    </dialog>
+    <nav class="locations-collaboration-how-pagination" aria-label="Elegir paso">
+      @for (step of [1, 2, 3, 4]; track step; let i = $index) {
+        <button
+          type="button"
+          [class.is-active]="i === activeStep()"
+          [attr.aria-current]="i === activeStep() ? 'true' : null"
+          [attr.aria-label]="'Mostrar el paso ' + step"
+          (click)="showStep(i)"
+        ></button>
+      }
+    </nav>
     <div class="locations-collaboration-how-drift is-foot" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
@@ -249,7 +310,7 @@
     </aside>
 
     <div class="locations-chart-viewport">
-      <div class="locations-chart" [class.is-loading]="loading">
+      <div class="locations-chart" [class.is-loading]="loading" (scroll)="trackActiveStation()">
         <article
           class="location-node"
           *ngFor="let station of stations | slice: 0 : 3; let index = index; trackBy: trackStation"
@@ -302,6 +363,22 @@
 
         <p class="locations-loading" *ngIf="loading">Sincronizando coordenadas…</p>
       </div>
+
+      <!-- Solo en móvil y tableta, donde las estaciones se pasan deslizando. -->
+      <nav
+        class="locations-chart-pagination"
+        *ngIf="!loading && stations.length > 1"
+        aria-label="Elegir estación"
+      >
+        <button
+          *ngFor="let station of stations | slice: 0 : 3; let index = index; trackBy: trackStation"
+          type="button"
+          [class.is-active]="index === activeStation()"
+          [attr.aria-current]="index === activeStation() ? 'true' : null"
+          [attr.aria-label]="'Mostrar ' + station.sitio"
+          (click)="showStation(index)"
+        ></button>
+      </nav>
     </div>
   </div>
 </section>

@@ -70,3 +70,16 @@ body {
   outline: 2px solid rgba(255, 127, 127, 0.35);
   outline-offset: 2px;
 }
+
+/* Portada: cuando el fondo líquido pinta la tinta de las piezas marcadas (data-backdrop-ink, ver
+   liquid-backdrop.component.ts), ellas y sus rellenos curvos dejan de pintarla, para que el
+   remolino del cursor asome también sobre la tinta. Sin WebGL, la clase no llega y se quedan como
+   estaban. Con html delante, para pesar más que los estilos de cada componente. */
+html .backdrop-inked [data-backdrop-ink] {
+  background: transparent;
+}
+
+html .backdrop-inked [data-backdrop-ink-filler]::before,
+html .backdrop-inked [data-backdrop-ink-filler]::after {
+  visibility: hidden;
+}

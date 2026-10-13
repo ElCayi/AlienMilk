@@ -15,6 +15,7 @@ import { ScaleWidthDirective } from '../fit-box/scale-width.directive';
   template: `
     <section
       class="closing-cta"
+      data-backdrop-ink
       [style.--closing-cta-image]="'url(' + image() + ')'"
       [attr.aria-labelledby]="labelledBy()"
       [appScaleWidth]="1094"

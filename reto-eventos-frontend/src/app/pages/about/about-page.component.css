@@ -372,6 +372,7 @@ h2 em {
   min-height: 2.75rem;
   color: var(--light-muted);
   text-decoration: none;
+  white-space: nowrap;
   transition: color 180ms ease;
 }
 
@@ -397,6 +398,31 @@ h2 em {
 .us-hero-bottom a:hover svg,
 .us-hero-bottom a:focus-visible svg {
   transform: translate(0.12rem, 0.12rem);
+}
+
+/* Las cinco secciones caben en una fila desde 1250 px; por debajo, en dos filas de tres y dos, y en
+   pantallas estrechas, apiladas, una línea por sección. Sin partir títulos, como en Contacto. */
+@media (min-width: 901px) and (max-width: 1250px) {
+  .us-hero-bottom {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .us-hero-bottom {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .us-hero-bottom a {
+    border-bottom: 1px solid var(--light-line);
+  }
+
+  .us-hero-bottom svg {
+    margin-left: auto;
+  }
 }
 
 /* Destinos del índice: la barra superior no tapa el arranque de la sección. */
@@ -1018,7 +1044,7 @@ h2 em {
   object-position: 46% 50%;
 }
 
-/* 04 / Nuestra organización, sobre la textura: el rótulo, como el de las secciones, y debajo el retrato
+/* 05 / Nuestra organización, sobre la textura: el rótulo, como el de las secciones, y debajo el retrato
    en un marco redondeado, con sus fichas, y la arquitectura ejecutiva. */
 .us-org-label {
   display: flex;
@@ -1028,8 +1054,8 @@ h2 em {
   color: var(--coral);
 }
 
-/* El equipo, entre la 03 y la 04: la nota firmada como la de la cabecera, centrada, con el mismo aire
-   encima y debajo, hasta el rótulo de la 04. */
+/* El equipo, entre la 04 y la 05: la nota firmada como la de la cabecera, centrada, con el mismo aire
+   encima y debajo, hasta el rótulo de la 05. */
 .us-team {
   display: flex;
   flex-direction: column;
@@ -1037,7 +1063,7 @@ h2 em {
   padding-block: clamp(4.5rem, 11vw, 11rem);
 }
 
-/* Abajo sigue el rótulo pequeño de la 04 y la foto empieza más abajo: un pelín menos de aire, para que
+/* Abajo sigue el rótulo pequeño de la 05 y la foto empieza más abajo: un pelín menos de aire, para que
    a la vista quede igual que arriba. */
 @media (min-width: 1001px) {
   .us-team {
@@ -1363,6 +1389,35 @@ h2 em {
   display: none;
 }
 
+/* Al cambiar de capa, la nueva y el esquema entran con un fundido y suben un poco, como las
+   distinciones de la portada: así se nota el cambio aunque se pase rápido de una pestaña a otra. La
+   capa entra cada vez que aparece, porque oculta no tiene caja, y el esquema se vuelve a pintar; los
+   dos, también al desplegar el bloque. Sin movimiento, solo el fundido. */
+.us-arch-panel,
+.us-arch-cell {
+  animation: us-arch-in 0.45s ease-out;
+}
+
+@keyframes us-arch-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+}
+
+@keyframes us-arch-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .us-arch-panel,
+  .us-arch-cell {
+    animation-name: us-arch-fade;
+  }
+}
+
 .us-arch-copy h4 {
   margin: 0;
   font: 700 clamp(1.9rem, 2.8vw, 2.8rem) / 0.85 var(--condensed);
@@ -1406,8 +1461,7 @@ h2 em {
   font-weight: 800;
 }
 
-/* El esquema: trazo fino y claro, y la capa abierta en coral. Al cambiar de capa, el coral pasa de
-   una parte a otra. */
+/* El esquema: trazo fino y claro, y la capa abierta en coral. */
 .us-arch-cell {
   grid-area: 1 / 2;
   justify-self: center;
@@ -1423,10 +1477,6 @@ h2 em {
   stroke: rgba(247, 248, 249, 0.38);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
-  transition:
-    stroke 400ms ease,
-    fill 400ms ease,
-    opacity 400ms ease;
 }
 
 .us-arch-cell .us-cell-inner {
@@ -1470,7 +1520,6 @@ h2 em {
   letter-spacing: 0.1em;
   text-anchor: middle;
   dominant-baseline: central;
-  transition: fill 400ms ease;
 }
 
 .us-arch-cell[data-layer='0'] .us-cell-frame circle,
@@ -1662,7 +1711,7 @@ h2 em {
   }
 }
 
-/* 03 / El ecosistema: unida a la 02, con su geometría al revés. El recuadro oscuro va a la izquierda, de
+/* 03 / El Archivo: unida a la 02, con su geometría al revés. El recuadro oscuro va a la izquierda, de
    arriba abajo, con las fotos; el texto, en el lienzo claro de la derecha. Todo va en em, como en la 02.
    Arriba, la esquina pequeña de la unión a la izquierda y recta a la derecha; abajo, la esquina grande
    hacia la textura que antes cerraba la 02. */
@@ -1979,9 +2028,11 @@ h2 em {
   background: rgba(13, 21, 30, 0.82);
 }
 
-/* Invitación: tarjeta blanca flotando sobre la textura, fuera del lienzo. */
+/* Invitación: tarjeta blanca flotando sobre la textura, fuera del lienzo. Encima y debajo, el mismo
+   aire que deja antes del pie el cierre de la portada y de Sesiones (.closing de
+   sessions-closing.css). */
 .us-invitation {
-  padding-block: clamp(2.5rem, 5vw, 4.5rem) clamp(3rem, 6vw, 5rem);
+  padding-block: clamp(7.5rem, 15.5vw, 14.5rem);
 }
 
 .us-invitation-card {
@@ -2016,6 +2067,20 @@ h2 em {
 @media (max-width: 1400px) {
   .us-invitation-door app-collaborators-door {
     zoom: 0.5;
+  }
+}
+
+/* Donde sobra sitio a la derecha del texto, la puerta se ensancha por el centro, con más aire para el
+   título y las minimilks. La puerta y el texto van cada uno a su ancho y juntos en el centro de la
+   tarjeta: lo que sobra se reparte igual a los dos lados. */
+@media (min-width: 1520px) {
+  .us-invitation-card {
+    grid-template-columns: auto minmax(0, max-content);
+    justify-content: center;
+  }
+
+  .us-invitation-door app-collaborators-door {
+    --door-extra: 3rem;
   }
 }
 
@@ -2309,27 +2374,14 @@ h2 em {
 }
 
 @media (max-width: 600px) {
-  .us-label span:last-child {
+  /* Del rótulo solo queda la marca de la sección, con su icono: el texto de la derecha no cabe. */
+  .us-label > span:not(:first-child) {
     display: none;
   }
 
   /* Con tan pocas palabras por línea, justificar abre huecos: la nota va en bandera. */
   .us-hero-lead {
     text-align: left;
-  }
-
-  /* En móvil el índice se apila, una línea por sección, como en Contacto. */
-  .us-hero-bottom {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .us-hero-bottom a {
-    border-bottom: 1px solid var(--light-line);
-  }
-
-  .us-hero-bottom svg {
-    margin-left: auto;
   }
 
   .us-functions {
@@ -2350,7 +2402,7 @@ h2 em {
     --room: calc(100svh - var(--topbar-height, 3.75rem));
   }
 
-  /* Al saltar desde el índice, la sección arranca justo bajo la barra y se ve entera. La 04 no tiene
+  /* Al saltar desde el índice, la sección arranca justo bajo la barra y se ve entera. La 05 no tiene
      lienzo: deja sobre su rótulo el aire de los de las secciones. */
   .us-definition,
   .us-ecosystem {
@@ -2719,7 +2771,7 @@ h2 em {
   }
 }
 
-/* 03 / El ecosistema — 2 y 3: la 02 tal cual, salvo que es la última pieza del lienzo: abajo lleva
+/* 04 / El ecosistema: la 02 tal cual, salvo que es la última pieza del lienzo: abajo lleva
    las esquinas que cerraban la 02, y la foto de abajo acaba en la esquina grande. Los huecos de foto
    llenan su recuadro como lo hará la foto. */
 .us-definition.us-eco-more {
@@ -2751,7 +2803,7 @@ h2 em {
   }
 }
 
-/* Los recuadros claros de la 02 y la 03 miden siempre lo mismo (lo que medía la 02 con su primer
+/* Los recuadros claros de la 02 y la 04 miden siempre lo mismo (lo que medía la 02 con su primer
    texto) y no crecen con el texto: si no cabe, se desplaza dentro de su recuadro. */
 @media (min-width: 1001px) {
   .us-work .us-definition-grid.us-work-grid {
@@ -2788,7 +2840,7 @@ h2 em {
   }
 }
 
-/* El rótulo de la 03 — 1, arriba a la izquierda sobre el recuadro oscuro, a la altura del de la 01. */
+/* El rótulo de la 03, arriba a la izquierda sobre el recuadro oscuro, a la altura del de la 01. */
 .us-ecosystem .us-eco-label {
   margin: 0 0 1.5rem;
 }

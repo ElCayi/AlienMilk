@@ -3,25 +3,139 @@
    medidas repiten las de la base: filas de 1.25rem, bloques de 1.75rem y los mismos clamp entre
    columnas, para que la tienda respire igual que el resto de páginas. */
 
-/* Cabecera: las condiciones, en el recuadro con leyenda de Localizaciones. */
+/* Cabecera: categoría y buscador, los de Sesiones, abajo a la derecha del texto. */
+.secondary-header {
+  align-items: end;
+  --light: var(--ink);
+  --light-line: var(--line);
+  --light-rule: var(--rule);
+}
+
+.shop-tools {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.shop-filter {
+  padding-bottom: 0.45rem;
+  border-bottom: 2px solid var(--rule);
+  color: var(--muted);
+}
+
+.shop-search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 0.45rem;
+  color: var(--paper-muted);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+/* El foco del buscador de Sesiones, ya aclarado para la franja oscura. */
+.shop-search:focus-within {
+  border-color: var(--coral);
+  background: #fff;
+  box-shadow: 0 0 0 2px #ffb8b8;
+}
+
+.shop-search svg {
+  width: 1rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.shop-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--paper-ink);
+  background: transparent;
+  font:
+    0.95rem Arial,
+    sans-serif;
+}
+
+/* Las condiciones, en el recuadro con leyenda de Localizaciones, junto al título del catálogo y
+   con los colores del bloque claro. */
+.terms-box {
+  border-color: rgba(40, 51, 58, 0.42);
+  --line: var(--paper-line);
+}
+
+.terms-box dt {
+  color: var(--paper-muted);
+}
+
+.terms-box dd {
+  color: var(--paper-ink);
+}
+
+/* Más ancho y en dos columnas: cuatro filas apiladas ocupaban casi tanto como el título. */
+.terms-box {
+  padding: clamp(1.25rem, 1.6vw, 1.75rem) clamp(1.15rem, 1.8vw, 2rem) clamp(1.1rem, 1.4vw, 1.5rem);
+}
+
+.terms-box dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem clamp(1rem, 2vw, 1.75rem);
+  padding-top: 0.35rem;
+}
+
+/* Cada condición, en su chip: transparente y con trazo oscuro, sin las rayas entre filas. */
+.terms-box dl div,
+.terms-box dl div:first-child,
+.terms-box dl div:last-child {
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--paper-ink);
+  border-radius: 999px;
+}
+
 .terms-pending {
   margin: 0.5rem 0 0;
-  color: var(--muted);
+  color: var(--paper-muted);
   font: 400 clamp(1.05rem, 1vw, 1.25rem) var(--condensed);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-/* 01 · Catálogo: título y texto en las proporciones del bloque claro partido. */
+/* 01 · Catálogo: el título y, con más sitio, el recuadro de las condiciones. */
 .catalog-heading {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(2.5rem, 6vw, 7rem);
-  align-items: end;
+  grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr);
+  gap: 1.5rem clamp(2.5rem, 6vw, 7rem);
+  align-items: center;
+}
+
+/* El rótulo, en su fila: así el título se centra con el recuadro sin contarlo. */
+.catalog-heading .section-kicker {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .catalog-heading h2 {
-  margin-bottom: 0;
+  margin: 0;
+  font-size: clamp(2.85rem, 4.4vw, 4.75rem);
+}
+
+/* «a su mesa.» empieza bajo la «a» de «archivo»: una rejilla de dos columnas con «Del» en la
+   primera. */
+.catalog-title {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  column-gap: 0.2em;
+}
+
+.catalog-title-tail {
+  grid-column: 2;
+  white-space: nowrap;
 }
 
 .catalog-toolbar {
@@ -541,6 +655,16 @@
 
 /* Móvil: una columna; cada producto, la muestra a la izquierda de su nombre. */
 @media (max-width: 700px) {
+  .terms-box dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .terms-box dl div,
+  .terms-box dl div:first-child,
+  .terms-box dl div:last-child {
+    padding: 0.5rem 1rem;
+  }
+
   .product-grid {
     grid-template-columns: minmax(0, 1fr);
     row-gap: 2.5rem;

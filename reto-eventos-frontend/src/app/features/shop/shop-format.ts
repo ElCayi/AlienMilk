@@ -84,3 +84,35 @@ export function maxUnits(product: Producto, terms: CondicionesTienda): number {
 export function shippingCost(delivery: EntregaPedido, subtotal: number, terms: CondicionesTienda): number {
   return delivery === 'RECOGIDA' || subtotal >= terms.envioGratisDesde ? 0 : terms.gastosEnvio;
 }
+
+/** Sin tildes ni mayúsculas: «leche pelagia» encuentra «Leche de Pelagia». */
+function normalizeSearch(value: string): string {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+/**
+ * Productos de una categoría que contienen todas las palabras buscadas, en el nombre, la
+ * categoría, el formato, la procedencia o el resumen.
+ */
+export function filterProducts(
+  products: Producto[],
+  query: string,
+  category: CategoryFilter,
+): Producto[] {
+  const words = normalizeSearch(query).split(/\s+/).filter(Boolean);
+  return products.filter((product) => {
+    if (category !== 'TODO' && product.categoria !== category) {
+      return false;
+    }
+    const searchable = normalizeSearch(
+      [
+        product.nombre,
+        CATEGORY_LABELS[product.categoria],
+        product.formato,
+        product.procedencia,
+        product.resumen,
+      ].join(' '),
+    );
+    return words.every((word) => searchable.includes(word));
+  });
+}

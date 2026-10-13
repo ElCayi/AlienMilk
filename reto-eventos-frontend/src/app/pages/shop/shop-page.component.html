@@ -16,10 +16,49 @@
         <p class="secondary-subtitle">Lo que se sirve en las sesiones, para su mesa.</p>
         <p class="secondary-intro">
           Las leches de referencia del archivo, sus derivados y lo necesario para servirlos en casa.
-          Cada producto sale del <b>centro de distribución de A Coruña</b> con su procedencia, su
-          lote y su <b>cadena de frío</b>, y llega en 48 horas a cualquier dirección de SOL-III.
+          Cada producto lleva su <b>procedencia</b> y su <b>lote</b>, como las muestras que se sirven
+          en las sesiones. Sale del <b>centro de distribución de A Coruña</b> en <b>cadena de frío</b>
+          y llega en 48 horas a cualquier dirección de SOL&#8209;III. Las existencias son las de ese
+          centro en este momento.
         </p>
       </div>
+
+      <!-- Como en Sesiones: la categoría va unida al filtro del catálogo y la búsqueda lo afina. -->
+      <div class="shop-tools">
+        <app-category-select
+          class="shop-filter"
+          label="Categoría"
+          [options]="categoryOptions"
+          [value]="filter()"
+          (valueChange)="setCategory($event)"
+        />
+
+        <label class="shop-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="m16 16 4 4"></path>
+          </svg>
+          <span class="visually-hidden">Buscar en la tienda</span>
+          <input
+            type="search"
+            [value]="query()"
+            (input)="updateQuery($event)"
+            placeholder="Nombre, procedencia o formato"
+          />
+        </label>
+      </div>
+    </header>
+  </div>
+
+  <section class="paper-card catalog" aria-labelledby="catalog-title">
+    <div class="catalog-heading">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        01 / Catálogo
+      </p>
+      <h2 id="catalog-title" class="catalog-title">
+        <span>Del </span><span>archivo </span><span class="catalog-title-tail">a su mesa</span>
+      </h2>
 
       <!-- Las cifras llegan con el catálogo: son las mismas con las que el servidor calcula el pedido. -->
       <fieldset class="legend-box terms-box">
@@ -47,25 +86,6 @@
           <p class="terms-pending">{{ status() === 'error' ? 'No disponibles' : 'Cargando…' }}</p>
         }
       </fieldset>
-    </header>
-  </div>
-
-  <section class="paper-card catalog" aria-labelledby="catalog-title">
-    <div class="catalog-heading">
-      <div>
-        <p class="section-label section-kicker">
-          <span class="eyebrow-icon" aria-hidden="true"></span>
-          01 / Catálogo
-        </p>
-        <h2 id="catalog-title">
-          <span class="title-line">Del archivo</span>
-          <span class="title-line">a su mesa.</span>
-        </h2>
-      </div>
-      <p class="section-copy">
-        Cada producto lleva su <b>procedencia</b> y su <b>lote</b>, como las muestras que se sirven
-        en las sesiones. Las existencias son las del centro de distribución en este momento.
-      </p>
     </div>
 
     <div class="catalog-toolbar">
@@ -98,6 +118,11 @@
         </div>
       }
       @default {
+        @if (!visible().length) {
+          <div class="catalog-status">
+            <p>Ningún producto coincide con la búsqueda.</p>
+          </div>
+        }
         <ul class="product-grid">
           @for (product of visible(); track product.slug) {
             <li class="product" [attr.data-tone]="product.tono">

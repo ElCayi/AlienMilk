@@ -1,5 +1,12 @@
 import { CondicionesTienda, Producto } from '../../models/api.models';
-import { formatPrice, maxUnits, shippingCost, stockLabel, stockLevel } from './shop-format';
+import {
+  filterProducts,
+  formatPrice,
+  maxUnits,
+  shippingCost,
+  stockLabel,
+  stockLevel,
+} from './shop-format';
 
 const terms: CondicionesTienda = {
   gastosEnvio: 4.9,
@@ -49,5 +56,23 @@ describe('shop format', () => {
     expect(shippingCost('ENVIO', 39.99, terms)).toBe(4.9);
     expect(shippingCost('ENVIO', 40, terms)).toBe(0);
     expect(shippingCost('RECOGIDA', 10, terms)).toBe(0);
+  });
+
+  it('finds products by any of their words, without accents or capitals', () => {
+    const copa: Producto = {
+      ...product(90),
+      slug: 'copa',
+      nombre: 'Copa de degustación',
+      categoria: 'MESA',
+      procedencia: 'Taller de vidrio · A Coruña',
+      formato: 'Unidad',
+    };
+    const all = [product(148), copa];
+
+    expect(filterProducts(all, 'DEGUSTACION', 'TODO')).toEqual([copa]);
+    expect(filterProducts(all, 'pelagia 500', 'TODO')).toEqual([product(148)]);
+    expect(filterProducts(all, 'leches', 'TODO')).toEqual([product(148)]);
+    expect(filterProducts(all, 'pelagia', 'MESA')).toEqual([]);
+    expect(filterProducts(all, '  ', 'MESA')).toEqual([copa]);
   });
 });

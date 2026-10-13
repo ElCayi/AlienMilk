@@ -24,6 +24,7 @@ import {
   CATEGORY_LABELS,
   CategoryFilter,
   DELIVERY_LABELS,
+  filterProducts,
   formatOrderDate,
   formatPrice,
   maxUnits,
@@ -39,6 +40,10 @@ import {
   Pedido,
   Producto,
 } from '../../models/api.models';
+import {
+  CategoryOption,
+  CategorySelectComponent,
+} from '../../features/sessions/category-select.component';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 
 /** Una línea del pedido en curso, con el producto tal como lo trae el catálogo. */
@@ -57,7 +62,7 @@ interface CartLine {
 @Component({
   selector: 'app-shop-page',
   standalone: true,
-  imports: [FitLineDirective, OrderReceiptComponent, RouterLink],
+  imports: [CategorySelectComponent, FitLineDirective, OrderReceiptComponent, RouterLink],
   templateUrl: './shop-page.component.html',
   styleUrls: [
     '../../shared/secondary-page/secondary-page.css',
@@ -86,14 +91,14 @@ export class ShopPageComponent {
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
   readonly catalog = signal<CatalogoTienda | null>(null);
   readonly filter = signal<CategoryFilter>('TODO');
+  readonly query = signal('');
+  /** El desplegable de la cabecera: las mismas categorías que el filtro del catálogo. */
+  readonly categoryOptions: CategoryOption[] = CATEGORY_FILTERS.map((option) =>
+    option.value === 'TODO' ? { ...option, label: 'Todos los productos' } : option,
+  );
 
   readonly products = computed(() => this.catalog()?.productos ?? []);
-  readonly visible = computed(() => {
-    const filter = this.filter();
-    return filter === 'TODO'
-      ? this.products()
-      : this.products().filter((product) => product.categoria === filter);
-  });
+  readonly visible = computed(() => filterProducts(this.products(), this.query(), this.filter()));
 
   readonly lines = computed<CartLine[]>(() => {
     const catalog = this.catalog();
@@ -200,6 +205,15 @@ export class ShopPageComponent {
   max(product: Producto): number {
     const terms = this.catalog()?.condiciones;
     return terms ? maxUnits(product, terms) : 0;
+  }
+
+  /** El desplegable trabaja con textos; sus opciones son las de CATEGORY_FILTERS. */
+  setCategory(value: string): void {
+    this.filter.set(value as CategoryFilter);
+  }
+
+  updateQuery(event: Event): void {
+    this.query.set((event.target as HTMLInputElement).value);
   }
 
   add(product: Producto): void {

@@ -1,0 +1,83 @@
+/* Sobre papel: la placa es un disco de la tinta de la tienda, para que las gotas claras se vean.
+   Sobre tinta, el contenedor cambia estas variables (ver shop-shared.css y
+   distribution.component.css): la placa casi transparente y el aro claro. */
+:host {
+  --molecule-plate-fill: #3a4954;
+  --molecule-plate-fill-deep: #28333a;
+  --molecule-plate-stroke: transparent;
+  --molecule-shadow: #0d0b10;
+  --molecule-shadow-opacity: 0.5;
+  display: block;
+  aspect-ratio: 1;
+}
+
+svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tone {
+  stop-color: var(--tone, #f1ece2);
+}
+
+.tone-deep {
+  stop-color: var(--tone-deep, #d6ccbb);
+}
+
+.plate-light {
+  stop-color: var(--molecule-plate-fill);
+}
+
+.plate-deep {
+  stop-color: var(--molecule-plate-fill-deep, var(--molecule-plate-fill));
+}
+
+.plate {
+  stroke: var(--molecule-plate-stroke);
+  stroke-width: 1;
+}
+
+/* El cultivo entero, sin la placa: lo apaga un producto agotado (--molecule-culture-opacity). */
+.culture {
+  opacity: var(--molecule-culture-opacity, 1);
+}
+
+.shadow {
+  fill: var(--molecule-shadow);
+  opacity: var(--molecule-shadow-opacity);
+}
+
+.shine {
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+/* El brote se aleja de la célula y vuelve, despacio, y el cuello se estira con él; las esporas
+   flotan. */
+@media (prefers-reduced-motion: no-preference) {
+  .bud {
+    animation: bud var(--bud-period, 8s) ease-in-out infinite alternate;
+  }
+
+  .spore {
+    animation: spore 5s ease-in-out infinite alternate;
+  }
+
+  .spore:nth-of-type(2n) {
+    animation-duration: 6.5s;
+    animation-delay: -2s;
+  }
+}
+
+@keyframes bud {
+  to {
+    transform: translate(var(--bud-x, 4px), var(--bud-y, -3px));
+  }
+}
+
+@keyframes spore {
+  to {
+    transform: translateY(-3px);
+  }
+}

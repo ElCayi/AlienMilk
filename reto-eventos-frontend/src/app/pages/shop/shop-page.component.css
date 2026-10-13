@@ -211,13 +211,14 @@
   color: var(--paper-muted);
 }
 
-/* Rejilla: tres columnas con el filete de las columnas del bloque oscuro. Cada producto reparte sus
-   piezas en las filas de la rejilla (subgrid), así que el texto, la procedencia y el precio quedan a
-   la misma altura en toda la fila aunque un resumen sea más largo que otro. */
+/* Rejilla: tres columnas de tarjetas. Cada tarjeta es el papel un tono más hondo, con un trazo
+   fino y sin sombra, para que el ojo siga cada producto sin que la caja se note. Cada producto
+   reparte sus piezas en las filas de la rejilla (subgrid), así que el texto, la procedencia y el
+   precio quedan a la misma altura en toda la fila aunque un resumen sea más largo que otro. */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(2.5rem, 4vw, 3.5rem) clamp(2.5rem, 5vw, 6rem);
+  gap: clamp(1rem, 1.6vw, 1.5rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -229,8 +230,12 @@
   grid-template-rows: subgrid;
   row-gap: 0;
   min-width: 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--paper-line);
+  padding: clamp(1.5rem, 2.2vw, 2.25rem);
+  border: 1px solid rgba(40, 51, 58, 0.38);
+  /* La hoja de la casa (la etiqueta del CEO o la cita de la arquitectura en Nosotros): esquinas
+     grandes arriba a la izquierda y abajo a la derecha. */
+  border-radius: clamp(1.5rem, 2.6vw, 2.5rem) 0.35rem;
+  background: #efece6;
 }
 
 .product-link {
@@ -242,7 +247,7 @@
 }
 
 .product-sample {
-  width: clamp(4.5rem, 5.5vw, 6rem);
+  width: clamp(6.5rem, 7.5vw, 8.5rem);
   transition: transform 240ms ease;
 }
 
@@ -309,13 +314,36 @@
   min-width: 0;
 }
 
-/* Agotado: la muestra se apaga y el precio pasa a segundo plano. */
-.product:has(.stock[data-level='out']) :is(.product-sample, .price) {
+/* Agotado: la tarjeta pierde el fondo y queda como un hueco vacío en el estante, solo con su
+   trazo; el cultivo se apaga sobre su placa, que sigue entera, y el precio pasa a segundo plano. */
+.product:has(.stock[data-level='out']) {
+  background: none;
+}
+
+.product:has(.stock[data-level='out']) .product-sample {
+  --molecule-culture-opacity: 0.4;
+}
+
+.product:has(.stock[data-level='out']) .price {
   opacity: 0.45;
 }
 
 .order-empty {
   color: var(--muted);
+}
+
+/* La columna del pedido: el título, el aviso si lo hay y las líneas. El margen de encima del
+   título pasa a la rejilla, así la columna de la entrega empieza a la altura del título. */
+.order .order-layout {
+  margin-top: clamp(2rem, 3.5vw, 3rem);
+}
+
+.order-main {
+  min-width: 0;
+}
+
+.order-main h2 {
+  margin-top: 0;
 }
 
 .order-lines {
@@ -337,7 +365,7 @@
   border-top: 1px solid var(--line);
 }
 
-.order-line .sample {
+.order-line-sample {
   width: 3.25rem;
 }
 
@@ -649,7 +677,6 @@
 
   .product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 2.5rem;
   }
 }
 
@@ -667,7 +694,6 @@
 
   .product-grid {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 2.5rem;
   }
 
   .catalog-filter {
@@ -682,7 +708,7 @@
 
   .product-sample {
     grid-row: span 2;
-    width: 4.5rem;
+    width: 5.5rem;
   }
 
   .product-kicker {
@@ -694,7 +720,7 @@
     align-items: start;
   }
 
-  .order-line .sample {
+  .order-line-sample {
     width: 2.75rem;
   }
 

@@ -2,8 +2,7 @@
    y la muestra, el precio y el selector de unidades en features/shop/shop-shared.css; aquí, la
    muestra grande de la cabecera, la compra y el recuadro de la sección. */
 
-/* Muestra grande: del tamaño del sello de los operadores, con el lote debajo. La luz de la superficie
-   se mueve despacio, como un líquido que aún no se ha asentado. */
+/* Muestra grande: del tamaño del sello de los operadores, con el lote debajo. */
 .product-figure {
   display: grid;
   justify-items: center;
@@ -13,17 +12,6 @@
 
 .product-figure-sample {
   width: min(100%, clamp(13rem, 14vw, 17rem));
-  box-shadow: 0 0 0 0.5rem rgba(247, 248, 249, 0.06);
-}
-
-.product-figure-sample::after {
-  animation: surface 9s ease-in-out infinite alternate;
-}
-
-@keyframes surface {
-  to {
-    background-position: 0.9rem 0.6rem;
-  }
 }
 
 .product-figure-caption {
@@ -186,7 +174,6 @@
 
   .product-figure-sample {
     width: 6rem;
-    box-shadow: 0 0 0 0.35rem rgba(247, 248, 249, 0.08);
   }
 
   .product-figure-caption {
@@ -195,10 +182,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .product-figure-sample::after {
-    animation: none;
-  }
-
   .network-link,
   .network-link::after,
   .network-link span,

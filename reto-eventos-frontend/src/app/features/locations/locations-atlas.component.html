@@ -1,4 +1,8 @@
-<section class="locations-atlas" aria-labelledby="locations-title">
+<section
+  class="locations-atlas"
+  [attr.id]="collaborationMode ? 'collaborators' : null"
+  aria-labelledby="locations-title"
+>
   <div class="locations-background" aria-hidden="true"></div>
   <header class="locations-editorial">
     <div class="locations-editorial-main">

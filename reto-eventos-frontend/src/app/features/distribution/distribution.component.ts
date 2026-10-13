@@ -13,6 +13,7 @@ import { catchError, map, of } from 'rxjs';
 import { ShopService } from '../../core/services/shop.service';
 import { Producto } from '../../models/api.models';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
+import { MoleculeComponent } from '../shop/molecule/molecule.component';
 
 /** Lo que se ve de cada producto de la selección: sin precio, que esto es un anuncio y no el catálogo. */
 type DistributionPick = Pick<
@@ -57,53 +58,6 @@ const FALLBACK_PICKS: readonly DistributionPick[] = [
   },
 ];
 
-interface Drop {
-  x: number;
-  y: number;
-  r: number;
-}
-
-/**
- * Muestra de cada producto: el cultivo de la cabecera de Nosotros (specimen-culture), reducido a su
- * forma. Una célula, el brote que se le está separando (unidos por un cuello viscoso, del filtro
- * del SVG) y un par de esporas sueltas, sobre una placa redonda. Coordenadas en 120 × 100: el
- * viewBox es de 120 × 120 y el cultivo baja 10 para quedar en el centro de la placa. El brote se
- * aleja y vuelve (dx, dy), así el cuello se estira y se encoge. Una disposición por producto, para
- * que no se repitan.
- */
-interface Molecule {
-  cell: Drop;
-  bud: Drop & { dx: number; dy: number; period: number };
-  spores: readonly Drop[];
-}
-
-const MOLECULES: readonly Molecule[] = [
-  {
-    cell: { x: 46, y: 56, r: 29 },
-    bud: { x: 83, y: 33, r: 16, dx: 4, dy: -3, period: 7 },
-    spores: [
-      { x: 104, y: 70, r: 5 },
-      { x: 22, y: 30, r: 3.5 },
-    ],
-  },
-  {
-    cell: { x: 66, y: 58, r: 28 },
-    bud: { x: 31, y: 33, r: 15, dx: -4, dy: -3, period: 8.5 },
-    spores: [
-      { x: 103, y: 26, r: 4.5 },
-      { x: 22, y: 82, r: 3.5 },
-    ],
-  },
-  {
-    cell: { x: 50, y: 44, r: 27 },
-    bud: { x: 85, y: 70, r: 16, dx: 4, dy: 3, period: 7.8 },
-    spores: [
-      { x: 22, y: 78, r: 4.5 },
-      { x: 98, y: 24, r: 3.5 },
-    ],
-  },
-];
-
 /**
  * Portada: AlienMilk Distribution, entre Localizaciones y Collaborators, con el formato de las demás
  * secciones. Debajo de la cabecera, el anuncio de la tienda: una pieza publicitaria y no un bloque
@@ -113,15 +67,13 @@ const MOLECULES: readonly Molecule[] = [
 @Component({
   selector: 'app-distribution',
   standalone: true,
-  imports: [RouterLink, FitLineDirective],
+  imports: [RouterLink, FitLineDirective, MoleculeComponent],
   templateUrl: './distribution.component.html',
   styleUrls: ['./distribution.component.css', '../shop/shop-shared.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DistributionComponent {
   private readonly shop = inject(ShopService);
-
-  protected readonly molecules = MOLECULES;
 
   /** La selección con los datos de la tienda; si alguno ya no está a la venta, se queda fuera. */
   readonly picks = toSignal(

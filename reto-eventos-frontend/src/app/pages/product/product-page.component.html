@@ -22,7 +22,7 @@
 
         <!-- La muestra del producto en grande, con su lote debajo como el sello de los operadores. -->
         <figure class="product-figure">
-          <span class="sample product-figure-sample" aria-hidden="true"></span>
+          <app-molecule class="product-figure-sample" [slug]="product.slug" />
           <figcaption class="product-figure-caption">
             Lote <span class="nowrap">{{ product.lote }}</span>
           </figcaption>

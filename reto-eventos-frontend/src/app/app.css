@@ -81,7 +81,7 @@
   flex-wrap: wrap;
 }
 
-.nav-links a {
+.nav-link {
   text-decoration: none;
   color: #c8bec5;
   font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
@@ -105,8 +105,8 @@
   vertical-align: 0.1em;
 }
 
-.nav-links a.active,
-.nav-links a:hover,
+.nav-link.active,
+.nav-link:hover,
 .brand:hover {
   color: #ff7f7f;
 }
@@ -407,9 +407,12 @@
     padding-top: 0.5rem;
   }
 
-  .topbar.menu-open .nav-links a {
+  .topbar.menu-open .nav-item {
+    border-bottom: 1px solid rgba(241, 236, 239, 0.1);
+  }
+
+  .topbar.menu-open .nav-link {
     padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(23, 32, 51, 0.08);
   }
 
   .topbar.menu-open .auth-box,
@@ -431,8 +434,188 @@
   background: rgba(33, 30, 36, 0.82);
 }
 
-.topbar.menu-open .nav-links a {
-  border-bottom-color: rgba(241, 236, 239, 0.1);
+
+/* Secciones de cada página. En escritorio, un desplegable en la tinta de la barra que se abre al
+   pasar o al llegar con el tabulador, con la hoja de la casa (esquinas grandes arriba a la
+   izquierda y abajo a la derecha); en el menú de móvil, un acordeón bajo cada página. */
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-expand {
+  display: none;
+}
+
+.nav-sections {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-sections a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #c8bec5;
+  font:
+    500 1.05rem / 1.2 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 160ms ease;
+}
+
+/* Una raya fina entre entrada y entrada, para que se lean como un índice y no como una lista de
+   palabras sueltas. */
+.nav-sections li + li {
+  border-top: 1px solid rgba(241, 236, 239, 0.12);
+}
+
+.nav-sections a:is(:hover, :focus-visible) {
+  color: #ff7f7f;
+}
+
+.nav-sections .nav-count {
+  margin-left: 0;
+}
+
+@media (min-width: 1200.02px) {
+  .nav-sections {
+    position: absolute;
+    top: calc(100% + 1.15rem);
+    left: 50%;
+    z-index: 1;
+    min-width: 14rem;
+    padding: 0.7rem 0;
+    border: 1px solid rgba(241, 236, 239, 0.12);
+    border-radius: 1.25rem 0.35rem;
+    background: rgba(5, 13, 22, 0.96);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 0.4rem);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease,
+      visibility 0s linear 160ms;
+  }
+
+  /* Un puente invisible entre el enlace y el desplegable, para que no se cierre al bajar el ratón. */
+  .nav-sections::before {
+    content: '';
+    position: absolute;
+    inset: -1.25rem 0 100%;
+  }
+
+  .nav-item:is(:hover, :focus-within):not(.is-dismissed) .nav-sections {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  .nav-sections li {
+    margin-inline: 1.35rem;
+  }
+
+  .nav-sections a {
+    padding: 0.6rem 0;
+  }
+
+  /* La «v» que avisa del desplegable, pegada al enlace y en su color; se gira al abrirse. */
+  .nav-expand {
+    display: inline-grid;
+    place-items: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-left: 0.2rem;
+    padding: 0;
+    border: 0;
+    color: #c8bec5;
+    background: none;
+    cursor: pointer;
+  }
+
+  .nav-expand svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 200ms ease;
+  }
+
+  .nav-item:is(:hover, :focus-within):not(.is-dismissed) :is(.nav-link, .nav-expand) {
+    color: #ff7f7f;
+  }
+
+  .nav-item:is(:hover, :focus-within):not(.is-dismissed) .nav-expand svg {
+    transform: rotate(180deg);
+  }
+}
+
+@media (max-width: 1200px) {
+  .topbar.menu-open .nav-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .topbar.menu-open .nav-expand {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    color: #c8bec5;
+    background: none;
+    cursor: pointer;
+  }
+
+  .nav-expand svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 200ms ease;
+  }
+
+  .nav-item.is-open .nav-expand svg {
+    transform: rotate(180deg);
+  }
+
+  .topbar.menu-open .nav-sections {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 0 0 0.75rem 1rem;
+  }
+
+  .topbar.menu-open .nav-item.is-open .nav-sections {
+    display: grid;
+  }
+
+  .nav-sections a {
+    padding: 0.6rem 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-sections,
+  .nav-sections a,
+  .nav-expand svg {
+    transition: none;
+  }
 }
 
 /* Tableta (901–1000 px): el header, algo mayor que el resto de la página (ver styles.css), y la

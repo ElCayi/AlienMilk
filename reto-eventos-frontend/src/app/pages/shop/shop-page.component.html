@@ -50,7 +50,7 @@
     </header>
   </div>
 
-  <section class="paper-card catalog" aria-labelledby="catalog-title">
+  <section class="paper-card catalog" id="catalogo" aria-labelledby="catalog-title">
     <div class="catalog-heading">
       <p class="section-label section-kicker">
         <span class="eyebrow-icon" aria-hidden="true"></span>
@@ -127,7 +127,7 @@
           @for (product of visible(); track product.slug) {
             <li class="product" [attr.data-tone]="product.tono">
               <a class="product-link" [routerLink]="['/tienda', product.slug]">
-                <span class="sample product-sample" aria-hidden="true"></span>
+                <app-molecule class="product-sample" [slug]="product.slug" />
                 <span class="product-kicker">
                   {{ categoryLabels[product.categoria] }} · {{ product.formato }}
                 </span>
@@ -239,61 +239,64 @@
         aunque cierre la página.
       </p>
     } @else {
-      <h2 id="order-title">
-        <span class="title-line">Revise su pedido</span>
-        <span class="title-line">antes de confirmarlo.</span>
-      </h2>
-      @if (notice(); as message) {
-        <p class="order-notice" role="status">{{ message }}</p>
-      }
+      <!-- El título va en la columna del pedido: así la entrega empieza a su altura, a la derecha. -->
       <div class="order-layout">
-        <ul class="order-lines">
-          @for (line of lines(); track line.product.slug) {
-            <li class="order-line" [attr.data-tone]="line.product.tono">
-              <span class="sample" aria-hidden="true"></span>
-              <div class="order-line-info">
-                <a class="order-line-name" [routerLink]="['/tienda', line.product.slug]" appFitLine>{{
-                  line.product.nombre
-                }}</a>
-                <p class="stock">{{ price(line.product.precio) }} · {{ line.product.formato }}</p>
-                @if (line.quantity > line.max) {
-                  <p class="order-line-warning">
-                    {{
-                      line.max
-                        ? 'Solo puede pedir ' + line.max + (line.max === 1 ? ' unidad' : ' unidades')
-                        : 'Agotado: quítelo del pedido para continuar'
-                    }}
-                  </p>
-                }
-              </div>
-              <div class="order-line-units">
-                <p class="price">{{ price(line.amount) }}</p>
-                <div class="stepper" role="group" [attr.aria-label]="'Unidades de ' + line.product.nombre">
-                  <button
-                    type="button"
-                    [attr.aria-label]="
-                      line.quantity === 1
-                        ? 'Quitar ' + line.product.nombre + ' del pedido'
-                        : 'Quitar una unidad de ' + line.product.nombre
-                    "
-                    (click)="setQuantity(line.product, line.quantity - 1)"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
-                  </button>
-                  <output aria-live="polite">{{ line.quantity }}</output>
-                  <button
-                    type="button"
-                    [attr.aria-label]="'Añadir una unidad de ' + line.product.nombre"
-                    [disabled]="line.quantity >= line.max"
-                    (click)="setQuantity(line.product, line.quantity + 1)"
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-                  </button>
-                </div>
-              </div>
-            </li>
+        <div class="order-main">
+          <h2 id="order-title">
+            <span class="title-line">Revise su pedido</span>
+            <span class="title-line">antes de confirmarlo.</span>
+          </h2>
+          @if (notice(); as message) {
+            <p class="order-notice" role="status">{{ message }}</p>
           }
-        </ul>
+          <ul class="order-lines">
+            @for (line of lines(); track line.product.slug) {
+              <li class="order-line" [attr.data-tone]="line.product.tono">
+                <app-molecule class="order-line-sample" [slug]="line.product.slug" />
+                <div class="order-line-info">
+                  <a class="order-line-name" [routerLink]="['/tienda', line.product.slug]" appFitLine>{{
+                    line.product.nombre
+                  }}</a>
+                  <p class="stock">{{ price(line.product.precio) }} · {{ line.product.formato }}</p>
+                  @if (line.quantity > line.max) {
+                    <p class="order-line-warning">
+                      {{
+                        line.max
+                          ? 'Solo puede pedir ' + line.max + (line.max === 1 ? ' unidad' : ' unidades')
+                          : 'Agotado: quítelo del pedido para continuar'
+                      }}
+                    </p>
+                  }
+                </div>
+                <div class="order-line-units">
+                  <p class="price">{{ price(line.amount) }}</p>
+                  <div class="stepper" role="group" [attr.aria-label]="'Unidades de ' + line.product.nombre">
+                    <button
+                      type="button"
+                      [attr.aria-label]="
+                        line.quantity === 1
+                          ? 'Quitar ' + line.product.nombre + ' del pedido'
+                          : 'Quitar una unidad de ' + line.product.nombre
+                      "
+                      (click)="setQuantity(line.product, line.quantity - 1)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /></svg>
+                    </button>
+                    <output aria-live="polite">{{ line.quantity }}</output>
+                    <button
+                      type="button"
+                      [attr.aria-label]="'Añadir una unidad de ' + line.product.nombre"
+                      [disabled]="line.quantity >= line.max"
+                      (click)="setQuantity(line.product, line.quantity + 1)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
 
         <div class="checkout">
           @if (!auth.isAuthenticated()) {

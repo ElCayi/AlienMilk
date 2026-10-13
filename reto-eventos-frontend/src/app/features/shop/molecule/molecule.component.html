@@ -1,0 +1,72 @@
+@let m = molecule();
+<svg
+  viewBox="0 0 120 120"
+  focusable="false"
+  [style.--bud-x.px]="m.bud.dx"
+  [style.--bud-y.px]="m.bud.dy"
+  [style.--bud-period.s]="m.bud.period"
+>
+  <defs>
+    <!-- El filtro que une la célula y el brote: desenfoca las formas y vuelve a recortar el borde,
+         así lo que estaba cerca queda unido por un cuello. -->
+    <filter [attr.id]="id + '-goo'" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+      <feColorMatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" />
+    </filter>
+    <!-- El fondo de la placa: un poco más claro en el centro, como si la luz cayera sobre él. -->
+    <radialGradient [attr.id]="id + '-plate'" cx="0.45" cy="0.42" r="0.6">
+      <stop offset="0" class="plate-light" />
+      <stop offset="1" class="plate-deep" />
+    </radialGradient>
+    <!-- Cada gota con su tono: claro en el centro y más hondo hacia el borde. -->
+    <radialGradient [attr.id]="id + '-tone'" cx="0.42" cy="0.4" r="0.62">
+      <stop offset="0.45" class="tone" />
+      <stop offset="1" class="tone-deep" />
+    </radialGradient>
+  </defs>
+  <!-- La placa bajo el cultivo, que lo asienta: un disco de tinta sobre papel, apenas un aro sobre tinta. -->
+  <circle
+    class="plate"
+    cx="60"
+    cy="60"
+    r="56"
+    vector-effect="non-scaling-stroke"
+    [attr.fill]="'url(#' + id + '-plate)'"
+  />
+  <g class="culture" transform="translate(0 10)">
+    <!-- Detrás, la sombra: la misma silueta en oscuro, desplazada abajo a la derecha. -->
+    <g class="shadow" [attr.filter]="'url(#' + id + '-goo)'">
+      <circle [attr.cx]="m.cell.x + 5" [attr.cy]="m.cell.y + 5" [attr.r]="m.cell.r" />
+      <circle class="bud" [attr.cx]="m.bud.x + 5" [attr.cy]="m.bud.y + 5" [attr.r]="m.bud.r" />
+    </g>
+    <!-- La célula y el brote, unidos por el filtro en un cuello que se estira. -->
+    <g [attr.fill]="'url(#' + id + '-tone)'" [attr.filter]="'url(#' + id + '-goo)'">
+      <circle [attr.cx]="m.cell.x" [attr.cy]="m.cell.y" [attr.r]="m.cell.r" />
+      <circle class="bud" [attr.cx]="m.bud.x" [attr.cy]="m.bud.y" [attr.r]="m.bud.r" />
+    </g>
+    @for (spore of m.spores; track $index) {
+      <circle
+        class="spore"
+        [attr.cx]="spore.x"
+        [attr.cy]="spore.y"
+        [attr.r]="spore.r"
+        [attr.fill]="'url(#' + id + '-tone)'"
+      />
+    }
+    <!-- El reflejo de la luz, arriba a la izquierda de cada gota. -->
+    <ellipse
+      class="shine"
+      [attr.cx]="m.cell.x - m.cell.r * 0.36"
+      [attr.cy]="m.cell.y - m.cell.r * 0.42"
+      [attr.rx]="m.cell.r * 0.26"
+      [attr.ry]="m.cell.r * 0.16"
+    />
+    <ellipse
+      class="shine bud"
+      [attr.cx]="m.bud.x - m.bud.r * 0.36"
+      [attr.cy]="m.bud.y - m.bud.r * 0.42"
+      [attr.rx]="m.bud.r * 0.26"
+      [attr.ry]="m.bud.r * 0.16"
+    />
+  </g>
+</svg>

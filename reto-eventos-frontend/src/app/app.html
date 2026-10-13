@@ -21,17 +21,57 @@
       <span></span>
     </button>
 
+    <!-- Cada página con sus secciones: en escritorio se despliegan al pasar o al llegar con el
+         tabulador; en el menú de móvil, con la flecha de al lado, como un acordeón. -->
     <nav class="nav-links" id="main-navigation">
-      <a href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
-      <a routerLink="/sesiones" (click)="closeMenu()">Sesiones</a>
-      <a routerLink="/nosotros" (click)="closeMenu()">Nosotros</a>
-      <a
-        routerLink="/tienda"
-        [attr.aria-label]="cart.units() ? 'Tienda, ' + cart.units() + ' en su pedido' : null"
-        (click)="closeMenu()"
-        >Tienda@if (cart.units(); as units) {<span class="nav-count" aria-hidden="true">{{ units }}</span>}</a
-      >
-      <a routerLink="/contacto" (click)="closeMenu()">Contacto</a>
+      @for (group of navGroups; track group.path) {
+        <div
+          class="nav-item"
+          [class.is-open]="openGroup() === group.path"
+          [class.is-dismissed]="dismissedGroup() === group.path"
+          (mouseleave)="dismissedGroup.set(null)"
+        >
+          @switch (group.path) {
+            @case ('/') {
+              <a class="nav-link" href="/#inicio" (click)="goToSection($event, 'inicio')">Inicio</a>
+            }
+            @case ('/tienda') {
+              <a
+                class="nav-link"
+                routerLink="/tienda"
+                [attr.aria-label]="cart.units() ? 'Tienda, ' + cart.units() + ' en su pedido' : null"
+                (click)="closeMenu()"
+                >Tienda@if (cart.units(); as units) {<span class="nav-count" aria-hidden="true">{{ units }}</span>}</a
+              >
+            }
+            @default {
+              <a class="nav-link" [routerLink]="group.path" (click)="closeMenu()">{{ group.label }}</a>
+            }
+          }
+          <button
+            type="button"
+            class="nav-expand"
+            [attr.aria-label]="'Secciones de ' + group.label"
+            [attr.aria-expanded]="openGroup() === group.path"
+            [attr.aria-controls]="'nav-sections-' + $index"
+            (click)="toggleGroup(group.path)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <ul class="nav-sections" [id]="'nav-sections-' + $index" [attr.aria-label]="group.label">
+            @for (section of group.sections; track section.label) {
+              <li>
+                <a [href]="sectionHref(group, section)" (click)="goTo($event, group, section)"
+                  >{{ section.label }}@if (section.fragment === 'su-pedido' && cart.units()) {<span
+                      class="nav-count"
+                      >{{ cart.units() }}</span
+                    >}</a
+                >
+              </li>
+            }
+          </ul>
+        </div>
+      }
     </nav>
 
     <div class="auth-box" *ngIf="authService.currentUser(); else guestBlock">

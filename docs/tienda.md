@@ -87,8 +87,11 @@ Confirmar ──▶ pedido PENDIENTE_PAGO, unidades reservadas ──▶ página
 
 ### Probarlo en local
 
-Claves del entorno de prueba en `.env.local` (`STRIPE_SECRET_KEY`), y la CLI de Stripe para recibir
-los avisos en el ordenador. Tarjeta de prueba: `4242 4242 4242 4242`, fecha futura y CVC cualquiera.
+Claves del entorno de prueba en el `.env.local` de la copia que aloja el backend: el checkout
+principal para el backend compartido, o el worktree con `wt svc up --standalone`. `up.sh` lo carga
+al arrancar el backend y apunta `TIENDA_URL` al frontend de esa misma copia. El catálogo dice si
+cobra: `pagoConTarjeta: true`. Para recibir los avisos en el ordenador, la CLI de Stripe. Tarjeta
+de prueba: `4242 4242 4242 4242`, fecha futura y CVC cualquiera.
 
 ```bash
 set -a; . ./.env.local; set +a

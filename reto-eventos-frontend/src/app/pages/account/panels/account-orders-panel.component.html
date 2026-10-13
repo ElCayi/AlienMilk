@@ -7,7 +7,7 @@
     </p>
   </div>
   <div class="section-head-actions">
-    <a class="btn btn-primary" routerLink="/tienda">Ir a la tienda</a>
+    <a class="btn btn-primary" routerLink="/tienda">Ir a la tienda <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span></a>
   </div>
 </header>
 
@@ -25,7 +25,7 @@
 } @else if (!orders().length) {
   <div class="empty">
     <p>Todavía no has hecho ningún pedido.</p>
-    <a class="btn" routerLink="/tienda">Ver la tienda</a>
+    <a class="btn" routerLink="/tienda">Ver la tienda <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span></a>
   </div>
 } @else {
   <div class="table-wrap">

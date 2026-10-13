@@ -148,10 +148,17 @@ export class App {
     });
   }
 
-  /** El pie es común a toda la web salvo el área de administración, que es una herramienta. */
-  shouldShowFooter(): boolean {
+  /**
+   * Mi panel y la administración son la aplicación, no la web: tienen su propia barra y ni la barra
+   * de la web ni su pie.
+   */
+  inPanel(): boolean {
     const path = this.router.url.split('?')[0].split('#')[0];
-    return !path.startsWith('/admin');
+    return /^\/(admin|cuenta)(\/|$)/.test(path);
+  }
+
+  shouldShowFooter(): boolean {
+    return !this.inPanel();
   }
 
   logout(): void {

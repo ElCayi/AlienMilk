@@ -1,68 +1,36 @@
-<article class="secondary-page panel-page" aria-labelledby="account-title">
-  <div class="secondary-stage panel-stage">
-    <nav class="breadcrumb" aria-label="Ruta de navegación">
-      <a routerLink="/">Inicio</a>
-      <span aria-hidden="true">/</span>
-      <a routerLink="/cuenta">Mi panel</a>
-      <span aria-hidden="true">/</span>
-      <span aria-current="page">{{ section() }}</span>
-    </nav>
+<app-panel-frame area="Mi panel" navLabel="Secciones de Mi panel" [items]="navItems()">
+  <header class="page-head">
+    <div>
+      <p class="page-kicker">Área personal · {{ section() }}</p>
+      <h1>Hola, {{ name() }}</h1>
+      <p class="page-intro">Tus sesiones reservadas, tus pedidos de la tienda y tu cuenta.</p>
+    </div>
 
-    <header class="panel-header">
-      <div class="panel-heading">
-        <p class="eyebrow">
-          <span class="eyebrow-icon" aria-hidden="true"></span>
-          <span>AlienMilk / Área personal</span>
-        </p>
-        <h1 id="account-title">Mi panel</h1>
-        <p class="panel-subtitle">
-          @if (name()) {
-            Hola, {{ name() }}.
-          } @else {
-            Hola.
-          }
-          Tus sesiones reservadas y tus pedidos de la tienda.
-        </p>
-      </div>
-
-      <div class="account-shortcuts">
-        <a class="line-action" routerLink="/sesiones">
-          <span class="line-action-label">Ver el programa</span>
-          <span class="line-action-arrow" aria-hidden="true"
-            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
-          ></span>
+    <ul class="panel-shortcuts" aria-label="Accesos rápidos">
+      <li>
+        <a routerLink="/sesiones">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM8 3v4M16 3v4M4 10h16M12 13v4M10 15h4" />
+          </svg>
+          <span>Reservar una sesión</span>
+          <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span>
         </a>
-        <a class="line-action" routerLink="/tienda">
-          <span class="line-action-label">Ir a la tienda</span>
-          <span class="line-action-arrow" aria-hidden="true"
-            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
-          ></span>
+      </li>
+      <li>
+        <a routerLink="/tienda">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9" />
+          </svg>
+          <span>Ir a la tienda</span>
+          <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span>
         </a>
-      </div>
-    </header>
-  </div>
+      </li>
+    </ul>
+  </header>
 
-  <nav class="panel-tabs account-tabs" aria-label="Secciones de Mi panel">
-    <a class="panel-tab" routerLink="reservas" routerLinkActive="is-open" ariaCurrentWhenActive="page">
-      <span class="panel-tab-label">Reservas</span>
-      @if (store.activeReservations(); as count) {
-        <span class="panel-tab-total" [attr.aria-label]="count + ' activas'">{{ count }}</span>
-      }
-    </a>
-    <a class="panel-tab" routerLink="pedidos" routerLinkActive="is-open" ariaCurrentWhenActive="page">
-      <span class="panel-tab-label">Pedidos</span>
-      @if (store.ordersInProgress(); as count) {
-        <span class="panel-tab-total" [attr.aria-label]="count + ' en curso'">{{ count }}</span>
-      }
-    </a>
-    <a class="panel-tab" routerLink="datos" routerLinkActive="is-open" ariaCurrentWhenActive="page">
-      <span class="panel-tab-label">Cuenta</span>
-    </a>
-  </nav>
-
-  <section class="panel-surface">
+  <section class="page-content" [attr.aria-label]="section()">
     <router-outlet />
   </section>
 
   <app-panel-confirm />
-</article>
+</app-panel-frame>

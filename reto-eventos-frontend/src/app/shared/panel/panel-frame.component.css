@@ -1,0 +1,374 @@
+/* Marco de los paneles: la barra en la tinta de la web, el menú lateral en una franja del papel y el
+   contenido sobre papel. Coral solo para el área, el avatar y lo pendiente. */
+:host {
+  --bar: #0d151e;
+  --bar-ink: #f7f8f9;
+  --bar-muted: rgba(247, 248, 249, 0.74);
+  --bar-line: rgba(247, 248, 249, 0.16);
+  --bar-height: 4.25rem;
+  --paper: #f8f6f2;
+  --paper-soft: #efece6;
+  --paper-ink: #28333a;
+  --paper-muted: #3d474e;
+  --paper-rule: #c9cdca;
+  --coral: #ff7f7f;
+  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  display: block;
+  font-family: Arial, sans-serif;
+}
+
+.frame {
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--paper-ink);
+  background: var(--paper);
+}
+
+/* Barra: la marca y el área a la izquierda; la cuenta, la web y la salida a la derecha. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: var(--bar-height);
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  color: var(--bar-ink);
+  background: var(--bar);
+}
+
+.bar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.bar-logo {
+  width: 1.85rem;
+  height: 1.85rem;
+  flex: none;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.bar-name {
+  font:
+    800 1.2rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.bar-sessions {
+  margin-left: -0.2rem;
+  color: #d9d0d6;
+  font: 600 0.88rem var(--condensed);
+  letter-spacing: 0.06em;
+}
+
+/* Al pasar por encima, la marca entera en coral, como en la barra de la web. */
+.bar-brand:hover,
+.bar-brand:hover .bar-sessions {
+  color: var(--coral);
+}
+
+.bar-area {
+  padding-left: 1rem;
+  border-left: 1px solid var(--bar-line);
+  color: var(--coral);
+  font: 600 1.15rem / 1 var(--condensed);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.bar-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.bar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-right: 0.75rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--bar-line);
+}
+
+.bar-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: none;
+  border-radius: 50%;
+  color: #1b2227;
+  background: var(--coral);
+  font:
+    800 1rem 'Nunito',
+    sans-serif;
+}
+
+.bar-user-text {
+  display: grid;
+  line-height: 1.2;
+}
+
+.bar-user-name {
+  max-width: 12rem;
+  overflow: hidden;
+  font:
+    700 0.92rem 'Nunito',
+    sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-user-role {
+  color: var(--bar-muted);
+  font:
+    800 0.6rem 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* «Cerrar sesión» y «Área pública»: cajas del mismo ancho con trazo fino, texto a la izquierda y el
+   icono a la derecha. Al pasar por encima, el trazo se aclara; el coral se queda para el área. */
+.bar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  min-width: 9.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--bar-line);
+  border-radius: 0.5rem;
+  color: var(--bar-muted);
+  background: transparent;
+  font:
+    700 0.9rem 'Nunito',
+    sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.bar-link svg,
+.side-link svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bar-link:hover {
+  border-color: rgba(247, 248, 249, 0.5);
+  color: var(--bar-ink);
+  background: rgba(247, 248, 249, 0.06);
+}
+
+.bar-link + .bar-link {
+  margin-left: 0.35rem;
+}
+
+.bar :is(a, button):focus-visible,
+.side-link:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* Menú lateral: cajas con icono y etiqueta a la izquierda; la abierta, en blanco y perfilada. */
+.frame-body {
+  display: grid;
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+}
+
+.side {
+  position: sticky;
+  top: var(--bar-height);
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  height: calc(100dvh - var(--bar-height));
+  padding: 1.75rem 1.1rem;
+  overflow-y: auto;
+  border-right: 1px solid var(--paper-rule);
+  background: var(--paper-soft);
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.3rem;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  color: var(--paper-muted);
+  font:
+    700 1.08rem 'Nunito',
+    sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.side-link:hover {
+  color: var(--paper-ink);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.side-link.is-open {
+  border-color: var(--paper-rule);
+  color: var(--paper-ink);
+  background: #fff;
+}
+
+/* Los iconos del menú, mayores que los de la barra. */
+.side-link svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.side-link.is-open svg {
+  color: var(--coral);
+}
+
+.side-label {
+  flex: 1;
+}
+
+.side-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding-inline: 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+
+.side-count.is-urgent {
+  border-color: var(--coral);
+  color: #1b2227;
+  background: var(--coral);
+  font-weight: 800;
+}
+
+/* En pantallas anchas, el contenido no pasa de 110rem: las tablas larguísimas no se leen bien. */
+.frame-main {
+  min-width: 0;
+  width: 100%;
+  max-width: 110rem;
+  margin-inline: auto;
+  padding: clamp(1.75rem, 3.5vw, 3rem) clamp(1.25rem, 4vw, 4rem) clamp(3rem, 6vw, 5rem);
+}
+
+/* Tableta y móvil: el menú, en una fila de cajas bajo la barra. */
+@media (max-width: 1000px) {
+  .frame-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .side {
+    position: static;
+    display: flex;
+    gap: 0.4rem;
+    height: auto;
+    padding: 0.75rem clamp(1rem, 3vw, 2.5rem);
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--paper-rule);
+    scrollbar-width: none;
+  }
+
+  .side::-webkit-scrollbar {
+    display: none;
+  }
+
+  .side-link {
+    flex: none;
+    min-height: 2.6rem;
+    gap: 0.55rem;
+    padding: 0 0.85rem;
+  }
+}
+
+/* En la barra estrecha, la cuenta se queda en el avatar y los enlaces en su icono. */
+@media (max-width: 760px) {
+  .bar-user-text,
+  .bar-link-label,
+  .bar-sessions {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .bar-user {
+    margin-right: 0.25rem;
+    padding-right: 0.5rem;
+  }
+
+  .bar-area {
+    padding-left: 0.75rem;
+    font-size: 1.05rem;
+  }
+
+  .bar-name {
+    font-size: 1.05rem;
+  }
+
+  .bar-link {
+    justify-content: center;
+    min-width: 2.5rem;
+    padding: 0;
+  }
+}
+
+/* En los móviles estrechos, el menú sin iconos: las tres secciones de Mi panel caben a la vista. */
+@media (max-width: 480px) {
+  .side-link svg {
+    display: none;
+  }
+
+  .side-link {
+    padding: 0 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .bar-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-link,
+  .side-link {
+    transition: none;
+  }
+}

@@ -1,0 +1,54 @@
+<div class="frame">
+  <header class="bar">
+    <a class="bar-brand" routerLink="/" aria-label="AlienMilk Sessions: ir a la portada">
+      <span class="bar-logo" aria-hidden="true"></span>
+      <span class="bar-name">AlienMilk</span>
+      <span class="bar-sessions">Sessions</span>
+    </a>
+    <span class="bar-area">{{ area() }}</span>
+
+    <div class="bar-tools">
+      @if (user(); as cuenta) {
+        <span class="bar-user">
+          <span class="bar-avatar" aria-hidden="true">{{ initial() }}</span>
+          <span class="bar-user-text">
+            <span class="bar-user-name">{{ cuenta.nombre }}</span>
+            <span class="bar-user-role">{{ role() }}</span>
+          </span>
+        </span>
+      }
+      <button type="button" class="bar-link" (click)="logout()">
+        <span class="bar-link-label">Cerrar sesión</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 8l-4 4 4 4M6 12h10" /></svg>
+      </button>
+      <a class="bar-link" routerLink="/">
+        <span class="bar-link-label">Área pública</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>
+      </a>
+    </div>
+  </header>
+
+  <div class="frame-body">
+    <nav class="side" [attr.aria-label]="navLabel()">
+      @for (item of items(); track item.path) {
+        <a
+          class="side-link"
+          [routerLink]="item.path"
+          routerLinkActive="is-open"
+          ariaCurrentWhenActive="page"
+          (click)="reveal($event)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="icon(item.icon)" /></svg>
+          <span class="side-label">{{ item.label }}</span>
+          @if (item.count) {
+            <span class="side-count" [class.is-urgent]="item.urgent">{{ item.count }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="frame-main">
+      <ng-content />
+    </div>
+  </div>
+</div>

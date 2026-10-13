@@ -1,77 +1,42 @@
-<article class="secondary-page panel-page" aria-labelledby="admin-title">
-  <div class="secondary-stage panel-stage">
-    <nav class="breadcrumb" aria-label="Ruta de navegación">
-      <a routerLink="/">Inicio</a>
-      <span aria-hidden="true">/</span>
-      <a routerLink="/admin">Administración</a>
-      <span aria-hidden="true">/</span>
-      <span aria-current="page">{{ current().label }}</span>
-    </nav>
+<app-panel-frame area="Administración" navLabel="Secciones del panel de control" [items]="navItems()">
+  <header class="page-head">
+    <div>
+      <p class="page-kicker">Panel de control · {{ current().label }}</p>
+      <h1>Hola, {{ name() }}</h1>
+      <p class="page-intro">Sesiones, cuentas, tienda y atención al público de AlienMilk Sessions.</p>
+    </div>
 
-    <header class="panel-header">
-      <div class="panel-heading">
-        <p class="eyebrow">
-          <span class="eyebrow-icon" aria-hidden="true"></span>
-          <span>AlienMilk / Administración</span>
-        </p>
-        <h1 id="admin-title">Panel de control</h1>
-        <p class="panel-subtitle">
-          Sesiones, cuentas, tienda y atención al público, en un solo sitio.
-        </p>
-      </div>
+    <ul class="panel-figures" aria-label="Resumen">
+      <li>
+        <a routerLink="sesiones">
+          <strong>{{ figure(summary()?.sesionesActivas) }}</strong>
+          <span>Sesiones activas</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="reservas">
+          <strong>{{ figure(summary()?.plazasReservadas) }}</strong>
+          <span>Plazas reservadas</span>
+        </a>
+      </li>
+      <li [class.is-pending]="(summary()?.pedidosPorPreparar ?? 0) > 0">
+        <a routerLink="pedidos">
+          <strong>{{ figure(summary()?.pedidosPorPreparar) }}</strong>
+          <span>Pedidos por preparar</span>
+        </a>
+      </li>
+      <li [class.is-pending]="(summary()?.solicitudesNuevas ?? 0) > 0">
+        <a routerLink="solicitudes">
+          <strong>{{ figure(summary()?.solicitudesNuevas) }}</strong>
+          <span>Solicitudes sin atender</span>
+        </a>
+      </li>
+    </ul>
+  </header>
 
-      <ul class="panel-figures" aria-label="Resumen">
-        <li>
-          <a routerLink="sesiones">
-            <strong>{{ figure(summary()?.sesionesActivas) }}</strong>
-            <span>Sesiones activas</span>
-          </a>
-        </li>
-        <li>
-          <a routerLink="reservas">
-            <strong>{{ figure(summary()?.plazasReservadas) }}</strong>
-            <span>Plazas reservadas</span>
-          </a>
-        </li>
-        <li [class.is-pending]="(summary()?.pedidosPorPreparar ?? 0) > 0">
-          <a routerLink="pedidos">
-            <strong>{{ figure(summary()?.pedidosPorPreparar) }}</strong>
-            <span>Pedidos por preparar</span>
-          </a>
-        </li>
-        <li [class.is-pending]="(summary()?.solicitudesNuevas ?? 0) > 0">
-          <a routerLink="solicitudes">
-            <strong>{{ figure(summary()?.solicitudesNuevas) }}</strong>
-            <span>Solicitudes sin atender</span>
-          </a>
-        </li>
-      </ul>
-    </header>
-  </div>
-
-  <nav class="panel-tabs" aria-label="Secciones del panel">
-    @for (section of sections; track section.path) {
-      <a
-        class="panel-tab"
-        [routerLink]="section.path"
-        routerLinkActive="is-open"
-        ariaCurrentWhenActive="page"
-        (click)="reveal($event)"
-      >
-        <span class="panel-tab-label">{{ section.label }}</span>
-        @if (pendingCount(section); as count) {
-          <span class="panel-tab-count"
-            ><span class="panel-tab-number">{{ count }}</span
-            ><span class="visually-hidden"> pendientes</span></span
-          >
-        }
-      </a>
-    }
-  </nav>
-
-  <section class="panel-surface">
+  <section class="page-content" [attr.aria-label]="current().label">
     <router-outlet />
   </section>
 
   <app-panel-confirm />
-</article>
+</app-panel-frame>

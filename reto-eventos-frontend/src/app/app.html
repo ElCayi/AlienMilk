@@ -1,5 +1,7 @@
 <div class="app-shell">
-  <header class="topbar" [class.menu-open]="menuOpen()">
+  <!-- Dentro de los paneles (/cuenta, /admin) manda su propia barra: la de la web se oculta, sin
+       desaparecer, para que su altura se siga midiendo al volver. -->
+  <header class="topbar" [class.menu-open]="menuOpen()" [hidden]="inPanel()">
     <a class="brand" routerLink="/" (click)="closeMenu()">
       <span class="brand-logo" aria-hidden="true"></span>
       <span class="brand-text">

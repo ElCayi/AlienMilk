@@ -7,7 +7,7 @@
     </p>
   </div>
   <div class="section-head-actions">
-    <a class="btn btn-primary" routerLink="/sesiones">Reservar otra sesión</a>
+    <a class="btn btn-primary" routerLink="/sesiones">Reservar otra sesión <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span></a>
   </div>
 </header>
 
@@ -25,7 +25,7 @@
 } @else if (!store.reservations()!.length) {
   <div class="empty">
     <p>Todavía no has reservado ninguna sesión.</p>
-    <a class="btn" routerLink="/sesiones">Ver el programa</a>
+    <a class="btn" routerLink="/sesiones">Ver el programa <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span></a>
   </div>
 } @else {
   <h3 class="subsection-title">Próximas</h3>

@@ -64,6 +64,11 @@
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
+/* Oculta dentro de los paneles (ver inPanel en app.ts): sin esto, el display de .topbar la mostraría. */
+.topbar[hidden] {
+  display: none;
+}
+
 .menu-toggle {
   display: none;
 }
@@ -283,6 +288,12 @@
   width: min(1480px, 76vw);
 }
 
+/* Los paneles ocupan la ventana entera: su marco (barra, menú y contenido) lo pone cada uno. */
+.page-container:has(app-admin-page),
+.page-container:has(app-account-page) {
+  width: 100%;
+}
+
 @media (min-width: 1600px) and (max-height: 1200px) {
   .page-container:has(app-home-page),
   .page-container:has(app-sessions-page),
@@ -299,9 +310,7 @@
 .page-container:has(app-documentation-page),
 .page-container:has(app-shop-page),
 .page-container:has(app-product-page),
-.page-container:has(app-guest-order-page),
-.page-container:has(app-admin-page),
-.page-container:has(app-account-page) {
+.page-container:has(app-guest-order-page) {
   width: min(1480px, 76vw);
 }
 
@@ -313,9 +322,7 @@
 .page-container:has(app-documentation-page),
 .page-container:has(app-shop-page),
 .page-container:has(app-product-page),
-.page-container:has(app-guest-order-page),
-.page-container:has(app-admin-page),
-.page-container:has(app-account-page) {
+.page-container:has(app-guest-order-page) {
     width: min(1800px, 76vw);
   }
 }
@@ -328,9 +335,7 @@
 .page-container:has(app-documentation-page),
 .page-container:has(app-shop-page),
 .page-container:has(app-product-page),
-.page-container:has(app-guest-order-page),
-.page-container:has(app-admin-page),
-.page-container:has(app-account-page) {
+.page-container:has(app-guest-order-page) {
     width: calc(100% - 2 * clamp(1rem, 6vw, 3.75rem));
   }
 }

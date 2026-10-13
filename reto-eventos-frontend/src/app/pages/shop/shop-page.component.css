@@ -545,6 +545,13 @@
   line-height: 1.5;
 }
 
+/* Las salidas del resguardo, en fila mientras quepan. */
+.receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.5rem;
+}
+
 /* En el resguardo, pagar va primero y separado de lo demás. */
 .pay-action {
   margin-bottom: 1.75rem;

@@ -59,7 +59,7 @@
 /* La vista previa, en una ficha como las de datos de la web: rótulo pequeño y valor. */
 .contact-preview {
   position: sticky;
-  top: calc(var(--topbar-height, 4rem) + 1rem);
+  top: 5.5rem;
   padding: 1.25rem 1.35rem 1.4rem;
   border: 1px solid var(--paper-rule);
   border-radius: 0.75rem;

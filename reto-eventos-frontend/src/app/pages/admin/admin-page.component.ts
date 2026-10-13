@@ -1,50 +1,56 @@
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
 import { PanelConfirmComponent } from '../../shared/panel/panel-confirm';
+import { PanelFrameComponent, PanelNavItem } from '../../shared/panel/panel-frame.component';
 import { AdminSummaryService } from './admin-summary.service';
 
-interface AdminSection {
-  path: string;
-  label: string;
-  /** Avisos de la pestaña: lo que espera a alguien. */
-  pending?: 'pedidosPorPreparar' | 'solicitudesNuevas';
-}
+const SECTIONS: PanelNavItem[] = [
+  { path: 'sesiones', label: 'Sesiones', icon: 'sesiones' },
+  { path: 'reservas', label: 'Reservas', icon: 'reservas' },
+  { path: 'tipos', label: 'Tipos de sesión', icon: 'tipos' },
+  { path: 'usuarios', label: 'Usuarios', icon: 'usuarios' },
+  { path: 'perfiles', label: 'Perfiles', icon: 'perfiles' },
+  { path: 'pedidos', label: 'Pedidos', icon: 'pedidos' },
+  { path: 'solicitudes', label: 'Solicitudes', icon: 'solicitudes' },
+  { path: 'contacto', label: 'Contacto', icon: 'contacto' },
+];
 
 /**
- * Armazón del panel de administración: la cabecera con el resumen, las pestañas de las secciones y,
- * debajo, la sección abierta (cada una en su dirección, ver admin.routes.ts).
+ * Panel de administración: el marco de la aplicación (barra y menú lateral), el saludo con el
+ * resumen y, debajo, la sección abierta (cada una en su dirección, ver admin.routes.ts).
  */
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, PanelConfirmComponent],
+  imports: [RouterLink, RouterOutlet, PanelConfirmComponent, PanelFrameComponent],
   templateUrl: './admin-page.component.html',
-  styleUrls: [
-    '../../shared/secondary-page/secondary-page.css',
-    '../../shared/panel/panel-shell.css',
-  ],
+  styleUrl: '../../shared/panel/panel-shell.css',
 })
 export class AdminPageComponent {
   private readonly router = inject(Router);
   private readonly summaryService = inject(AdminSummaryService);
-  readonly auth = inject(AuthService);
+  private readonly auth = inject(AuthService);
 
   readonly summary = this.summaryService.summary;
+  readonly name = computed(() => this.auth.currentUser()?.nombre ?? '');
 
-  readonly sections: AdminSection[] = [
-    { path: 'sesiones', label: 'Sesiones' },
-    { path: 'reservas', label: 'Reservas' },
-    { path: 'tipos', label: 'Tipos' },
-    { path: 'usuarios', label: 'Usuarios' },
-    { path: 'perfiles', label: 'Perfiles' },
-    { path: 'pedidos', label: 'Pedidos', pending: 'pedidosPorPreparar' },
-    { path: 'solicitudes', label: 'Solicitudes', pending: 'solicitudesNuevas' },
-    { path: 'contacto', label: 'Contacto' },
-  ];
+  /** Las secciones, con lo pendiente de pedidos y solicitudes como aviso. */
+  readonly navItems = computed<PanelNavItem[]>(() => {
+    const summary = this.summary();
+    return SECTIONS.map((item) => {
+      const count =
+        item.path === 'pedidos'
+          ? summary?.pedidosPorPreparar
+          : item.path === 'solicitudes'
+            ? summary?.solicitudesNuevas
+            : undefined;
+      return count ? { ...item, count, urgent: true } : item;
+    });
+  });
 
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -54,28 +60,18 @@ export class AdminPageComponent {
     { initialValue: this.router.url },
   );
 
-  /** La sección abierta, para la ruta de navegación. */
+  /** La sección abierta, para el rótulo de la cabecera. */
   readonly current = computed(() => {
     const path = this.url().split(/[?#]/)[0].split('/')[2] ?? '';
-    return this.sections.find((section) => section.path === path) ?? this.sections[0];
+    return SECTIONS.find((section) => section.path === path) ?? SECTIONS[0];
   });
 
   constructor() {
     this.summaryService.refresh();
   }
 
-  pendingCount(section: AdminSection): number {
-    const summary = this.summary();
-    return section.pending && summary ? summary[section.pending] : 0;
-  }
-
   /** Una cifra del resumen, o un guion mientras llega (o si no llega). */
   figure(value: number | undefined): string {
     return value === undefined ? '—' : new Intl.NumberFormat('es-ES').format(value);
-  }
-
-  /** Al cambiar de pestaña con el teclado o el ratón, la abierta queda a la vista si la fila se desplaza. */
-  reveal(event: Event): void {
-    (event.currentTarget as HTMLElement).scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }
 }

@@ -58,12 +58,16 @@
         ><span>02</span> Nuestro trabajo
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
       ></a>
+      <a href="nosotros#archivo" (click)="goToSection($event, archivo)"
+        ><span>03</span> El Archivo
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
+      ></a>
       <a href="nosotros#ecosistema" (click)="goToSection($event, ecosistema)"
-        ><span>03</span> El ecosistema
+        ><span>04</span> El ecosistema
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
       ></a>
       <a href="nosotros#organizacion" (click)="goToSection($event, organizacion)"
-        ><span>04</span> Nuestra organización
+        ><span>05</span> Nuestra organización
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M5 19h14V5" /></svg
       ></a>
     </nav>
@@ -325,19 +329,13 @@
     </div>
   </section>
 
-  <!-- 03 / El ecosistema — 1: el Archivo, con la geometría de la 01. El recuadro oscuro con la foto a la
-       izquierda, el texto en el lienzo claro de la derecha y, al pie, una banda negra con los tres
-       estados de una muestra, como las funciones de la 01. -->
-  <section
-    class="us-ecosystem"
-    id="ecosistema"
-    #ecosistema
-    tabindex="-1"
-    aria-labelledby="us-eco-title"
-  >
+  <!-- 03 / El Archivo, con la geometría de la 01. El recuadro oscuro con la foto a la izquierda, el
+       texto en el lienzo claro de la derecha y, al pie, una banda negra con los tres estados de una
+       muestra, como las funciones de la 01. -->
+  <section class="us-ecosystem" id="archivo" #archivo tabindex="-1" aria-labelledby="us-eco-title">
     <!-- Los rótulos, arriba sobre el recuadro oscuro y sobre el lienzo claro, como los de la 01. -->
     <p class="us-work-eyebrow us-eco-label">
-      <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 1
+      <span class="eyebrow-icon" aria-hidden="true"></span>03 / El Archivo
     </p>
     <p class="us-eco-label-aside">Una biblioteca reproducible</p>
     <div class="us-eco-grid">
@@ -423,16 +421,19 @@
     </dl>
   </section>
 
-  <!-- 03 / El ecosistema — 2 y 3: la geometría de la 02, con el recuadro oscuro a la derecha, unida
-       bajo la banda de los estados igual que la 02 bajo la de las funciones de la 01. Entre las dos
-       partes, el camino de una muestra, como el recorrido. -->
+  <!-- 04 / El ecosistema, en dos partes: la geometría de la 02, con el recuadro oscuro a la derecha,
+       unida bajo la banda de los estados igual que la 02 bajo la de las funciones de la 01. Entre las
+       dos partes, la equivalencia del último lote, en la franja del recorrido. -->
   <section
     class="us-definition us-definition--inverse us-work us-eco-more"
+    id="ecosistema"
+    #ecosistema
+    tabindex="-1"
     aria-labelledby="us-eco-more-title"
   >
     <div class="us-label">
       <span class="us-label-mark"
-        ><span class="eyebrow-icon" aria-hidden="true"></span>03 / El Archivo</span
+        ><span class="eyebrow-icon" aria-hidden="true"></span>04 / El ecosistema — 1</span
       >
     </div>
     <div class="us-definition-body">
@@ -502,7 +503,7 @@
 
         <div class="us-work-block us-work-block--custody">
           <p class="us-work-eyebrow">
-            <span class="eyebrow-icon" aria-hidden="true"></span>03 / El ecosistema — 3
+            <span class="eyebrow-icon" aria-hidden="true"></span>04 / El ecosistema — 2
           </p>
           <h3 appFitLine [appFitLineMin]="32">Del Archivo a la experiencia.</h3>
           <p class="us-work-subtitle">Producción, distribución y coleccionismo.</p>
@@ -542,7 +543,7 @@
     </div>
   </section>
 
-  <!-- Entre la 03 y la 04, sobre la textura: la nota del equipo, centrada, con el formato de la de la
+  <!-- Entre la 04 y la 05, sobre la textura: la nota del equipo, centrada, con el formato de la de la
        cabecera; debajo, su retrato. -->
   <section class="us-team" aria-labelledby="us-team-title">
     <h2 id="us-team-title" class="visually-hidden">Nuestro equipo</h2>
@@ -558,7 +559,7 @@
     </figure>
   </section>
 
-  <!-- 04 / Nuestra organización: cómo funciona una empresa de esta escala. Sobre la textura, el rótulo
+  <!-- 05 / Nuestra organización: cómo funciona una empresa de esta escala. Sobre la textura, el rótulo
        y, debajo, el retrato del equipo con sus fichas y la arquitectura ejecutiva, en una sola pieza. -->
   <section
     class="us-org"
@@ -568,7 +569,7 @@
     aria-labelledby="us-org-title"
   >
     <p class="us-org-label">
-      <span class="eyebrow-icon" aria-hidden="true"></span>04 / Nuestra organización
+      <span class="eyebrow-icon" aria-hidden="true"></span>05 / Nuestra organización
     </p>
     <h2 id="us-org-title" class="visually-hidden">Nuestra organización</h2>
     <div class="us-team-board">
@@ -652,64 +653,67 @@
           <div class="us-arch-layers">
             <!-- 01, la membrana: el marco y sus límites. 02, el núcleo: la IEA, dentro de su envolvente.
                  03, los SEA: vesículas con una parte del contenido del núcleo. 04, el linaje: los
-                 filamentos, que siguen aunque cambie la instancia (las retiradas, en discontinuo). -->
-            <svg
-              class="us-arch-cell"
-              viewBox="0 0 320 320"
-              aria-hidden="true"
-              [attr.data-layer]="activeTab()"
-            >
-              <g class="us-cell-frame">
-                <circle cx="160" cy="160" r="150" />
-                <circle class="us-cell-inner" cx="160" cy="160" r="144" />
-              </g>
-              <g class="us-cell-grains">
-                <circle cx="99.3" cy="76.6" r="1.7" />
-                <circle cx="199.1" cy="251.2" r="1.2" />
-                <circle cx="51.4" cy="163.8" r="1.9" />
-                <circle cx="182.3" cy="278.7" r="1.9" />
-                <circle cx="59.9" cy="101.7" r="1.4" />
-                <circle cx="282.2" cy="164.3" r="1.1" />
-                <circle cx="192.8" cy="83.2" r="1.9" />
-                <circle cx="147.9" cy="264.5" r="1.6" />
-                <circle cx="286.6" cy="130.3" r="1.7" />
-                <circle cx="128.7" cy="244.9" r="1.9" />
-                <circle cx="38.4" cy="133.2" r="1.1" />
-                <circle cx="79.4" cy="198.1" r="1.1" />
-                <circle cx="229.5" cy="156.9" r="1.7" />
-                <circle cx="83.7" cy="123.7" r="1.9" />
-                <circle cx="217.8" cy="221.7" r="1.4" />
-                <circle cx="214.1" cy="273.2" r="0.9" />
-                <circle cx="227.6" cy="112.5" r="1.7" />
-                <circle cx="137.8" cy="73.2" r="1.2" />
-              </g>
-              <g class="us-cell-lineage">
-                <path d="M188.8 112.6C189.9 99.2 196.1 90.6 208.5 85.5" />
-                <path d="M104.2 213.5C92.8 216.5 86.3 223.2 83.7 234.7" />
-                <path d="M213.4 184.2C225 196.9 238.2 200.6 254.8 196" />
-                <circle class="us-cell-ghost" cx="249.4" cy="106.3" r="12.5" />
-                <circle class="us-cell-ghost" cx="50.6" cy="208.2" r="10.5" />
-                <circle class="us-cell-ghost" cx="235.8" cy="238" r="9" />
-              </g>
-              <g class="us-cell-core">
-                <circle class="us-cell-envelope" cx="150" cy="166" r="66" />
-                <circle class="us-cell-nucleus" cx="150" cy="166" r="47" />
-              </g>
-              <g class="us-cell-agents">
-                <circle cx="215.8" cy="75.4" r="12.5" />
-                <circle class="us-cell-fragment" cx="216.1" cy="80.1" r="3.5" />
-                <circle cx="76.4" cy="242.3" r="10.5" />
-                <circle class="us-cell-fragment" cx="76.7" cy="238.3" r="2.9" />
-                <circle cx="263.4" cy="198.5" r="9" />
-                <circle class="us-cell-fragment" cx="260.3" cy="199.9" r="2.5" />
-              </g>
-              <g class="us-cell-codes">
-                <text x="43.3" y="43.3">01</text>
-                <text x="71.8" y="145">02</text>
-                <text x="196.4" y="56">03</text>
-                <text x="227.6" y="260.6">04</text>
-              </g>
-            </svg>
+                 filamentos, que siguen aunque cambie la instancia (las retiradas, en discontinuo).
+                 Se vuelve a pintar al cambiar de capa, y entra con el texto, con el mismo fundido. -->
+            @for (layer of [activeTab()]; track layer) {
+              <svg
+                class="us-arch-cell"
+                viewBox="0 0 320 320"
+                aria-hidden="true"
+                [attr.data-layer]="layer"
+              >
+                <g class="us-cell-frame">
+                  <circle cx="160" cy="160" r="150" />
+                  <circle class="us-cell-inner" cx="160" cy="160" r="144" />
+                </g>
+                <g class="us-cell-grains">
+                  <circle cx="99.3" cy="76.6" r="1.7" />
+                  <circle cx="199.1" cy="251.2" r="1.2" />
+                  <circle cx="51.4" cy="163.8" r="1.9" />
+                  <circle cx="182.3" cy="278.7" r="1.9" />
+                  <circle cx="59.9" cy="101.7" r="1.4" />
+                  <circle cx="282.2" cy="164.3" r="1.1" />
+                  <circle cx="192.8" cy="83.2" r="1.9" />
+                  <circle cx="147.9" cy="264.5" r="1.6" />
+                  <circle cx="286.6" cy="130.3" r="1.7" />
+                  <circle cx="128.7" cy="244.9" r="1.9" />
+                  <circle cx="38.4" cy="133.2" r="1.1" />
+                  <circle cx="79.4" cy="198.1" r="1.1" />
+                  <circle cx="229.5" cy="156.9" r="1.7" />
+                  <circle cx="83.7" cy="123.7" r="1.9" />
+                  <circle cx="217.8" cy="221.7" r="1.4" />
+                  <circle cx="214.1" cy="273.2" r="0.9" />
+                  <circle cx="227.6" cy="112.5" r="1.7" />
+                  <circle cx="137.8" cy="73.2" r="1.2" />
+                </g>
+                <g class="us-cell-lineage">
+                  <path d="M188.8 112.6C189.9 99.2 196.1 90.6 208.5 85.5" />
+                  <path d="M104.2 213.5C92.8 216.5 86.3 223.2 83.7 234.7" />
+                  <path d="M213.4 184.2C225 196.9 238.2 200.6 254.8 196" />
+                  <circle class="us-cell-ghost" cx="249.4" cy="106.3" r="12.5" />
+                  <circle class="us-cell-ghost" cx="50.6" cy="208.2" r="10.5" />
+                  <circle class="us-cell-ghost" cx="235.8" cy="238" r="9" />
+                </g>
+                <g class="us-cell-core">
+                  <circle class="us-cell-envelope" cx="150" cy="166" r="66" />
+                  <circle class="us-cell-nucleus" cx="150" cy="166" r="47" />
+                </g>
+                <g class="us-cell-agents">
+                  <circle cx="215.8" cy="75.4" r="12.5" />
+                  <circle class="us-cell-fragment" cx="216.1" cy="80.1" r="3.5" />
+                  <circle cx="76.4" cy="242.3" r="10.5" />
+                  <circle class="us-cell-fragment" cx="76.7" cy="238.3" r="2.9" />
+                  <circle cx="263.4" cy="198.5" r="9" />
+                  <circle class="us-cell-fragment" cx="260.3" cy="199.9" r="2.5" />
+                </g>
+                <g class="us-cell-codes">
+                  <text x="43.3" y="43.3">01</text>
+                  <text x="71.8" y="145">02</text>
+                  <text x="196.4" y="56">03</text>
+                  <text x="227.6" y="260.6">04</text>
+                </g>
+              </svg>
+            }
 
             <div
               class="us-arch-panel"
@@ -750,7 +754,9 @@
             >
               <div class="us-arch-copy">
                 <h4>IEA</h4>
-                <p class="us-arch-sub">Inteligencias Ejecutivas Autónomas</p>
+                <p class="us-arch-sub" appFitLine [appFitLineMin]="16">
+                  Inteligencias Ejecutivas Autónomas
+                </p>
                 <p>Las IEA constituyen la <b>capa ejecutiva persistente</b> de AlienMilk.</p>
                 <p>
                   Mantienen contexto operativo de largo plazo, coordinan procesos y agentes y pueden
@@ -787,7 +793,9 @@
             >
               <div class="us-arch-copy">
                 <h4>SEA</h4>
-                <p class="us-arch-sub">Synthetic Executive Agents</p>
+                <p class="us-arch-sub" appFitLine [appFitLineMin]="16">
+                  Synthetic Executive Agents
+                </p>
                 <p>
                   Cuando una IEA necesita <b>presencia física</b> o <b>interacción local</b>, puede
                   <b>desplegar un SEA</b>.
@@ -847,9 +855,9 @@
               </dl>
             </div>
 
-            <!-- Cierre del bloque, bajo las capas: por qué las IEA. Texto de la usuaria, literal. El título a
-                 todo el ancho; debajo, el texto en la columna ancha y, en la estrecha, la responsabilidad
-                 de la capa abierta arriba y la frase final al pie. -->
+            <!-- Cierre del bloque, bajo las capas: por qué las IEA. Texto de la usuaria, literal. El título
+                 y, debajo, el texto, en la columna ancha; en la estrecha, la responsabilidad de la capa
+                 abierta y, justo debajo, la frase final. -->
             <div class="us-arch-scale">
               <h4 appFitLine [appFitLineMin]="24">Diseñadas para operar a otra escala</h4>
               <div class="us-arch-scale-copy">
@@ -894,7 +902,7 @@
       </div>
       <div class="us-invitation-copy">
         <p class="us-kicker">Programa de colaboradores</p>
-        <h2 id="us-invitation-title">Hay un sitio para usted.</h2>
+        <h2 id="us-invitation-title">Hay un sitio <br />para usted.</h2>
         <p>Sin compromiso, sin prisas y sin complicaciones.</p>
         <p class="us-invitation-motto"><span>El dolor es temporal.</span> La gloria es eterna.</p>
         <a

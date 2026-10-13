@@ -4,7 +4,10 @@
   /* Los tonos de la portada, donde nació. */
   --showcase-card: #1f2430;
   --showcase-card-deep: #151a22;
-  --collaboration-frame-half-width: 21rem;
+  /* Quien la usa puede ensanchar el centro --door-extra a cada lado: el marco, el portal y el panel
+     se abren lo mismo, y el techo y el suelo siguen acabando en las rayas de fuera. */
+  --collaboration-frame-half-width: calc(21rem + var(--door-extra, 0rem));
+  --sample-portal-width: calc(40rem + 2 * var(--door-extra, 0rem));
   --home-showcase-height: 40rem;
   position: relative;
   isolation: isolate;
@@ -65,5 +68,5 @@ app-sample-reception {
   z-index: 1;
   width: 100%;
   height: 100%;
-  max-width: 43.5rem;
+  max-width: calc(43.5rem + 2 * var(--door-extra, 0rem));
 }

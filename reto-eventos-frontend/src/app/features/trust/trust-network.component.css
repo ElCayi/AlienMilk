@@ -1010,7 +1010,7 @@
 
 /* En móvil, la barra la pone la portada (como en las demás secciones) y las cifras van de dos en
    dos. */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .trust {
     padding-top: 0.85rem;
     border-top: 0;

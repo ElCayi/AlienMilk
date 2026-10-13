@@ -357,6 +357,7 @@ export class LiquidBackdropComponent {
     };
 
     const wideLayout = window.matchMedia('(min-width: 1001px)');
+    const tabletLayout = window.matchMedia('(min-width: 901px) and (max-width: 1000px)');
     const image = new Image();
     let ready = false;
     const target = { x: 0.5, y: 0.5 };
@@ -383,7 +384,13 @@ export class LiquidBackdropComponent {
       const second = this.deepen?.children[1]?.getBoundingClientRect();
       if (first) {
         gl.uniform1f(uniforms.depthStart, first.top);
-        gl.uniform2f(uniforms.depthColumn, (first.left + first.right) / 2, first.width / 2);
+        // Solo entre 901 y 1000 px (tableta), el blanco va de borde a borde, sin columnas de textura a
+        // los lados: asomaban junto a bandas de tinta que sí llegan al borde. Fuera de ese tramo, igual.
+        gl.uniform2f(
+          uniforms.depthColumn,
+          (first.left + first.right) / 2,
+          tabletLayout.matches ? window.innerWidth : first.width / 2,
+        );
         gl.uniform2f(uniforms.depth, this.depth, 1);
         // Entre las dos secciones no hay corte: la tinta empieza con la segunda (Localizaciones), que
         // deja su propio aire sobre el título. Los cortes de más abajo miden 2 × half.

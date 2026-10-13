@@ -452,7 +452,7 @@
 }
 
 /* En móvil, la barra la pone la portada, como en las demás secciones. */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .distribution {
     padding-top: 0.85rem;
     border-top: 0;

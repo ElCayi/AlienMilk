@@ -3,7 +3,7 @@
    Hoja aparte del resto de la home para no pasar el presupuesto de tamaño por hoja; se carga la
    última porque sobrescribe a home-session-cards.css. */
 
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .sessions-block::before,
   .sessions-carousel::before {
     content: none;
@@ -286,14 +286,14 @@
   font-size: 1rem;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-tools .sessions-explore {
     font-size: 1.15rem;
   }
 }
 
 /* La primera tarjeta pequeña lleva el marco en espejo vertical: la curva grande arriba. */
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .session-secondary:first-child > div::before {
     border-radius: clamp(2rem, 4vw, 3.5rem) 0 0 0.35rem;
   }
@@ -305,7 +305,7 @@
   display: none;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .sessions-tools .sessions-explore {
     display: none;
   }
@@ -378,7 +378,7 @@
   }
 }
 
-@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1001px) and (prefers-reduced-motion: no-preference) {
   .is-swapping .session-featured::before,
   .is-swapping .session-secondary > div {
     animation: session-frame-bounce 640ms cubic-bezier(0.33, 0, 0.2, 1) both;

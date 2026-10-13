@@ -11,6 +11,14 @@ body {
   color: #211e24;
 }
 
+/* Tableta (901–1000 px): la maqueta de móvil, con todo lo medido en rem más grande. Solo este tramo;
+   el resto de anchos, como siempre. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  html {
+    font-size: 150%;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

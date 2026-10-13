@@ -665,7 +665,7 @@
 
 /* La ficha del asistente, entera en oscuro: el marco se rellena con la placa y los bloques de dentro
    quedan como zonas separadas por un filo claro. */
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .locations-brief {
     border-color: rgba(13, 22, 31, 0.9);
     background: rgba(13, 22, 31, 0.9);

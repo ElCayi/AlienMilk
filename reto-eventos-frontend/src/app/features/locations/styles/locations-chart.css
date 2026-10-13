@@ -320,16 +320,10 @@
   }
 }
 
-@media (min-width: 901px) and (max-width: 1000px) {
-  .locations-atlas {
-    width: var(--home-section-width, 82vw);
-  }
-}
-
 /* Desde tablet: el planetario se compone con una sola medida, --orbit. Las órbitas, su columna, el
    eje vertical y el ritmo entre estaciones salen de ella, y el conjunto se centra en el panel de
    textura. En móvil lo sustituye locations-responsive.css. */
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .locations-layout:not(.locations-layout-collaboration) {
     grid-template-columns: clamp(19rem, 24vw, 26rem) minmax(0, 1fr);
     gap: 0;

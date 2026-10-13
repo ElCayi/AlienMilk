@@ -68,12 +68,18 @@ export class App {
         return;
       }
 
+      let closedHeight = topbar.offsetHeight;
       const updateTopbarHeight = () => {
+        // El menú desplegado se abre por encima de la página: lo que crece el header se le resta
+        // por debajo (app.css, --menu-overlap), así no empuja nada.
         if (topbar.classList.contains('menu-open')) {
+          topbar.style.setProperty('--menu-overlap', `${topbar.offsetHeight - closedHeight}px`);
           return;
         }
 
-        appShell.style.setProperty('--topbar-height', `${topbar.offsetHeight}px`);
+        topbar.style.removeProperty('--menu-overlap');
+        closedHeight = topbar.offsetHeight;
+        appShell.style.setProperty('--topbar-height', `${closedHeight}px`);
       };
       const resizeObserver = new ResizeObserver(updateTopbarHeight);
 

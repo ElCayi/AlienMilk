@@ -84,7 +84,7 @@
       z-index: 1;
     }
 
-    @media (min-width: 901px) {
+    @media (min-width: 1001px) {
       .sessions-tools {
         transform: translateY(-2.75rem);
       }

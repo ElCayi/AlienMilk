@@ -24,6 +24,11 @@
   z-index: 10;
 }
 
+/* Desplegado, se abre por encima de la página sin empujarla (--menu-overlap, en app.ts). */
+.topbar.menu-open {
+  margin-bottom: calc(-1 * var(--menu-overlap, 0px));
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -428,4 +433,61 @@
 
 .topbar.menu-open .nav-links a {
   border-bottom-color: rgba(241, 236, 239, 0.1);
+}
+
+/* Tableta (901–1000 px): el header, algo mayor que el resto de la página (ver styles.css), y la
+   hamburguesa del tamaño de una yema de dedo. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .topbar {
+    padding-block: 0.75rem;
+  }
+
+  .brand {
+    font-size: 1.6rem;
+  }
+
+  .brand-logo {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  /* 85 px, medido por Cayi. */
+  .menu-toggle {
+    width: 85px;
+    height: 85px;
+    gap: 0.45rem;
+  }
+
+  .menu-toggle span {
+    width: 1.75rem;
+    height: 3px;
+  }
+
+  .menu-open .menu-toggle span:nth-child(1) {
+    transform: translateY(calc(0.45rem + 3px)) rotate(45deg);
+  }
+
+  .menu-open .menu-toggle span:nth-child(3) {
+    transform: translateY(calc(-0.45rem - 3px)) rotate(-45deg);
+  }
+
+  /* El menú desplegado, a la misma escala: enlaces y botones de la cuenta. */
+  .topbar.menu-open .nav-links a {
+    padding: 1.1rem 0;
+    font-size: 1.6rem;
+  }
+
+  .topbar .ghost-btn,
+  .topbar .dark-btn,
+  .topbar .secondary-btn {
+    min-width: 10rem;
+    padding: 0.85rem 1.4rem;
+    font-size: 1.25rem;
+  }
+
+  /* 5 px de aire bajo los botones de la cuenta, con el menú abierto. */
+  .topbar.menu-open .auth-box,
+  .topbar.menu-open .guest-actions {
+    padding-bottom: 5px;
+  }
 }

@@ -153,3 +153,15 @@ Excepciones con `data-fit-wrap`. Además, en móvil, 20 px más sobre la molécu
 primera cata» (Distribution).
 - **Comprobar tras el merge:** a 360×740, los botones de cada página en una línea y dentro de su
   tarjeta; ninguna tarjeta pulsable de varias líneas (cuentas de prueba del login) aplastada.
+
+## Tableta (901–1000 px) y menú desplegable
+
+- **El corte móvil/escritorio de la portada pasa a 1000/1001** en sus hojas (900→1000, 901→1001).
+  Entre 901 y 1000 se mezclaban las dos maquetas: filas de 2826 px (grid `1fr`) y la órbita de
+  sesiones de escritorio. Por debajo de 900 y por encima de 1000 todo queda igual; se retiran los
+  dos parches que solo valían para 901–1000.
+- **Solo en 901–1000:** raíz al 150 % (`styles.css`), header y menú más grandes (hamburguesa de
+  85 px, `app.css`) y blanco de borde a borde en el fondo líquido (`liquid-backdrop`).
+- **En todos los anchos:** el menú hamburguesa se abre por encima de la página en vez de empujarla
+  (`--menu-overlap`, medido en `app.ts`).
+- **Comprobar tras el merge:** portada a 912×1368 sin huecos; menú abierto a 390 y a 912.

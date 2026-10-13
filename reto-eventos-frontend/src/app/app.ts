@@ -7,6 +7,68 @@ import { AuthService } from './core/services/auth.service';
 import { CartService } from './features/shop/cart.service';
 import { SiteFooterComponent } from './shared/site-footer/site-footer.component';
 
+/** Una entrada del desplegable: sin `fragment`, lleva al principio de la página. */
+interface NavSection {
+  label: string;
+  fragment?: string;
+}
+
+/** Cada página del menú con sus secciones, para ir directamente a ellas desde cualquier sitio. */
+interface NavGroup {
+  label: string;
+  path: string;
+  sections: readonly NavSection[];
+}
+
+const NAV_GROUPS: readonly NavGroup[] = [
+  {
+    label: 'Inicio',
+    path: '/',
+    sections: [
+      { label: 'Próximas sesiones', fragment: 'sesiones' },
+      { label: 'AlienMilk Distribution', fragment: 'distribution' },
+      { label: 'AlienMilk Collaborators', fragment: 'collaborators' },
+      { label: 'En buenas manos', fragment: 'confianza' },
+    ],
+  },
+  {
+    label: 'Sesiones',
+    path: '/sesiones',
+    sections: [{ label: 'Programación de experiencias' }],
+  },
+  {
+    label: 'Nosotros',
+    path: '/nosotros',
+    sections: [
+      { label: 'Una institución dedicada a lo que nos une' },
+      { label: 'Nuestro campo', fragment: 'campo' },
+      { label: 'Nuestro trabajo', fragment: 'trabajo' },
+      { label: 'El ecosistema', fragment: 'ecosistema' },
+      { label: 'Nuestra organización', fragment: 'organizacion' },
+    ],
+  },
+  {
+    label: 'Tienda',
+    path: '/tienda',
+    sections: [
+      { label: 'Tienda' },
+      { label: 'Catálogo', fragment: 'catalogo' },
+      { label: 'Su pedido', fragment: 'su-pedido' },
+    ],
+  },
+  {
+    label: 'Contacto',
+    path: '/contacto',
+    sections: [
+      { label: 'Contacto' },
+      { label: 'Atención y consultas', fragment: 'atencion' },
+      { label: 'Visitar la sede', fragment: 'visita' },
+      { label: 'AlienMilk Collaborators', fragment: 'collaborators' },
+      { label: 'Antes de escribir', fragment: 'preguntas' },
+    ],
+  },
+];
+
 @Component({
   selector: 'app-root',
   imports: [NgIf, RouterLink, RouterOutlet, SiteFooterComponent],
@@ -18,6 +80,11 @@ export class App {
   /** Pedido en curso de la tienda: el menú muestra cuántas unidades lleva. */
   readonly cart = inject(CartService);
   readonly menuOpen = signal(false);
+  readonly navGroups = NAV_GROUPS;
+  /** En el menú de móvil, la página con las secciones desplegadas. */
+  readonly openGroup = signal<string | null>(null);
+  /** Tras elegir una sección, su desplegable se cierra aunque el ratón siga encima. */
+  readonly dismissedGroup = signal<string | null>(null);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -79,12 +146,48 @@ export class App {
     });
   }
 
+  /**
+   * Una sección del desplegable, en cualquier página. Sin fragmento, el principio de la página. Si
+   * ya se está en ella, el router no navega y solo se desplaza.
+   */
+  goTo(event: MouseEvent, group: NavGroup, section: NavSection): void {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    this.closeMenu();
+    this.dismissedGroup.set(group.path);
+    (this.document.activeElement as HTMLElement | null)?.blur();
+
+    const fragment = section.fragment;
+    this.menuSection = fragment ?? null;
+    this.router.navigate([group.path], fragment ? { fragment } : {}).then(() => {
+      setTimeout(() => {
+        if (fragment) {
+          this.followSection(fragment);
+        } else {
+          this.document.defaultView?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  /** El enlace que lleva cada entrada, para abrirla en otra pestaña o copiarla. */
+  sectionHref(group: NavGroup, section: NavSection): string {
+    return section.fragment ? `${group.path}#${section.fragment}` : group.path;
+  }
+
+  toggleGroup(path: string): void {
+    this.openGroup.update((open) => (open === path ? null : path));
+  }
+
   toggleMenu(): void {
     this.menuOpen.update((open) => !open);
   }
 
   closeMenu(): void {
     this.menuOpen.set(false);
+    this.openGroup.set(null);
   }
 
   /**

@@ -18,6 +18,7 @@ import { ContactService } from '../../core/services/contact.service';
 import { guestOrderLink, ShopService } from '../../core/services/shop.service';
 import { CartService } from '../../features/shop/cart.service';
 import { OrderReceiptComponent } from '../../features/shop/order-receipt/order-receipt.component';
+import { MoleculeComponent } from '../../features/shop/molecule/molecule.component';
 import { PendingPayment, rememberPayment, takePayment } from '../../features/shop/pending-payment';
 import {
   CATEGORY_FILTERS,
@@ -62,7 +63,13 @@ interface CartLine {
 @Component({
   selector: 'app-shop-page',
   standalone: true,
-  imports: [CategorySelectComponent, FitLineDirective, OrderReceiptComponent, RouterLink],
+  imports: [
+    CategorySelectComponent,
+    FitLineDirective,
+    MoleculeComponent,
+    OrderReceiptComponent,
+    RouterLink,
+  ],
   templateUrl: './shop-page.component.html',
   styleUrls: [
     '../../shared/secondary-page/secondary-page.css',

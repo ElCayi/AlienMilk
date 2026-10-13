@@ -5,6 +5,7 @@ import { map } from 'rxjs';
 
 import { ShopService } from '../../core/services/shop.service';
 import { CartService } from '../../features/shop/cart.service';
+import { MoleculeComponent } from '../../features/shop/molecule/molecule.component';
 import {
   CATEGORY_LABELS,
   formatPrice,
@@ -21,7 +22,7 @@ import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [FitLineDirective, RouterLink],
+  imports: [FitLineDirective, MoleculeComponent, RouterLink],
   templateUrl: './product-page.component.html',
   styleUrls: [
     '../../shared/secondary-page/secondary-page.css',

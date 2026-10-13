@@ -37,3 +37,94 @@
   color: var(--ink);
   font-weight: 700;
 }
+
+/* La columna de los importes, con la fiesta debajo cuando el pedido sigue adelante. */
+.receipt-side {
+  display: grid;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  min-width: 0;
+}
+
+/* La fiesta: una caja ancha donde cada pieza se sitúa por su centro (--x, --y). */
+.happy-party {
+  position: relative;
+  height: clamp(13rem, 19vw, 16rem);
+}
+
+.happy-minimilk,
+.happy-heart {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: calc(var(--size) * 1rem);
+  margin: calc(var(--size) * -0.5rem) 0 0 calc(var(--size) * -0.5rem);
+}
+
+/* Cuadradas, como el resto de minimilks: el SVG se estira a la caja en toda la web. La grande en
+   blanco leche; las de la ronda, grisitas. */
+.happy-minimilk {
+  aspect-ratio: 1;
+  background: var(--ink);
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
+}
+
+.happy-minimilk.is-small {
+  background: rgba(247, 248, 249, 0.34);
+}
+
+.happy-heart {
+  height: calc(var(--size) * 1rem);
+  fill: var(--coral);
+  opacity: 0.8;
+}
+
+/* Todas dan el mismo saltito de alegría, despacio y ladeándose, cada una con su desfase; los
+   corazones suben y se desvanecen. */
+@media (prefers-reduced-motion: no-preference) {
+  .happy-minimilk {
+    animation: happy-hop 2.6s ease-in-out var(--delay, 0s) infinite;
+  }
+
+  .happy-minimilk.is-small {
+    --hop: -0.45rem;
+  }
+
+  .happy-heart {
+    animation: happy-heart 3.6s ease-out var(--delay, 0s) infinite;
+  }
+}
+
+@keyframes happy-hop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  25% {
+    transform: translateY(var(--hop, -0.9rem)) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(0) rotate(3deg);
+  }
+
+  75% {
+    transform: translateY(var(--hop, -0.9rem)) rotate(0deg);
+  }
+}
+
+@keyframes happy-heart {
+  0% {
+    opacity: 0;
+    transform: translateY(0.6rem) scale(0.7);
+  }
+
+  25% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-1.8rem) scale(1.05);
+  }
+}

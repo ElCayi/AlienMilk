@@ -2,8 +2,8 @@
    la base de las páginas secundarias (shared/secondary-page/secondary-page.css), así que usan sus
    variables. */
 
-/* Muestra: el producto visto desde arriba, como una gota en su placa. El tono lo pone el producto
-   (data-tone, desde la base de datos); el borde, el fondo sobre el que está. */
+/* Muestra: el producto como un cultivo en su placa (features/shop/molecule). El tono lo pone el
+   producto (data-tone, desde la base de datos); la placa y la sombra, el fondo sobre el que está. */
 [data-tone] {
   --tone: #f1ece2;
   --tone-deep: #d6ccbb;
@@ -54,38 +54,14 @@
   --tone-deep: #c8b797;
 }
 
-.sample {
-  --sample-ring: rgba(40, 51, 58, 0.34);
-  position: relative;
-  display: block;
-  flex: none;
-  aspect-ratio: 1;
-  border: 1px solid var(--sample-ring);
-  border-radius: 50%;
-}
-
-.ink-card .sample,
-.secondary-stage .sample {
-  --sample-ring: rgba(247, 248, 249, 0.34);
-}
-
-/* El líquido y, encima, el reflejo de la luz en su superficie. */
-.sample::before,
-.sample::after {
-  content: '';
-  position: absolute;
-  inset: 14%;
-  border-radius: 50%;
-}
-
-.sample::before {
-  background: radial-gradient(circle at 50% 50%, var(--tone) 52%, var(--tone-deep));
-  box-shadow: inset 0 -0.3em 0.8em rgba(31, 41, 48, 0.14);
-}
-
-.sample::after {
-  background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0) 32%)
-    no-repeat;
+/* Sobre tinta: el aro claro, un fondo apenas más claro que ella y la sombra honda. */
+.ink-card app-molecule,
+.secondary-stage app-molecule {
+  --molecule-plate-fill: rgba(251, 246, 245, 0.04);
+  --molecule-plate-fill-deep: rgba(251, 246, 245, 0.04);
+  --molecule-plate-stroke: rgba(247, 248, 249, 0.3);
+  --molecule-shadow: #0d0b10;
+  --molecule-shadow-opacity: 0.55;
 }
 
 /* Precio y disponibilidad */

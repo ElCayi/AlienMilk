@@ -197,44 +197,17 @@
   text-decoration: none;
 }
 
-/* La muestra, en forma de cultivo (ver MOLECULES en el componente), con el tono del producto. */
+/* La muestra, en forma de cultivo (features/shop/molecule), con el tono del producto: la placa con
+   el aro claro de las muestras sobre tinta, un fondo apenas más claro que ella y la sombra honda. */
 .distribution-pick .molecule {
+  --molecule-plate-fill: rgba(251, 246, 245, 0.04);
+  --molecule-plate-fill-deep: rgba(251, 246, 245, 0.04);
+  --molecule-plate-stroke: rgba(247, 248, 249, 0.3);
+  --molecule-shadow: #0d0b10;
+  --molecule-shadow-opacity: 0.55;
   justify-self: start;
   width: clamp(7rem, 9vw, 9.5rem);
-  height: auto;
   margin-bottom: 0.35rem;
-  overflow: visible;
-}
-
-/* El filtro, sin sitio en la maqueta. */
-.distribution-defs {
-  position: absolute;
-  width: 0;
-  height: 0;
-}
-
-.molecule-tone {
-  stop-color: var(--tone);
-}
-
-.molecule-tone-deep {
-  stop-color: var(--tone-deep);
-}
-
-/* La placa, con el aro claro de las muestras sobre tinta y un fondo apenas más claro que ella. */
-.molecule-plate {
-  fill: rgba(251, 246, 245, 0.04);
-  stroke: rgba(247, 248, 249, 0.3);
-  stroke-width: 1;
-}
-
-.molecule-shadow {
-  fill: #0d0b10;
-  opacity: 0.55;
-}
-
-.molecule-shine {
-  fill: rgba(255, 255, 255, 0.7);
 }
 
 .distribution-pick-origin,
@@ -270,8 +243,7 @@
   outline-offset: 0.45rem;
 }
 
-/* El brote se aleja de la célula y vuelve, despacio, y el cuello se estira con él; las esporas
-   flotan. Al pasar el cursor, la muestra crece un poco, como los pasos de «Cómo colaborar». */
+/* Al pasar el cursor, la muestra crece un poco, como los pasos de «Cómo colaborar». */
 @media (prefers-reduced-motion: no-preference) {
   .distribution-pick .molecule {
     transition: transform 0.45s cubic-bezier(0.33, 0, 0.2, 1);
@@ -279,31 +251,6 @@
 
   .distribution-pick a:hover .molecule {
     transform: scale(1.06);
-  }
-
-  .molecule-bud {
-    animation: molecule-bud var(--bud-period, 8s) ease-in-out infinite alternate;
-  }
-
-  .molecule-spore {
-    animation: molecule-spore 5s ease-in-out infinite alternate;
-  }
-
-  .molecule-spore:nth-of-type(2n) {
-    animation-duration: 6.5s;
-    animation-delay: -2s;
-  }
-}
-
-@keyframes molecule-bud {
-  to {
-    transform: translate(var(--bud-x, 4px), var(--bud-y, -3px));
-  }
-}
-
-@keyframes molecule-spore {
-  to {
-    transform: translateY(-3px);
   }
 }
 

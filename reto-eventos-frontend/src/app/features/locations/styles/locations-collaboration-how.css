@@ -70,6 +70,9 @@
 
 .locations-collaboration-how-head p {
   font-size: var(--home-section-copy-size, 1.1rem);
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
 }
 
 .locations-collaboration-how-steps {
@@ -98,6 +101,11 @@
   border-radius: 50%;
   background: var(--how-image) center / cover no-repeat;
   box-shadow: 0 0 0 clamp(0.4rem, 0.7vw, 0.75rem) rgba(251, 246, 245, 0.08);
+  /* Es un botón: amplía la muestra. */
+  padding: 0;
+  border: 0;
+  font: inherit;
+  cursor: zoom-in;
 }
 
 .locations-collaboration-how-visual::before {
@@ -466,5 +474,234 @@
 @media (prefers-reduced-motion: reduce) {
   .locations-collaboration-how-drift span {
     animation: none;
+  }
+}
+
+/* Móvil y tableta: una subsección, no una tarjeta. Como la selección de Distribution, una banda de
+   tinta de borde a borde con las esquinas en diagonal y el blanco de antes y de después acabando en
+   curva sobre ella (arriba a la izquierda, abajo a la derecha). El texto, alineado con la página. */
+@media (max-width: 1000px) {
+  .locations-collaboration-how {
+    --how-join: 3.5rem;
+    position: relative;
+    /* La curva de arriba sube sobre el blanco y arranca justo al pie de la ficha anterior. */
+    margin-top: var(--how-join);
+    margin-inline: calc(50% - 50vw);
+    padding: 4.5rem calc(50vw - 50%) 6.25rem;
+    border-radius: 0 var(--how-join) 0 var(--how-join);
+  }
+
+  /* La banda cierra la sección: sin el relleno de debajo, que se sumaba al hueco entre secciones. */
+  :host(.locations-collaboration-section) .locations-atlas {
+    padding-bottom: 0;
+  }
+
+  /* Fuera de escritorio el fondo pinta la banda pero no estas curvas: se dejan ver aunque la hoja
+     global oculte los rellenos de las piezas de tinta (de ahí el selector más largo). */
+  .locations-atlas .locations-collaboration-how::before,
+  .locations-atlas .locations-collaboration-how::after {
+    content: '';
+    position: absolute;
+    width: var(--how-join);
+    /* Solapadas 3px con la banda: sin solape asoma una raya en la costura. */
+    height: calc(var(--how-join) + 3px);
+    visibility: visible;
+    pointer-events: none;
+  }
+
+  .locations-collaboration-how::before {
+    bottom: calc(100% - 3px);
+    left: 0;
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--how-join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--how-join)
+    );
+  }
+
+  .locations-collaboration-how::after {
+    top: calc(100% - 3px);
+    right: 0;
+    background: radial-gradient(
+      circle at 0 100%,
+      transparent calc(var(--how-join) - 0.5px),
+      var(--gallery-ink, #211e24) var(--how-join)
+    );
+  }
+}
+
+/* Móvil y tableta: los pasos, en un carrusel que se desliza con el dedo, como el planetario y la
+   selección de Distribution; debajo, los puntos. Cada paso en su tarjeta, apenas más clara que la
+   banda y con las esquinas en diagonal de las fichas: arriba, centrada, la muestra (al pulsarla se
+   amplía); debajo, el paso y el texto. */
+@media (max-width: 1000px) {
+  .locations-collaboration-how {
+    --how-orb: 8rem;
+  }
+
+  .locations-collaboration-how-steps {
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    gap: 1rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .locations-collaboration-how-steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .locations-collaboration-how-steps li {
+    box-sizing: border-box;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    justify-items: center;
+    row-gap: 0.75rem;
+    padding: 2.25rem 1.25rem 2rem;
+    border: 1px solid rgba(251, 246, 245, 0.14);
+    border-radius: 0.75rem 2.25rem;
+    background: rgba(251, 246, 245, 0.04);
+    scroll-snap-align: start;
+    /* Un píxel por lado: con anchos fraccionarios el carrusel se queda a medio píxel y perdía el
+       filo derecho. */
+    margin-inline: 1px;
+  }
+
+  .locations-collaboration-how-visual {
+    grid-row: auto;
+    margin-bottom: 1.1rem;
+  }
+
+  /* El paso, grande y en dos líneas, alineado con el texto (appFitLine lo dejaría en una, encogido). */
+  .locations-collaboration-how-steps li > strong {
+    justify-self: stretch;
+    font-size: 2.3rem !important;
+    line-height: 0.98;
+    white-space: normal !important;
+  }
+
+  .locations-collaboration-how-steps li > strong span {
+    display: block;
+  }
+
+  .locations-collaboration-how-steps li > p {
+    justify-self: stretch;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
+  }
+
+  /* En táctil, el crecimiento del cursor se quedaba pegado tras el toque. */
+  .locations-collaboration-how-steps li:hover,
+  .locations-collaboration-how-steps li:hover .locations-collaboration-how-visual {
+    transform: none;
+  }
+
+  .locations-collaboration-how-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: -0.75rem;
+  }
+
+  /* El enlace final, centrado bajo los puntos y bien separado de ellos (con la cabecera, de la que
+     cuelga, que anula los márgenes de sus párrafos). */
+  .locations-collaboration-how-head .locations-collaboration-how-close {
+    justify-items: center;
+    margin-top: 3rem;
+  }
+
+  .locations-collaboration-how-pagination button {
+    width: 0.82rem;
+    height: 0.82rem;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 1px solid rgba(251, 246, 245, 0.5);
+    border-radius: 999px;
+    background: rgba(251, 246, 245, 0.14);
+    cursor: pointer;
+    transition:
+      width 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      background-color 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .locations-collaboration-how-pagination button.is-active {
+    width: 2.45rem;
+    border-color: #fbf6f5;
+    background: #fbf6f5;
+  }
+
+  .locations-collaboration-how-pagination button:focus-visible {
+    outline: 2px solid #ff7f7f;
+    outline-offset: 0.2rem;
+  }
+}
+
+@media (min-width: 1001px) {
+  .locations-collaboration-how-pagination {
+    display: none;
+  }
+}
+
+/* La muestra ampliada, con su círculo, su halo y su número: la misma composición, agrandada entera
+   (zoom), sobre la página oscurecida. La muestra es el botón de cerrar; fuera de ella, cierra el
+   propio diálogo (closedby). */
+.locations-collaboration-how-zoom {
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.locations-collaboration-how-zoom::backdrop {
+  background: rgba(13, 11, 16, 0.85);
+}
+
+.locations-collaboration-how-zoom button {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-out;
+}
+
+.locations-collaboration-how-zoom .locations-collaboration-how-visual {
+  --how-orb: 8rem;
+  display: block;
+  margin: 0;
+  zoom: 2.4;
+  cursor: inherit;
+}
+
+@media (min-width: 1001px) {
+  .locations-collaboration-how-zoom .locations-collaboration-how-visual {
+    zoom: 3.6;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .locations-collaboration-how-zoom[open] button {
+    animation: how-zoom-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+@keyframes how-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* Móvil y tableta: la invitación, más grande que el mínimo de su escala; cierra la sección junto a
+   títulos mucho mayores. Igual que «Descubrir la tienda» en Distribution. */
+@media (max-width: 1000px) {
+  .locations-collaboration-how-start {
+    padding: 1rem 1.75rem;
+    font-size: 1.35rem;
   }
 }

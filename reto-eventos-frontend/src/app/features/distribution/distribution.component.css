@@ -471,6 +471,11 @@
     border-radius: 0 var(--picks-join) 0 var(--picks-join);
   }
 
+  /* Aire entre el texto y la curva con que el blanco acaba sobre la banda. */
+  .distribution-copy {
+    padding-bottom: 0.75rem;
+  }
+
   .distribution-ad {
     margin-inline: calc(50% - 50vw);
     /* Más aire entre la foto y el rótulo de la selección. */
@@ -609,5 +614,14 @@
 @media (min-width: 1001px) {
   .distribution-picks-pagination {
     display: none;
+  }
+}
+
+/* Móvil y tableta: el enlace a la tienda, más grande que el mínimo de su escala; cierra la sección
+   junto a títulos mucho mayores. Igual que «Cuéntenos su propuesta» en Collaborators. */
+@media (max-width: 1000px) {
+  .distribution-cta {
+    padding: 1rem 1.75rem;
+    font-size: 1.35rem;
   }
 }

@@ -243,7 +243,7 @@
   }
 
   :host(:not(.locations-collaboration-section)) .locations-copy {
-    padding-block: 3.25rem 3.5rem;
+    padding-block: 3.25rem 2.25rem;
     background: transparent;
   }
 
@@ -279,6 +279,11 @@
     border-radius: 0;
     background: transparent;
   }
+
+  /* El enlace a la documentación, bien separado de la lista de operadores. */
+  :host(:not(.locations-collaboration-section)) .locations-brief-cta-external {
+    margin-top: 3rem;
+  }
 }
 
 @media (min-width: 1001px) {
@@ -293,5 +298,51 @@
   .location-node:hover .location-marker > span,
   .location-node:focus-within .location-marker > span {
     scale: none;
+  }
+}
+
+/* Móvil y tableta: «Antes de su visita» con más aire entre bloques (pasos, aviso, operadores y
+   enlace) y la letra al tamaño de las demás secciones: con la de escritorio, el rótulo, el aviso y
+   los operadores se quedaban en 11-14 px. */
+@media (max-width: 1000px) {
+  :host(:not(.locations-collaboration-section)) .locations-brief {
+    gap: 2.25rem;
+  }
+
+  /* El rótulo y el título, juntos, como en las demás cabeceras. */
+  :host(:not(.locations-collaboration-section)) .locations-brief h3 {
+    margin-top: -1.25rem;
+    font-size: 2.6rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-code,
+  :host(:not(.locations-collaboration-section)) .locations-brief-operators legend {
+    font-size: 0.8rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-time {
+    font-size: 1.25rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-body {
+    font-size: 1.05rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-step-number {
+    font-size: 0.85rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief > .locations-brief-disclaimer {
+    /* Con !important: la hoja de la ficha fija el del aviso así. */
+    font-size: 1rem !important;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-operators dt,
+  :host(:not(.locations-collaboration-section)) .locations-operator-link {
+    font-size: 1.05rem;
+  }
+
+  :host(:not(.locations-collaboration-section)) .locations-brief-cta-external {
+    font-size: 1.35rem;
   }
 }

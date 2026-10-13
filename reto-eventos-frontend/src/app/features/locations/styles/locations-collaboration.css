@@ -27,7 +27,9 @@
 
 /* Los titulares de las columnas, con la letra de «Cómo colaborar», en una línea y al mismo cuerpo
    (el que deja entero el más largo); el remate, en coral. */
-.locations-collaboration-columns p.locations-collaboration-perks {
+.locations-collaboration-perks {
+  display: block;
+  min-width: 0;
   margin: 0 0 0.9rem;
   font: 400 clamp(1.75rem, 2.6vw, 3.3rem) / 1 'Barlow Condensed', 'Arial Narrow', sans-serif;
   text-align: left;
@@ -36,6 +38,27 @@
 
 .locations-collaboration-perks span {
   color: #ff7f7f;
+}
+
+/* Cada columna, un desplegable con el titular por resumen. En escritorio, siempre abierto: el
+   titular no despliega nada. */
+.locations-collaboration-columns summary {
+  display: block;
+  list-style: none;
+}
+
+.locations-collaboration-columns summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (min-width: 1001px) {
+  .locations-collaboration-columns details::details-content {
+    content-visibility: visible;
+  }
+
+  .locations-collaboration-columns summary {
+    pointer-events: none;
+  }
 }
 
 /* Cada columna: el titular y dos párrafos, con aire entre ellos. */
@@ -197,6 +220,11 @@
     border-radius: 1rem 3.5rem;
   }
 
+  /* Entre el pie de foto y las fichas del gancho, poco más que entre las fichas. */
+  .locations-collaboration-columns {
+    margin-top: 0.75rem;
+  }
+
   .locations-collaboration-team img {
     aspect-ratio: 5 / 6;
     border-radius: 0;
@@ -209,6 +237,118 @@
     margin: 0;
     /* Abajo, más relleno: la curva amplia de la esquina izquierda no muerde la última línea. */
     padding: 0.9rem 1.25rem 1.4rem;
+    /* A la izquierda, alineada con el texto de la página: su margen es 12vw (la página mide 76vw) y
+       la foto ya sale de él hasta la columna fina; menos el filo coral, más grueso que en escritorio. */
+    padding-left: calc(12vw - var(--team-rim) - 4px);
+    border-left-width: 4px;
+    /* La tinta de las fichas de debajo, no el azulado de escritorio. */
+    background: var(--gallery-ink, #211e24);
     font-size: 0.66rem;
+  }
+}
+
+/* Móvil y tableta: el gancho, en dos fichas con la forma de la foto, plegadas: solo el titular y el
+   «+» redondo del planetario; al pulsar, se despliega el texto. La primera, blanca con el filo de
+   tinta de las tarjetas de sesiones; la segunda, el reclamo, en tinta como «Cómo colaborar». En
+   cada titular, la primera parte pequeña y el remate debajo, grande y en coral: «comunidad.» y,
+   sobre todo, «Gratis.». El texto, alineado con el de la página. */
+@media (max-width: 1000px) {
+  .locations-collaboration-columns {
+    --card-rim: 0.75rem;
+    --card-edge: 2px;
+    gap: 1.25rem;
+  }
+
+  .locations-collaboration-columns > details {
+    box-sizing: border-box;
+    width: calc(100vw - 2 * var(--card-rim));
+    margin-inline: calc(50% - 50vw + var(--card-rim)) 0;
+    padding: 2rem calc(12vw - var(--card-rim) - var(--card-edge)) 2.25rem;
+    border: var(--card-edge) solid var(--gallery-ink, #211e24);
+    border-radius: 1rem 3.5rem;
+  }
+
+  .locations-collaboration-columns > details:last-child {
+    --card-line: #fbf6f5;
+    color: rgba(251, 246, 245, 0.82);
+    background: var(--gallery-ink, #211e24);
+  }
+
+  .locations-collaboration-columns > details:last-child strong {
+    color: #fbf6f5;
+  }
+
+  /* El titular y, a su derecha, a la altura del remate, el botón. */
+  .locations-collaboration-columns summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+    cursor: pointer;
+  }
+
+  .locations-collaboration-columns summary::after {
+    content: '';
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-bottom: 0.35rem;
+    color: var(--card-line, #394654);
+    background-image:
+      linear-gradient(currentColor, currentColor),
+      linear-gradient(currentColor, currentColor);
+    background-size: 36% 1.5px, 1.5px 36%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    opacity: 0.75;
+    transition: background-size 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .locations-collaboration-columns details[open] summary::after {
+    background-size: 36% 1.5px, 0 36%;
+  }
+
+  .locations-collaboration-columns summary:focus-visible {
+    outline: 2px solid #ff7f7f;
+    outline-offset: 0.4rem;
+  }
+
+  .locations-collaboration-perks {
+    margin-bottom: 0;
+    font-size: 1.6rem;
+    line-height: 1.05;
+  }
+
+  .locations-collaboration-columns > details:last-child .locations-collaboration-perks {
+    color: #fbf6f5;
+  }
+
+  .locations-collaboration-perks span {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 3.6rem;
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+  }
+
+  .locations-collaboration-columns > details:last-child .locations-collaboration-perks span {
+    font-size: 4.6rem;
+  }
+
+  .locations-collaboration-body {
+    padding-top: 1.25rem;
+  }
+
+  .locations-collaboration-columns details[open] .locations-collaboration-body {
+    animation: locations-collaboration-open 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+@keyframes locations-collaboration-open {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
   }
 }

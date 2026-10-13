@@ -69,7 +69,55 @@ Comprobado el 11 de octubre tras actualizar `origin`:
 3. **Imágenes:** subir `alienmilk-distribution-gallery.webp`. Las cuatro `alienmilk-closing-*.webp`
    siguen sin usarse y fuera de los commits.
 
-## Pendiente, de antes
+## Tanda del 12 y 13 de octubre: la portada en móvil
 
-En móvil, a 390 px, los párrafos de Localizaciones y Collaborators (el mismo componente) son unos
-39 px más anchos que la pantalla y se cortan por la derecha.
+Commits `592cef2` y el siguiente, sobre `650e01b`. Comprobado el 13 de octubre:
+- `pnpm check` en verde (lint, 29 pruebas y build).
+- `origin/main` sigue en `e3eedad`.
+- `git merge-tree --write-tree` no da conflictos con `origin/clos` (`415bc4f`) ni con
+  `origin/MegaClos` (`ff504f7`).
+
+Todo es de móvil y tableta (hasta 1000 px, algunas cosas hasta 600). El escritorio no cambia, salvo
+donde se dice.
+
+### Lenguaje común
+
+- **Bandas de tinta de borde a borde** con las esquinas en diagonal y uniones en curva (el blanco
+  acaba en curva arriba a la izquierda; la tinta baja en curva abajo a la derecha). Las uniones son
+  pseudoelementos con `radial-gradient`, solapados 1–3 px con la banda. Las hojas globales ocultan
+  los rellenos de `[data-backdrop-ink-filler]`, así que van con un selector más largo.
+  - Localizaciones, la selección de Distribution, «Cómo colaborar» y la franja de la red de
+    confianza (distinciones, cinta de socios y cifras).
+- **Carruseles nativos** con scroll-snap y puntos debajo: sesiones, planetario, productos de
+  Distribution y pasos de «Cómo colaborar».
+- **Aire estándar en móvil:** unos 50 px entre texto y bloque.
+
+### Por sección
+
+- **Héroe:** los iconos responden al toque; «Copiar enlace» destella en blanco como el corazón.
+- **Próximas sesiones:** una ficha por sesión en una pista deslizable, con el marco de escritorio, la
+  ficha técnica plegada (botón «Características») y el enlace «Explorar todas las sesiones» al final.
+- **Localizaciones:** banda de tinta; el planetario en una ventana blanca, en carrusel, con los datos
+  plegados de las demás estaciones al cambiar; «Antes de su visita» con más aire y letra mayor.
+- **Distribution:** la selección en banda de tinta y en carrusel; la foto se funde arriba y abajo.
+- **Collaborators:**
+  - La foto del equipo, 5:6, con la forma de la ventana del planetario y el pie pegado debajo.
+  - El gancho, en dos fichas plegables (`<details>`): «comunidad.» en blanca y «Gratis.» en tinta.
+    En escritorio siguen abiertas siempre (`::details-content`).
+  - «Cómo colaborar»: los pasos en tarjetas, en carrusel, con el título en dos líneas. Al pulsar la
+    muestra se amplía en un `<dialog>` (en móvil y en escritorio).
+  - **Texto:** el subtítulo pasa a «Participar es muy sencillo.» (también en escritorio).
+- **Red de confianza:** la destacada, centrada y más grande; el palmarés, con franjas a su alto; la
+  cinta de socios, sobre la textura líquida como imagen fija (en móvil el fondo animado no se pinta).
+- **Botones de cierre** («Descubrir la tienda», «Cuéntenos su propuesta.», «Consultar
+  documentación»): a 1,35rem.
+
+### Después del merge, comprobar
+
+1. **`/` a 390 y a 768:** que las curvas de las bandas casen sin rayas y que los carruseles lleguen
+   al último elemento con su filo entero.
+2. **`/` en escritorio (1536×750):** Collaborators con las dos columnas abiertas y «Cómo colaborar» sin
+   puntos ni tarjetas.
+3. **Imágenes:** las cuatro `alienmilk-closing-*.webp` siguen sin usarse y fuera de los commits.
+4. **Safari:** el `<dialog>` de las muestras se cierra pulsando la imagen; pulsando fuera
+   (`closedby`) solo en Chrome y Firefox.

@@ -44,6 +44,11 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
   private stationFrame = 0;
   /** La estación centrada en el carrusel de móvil y tableta. */
   readonly activeStation = signal(0);
+  private stepFrame = 0;
+  /** El paso de «Cómo colaborar» a la vista en el carrusel de móvil y tableta. */
+  readonly activeStep = signal(0);
+  /** El paso cuya muestra se ve ampliada en su diálogo. */
+  readonly zoomedStep = signal<number | null>(null);
   @Input() stations: Estacion[] = [];
   @Input() loading = false;
   @Input() collaborationMode = false;
@@ -142,6 +147,7 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
       .querySelector('.locations-chart')
       ?.removeEventListener('toggle', this.revealPanel, true);
     cancelAnimationFrame(this.stationFrame);
+    cancelAnimationFrame(this.stepFrame);
     this.deployObserver?.disconnect();
     this.panelObserver?.disconnect();
     clearTimeout(this.revealTimer);
@@ -188,6 +194,41 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
           data.open = false;
         }
       });
+    });
+  }
+
+  /** Amplía la muestra de un paso en su diálogo. */
+  zoomStep(dialog: HTMLDialogElement, step: number): void {
+    this.zoomedStep.set(step);
+    dialog.showModal();
+  }
+
+  /** Lleva el carrusel de «Cómo colaborar» al paso elegido en los puntos. */
+  showStep(index: number): void {
+    const list = this.host.nativeElement.querySelector<HTMLElement>('.locations-collaboration-how-steps');
+    const steps = list ? [...list.children] as HTMLElement[] : [];
+    if (!list || !steps[index]) {
+      return;
+    }
+
+    list.scrollTo({
+      left: steps[index].offsetLeft - steps[0].offsetLeft,
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    });
+  }
+
+  // El paso activo, el que más asoma en el carrusel; cada uno ocupa todo el ancho.
+  trackActiveStep(): void {
+    cancelAnimationFrame(this.stepFrame);
+    this.stepFrame = requestAnimationFrame(() => {
+      const list = this.host.nativeElement.querySelector<HTMLElement>('.locations-collaboration-how-steps');
+      const first = list?.firstElementChild as HTMLElement | null;
+      const second = first?.nextElementSibling as HTMLElement | null;
+      if (!list || !first || !second) {
+        return;
+      }
+
+      this.activeStep.set(Math.round(list.scrollLeft / (second.offsetLeft - first.offsetLeft)));
     });
   }
 

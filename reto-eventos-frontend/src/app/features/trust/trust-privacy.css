@@ -309,6 +309,46 @@
   .trust-voices-list > li {
     scroll-snap-align: start;
   }
+
+  /* Una sola cita a la vista: más grande, y su código algo mayor, como los rótulos de la franja. */
+  .trust-voices-list blockquote {
+    font-size: 1.75rem;
+  }
+
+  .trust-voice-by {
+    font-size: 0.78rem;
+  }
+
+  /* Bajo la barra, más aire hasta el rótulo de la discreción: con 3rem quedaba pegado. */
+  .trust-voices + .trust-privacy {
+    padding-top: 5rem;
+  }
+
+  /* El título de la discreción, que se lea como título: grande, en varias líneas justificadas, en
+     vez de encogerse para caber en una (la directiva de ajuste escribe en el estilo; de ahí el
+     !important). */
+  .trust-privacy h3 {
+    font-size: 2.3rem !important;
+    white-space: normal !important;
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  /* La frase de cierre, en una tarjeta blanca con el filo de tinta de las de Collaborators, y en
+     tinta: el coral sobre el blanco se leía mal. Abajo, el aire estándar hasta los compromisos (que
+     suman su margen de 1,25rem). */
+  .trust-privacy-close {
+    margin-top: 0.5rem;
+    margin-bottom: 1.75rem;
+    padding: 1.5rem 1.5rem 1.6rem;
+    border: 2px solid var(--gallery-ink, #211e24);
+    border-radius: 0.75rem 2.25rem;
+    color: var(--gallery-ink, #211e24);
+    font-size: 1.2rem;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
+  }
 }
 
 /* En móvil estrecho, el paso de página no cabe junto al rótulo: va bajo la cita, con la página a

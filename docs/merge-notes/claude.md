@@ -121,3 +121,18 @@ donde se dice.
 3. **Imágenes:** las cuatro `alienmilk-closing-*.webp` siguen sin usarse y fuera de los commits.
 4. **Safari:** el `<dialog>` de las muestras se cierra pulsando la imagen; pulsando fuera
    (`closedby`) solo en Chrome y Firefox.
+
+## Tarde del 13 de octubre: final de la portada en móvil
+
+- **Cinta de socios:** sin rayas (en móvil la tinta la pinta el CSS, no el fondo líquido), con un
+  velo oscuro leve bajo las marcas; «El resto prefiere no figurar», debajo de la cinta y entre dos
+  barras (≤600).
+- **Experiencias:** citas a 1,75rem y firma a 0,78rem (≤1000).
+- **Discreción:** título a 2,3rem, justificado y en varias líneas; la frase de cierre, en tarjeta
+  blanca con filo de tinta (≤1000).
+- **Cierre (`app-closing-cta`):** en la portada, de borde a borde, en la tinta del pie y pegado a
+  él, con la curva de entrada de las bandas; la imagen remata la página, recortada por los lados y
+  fundida bajo el texto (≤800). La tarjeta compartida gana variables (`--closing-cta-bleed`,
+  `-pad-x`, `-radius`, `-shadow`, `-ink`, `-stack-image`, `-stack-focus`, `-stack-overlap`,
+  `-stack-fade`) con sus valores de siempre por defecto: Sesiones no cambia.
+- **Comprobar tras el merge:** el cierre de `/sesiones` en móvil sigue igual.

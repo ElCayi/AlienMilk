@@ -132,7 +132,7 @@
 
       <p class="trust-reel-caption">
         <span appFitLine>Socios acreditados · Selección pública</span>
-        <span appFitLine>El resto prefiere no figurar</span>
+        <span class="trust-reel-rest" appFitLine>El resto prefiere no figurar</span>
       </p>
     </div>
     <div class="trust-reel-window" data-backdrop-ink="window">
@@ -156,6 +156,7 @@
     </div>
 
     <div class="trust-reel-ink" data-backdrop-ink="notch-bottom">
+      <p class="trust-reel-aside" aria-hidden="true">El resto prefiere no figurar</p>
       <dl class="trust-figures">
         @for (figure of figures(); track figure.label) {
           <div>

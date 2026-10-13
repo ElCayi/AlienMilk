@@ -6,16 +6,17 @@
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
   align-items: center;
-  margin: 0;
-  padding: clamp(3rem, 6vw, 5.5rem) clamp(1.75rem, 5.5vw, 5.5rem);
+  /* Quien la usa puede sacarla de su columna y darle otras esquinas (la portada, en móvil). */
+  margin: 0 var(--closing-cta-bleed, 0);
+  padding: clamp(3rem, 6vw, 5.5rem) var(--closing-cta-pad-x, clamp(1.75rem, 5.5vw, 5.5rem));
   overflow: hidden;
-  border-radius: 1.25rem;
+  border-radius: var(--closing-cta-radius, 1.25rem);
   color: #f1ecef;
   font-family: Arial, sans-serif;
   /* Su tinta, la que pinta el fondo de la portada en su lugar (data-backdrop-ink). */
-  --backdrop-ink: #050d16;
-  background: #050d16;
-  box-shadow: 0 24px 60px rgba(13, 21, 30, 0.35);
+  --backdrop-ink: var(--closing-cta-ink, #050d16);
+  background: var(--closing-cta-ink, #050d16);
+  box-shadow: var(--closing-cta-shadow, 0 24px 60px rgba(13, 21, 30, 0.35));
 }
 
 /* La imagen (el astronauta en Sesiones), a la derecha y entera: se funde por su borde con el fondo de
@@ -141,7 +142,11 @@
 @media (max-width: 800px) {
   .closing-cta {
     grid-template-columns: 1fr;
-    padding-bottom: 21rem;
+    /* Quien la usa puede darle a la imagen otro alto, otro encuadre, otro fundido y meterla más
+       bajo el texto (la portada). */
+    padding-bottom: calc(
+      var(--closing-cta-stack-image, 22rem) - var(--closing-cta-stack-overlap, 1rem)
+    );
   }
 
   /* En una columna, el texto ocupa el ancho de la tarjeta en vez del del título. */
@@ -152,10 +157,10 @@
   .closing-cta::before {
     top: auto;
     left: 0;
-    height: 22rem;
+    height: var(--closing-cta-stack-image, 22rem);
     aspect-ratio: auto;
-    background-position: 80% bottom;
-    mask: linear-gradient(180deg, transparent 0%, #000 45%);
+    background-position: var(--closing-cta-stack-focus, 80% bottom);
+    mask: linear-gradient(180deg, var(--closing-cta-stack-fade, transparent 0%, #000 45%));
     mask-composite: add;
   }
 }

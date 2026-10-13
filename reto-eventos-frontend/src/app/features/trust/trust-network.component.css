@@ -1172,7 +1172,7 @@
     --reel-join: 3.5rem;
     margin-inline: calc(50% - 50vw);
     /* Las curvas salen por encima y por debajo: el margen las separa del texto, apenas por arriba. */
-    margin-block: calc(var(--reel-join) - 0.5rem) calc(var(--reel-join) + 3rem);
+    margin-block: calc(var(--reel-join) - 0.5rem) calc(var(--reel-join) + 0.875rem);
     border-radius: 0;
     /* Solo a lo ancho: el halo de la medalla no ensancha la página, y las curvas salen por arriba y
        por abajo. */
@@ -1200,13 +1200,23 @@
     border-block: 0;
   }
 
+  /* La tinta de la franja la pinta su CSS, no el fondo líquido: este la dibuja en tres tramos, a
+     media resolución, y en las juntas asomaban rayas claras (de ahí el selector más largo, que pesa
+     más que la hoja global). */
+  .trust .trust-reel-ink,
+  .trust .trust-reel-window {
+    background: var(--gallery-ink, #211e24);
+  }
+
   .trust .trust-reel-window::before {
     content: '';
     position: absolute;
     inset: 0 0.75rem;
     border-radius: 1rem;
-    /* Algo más de tinta que en escritorio: la textura fija, sin el líquido, distraía. */
+    /* Algo más de tinta que en escritorio: la textura fija, sin el líquido, distraía. Encima, un
+       velo oscuro muy leve, por debajo de las marcas. */
     background:
+      linear-gradient(rgba(13, 11, 16, 0.2), rgba(13, 11, 16, 0.2)),
       linear-gradient(rgba(33, 30, 36, 0.66), rgba(33, 30, 36, 0.66)),
       url('/alienmilk-showcase-texture.webp') center / cover;
     pointer-events: none;
@@ -1222,7 +1232,7 @@
   }
 
   .trust-reel-ink:last-child {
-    padding-bottom: 4.5rem;
+    padding-bottom: 3rem;
     border-radius: 0 0 0 var(--reel-join);
   }
 
@@ -1383,6 +1393,8 @@
 
   .trust-reel-caption {
     font-size: 0.78rem;
+    /* Bajo la barra, algo más de aire: con 1,4rem el rótulo quedaba pegado. */
+    padding-top: 2rem;
     text-align: center;
   }
 
@@ -1394,5 +1406,37 @@
     font-size: 1.05rem !important;
     white-space: normal !important;
     text-wrap: balance;
+  }
+}
+
+/* Móvil estrecho: los dos rótulos de la cinta no van juntos encima; «El resto prefiere no figurar»,
+   debajo de ella, como remate. El de abajo es el mismo texto: el de arriba queda para los lectores
+   de pantalla. */
+.trust-reel-aside {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .trust-reel-caption .trust-reel-rest {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .trust-reel-aside {
+    display: block;
+    margin: 1.25rem 0 0;
+    /* Debajo, una barra como la de encima del otro rótulo, con el mismo aire: la cinta queda entre
+       las dos. */
+    padding-bottom: 2rem;
+    border-bottom: 2px solid rgba(251, 246, 245, 0.2);
+    color: rgba(251, 246, 245, 0.6);
+    font: 800 0.78rem / normal 'Nunito', sans-serif;
+    letter-spacing: 0.14em;
+    text-align: center;
+    text-transform: uppercase;
   }
 }

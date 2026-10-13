@@ -272,6 +272,9 @@ export interface Pedido {
   total: number;
   creadoEn: string;
   anuladoEn: string | null;
+  /** Cuándo salió del centro de distribución y cuándo se entregó (o se recogió en la sede). */
+  enviadoEn?: string;
+  entregadoEn?: string;
   lineas: LineaPedido[];
   /** Pedido sin cuenta: se abre con su enlace privado, no está en ningún historial. */
   invitado: boolean;
@@ -281,4 +284,20 @@ export interface Pedido {
   pagoCaducaEn?: string;
   /** La clave del enlace privado. Solo llega una vez, al crear un pedido de invitado. */
   clave?: string;
+}
+
+/**
+ * Un pedido visto desde el centro de distribución (/admin). `siguiente` es el paso que le toca y
+ * `anulable`, si aún se puede anular: las reglas las decide el servidor.
+ */
+export interface PedidoAdmin {
+  pedido: Pedido;
+  /** Usuario de la cuenta; vacío en los pedidos de invitado. */
+  cuenta: string | null;
+  correo: string | null;
+  /** Cuándo se cobró con tarjeta; vacío en la tienda de demostración. */
+  pagadoEn: string | null;
+  reembolsado: boolean;
+  siguiente: Extract<EstadoPedido, 'ENVIADO' | 'ENTREGADO'> | null;
+  anulable: boolean;
 }

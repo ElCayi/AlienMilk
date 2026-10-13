@@ -29,8 +29,29 @@ Stripe                    ──▶ POST /api/tienda/pagos/aviso           aviso
   6 unidades por producto son constantes del servicio. Llegan al frontend con el catálogo, que las
   anuncia sin tenerlas duplicadas.
 - **Anulación.** Un pedido pendiente de pago o `CONFIRMADO` se puede anular, desde el historial o
-  desde el enlace privado, y sus unidades vuelven al almacén (ver el cobro, más abajo). Los estados `ENVIADO` y `ENTREGADO` existen para un
-  futuro panel de administración.
+  desde el enlace privado, y sus unidades vuelven al almacén (ver el cobro, más abajo). Cuando sale
+  del centro de distribución ya no se puede anular.
+
+## Gestión de pedidos (/admin → Pedidos)
+
+El centro de distribución lleva cada pedido pagado hasta su entrega:
+
+```
+CONFIRMADO ──Marcar enviado──▶ ENVIADO ──Marcar entregado──▶ ENTREGADO     (envío refrigerado)
+CONFIRMADO ──Marcar recogido─────────────────────────────▶ ENTREGADO     (recogida en la sede)
+CONFIRMADO / PENDIENTE_PAGO ──Anular──▶ ANULADO   (con devolución si se cobró)
+```
+
+- **Las reglas, en el servidor.** `GET /api/admin/pedidos` devuelve cada pedido con `siguiente` (el
+  paso que le toca, o vacío) y `anulable`; el panel solo enseña esos botones. `PATCH
+  /api/admin/pedidos/{id}` con `{"estado": "ENVIADO"}` da un paso, y responde 409 si no es el que
+  toca: no se puede saltar ni volver atrás. Cada cambio bloquea antes la fila, como el cobro.
+- **Fechas.** `enviado_en` y `entregado_en` se guardan con el paso, y el resguardo del cliente las
+  muestra («Ha salido del centro de distribución el 13 de octubre…»).
+- **Anular desde el admin** (`POST /api/admin/pedidos/{id}/anulacion`) es la misma anulación del
+  cliente: cierra la página de pago o devuelve el cobro, y las unidades vuelven al almacén.
+- **Bandejas:** por preparar, en camino, pendientes de pago, cerrados y todos. Cada tarjeta lleva
+  el comprador (cuenta o invitado), su correo para escribirle, la entrega, los productos y el cobro.
 
 ## Cobro con Stripe Checkout
 
@@ -111,9 +132,13 @@ con una fila en `productos`:
 
 ## Base de datos
 
-Aplicar, en este orden y en cualquier base existente (las tres son idempotentes):
+Aplicar, en este orden y en cualquier base existente (las cuatro son idempotentes):
 
 1. `reto-eventos-backend/migraciones/2026-10-09-tienda.sql`: crea `productos`, `pedidos` y
    `lineas_pedido` con el catálogo inicial.
-. `reto-eventos-backend/migraciones/2026-10-12-tienda-pagos.sql`: estado `PENDIENTE_PAGO` y los
+2. `reto-eventos-backend/migraciones/2026-10-10-tienda-invitados.sql`: pedidos sin usuario, con
+   nombre, correo y huella de la clave.
+3. `reto-eventos-backend/migraciones/2026-10-12-tienda-pagos.sql`: estado `PENDIENTE_PAGO` y los
    datos del cobro (sesión, plazo, pago y reembolso).
+4. `reto-eventos-backend/migraciones/2026-10-13-tienda-envios.sql`: cuándo salió y cuándo se
+   entregó cada pedido.

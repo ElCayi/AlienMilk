@@ -14,6 +14,7 @@ import {
   UsuarioPayload,
 } from '../../models/api.models';
 import { AdminContactPanelComponent } from './panels/admin-contact-panel.component';
+import { AdminOrdersPanelComponent } from './panels/admin-orders-panel.component';
 import { AdminProfilesPanelComponent } from './panels/admin-profiles-panel.component';
 import { AdminRequestsPanelComponent } from './panels/admin-requests-panel.component';
 import { AdminSessionsPanelComponent } from './panels/admin-sessions-panel.component';
@@ -32,6 +33,7 @@ import { AdminUsersPanelComponent } from './panels/admin-users-panel.component';
     AdminProfilesPanelComponent,
     AdminContactPanelComponent,
     AdminRequestsPanelComponent,
+    AdminOrdersPanelComponent,
   ],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css',
@@ -46,9 +48,9 @@ export class AdminPageComponent implements OnInit {
   readonly tipos = signal<TipoEvento[]>([]);
   readonly perfiles = signal<Perfil[]>([]);
   readonly feedback = signal('');
-  readonly activeTab = signal<'sesiones' | 'usuarios' | 'tipos' | 'perfiles' | 'contacto' | 'solicitudes'>('sesiones');
+  readonly activeTab = signal<'sesiones' | 'usuarios' | 'tipos' | 'perfiles' | 'contacto' | 'solicitudes' | 'pedidos'>('sesiones');
 
-  setTab(tab: 'sesiones' | 'usuarios' | 'tipos' | 'perfiles' | 'contacto' | 'solicitudes'): void {
+  setTab(tab: 'sesiones' | 'usuarios' | 'tipos' | 'perfiles' | 'contacto' | 'solicitudes' | 'pedidos'): void {
     this.activeTab.set(tab);
     this.feedback.set('');
   }

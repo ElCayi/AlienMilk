@@ -114,6 +114,14 @@ public class Pedido {
 	@Column(name = "reembolso_id")
 	private String reembolsoId;
 
+	/** Cuándo salió del centro de distribución (solo envíos). */
+	@Column(name = "enviado_en")
+	private LocalDateTime enviadoEn;
+
+	/** Cuándo llegó a su destino o se recogió en la sede. */
+	@Column(name = "entregado_en")
+	private LocalDateTime entregadoEn;
+
 	@Builder.Default
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("idLinea")

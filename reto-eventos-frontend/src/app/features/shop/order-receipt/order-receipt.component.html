@@ -14,10 +14,15 @@
           El pedido se ha anulado y sus unidades han vuelto al centro de distribución.
         }
         @case ('ENVIADO') {
-          Ha salido del centro de distribución en cadena de frío hacia <b>{{ pedido.direccion }}</b>.
+          Ha salido del centro de distribución@if (pedido.enviadoEn) { el <b>{{ date(pedido.enviadoEn) }}</b>}, en
+          cadena de frío, hacia <b>{{ pedido.direccion }}</b>.
         }
         @case ('ENTREGADO') {
-          Entregado. Que lo disfrute.
+          @if (pedido.entrega === 'RECOGIDA') {
+            Recogido en la sede@if (pedido.entregadoEn) { el {{ date(pedido.entregadoEn) }}}. Que lo disfrute.
+          } @else {
+            Entregado@if (pedido.entregadoEn) { el {{ date(pedido.entregadoEn) }}}. Que lo disfrute.
+          }
         }
         @default {
           @if (pedido.entrega === 'RECOGIDA') {

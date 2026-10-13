@@ -3,9 +3,11 @@ package retotransversal.modelo.service;
 import java.util.List;
 
 import retotransversal.modelo.dto.CatalogoTiendaDto;
+import retotransversal.modelo.dto.PedidoAdminDto;
 import retotransversal.modelo.dto.PedidoCrearDto;
 import retotransversal.modelo.dto.PedidoDto;
 import retotransversal.modelo.dto.ProductoDto;
+import retotransversal.modelo.entities.EstadoPedido;
 
 public interface TiendaService {
 
@@ -43,4 +45,16 @@ public interface TiendaService {
 
 	/** Pone al día el pago de un pedido preguntando a la pasarela, por si no llegó el aviso. */
 	void repasarPago(Integer idPedido);
+
+	/** Centro de distribución (/admin): todos los pedidos, los más recientes primero. */
+	List<PedidoAdminDto> todosLosPedidos();
+
+	/**
+	 * Da el paso que le toca a un pedido: un envío sale (ENVIADO) y luego llega (ENTREGADO); una
+	 * recogida pasa directamente a ENTREGADO. No se puede saltar un paso ni volver atrás.
+	 */
+	PedidoAdminDto avanzarPedido(Integer idPedido, EstadoPedido estado);
+
+	/** Anula desde el centro de distribución un pedido que aún no ha salido, con devolución si se cobró. */
+	PedidoAdminDto anularPedidoAdmin(Integer idPedido);
 }

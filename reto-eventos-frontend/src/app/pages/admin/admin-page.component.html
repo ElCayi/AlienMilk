@@ -7,7 +7,7 @@
           </p>
           <h1>Control de AlienMilk Sessions</h1>
           <p class="helper">
-            Revisa y gestiona sesiones, usuarios, tipos, perfiles, reservas, la ficha de contacto y las solicitudes desde la cabina central.
+            Revisa y gestiona sesiones, usuarios, tipos, perfiles, reservas, la ficha de contacto, las solicitudes y los pedidos de la tienda desde la cabina central.
           </p>
         </div>
       </div>
@@ -58,6 +58,13 @@
             >
               Solicitudes
             </button>
+            <button
+              type="button"
+              [class.active]="activeTab() === 'pedidos'"
+              (click)="setTab('pedidos')"
+            >
+              Pedidos
+            </button>
             <a routerLink="/admin/reservas">Gestionar reservas por usuario</a>
           </nav>
         </aside>
@@ -90,6 +97,8 @@
       <app-admin-contact-panel *ngIf="activeTab() === 'contacto'" />
 
       <app-admin-requests-panel *ngIf="activeTab() === 'solicitudes'" />
+
+      <app-admin-orders-panel *ngIf="activeTab() === 'pedidos'" />
 
       
 

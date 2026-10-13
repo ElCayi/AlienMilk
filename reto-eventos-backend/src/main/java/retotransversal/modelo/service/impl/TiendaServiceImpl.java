@@ -37,6 +37,7 @@ import retotransversal.modelo.dto.CatalogoTiendaDto;
 import retotransversal.modelo.dto.CondicionesTiendaDto;
 import retotransversal.modelo.dto.LineaPedidoCrearDto;
 import retotransversal.modelo.dto.LineaPedidoDto;
+import retotransversal.modelo.dto.PedidoAdminDto;
 import retotransversal.modelo.dto.PedidoCrearDto;
 import retotransversal.modelo.dto.PedidoDto;
 import retotransversal.modelo.dto.ProductoDto;
@@ -156,8 +157,7 @@ public class TiendaServiceImpl implements TiendaService {
 	@Override
 	@Transactional
 	public PedidoDto anularPedido(Integer idPedido, String username) {
-		Pedido pedido = pedidoRepository.findById(idPedido)
-				.orElseThrow(() -> new RecursoNoEncontradoException("No existe el pedido " + idPedido));
+		Pedido pedido = buscarPedido(idPedido);
 		if (pedido.getUsuario() == null || !pedido.getUsuario().getUsername().equals(username)) {
 			throw new OperacionNoPermitidaException("Solo puede anular sus propios pedidos");
 		}
@@ -204,6 +204,56 @@ public class TiendaServiceImpl implements TiendaService {
 	@Transactional
 	public void repasarPago(Integer idPedido) {
 		pedidoRepository.findById(idPedido).ifPresent(this::sincronizar);
+	}
+
+	@Override
+	@Transactional
+	public List<PedidoAdminDto> todosLosPedidos() {
+		return pedidoRepository.findAllByOrderByCreadoEnDescIdPedidoDesc().stream().map(pedido -> aAdminDto(alDia(pedido)))
+				.toList();
+	}
+
+	@Override
+	@Transactional
+	public PedidoAdminDto avanzarPedido(Integer idPedido, EstadoPedido estado) {
+		Pedido pedido = buscarPedido(idPedido);
+		bloquear(pedido);
+		if (estado == null || estado != siguientePaso(pedido)) {
+			throw new ConflictoNegocioException("El pedido " + pedido.getReferencia() + " no puede pasar a "
+					+ (estado == null ? "ese estado" : estado.name()));
+		}
+		LocalDateTime ahora = LocalDateTime.now(reloj);
+		if (estado == EstadoPedido.ENVIADO) {
+			pedido.setEnviadoEn(ahora);
+		} else {
+			pedido.setEntregadoEn(ahora);
+		}
+		pedido.setEstado(estado);
+		log.info("Pedido {} {}", pedido.getReferencia(), estado);
+		return aAdminDto(pedido);
+	}
+
+	@Override
+	@Transactional
+	public PedidoAdminDto anularPedidoAdmin(Integer idPedido) {
+		return aAdminDto(anular(buscarPedido(idPedido)));
+	}
+
+	private Pedido buscarPedido(Integer idPedido) {
+		return pedidoRepository.findById(idPedido)
+				.orElseThrow(() -> new RecursoNoEncontradoException("No existe el pedido " + idPedido));
+	}
+
+	/**
+	 * El paso que le toca a un pedido ya pagado: un envío sale y luego llega; una recogida se entrega
+	 * en la sede, sin salir. Vacío si no le queda ninguno.
+	 */
+	private static EstadoPedido siguientePaso(Pedido pedido) {
+		return switch (pedido.getEstado()) {
+			case CONFIRMADO -> pedido.getEntrega() == EntregaPedido.ENVIO ? EstadoPedido.ENVIADO : EstadoPedido.ENTREGADO;
+			case ENVIADO -> EstadoPedido.ENTREGADO;
+			default -> null;
+		};
 	}
 
 	/** Con pasarela, abre el pago del pedido recién guardado; si no se puede, el pedido entero se deshace. */
@@ -490,7 +540,16 @@ public class TiendaServiceImpl implements TiendaService {
 				.toList();
 		return new PedidoDto(pedido.getIdPedido(), pedido.getReferencia(), pedido.getEstado(), pedido.getEntrega(),
 				pedido.getDireccion(), pedido.getSubtotal(), pedido.getGastosEnvio(), pedido.getTotal(),
-				pedido.getCreadoEn(), pedido.getAnuladoEn(), lineas, pedido.getUsuario() == null, pedido.getNombre(),
+				pedido.getCreadoEn(), pedido.getAnuladoEn(), pedido.getEnviadoEn(), pedido.getEntregadoEn(), lineas, pedido.getUsuario() == null, pedido.getNombre(),
 				pendiente ? pedido.getPagoUrl() : null, pendiente ? pedido.getPagoCaducaEn() : null, clave);
+	}
+
+	/** Lo que ve el centro de distribución: el pedido, su comprador, el cobro y lo que se puede hacer con él. */
+	private PedidoAdminDto aAdminDto(Pedido pedido) {
+		Usuario usuario = pedido.getUsuario();
+		boolean anulable = pedido.getEstado() == EstadoPedido.PENDIENTE_PAGO || pedido.getEstado() == EstadoPedido.CONFIRMADO;
+		return new PedidoAdminDto(aDto(pedido, null), usuario == null ? null : usuario.getUsername(),
+				usuario == null ? pedido.getCorreo() : usuario.getEmail(), pedido.getPagadoEn(),
+				pedido.getReembolsoId() != null, siguientePaso(pedido), anulable);
 	}
 }

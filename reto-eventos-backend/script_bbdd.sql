@@ -300,6 +300,9 @@ CREATE TABLE IF NOT EXISTS pedidos (
 	pago_id VARCHAR(255),
 	pagado_en DATETIME,
 	reembolso_id VARCHAR(255),
+	-- Gestión desde /admin: salida del centro de distribución y entrega (o recogida en la sede).
+	enviado_en DATETIME,
+	entregado_en DATETIME,
 	CONSTRAINT fk_pedidos_usuarios FOREIGN KEY (username) REFERENCES usuarios(username),
 	CONSTRAINT ck_pedido_estado CHECK (estado IN ('PENDIENTE_PAGO', 'CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'ANULADO')),
 	CONSTRAINT ck_pedido_entrega CHECK (entrega IN ('ENVIO', 'RECOGIDA')),

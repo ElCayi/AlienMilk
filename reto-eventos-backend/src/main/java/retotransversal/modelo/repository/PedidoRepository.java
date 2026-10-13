@@ -13,6 +13,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
 	List<Pedido> findAllByUsuarioUsernameOrderByCreadoEnDesc(String username);
 
+	/** Para el centro de distribución: todos, los más recientes primero. */
+	List<Pedido> findAllByOrderByCreadoEnDescIdPedidoDesc();
+
 	Optional<Pedido> findByReferencia(String referencia);
 
 	Optional<Pedido> findByPagoSesion(String pagoSesion);

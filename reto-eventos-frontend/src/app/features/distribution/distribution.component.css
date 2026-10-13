@@ -548,6 +548,8 @@
     grid-auto-flow: column;
     grid-auto-columns: 100%;
     gap: 0;
+    /* 20 px más de aire sobre la molécula: 32 + 20 = 52 px desde el texto de cabecera. */
+    margin-top: 1.25rem;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;

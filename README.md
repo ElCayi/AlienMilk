@@ -127,7 +127,7 @@ cuatro que aparecen hoy están en `false` a conciencia: se comprobó que el buil
 - [Identidad de AlienMilk](docs/identidad-alienmilk.md) — voz, tono y criterio de la
   marca; leer antes de escribir texto, diseñar o proponer funcionalidades
 - [Trabajar en paralelo](docs/colaboracion.md) — worktrees, merges, migraciones de base de
-  datos, servicios y CSS; leer antes de editar o fusionar
+  datos, servicios, CSS y la regla de medir (`?regla`, px CSS); leer antes de editar o fusionar
 - [Formularios públicos](docs/formularios.md) — el molde: un JSON por formulario, sin código
 - [Tienda](docs/tienda.md) — catálogo, carrito, pedidos con o sin cuenta y pago con Stripe Checkout (entorno de prueba)
 - [Entrega de la integración](docs/merge-notes/integracion-2026-10-07.md) —

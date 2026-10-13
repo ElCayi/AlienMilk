@@ -59,6 +59,27 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
 - **El pie es un componente común** (`shared/site-footer/`) y sale en toda la web salvo en
   `/admin`. No deja margen propio: cada página decide el espacio con el que termina su último
   bloque y el pie se apoya justo debajo. No añadir excepciones del pie por página.
+- **Los botones nunca parten su rótulo ni se salen de su caja:** si no caben, sueltan primero la
+  flecha del final y, si aún no basta, encogen la letra lo justo, hasta un 70 %. Los gemelos de una
+  misma sección acaban iguales.
+  Lo hace `shared/fit-controls/` sola, para todo `button`, `a` o `[role=button]` con rótulo corto;
+  no hace falta marcar nada. Un control que deba ocupar varias líneas a propósito lleva `data-fit-wrap`.
+
+## Medidas: la regla (`?regla`)
+
+Cayi puede medir en la propia página y pedir los espacios **en px CSS**, en vez de «un poco más».
+Es una regla solo de desarrollo (`shared/dev-ruler/`, nunca se descarga en producción):
+
+- `localhost:<puerto>/?regla` la enciende; `?regla=0` la apaga (se recuerda en la pestaña).
+- Al pasar el ratón: caja del elemento (ancho × alto, cuerpo de letra) y el aire ↑ ↓ hasta lo
+  siguiente, o «hasta el borde» de la banda o tarjeta que lo contiene.
+- **Mayús + arrastrar:** medida libre de un punto a otro. **Esc** la borra.
+- **Alt + clic:** fija un elemento y mide hasta otro. **Alt + ↑ / ↓:** contenedor / de vuelta.
+  **Alt + R:** esconde la regla.
+
+Si Cayi da una medida, viene de aquí: son px CSS reales y se aplican tal cual (convertidos a
+`rem` si hace falta, 16 px = 1 rem). Medida libre a pulso: puede bailar 1–2 px; ante la duda,
+redondear al múltiplo de 4 más cercano y decirlo. Para verificar un cambio, la misma regla sirve.
 
 ## Archivos que no se versionan
 

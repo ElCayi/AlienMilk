@@ -136,3 +136,20 @@ donde se dice.
   `-pad-x`, `-radius`, `-shadow`, `-ink`, `-stack-image`, `-stack-focus`, `-stack-overlap`,
   `-stack-fade`) con sus valores de siempre por defecto: Sesiones no cambia.
 - **Comprobar tras el merge:** el cierre de `/sesiones` en móvil sigue igual.
+
+## Regla de medir (`?regla`)
+
+Herramienta de desarrollo para hablar de espacios en px: `shared/dev-ruler/dev-ruler.ts`, cargada
+desde `app.ts` solo con `isDevMode()` y por import dinámico (su trozo no se descarga en
+producción). Uso y atajos en [colaboracion.md](../colaboracion.md#medidas-la-regla-regla).
+**Para los compas:** las medidas que dé Cayi a partir de ahora salen de ella; son px CSS exactos.
+
+## Botones que no se parten (`shared/fit-controls/`)
+
+Norma general, arrancada en `app.ts` (también en producción): un `button`, `a` o `[role=button]` con
+rótulo corto nunca parte su texto ni se sale de su caja. Si no cabe, suelta la flecha del final y,
+si aún no basta, encoge la letra hasta un 70 %; los gemelos de una sección acaban iguales.
+Excepciones con `data-fit-wrap`. Además, en móvil, 20 px más sobre la molécula de «Para una
+primera cata» (Distribution).
+- **Comprobar tras el merge:** a 360×740, los botones de cada página en una línea y dentro de su
+  tarjeta; ninguna tarjeta pulsable de varias líneas (cuentas de prueba del login) aplastada.

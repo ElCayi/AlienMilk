@@ -23,7 +23,7 @@
   display: none;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .sessions-program {
     transform: translateX(-0.75rem);
   }

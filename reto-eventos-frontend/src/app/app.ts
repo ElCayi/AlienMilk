@@ -1,10 +1,11 @@
-import { afterNextRender, Component, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, Component, DestroyRef, inject, isDevMode, signal } from '@angular/core';
 import { DOCUMENT, NgIf } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 
 import { AuthService } from './core/services/auth.service';
 import { CartService } from './features/shop/cart.service';
+import { startFitControls } from './shared/fit-controls/fit-controls';
 import { SiteFooterComponent } from './shared/site-footer/site-footer.component';
 
 @Component({
@@ -40,6 +41,26 @@ export class App {
     });
 
     afterNextRender(() => {
+      // Ningún botón parte su rótulo en dos líneas ni se sale de su caja: si no cabe, encoge.
+      const stopFitControls = startFitControls(this.document);
+      this.destroyRef.onDestroy(stopFitControls);
+
+      // La regla de medir (shared/dev-ruler), solo en desarrollo y en su propio trozo, que en
+      // producción nunca se descarga. Se enciende con «?regla» en la dirección.
+      if (isDevMode()) {
+        let stopRuler: (() => void) | null = null;
+        let destroyed = false;
+        this.destroyRef.onDestroy(() => {
+          destroyed = true;
+          stopRuler?.();
+        });
+        void import('./shared/dev-ruler/dev-ruler').then(({ startDevRuler }) => {
+          if (!destroyed) {
+            stopRuler = startDevRuler(this.document);
+          }
+        });
+      }
+
       const topbar = this.document.querySelector<HTMLElement>('.topbar');
       const appShell = this.document.querySelector<HTMLElement>('.app-shell');
 
@@ -47,12 +68,18 @@ export class App {
         return;
       }
 
+      let closedHeight = topbar.offsetHeight;
       const updateTopbarHeight = () => {
+        // El menú desplegado se abre por encima de la página: lo que crece el header se le resta
+        // por debajo (app.css, --menu-overlap), así no empuja nada.
         if (topbar.classList.contains('menu-open')) {
+          topbar.style.setProperty('--menu-overlap', `${topbar.offsetHeight - closedHeight}px`);
           return;
         }
 
-        appShell.style.setProperty('--topbar-height', `${topbar.offsetHeight}px`);
+        topbar.style.removeProperty('--menu-overlap');
+        closedHeight = topbar.offsetHeight;
+        appShell.style.setProperty('--topbar-height', `${closedHeight}px`);
       };
       const resizeObserver = new ResizeObserver(updateTopbarHeight);
 

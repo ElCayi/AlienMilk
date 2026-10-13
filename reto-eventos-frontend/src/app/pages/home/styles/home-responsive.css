@@ -230,7 +230,7 @@
       }
     }
 
-    @media (min-width: 901px) {
+    @media (min-width: 1001px) {
       app-home-page {
         /* Tarjetas en el azul noche de los avisos y la página de Sesiones, no en pizarra gris. */
         --showcase-card: #1f2430;
@@ -259,20 +259,7 @@
       }
     }
 
-    @media (min-width: 901px) and (max-width: 1000px) {
-      app-home-page {
-        --home-section-width: 82vw;
-      }
-
-      .sessions-block {
-        width: 82vw;
-        margin-left: 50%;
-        transform: translate(-50%, -0.65rem);
-      }
-
-    }
-
-    @media (max-width: 900px) {
+    @media (max-width: 1000px) {
       .home-editorial-sections {
         --home-section-gap: clamp(5rem, 12vh, 8rem);
         grid-auto-rows: auto;
@@ -486,7 +473,7 @@
       }
     }
 
-    @media (min-width: 601px) and (max-width: 900px) {
+    @media (min-width: 601px) and (max-width: 1000px) {
       .sessions-editorial {
         width: calc(100% + 2rem);
         margin-left: -1rem;

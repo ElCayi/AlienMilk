@@ -344,7 +344,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .home-intro {
     padding-inline: 1.4rem;
   }

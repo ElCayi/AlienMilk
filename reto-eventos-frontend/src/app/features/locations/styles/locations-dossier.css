@@ -1,7 +1,7 @@
 /* Localizaciones en escritorio con el lenguaje de Próximas sesiones: sin escaparate, todo flota
    sobre el fondo líquido; marcos gris oscuro sin relleno y los datos en placas oscuras. Se carga
    la última porque sobrescribe al resto de hojas de la sección. Collaborators conserva su panel. */
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .locations-layout:not(.locations-layout-collaboration)::before {
     content: none;
   }

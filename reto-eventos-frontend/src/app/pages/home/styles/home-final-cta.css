@@ -34,3 +34,62 @@
     #000 18rem
   );
 }
+
+/* Móvil y tableta: la tarjeta, como las bandas de tinta de la portada, de borde a borde y con el
+   texto alineado con el de la página; arriba, el blanco acaba en curva sobre ella (a la izquierda)
+   y ella en curva a la derecha. Abajo baja hasta el pie, sin hueco y en su misma tinta, así que
+   las dos se leen como una sola pieza. */
+@media (max-width: 1000px) {
+  .home-editorial-sections:has(> .final-cta-section) {
+    margin-bottom: 0;
+  }
+
+  .final-cta-section {
+    --cta-join: 3.5rem;
+    position: relative;
+  }
+
+  .final-cta-section app-closing-cta {
+    --closing-cta-bleed: calc(50% - 50vw);
+    /* En el porcentaje, la tarjeta y la sección miden lo mismo: queda el margen de la página. */
+    --closing-cta-pad-x: calc(50vw - 50%);
+    --closing-cta-radius: 0 var(--cta-join) 0 0;
+    --closing-cta-shadow: none;
+    /* La tinta del pie (--footer-bg en site-footer). */
+    --closing-cta-ink: #0c141d;
+  }
+
+  /* La curva del blanco sobre la tarjeta, arriba a la izquierda; solapada 3px con ella para que no
+     asome una raya en la costura. */
+  .final-cta-section::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% - 3px);
+    left: calc(50% - 50vw);
+    width: var(--cta-join);
+    height: calc(var(--cta-join) + 3px);
+    background: radial-gradient(
+      circle at 100% 0,
+      transparent calc(var(--cta-join) - 0.5px),
+      #0c141d var(--cta-join)
+    );
+    pointer-events: none;
+  }
+}
+
+/* Móvil, en una columna: la imagen remata la tarjeta y la página, pegada al pie y a todo lo ancho;
+   más alta que su proporción, así que se recorta por los lados (como la foto del equipo en
+   Collaborators) y el astronauta se ve grande. */
+@media (max-width: 800px) {
+  .final-cta-section app-closing-cta {
+    --closing-cta-image-right: 0rem;
+    --closing-cta-image-bottom: 0rem;
+    --closing-cta-stack-image: 36rem;
+    --closing-cta-stack-focus: 52% 100%;
+    /* Sube bajo la frase final y los botones, y se funde en la tinta con un degradado más largo y
+       suave. */
+    --closing-cta-stack-overlap: 6rem;
+    --closing-cta-stack-fade:
+      transparent 0%, rgb(0 0 0 / 0.25) 22%, rgb(0 0 0 / 0.7) 42%, #000 62%;
+  }
+}

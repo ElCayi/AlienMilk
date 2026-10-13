@@ -452,7 +452,7 @@
 }
 
 /* En móvil, la barra la pone la portada, como en las demás secciones. */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .distribution {
     padding-top: 0.85rem;
     border-top: 0;
@@ -548,6 +548,8 @@
     grid-auto-flow: column;
     grid-auto-columns: 100%;
     gap: 0;
+    /* 20 px más de aire sobre la molécula: 32 + 20 = 52 px desde el texto de cabecera. */
+    margin-top: 1.25rem;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;

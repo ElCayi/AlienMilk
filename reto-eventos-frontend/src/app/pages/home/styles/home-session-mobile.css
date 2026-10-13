@@ -1,4 +1,4 @@
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-program {
     grid-template-columns: 1fr;
     gap: 4rem;
@@ -75,7 +75,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-carousel .session-image-link {
     view-transition-name: none !important;
   }
@@ -298,7 +298,7 @@
 
 /* La ficha de móvil, también en tableta: en esos anchos la de la versión anterior quedaba con letra
    diminuta. */
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-carousel {
     width: min(100%, 23rem);
     margin-inline: auto;
@@ -641,7 +641,7 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-editorial .sessions-tools {
     display: none;
   }
@@ -656,7 +656,7 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .session-featured h3 {
     display: grid;
   }
@@ -671,7 +671,7 @@
   }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1001px) {
   .session-specs-toggle {
     display: none;
   }
@@ -684,7 +684,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-carousel-pagination button {
     border-color: rgba(33, 30, 36, 0.5);
     background: rgba(33, 30, 36, 0.12);
@@ -704,7 +704,7 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .sessions-carousel .sessions-program {
     display: none;
   }

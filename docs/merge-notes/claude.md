@@ -121,3 +121,47 @@ donde se dice.
 3. **Imágenes:** las cuatro `alienmilk-closing-*.webp` siguen sin usarse y fuera de los commits.
 4. **Safari:** el `<dialog>` de las muestras se cierra pulsando la imagen; pulsando fuera
    (`closedby`) solo en Chrome y Firefox.
+
+## Tarde del 13 de octubre: final de la portada en móvil
+
+- **Cinta de socios:** sin rayas (en móvil la tinta la pinta el CSS, no el fondo líquido), con un
+  velo oscuro leve bajo las marcas; «El resto prefiere no figurar», debajo de la cinta y entre dos
+  barras (≤600).
+- **Experiencias:** citas a 1,75rem y firma a 0,78rem (≤1000).
+- **Discreción:** título a 2,3rem, justificado y en varias líneas; la frase de cierre, en tarjeta
+  blanca con filo de tinta (≤1000).
+- **Cierre (`app-closing-cta`):** en la portada, de borde a borde, en la tinta del pie y pegado a
+  él, con la curva de entrada de las bandas; la imagen remata la página, recortada por los lados y
+  fundida bajo el texto (≤800). La tarjeta compartida gana variables (`--closing-cta-bleed`,
+  `-pad-x`, `-radius`, `-shadow`, `-ink`, `-stack-image`, `-stack-focus`, `-stack-overlap`,
+  `-stack-fade`) con sus valores de siempre por defecto: Sesiones no cambia.
+- **Comprobar tras el merge:** el cierre de `/sesiones` en móvil sigue igual.
+
+## Regla de medir (`?regla`)
+
+Herramienta de desarrollo para hablar de espacios en px: `shared/dev-ruler/dev-ruler.ts`, cargada
+desde `app.ts` solo con `isDevMode()` y por import dinámico (su trozo no se descarga en
+producción). Uso y atajos en [colaboracion.md](../colaboracion.md#medidas-la-regla-regla).
+**Para los compas:** las medidas que dé Cayi a partir de ahora salen de ella; son px CSS exactos.
+
+## Botones que no se parten (`shared/fit-controls/`)
+
+Norma general, arrancada en `app.ts` (también en producción): un `button`, `a` o `[role=button]` con
+rótulo corto nunca parte su texto ni se sale de su caja. Si no cabe, suelta la flecha del final y,
+si aún no basta, encoge la letra hasta un 70 %; los gemelos de una sección acaban iguales.
+Excepciones con `data-fit-wrap`. Además, en móvil, 20 px más sobre la molécula de «Para una
+primera cata» (Distribution).
+- **Comprobar tras el merge:** a 360×740, los botones de cada página en una línea y dentro de su
+  tarjeta; ninguna tarjeta pulsable de varias líneas (cuentas de prueba del login) aplastada.
+
+## Tableta (901–1000 px) y menú desplegable
+
+- **El corte móvil/escritorio de la portada pasa a 1000/1001** en sus hojas (900→1000, 901→1001).
+  Entre 901 y 1000 se mezclaban las dos maquetas: filas de 2826 px (grid `1fr`) y la órbita de
+  sesiones de escritorio. Por debajo de 900 y por encima de 1000 todo queda igual; se retiran los
+  dos parches que solo valían para 901–1000.
+- **Solo en 901–1000:** raíz al 150 % (`styles.css`), header y menú más grandes (hamburguesa de
+  85 px, `app.css`) y blanco de borde a borde en el fondo líquido (`liquid-backdrop`).
+- **En todos los anchos:** el menú hamburguesa se abre por encima de la página en vez de empujarla
+  (`--menu-overlap`, medido en `app.ts`).
+- **Comprobar tras el merge:** portada a 912×1368 sin huecos; menú abierto a 390 y a 912.

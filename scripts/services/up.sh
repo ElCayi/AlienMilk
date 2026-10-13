@@ -16,8 +16,17 @@ run_service() {
         --bind-address=127.0.0.1 --port="$DB_PORT" --skip-networking=0
       ;;
     backend)
+      # Credenciales locales (base, correo, Stripe): ver .env.local.example. Git las ignora.
+      if [[ -f .env.local ]]; then
+        set -a
+        # shellcheck source=/dev/null
+        . ./.env.local
+        set +a
+      fi
       cd reto-eventos-backend
       export SERVER_PORT="$BACKEND_PORT"
+      # Adónde vuelve el comprador desde la página de pago de Stripe: el frontend de esta copia.
+      export TIENDA_URL="${TIENDA_URL:-http://127.0.0.1:$FRONTEND_PORT}"
       export SPRING_DATASOURCE_URL="${DB_URL:-jdbc:mysql://127.0.0.1:${DB_PORT}/reserva_eventos_bbdd?serverTimezone=UTC}"
       export SPRING_DATASOURCE_USERNAME="${DB_USER:-root}"
       export SPRING_DATASOURCE_PASSWORD="${DB_PASS:-}"

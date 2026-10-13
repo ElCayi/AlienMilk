@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -9,17 +10,21 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { map, Observable } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
 import { ContactService } from '../../core/services/contact.service';
-import { ShopService } from '../../core/services/shop.service';
+import { guestOrderLink, ShopService } from '../../core/services/shop.service';
 import { CartService } from '../../features/shop/cart.service';
+import { OrderReceiptComponent } from '../../features/shop/order-receipt/order-receipt.component';
+import { PendingPayment, rememberPayment, takePayment } from '../../features/shop/pending-payment';
 import {
   CATEGORY_FILTERS,
   CATEGORY_LABELS,
   CategoryFilter,
   DELIVERY_LABELS,
+  filterProducts,
   formatOrderDate,
   formatPrice,
   maxUnits,
@@ -35,6 +40,10 @@ import {
   Pedido,
   Producto,
 } from '../../models/api.models';
+import {
+  CategoryOption,
+  CategorySelectComponent,
+} from '../../features/sessions/category-select.component';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 
 /** Una línea del pedido en curso, con el producto tal como lo trae el catálogo. */
@@ -48,11 +57,12 @@ interface CartLine {
 /**
  * Tienda: catálogo con filtro por categoría, pedido en curso y pedidos anteriores. El carrito vive
  * en el navegador (CartService); los importes que se cobran los calcula el servidor al confirmar.
+ * Se compra con cuenta o como invitado; el invitado se lleva un enlace privado a su pedido.
  */
 @Component({
   selector: 'app-shop-page',
   standalone: true,
-  imports: [FitLineDirective, RouterLink],
+  imports: [CategorySelectComponent, FitLineDirective, OrderReceiptComponent, RouterLink],
   templateUrl: './shop-page.component.html',
   styleUrls: [
     '../../shared/secondary-page/secondary-page.css',
@@ -65,6 +75,8 @@ export class ShopPageComponent {
   private readonly contact = inject(ContactService);
   readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly filters = CATEGORY_FILTERS;
   readonly categoryLabels = CATEGORY_LABELS;
@@ -79,14 +91,14 @@ export class ShopPageComponent {
   readonly status = signal<'loading' | 'ready' | 'error'>('loading');
   readonly catalog = signal<CatalogoTienda | null>(null);
   readonly filter = signal<CategoryFilter>('TODO');
+  readonly query = signal('');
+  /** El desplegable de la cabecera: las mismas categorías que el filtro del catálogo. */
+  readonly categoryOptions: CategoryOption[] = CATEGORY_FILTERS.map((option) =>
+    option.value === 'TODO' ? { ...option, label: 'Todos los productos' } : option,
+  );
 
   readonly products = computed(() => this.catalog()?.productos ?? []);
-  readonly visible = computed(() => {
-    const filter = this.filter();
-    return filter === 'TODO'
-      ? this.products()
-      : this.products().filter((product) => product.categoria === filter);
-  });
+  readonly visible = computed(() => filterProducts(this.products(), this.query(), this.filter()));
 
   readonly lines = computed<CartLine[]>(() => {
     const catalog = this.catalog();
@@ -110,6 +122,8 @@ export class ShopPageComponent {
   readonly deliveries: EntregaPedido[] = ['ENVIO', 'RECOGIDA'];
   readonly delivery = signal<EntregaPedido>('ENVIO');
   readonly address = signal('');
+  readonly name = signal('');
+  readonly email = signal('');
   readonly freeShippingFrom = computed(() => this.catalog()?.condiciones.envioGratisDesde ?? 0);
   readonly subtotal = computed(() => this.lines().reduce((total, line) => total + line.amount, 0));
   readonly shipping = computed(() => {
@@ -121,16 +135,25 @@ export class ShopPageComponent {
   readonly sending = signal(false);
   readonly orderError = signal<string | null>(null);
   readonly addressError = signal<string | null>(null);
+  readonly nameError = signal<string | null>(null);
+  readonly emailError = signal<string | null>(null);
   readonly receipt = signal<Pedido | null>(null);
   readonly orders = signal<Pedido[]>([]);
   readonly cancelling = signal<number | null>(null);
+  readonly linkCopied = signal(false);
+  /** Aviso informativo sobre el pedido en curso (al volver de Stripe sin pagar). */
+  readonly notice = signal<string | null>(null);
+  readonly payByCard = computed(() => this.catalog()?.condiciones.pagoConTarjeta ?? false);
 
   private readonly addressField = viewChild<ElementRef<HTMLTextAreaElement>>('addressField');
-  private readonly receiptBox = viewChild<ElementRef<HTMLElement>>('receiptBox');
+  private readonly nameField = viewChild<ElementRef<HTMLInputElement>>('nameField');
+  private readonly emailField = viewChild<ElementRef<HTMLInputElement>>('emailField');
+  private readonly receiptView = viewChild(OrderReceiptComponent);
 
   constructor() {
     this.loadCatalog();
     this.contact.load();
+    this.handlePaymentReturn();
 
     // La sesión puede llegar después que la página (al recargar con la sesión guardada).
     effect(() => {
@@ -138,10 +161,20 @@ export class ShopPageComponent {
       untracked(() => (user ? this.loadOrders() : this.orders.set([])));
     });
 
+    // Vuelta con «Atrás» desde Stripe: el navegador restaura la página tal como se fue, con el botón
+    // aún en «Abriendo el pago…».
+    const restored = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        this.sending.set(false);
+      }
+    };
+    window.addEventListener('pageshow', restored);
+    inject(DestroyRef).onDestroy(() => window.removeEventListener('pageshow', restored));
+
     // El resguardo toma el foco al aparecer, como en los formularios.
     effect(() => {
       if (this.receipt()) {
-        setTimeout(() => this.receiptBox()?.nativeElement.focus());
+        setTimeout(() => this.receiptView()?.focus());
       }
     });
   }
@@ -174,6 +207,15 @@ export class ShopPageComponent {
     return terms ? maxUnits(product, terms) : 0;
   }
 
+  /** El desplegable trabaja con textos; sus opciones son las de CATEGORY_FILTERS. */
+  setCategory(value: string): void {
+    this.filter.set(value as CategoryFilter);
+  }
+
+  updateQuery(event: Event): void {
+    this.query.set((event.target as HTMLInputElement).value);
+  }
+
   add(product: Producto): void {
     this.receipt.set(null);
     this.cart.add(product.slug, this.max(product));
@@ -196,33 +238,78 @@ export class ShopPageComponent {
     }
   }
 
+  onNameInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.name.set(value);
+    if (value.trim()) {
+      this.nameError.set(null);
+    }
+  }
+
+  onEmailInput(event: Event): void {
+    this.email.set((event.target as HTMLInputElement).value);
+    this.emailError.set(null);
+  }
+
   confirm(): void {
     const lines = this.lines();
     if (!lines.length || this.sending()) {
       return;
     }
+    const guest = !this.auth.isAuthenticated();
+    const name = this.name().trim();
+    const email = this.email().trim();
     const address = this.address().trim();
-    if (this.delivery() === 'ENVIO' && !address) {
-      this.addressError.set('Indique la dirección de entrega');
-      this.addressField()?.nativeElement.focus();
+
+    // Todos los avisos a la vez, y el foco en el primer campo que falta, en el orden de la página.
+    this.nameError.set(guest && !name ? 'Indique a nombre de quién va el pedido' : null);
+    this.emailError.set(
+      !guest
+        ? null
+        : !email
+          ? 'Indique un correo para avisarle del pedido'
+          : EMAIL.test(email)
+            ? null
+            : 'Escriba un correo válido',
+    );
+    this.addressError.set(
+      this.delivery() === 'ENVIO' && !address ? 'Indique la dirección de entrega' : null,
+    );
+    const invalid = [
+      { message: this.nameError(), field: this.nameField() },
+      { message: this.emailError(), field: this.emailField() },
+      { message: this.addressError(), field: this.addressField() },
+    ].find((entry) => entry.message);
+    if (invalid) {
+      invalid.field?.nativeElement.focus();
       return;
     }
 
     this.sending.set(true);
     this.orderError.set(null);
+    this.notice.set(null);
     this.shop
       .placeOrder({
         lineas: lines.map((line) => ({ producto: line.product.slug, cantidad: line.quantity })),
         entrega: this.delivery(),
         direccion: this.delivery() === 'ENVIO' ? address : undefined,
+        ...(guest ? { nombre: name, correo: email } : {}),
       })
       .subscribe({
         next: (pedido) => {
+          // Con pago: a la página de Stripe. El carrito se vacía al volver pagado (handlePaymentReturn).
+          if (pedido.pagoUrl) {
+            this.pay(pedido, pedido.clave);
+            return;
+          }
           this.sending.set(false);
           this.cart.clear();
           this.address.set('');
+          this.linkCopied.set(false);
           this.receipt.set(pedido);
-          this.orders.update((orders) => [pedido, ...orders]);
+          if (!pedido.invitado) {
+            this.orders.update((orders) => [pedido, ...orders]);
+          }
           this.loadCatalog(true);
         },
         error: (error: HttpErrorResponse) => {
@@ -230,6 +317,81 @@ export class ShopPageComponent {
           this.showOrderError(error);
         },
       });
+  }
+
+  /** El enlace privado de un pedido de invitado, mientras su resguardo está en pantalla. */
+  guestLink(order: Pedido): string | null {
+    return order.clave ? guestOrderLink(order, order.clave) : null;
+  }
+
+  copyLink(link: string): void {
+    navigator.clipboard.writeText(link).then(
+      () => this.linkCopied.set(true),
+      () => this.linkCopied.set(false),
+    );
+  }
+
+  /** A la página de pago de Stripe, recordando el pedido para reconocerlo al volver. */
+  pay(order: Pedido, key?: string): void {
+    if (!order.pagoUrl) {
+      return;
+    }
+    rememberPayment(order, key);
+    window.location.assign(order.pagoUrl);
+  }
+
+  /**
+   * Vuelta de Stripe: /tienda?pago=hecho o ?pago=cancelado. Pagado, se enseña el resguardo y se vacía
+   * el carrito; sin pagar, se anula ese intento (sus unidades vuelven al almacén) y el carrito sigue
+   * ahí para volver a intentarlo.
+   */
+  private handlePaymentReturn(): void {
+    const result = this.route.snapshot.queryParamMap.get('pago');
+    if (!result) {
+      return;
+    }
+    // Fuera ?pago= de la dirección: recargar la página no debe repetir nada.
+    void this.router.navigate([], {
+      queryParams: { pago: null },
+      queryParamsHandling: 'merge',
+      fragment: 'su-pedido',
+      replaceUrl: true,
+    });
+    const pending = takePayment();
+    if (!pending) {
+      return;
+    }
+    if (result === 'hecho') {
+      this.findOrder(pending).subscribe({
+        next: (order) => {
+          if (order) {
+            this.cart.clear();
+            this.receipt.set(pending.clave ? { ...order, clave: pending.clave } : order);
+            this.loadCatalog(true);
+          }
+        },
+        error: () => this.orderError.set('No hemos podido comprobar el pago. Revise sus pedidos en unos minutos.'),
+      });
+    } else {
+      const cancel = pending.clave
+        ? this.shop.cancelGuestOrder(pending.referencia, pending.clave)
+        : this.shop.cancelOrder(pending.idPedido);
+      const done = () => {
+        this.notice.set('Ha vuelto sin pagar. Su pedido sigue aquí, listo para cuando quiera pagarlo.');
+        this.loadCatalog(true);
+        if (this.auth.isAuthenticated()) {
+          this.loadOrders();
+        }
+      };
+      // Si no se puede anular (ya se había pagado en otra pestaña, por ejemplo), lo dirá el historial.
+      cancel.subscribe({ next: done, error: done });
+    }
+  }
+
+  private findOrder(pending: PendingPayment): Observable<Pedido | undefined> {
+    return pending.clave
+      ? this.shop.guestOrder(pending.referencia, pending.clave)
+      : this.shop.myOrders().pipe(map((orders) => orders.find((order) => order.referencia === pending.referencia)));
   }
 
   /** Vuelve del resguardo al catálogo para empezar otro pedido. */
@@ -281,9 +443,11 @@ export class ShopPageComponent {
     }
     const body = error.error as ApiError | null;
     const errores = body?.errores ?? {};
-    if (errores['direccion']) {
-      // El error de la dirección va junto al campo; arriba solo lo que no tiene campo propio.
-      this.addressError.set(errores['direccion']);
+    if (errores['nombre'] || errores['correo'] || errores['direccion']) {
+      // Los errores de los campos van junto a cada uno; arriba solo lo que no tiene campo propio.
+      this.nameError.set(errores['nombre'] ?? null);
+      this.emailError.set(errores['correo'] ?? null);
+      this.addressError.set(errores['direccion'] ?? null);
       this.orderError.set(errores['lineas'] ?? errores['entrega'] ?? null);
     } else {
       this.orderError.set(
@@ -301,3 +465,6 @@ export class ShopPageComponent {
     }
   }
 }
+
+/** La misma comprobación que hace el servidor: algo, una arroba, algo, un punto y algo. */
+const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;

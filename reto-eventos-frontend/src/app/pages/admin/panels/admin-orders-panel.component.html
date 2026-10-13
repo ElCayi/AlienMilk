@@ -1,0 +1,124 @@
+<section class="admin-grid">
+  <div class="panel orders-panel">
+    <div class="block-header compact">
+      <div>
+        <h2>Pedidos</h2>
+        <p class="block-helper">
+          Lo que sale del centro de distribución: márcalo cuando salga y cuando se entregue.
+          {{ toPrepare() }} por preparar.
+        </p>
+      </div>
+      <button type="button" class="ghost" (click)="load()">Actualizar</button>
+    </div>
+
+    <div class="order-filters" role="group" aria-label="Filtrar pedidos">
+      @for (option of filters; track option.value) {
+        <button
+          type="button"
+          class="ghost"
+          [attr.aria-pressed]="filter() === option.value"
+          (click)="filter.set(option.value)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </div>
+
+    @if (feedback(); as aviso) {
+      <p class="panel-feedback" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+    }
+
+    @if (loading() && !all().length) {
+      <p>Cargando pedidos...</p>
+    } @else {
+      <div class="table-list">
+        @for (order of visible(); track order.pedido.idPedido) {
+          @let pedido = order.pedido;
+          <article class="order-card" [class.is-pending]="pedido.estado === 'CONFIRMADO'">
+            <div class="order-card-head">
+              <div>
+                <strong>{{ pedido.referencia }} · {{ price(pedido.total) }}</strong>
+                <span class="order-state">{{ stateLabels[pedido.estado] }}</span>
+                <p>
+                  {{ pedido.nombre ?? order.cuenta }}
+                  ({{ order.cuenta ? 'cuenta ' + order.cuenta : 'invitado' }})
+                  @if (order.correo) {
+                    · <a [href]="replyHref(order)">{{ order.correo }}</a>
+                  }
+                  · {{ pedido.creadoEn | date: 'dd.MM.yyyy HH:mm' }}
+                </p>
+              </div>
+              <div class="actions">
+                @if (order.siguiente) {
+                  <button
+                    type="button"
+                    class="ghost"
+                    [disabled]="busy() === pedido.idPedido"
+                    (click)="advance(order)"
+                  >
+                    {{ nextLabel(order) }}
+                  </button>
+                }
+                @if (order.anulable) {
+                  <button
+                    type="button"
+                    class="danger"
+                    [disabled]="busy() === pedido.idPedido"
+                    (click)="cancel(order)"
+                  >
+                    Anular
+                  </button>
+                }
+              </div>
+            </div>
+            <dl class="order-data">
+              <div>
+                <dt>{{ deliveryLabels[pedido.entrega] }}</dt>
+                <dd>{{ pedido.direccion ?? 'En la sede' }}</dd>
+              </div>
+              <div>
+                <dt>Productos</dt>
+                <dd>
+                  <ul class="order-lines">
+                    @for (line of pedido.lineas; track line.producto) {
+                      <li>{{ line.cantidad }} × {{ line.nombre }}</li>
+                    }
+                  </ul>
+                </dd>
+              </div>
+              <div>
+                <dt>Cobro</dt>
+                <dd>
+                  {{ payment(order) }}
+                  @if (order.pagadoEn && !order.reembolsado) {
+                    · {{ order.pagadoEn | date: 'dd.MM.yyyy HH:mm' }}
+                  }
+                </dd>
+              </div>
+              @if (pedido.enviadoEn) {
+                <div>
+                  <dt>Salida</dt>
+                  <dd>{{ pedido.enviadoEn | date: 'dd.MM.yyyy HH:mm' }}</dd>
+                </div>
+              }
+              @if (pedido.entregadoEn) {
+                <div>
+                  <dt>{{ pedido.entrega === 'RECOGIDA' ? 'Recogida' : 'Entrega' }}</dt>
+                  <dd>{{ pedido.entregadoEn | date: 'dd.MM.yyyy HH:mm' }}</dd>
+                </div>
+              }
+              @if (pedido.anuladoEn) {
+                <div>
+                  <dt>Anulación</dt>
+                  <dd>{{ pedido.anuladoEn | date: 'dd.MM.yyyy HH:mm' }}</dd>
+                </div>
+              }
+            </dl>
+          </article>
+        } @empty {
+          <p>No hay pedidos en esta bandeja.</p>
+        }
+      </div>
+    }
+  </div>
+</section>

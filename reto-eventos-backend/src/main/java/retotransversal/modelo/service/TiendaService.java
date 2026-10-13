@@ -3,9 +3,11 @@ package retotransversal.modelo.service;
 import java.util.List;
 
 import retotransversal.modelo.dto.CatalogoTiendaDto;
+import retotransversal.modelo.dto.PedidoAdminDto;
 import retotransversal.modelo.dto.PedidoCrearDto;
 import retotransversal.modelo.dto.PedidoDto;
 import retotransversal.modelo.dto.ProductoDto;
+import retotransversal.modelo.entities.EstadoPedido;
 
 public interface TiendaService {
 
@@ -16,8 +18,43 @@ public interface TiendaService {
 	/** Comprueba existencias, calcula importes y guarda el pedido en una sola transacción. */
 	PedidoDto crearPedido(String username, PedidoCrearDto datos);
 
+	/**
+	 * Lo mismo sin cuenta: pide nombre y correo, frena los envíos masivos desde `origen` y devuelve,
+	 * esta única vez, la clave del enlace privado del pedido.
+	 */
+	PedidoDto crearPedidoInvitado(PedidoCrearDto datos, String origen);
+
 	List<PedidoDto> pedidosDe(String username);
 
-	/** Anula un pedido propio que aún no ha salido y devuelve sus unidades al almacén. */
+	/** Anula un pedido propio que aún no ha salido, devuelve el pago si lo hubo y las unidades al almacén. */
 	PedidoDto anularPedido(Integer idPedido, String username);
+
+	/** Un pedido de invitado, para quien tiene su enlace: la referencia y la clave. */
+	PedidoDto pedidoInvitado(String referencia, String clave);
+
+	PedidoDto anularPedidoInvitado(String referencia, String clave);
+
+	/**
+	 * Aviso (webhook) de la pasarela de pago: se verifica su firma y se pone al día el pedido de esa
+	 * sesión. Repetir un aviso no cambia nada.
+	 */
+	void recibirAvisoPago(String cuerpo, String firma);
+
+	/** Pedidos pendientes cuyo plazo de pago ha pasado. */
+	List<Integer> pagosVencidos();
+
+	/** Pone al día el pago de un pedido preguntando a la pasarela, por si no llegó el aviso. */
+	void repasarPago(Integer idPedido);
+
+	/** Centro de distribución (/admin): todos los pedidos, los más recientes primero. */
+	List<PedidoAdminDto> todosLosPedidos();
+
+	/**
+	 * Da el paso que le toca a un pedido: un envío sale (ENVIADO) y luego llega (ENTREGADO); una
+	 * recogida pasa directamente a ENTREGADO. No se puede saltar un paso ni volver atrás.
+	 */
+	PedidoAdminDto avanzarPedido(Integer idPedido, EstadoPedido estado);
+
+	/** Anula desde el centro de distribución un pedido que aún no ha salido, con devolución si se cobró. */
+	PedidoAdminDto anularPedidoAdmin(Integer idPedido);
 }

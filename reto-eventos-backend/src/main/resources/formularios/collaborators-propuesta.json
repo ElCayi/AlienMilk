@@ -1,0 +1,19 @@
+{
+  "clave": "collaborators-propuesta",
+  "titulo": "Cuéntenos su propuesta",
+  "organizacion": "AlienMilk Collaborators",
+  "prefijo": "AMC",
+  "introduccion": "Unas líneas bastan. No necesita documentación ni enviar nada todavía: el equipo de Collaborators estudiará su propuesta y le escribirá para revisarla con usted.",
+  "accion": "Enviar propuesta",
+  "confirmacion": "El equipo de Collaborators ha recibido su propuesta y le escribirá en un plazo de cinco días hábiles. No envíe ninguna muestra antes de recibir instrucciones. Conserve este número para cualquier gestión.",
+  "campos": [
+    { "clave": "nombre", "etiqueta": "Nombre", "tipo": "texto", "requerido": true, "maximo": 80, "ancho": "mitad", "autocompletar": "name" },
+    { "clave": "email", "etiqueta": "Correo electrónico", "tipo": "email", "requerido": true, "maximo": 100, "ancho": "mitad", "autocompletar": "email" },
+    { "clave": "aportacion", "etiqueta": "Qué quiere aportar", "tipo": "seleccion", "requerido": true, "ancho": "mitad",
+      "opciones": ["Una muestra propia", "Una muestra de otro organismo", "Un lugar o una cosecha", "Otra propuesta"] },
+    { "clave": "procedencia", "etiqueta": "Procedencia", "tipo": "texto", "requerido": false, "maximo": 120, "ancho": "mitad",
+      "ayuda": "Mundo, sistema o comunidad, con el nombre que usen allí." },
+    { "clave": "propuesta", "etiqueta": "Su propuesta", "tipo": "texto-largo", "requerido": true, "maximo": 1000,
+      "ayuda": "Qué es, quién la produce y qué la hace especial. La persona que escribe no tiene por qué ser el organismo de origen." }
+  ]
+}

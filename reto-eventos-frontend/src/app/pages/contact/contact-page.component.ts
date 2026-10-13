@@ -6,11 +6,12 @@ import { ContactService } from '../../core/services/contact.service';
 import { FitLineDirective } from '../../shared/fit-line/fit-line.directive';
 import { describeDays, formatHour, siteStatus } from '../../features/contact/opening-hours';
 import { SOCIAL_LINKS } from '../../features/contact/social-links';
+import { RequestDialogComponent } from '../../shared/request-dialog/request-dialog.component';
 
 @Component({
   selector: 'app-contact-page',
   standalone: true,
-  imports: [DatePipe, FitLineDirective, NgTemplateOutlet, RouterLink],
+  imports: [DatePipe, FitLineDirective, NgTemplateOutlet, RequestDialogComponent, RouterLink],
   templateUrl: './contact-page.component.html',
   styleUrl: './contact-page.component.css',
 })

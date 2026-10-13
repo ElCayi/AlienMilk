@@ -1,0 +1,39 @@
+/* Resguardo: el número en grande, como el de las solicitudes a los operadores. La rejilla y los
+   importes están en shop-shared.css, que comparte con el pedido en curso de la tienda. */
+.receipt {
+  padding: clamp(1.5rem, 2.5vw, 2.25rem);
+  border: 1px dashed rgba(247, 248, 249, 0.42);
+  border-radius: 1rem;
+  outline: none;
+}
+
+.receipt-label {
+  margin: 0;
+  color: var(--muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.receipt-code {
+  margin: 0.4rem 0 0;
+  font: 400 clamp(2.4rem, 4vw, 3.4rem) / 1 var(--condensed);
+  letter-spacing: 0.06em;
+}
+
+.receipt-text {
+  margin: 1rem 0 1.75rem;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.receipt-text b {
+  color: var(--ink);
+  font-weight: 700;
+}

@@ -44,14 +44,31 @@ public class Pedido {
 	@Column(unique = true, length = 20)
 	private String referencia;
 
+	/** Quien compró con su cuenta; vacío en los pedidos de invitado. */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "username", nullable = false)
+	@JoinColumn(name = "username")
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private Usuario usuario;
 
+	/** Invitado: a nombre de quién va el pedido. */
+	@Column(length = 80)
+	private String nombre;
+
+	/** Invitado: dónde avisarle del pedido. */
+	@Column(length = 120)
+	private String correo;
+
+	/**
+	 * Invitado: huella SHA-256 de la clave de su enlace privado. La clave en claro solo la recibe el
+	 * comprador; quien lea la base de datos no puede abrir ni anular el pedido con lo que hay aquí.
+	 */
+	@Column(name = "clave_hash", length = 64)
+	@ToString.Exclude
+	private String claveHash;
+
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 12)
+	@Column(nullable = false, length = 16)
 	private EstadoPedido estado;
 
 	@Enumerated(EnumType.STRING)
@@ -75,6 +92,35 @@ public class Pedido {
 
 	@Column(name = "anulado_en")
 	private LocalDateTime anuladoEn;
+
+	/** Sesión de Stripe Checkout del pedido, mientras se paga y después, para consultarla. */
+	@Column(name = "pago_sesion")
+	private String pagoSesion;
+
+	/** Página de pago, válida hasta {@link #pagoCaducaEn}. */
+	@Column(name = "pago_url", length = 1024)
+	private String pagoUrl;
+
+	@Column(name = "pago_caduca_en")
+	private LocalDateTime pagoCaducaEn;
+
+	/** El cobro hecho (PaymentIntent de Stripe), para poder devolverlo. */
+	@Column(name = "pago_id")
+	private String pagoId;
+
+	@Column(name = "pagado_en")
+	private LocalDateTime pagadoEn;
+
+	@Column(name = "reembolso_id")
+	private String reembolsoId;
+
+	/** Cuándo salió del centro de distribución (solo envíos). */
+	@Column(name = "enviado_en")
+	private LocalDateTime enviadoEn;
+
+	/** Cuándo llegó a su destino o se recogió en la sede. */
+	@Column(name = "entregado_en")
+	private LocalDateTime entregadoEn;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)

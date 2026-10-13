@@ -1,8 +1,8 @@
 # Formularios públicos
 
-Todos los formularios que envían una solicitud desde la web (por ahora, los de los operadores
-asociados) usan el mismo molde. Cada formulario es **un archivo JSON**; añadir uno o cambiar sus
-campos no requiere código.
+Todos los formularios que envían una solicitud desde la web (los de los operadores asociados y la
+propuesta de Collaborators) usan el mismo molde. Cada formulario es **un archivo JSON**; añadir uno
+o cambiar sus campos no requiere código.
 
 ## Cómo funciona
 

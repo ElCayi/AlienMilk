@@ -190,10 +190,16 @@
       <li class="footer-unit">
         <strong class="lockup">AlienMilk <span class="lockup-unit">Collaborators</span></strong>
         <p>Aportación voluntaria de muestras, evaluación y seguimiento de cada propuesta.</p>
-        <a class="footer-unit-action" [href]="proposalHref()">
+        <button
+          type="button"
+          class="footer-unit-action"
+          aria-haspopup="dialog"
+          (click)="proposalDialog.open()"
+        >
           <span>Proponer una muestra</span>
           <ng-container *ngTemplateOutlet="actionArrow" />
-        </a>
+        </button>
+        <app-request-dialog #proposalDialog formKey="collaborators-propuesta" />
       </li>
     </ul>
     <ng-container

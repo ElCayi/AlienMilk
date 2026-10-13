@@ -1,17 +1,21 @@
 # Tienda
 
 `/tienda` vende los productos de AlienMilk: leches, derivados y lo necesario para la mesa. Cada
-producto tiene su ficha en `/tienda/<slug>`. Es una tienda de demostración: los pedidos se
-registran y descuentan existencias, pero no se cobra ni se envía nada.
+producto tiene su ficha en `/tienda/<slug>`. Con clave de Stripe se paga con tarjeta en Stripe
+Checkout (en el entorno de prueba: no se cobra nada); sin ella, la tienda confirma los pedidos sin
+cobrar. En ningún caso se envía nada.
 
 ## Cómo funciona
 
 ```
-productos (base de datos) ──▶ GET  /api/tienda/catalogo         catálogo y condiciones, público
-                          ──▶ GET  /api/tienda/productos/<slug>  un producto, público
-carrito (localStorage)    ──▶ POST /api/tienda/pedidos           con sesión: crea el pedido
-                              GET  /api/tienda/pedidos           con sesión: los pedidos propios
-                              POST /api/tienda/pedidos/<id>/anulacion
+productos (base de datos) ──▶ GET  /api/tienda/catalogo              catálogo y condiciones, público
+                          ──▶ GET  /api/tienda/productos/<slug>       un producto, público
+carrito (localStorage)    ──▶ POST /api/tienda/pedidos                con sesión o como invitado
+                              GET  /api/tienda/pedidos                con sesión: los pedidos propios
+                              POST /api/tienda/pedidos/<id>/anulacion con sesión
+enlace privado            ──▶ GET  /api/tienda/consulta/<referencia>  invitado, con X-Clave-Pedido
+                              POST /api/tienda/consulta/<referencia>/anulacion
+Stripe                    ──▶ POST /api/tienda/pagos/aviso           avisos (webhooks), con firma
 ```
 
 - **El servidor manda.** El carrito solo envía qué productos y cuántas unidades. Precios, gastos de
@@ -24,9 +28,96 @@ carrito (localStorage)    ──▶ POST /api/tienda/pedidos           con sesi�
 - **Condiciones en un solo sitio.** Gastos de envío (4,90 €), envío gratis desde 40 € y un máximo de
   6 unidades por producto son constantes del servicio. Llegan al frontend con el catálogo, que las
   anuncia sin tenerlas duplicadas.
-- **Anulación.** Un pedido `CONFIRMADO` propio se puede anular desde el historial, y sus unidades
-  vuelven al almacén. Los estados `ENVIADO` y `ENTREGADO` existen para un futuro panel de
-  administración.
+- **Anulación.** Un pedido pendiente de pago o `CONFIRMADO` se puede anular, desde el historial o
+  desde el enlace privado, y sus unidades vuelven al almacén (ver el cobro, más abajo). Cuando sale
+  del centro de distribución ya no se puede anular.
+
+## Gestión de pedidos (/admin → Pedidos)
+
+El centro de distribución lleva cada pedido pagado hasta su entrega:
+
+```
+CONFIRMADO ──Marcar enviado──▶ ENVIADO ──Marcar entregado──▶ ENTREGADO     (envío refrigerado)
+CONFIRMADO ──Marcar recogido─────────────────────────────▶ ENTREGADO     (recogida en la sede)
+CONFIRMADO / PENDIENTE_PAGO ──Anular──▶ ANULADO   (con devolución si se cobró)
+```
+
+- **Las reglas, en el servidor.** `GET /api/admin/pedidos` devuelve cada pedido con `siguiente` (el
+  paso que le toca, o vacío) y `anulable`; el panel solo enseña esos botones. `PATCH
+  /api/admin/pedidos/{id}` con `{"estado": "ENVIADO"}` da un paso, y responde 409 si no es el que
+  toca: no se puede saltar ni volver atrás. Cada cambio bloquea antes la fila, como el cobro.
+- **Fechas.** `enviado_en` y `entregado_en` se guardan con el paso, y el resguardo del cliente las
+  muestra («Ha salido del centro de distribución el 13 de octubre…»).
+- **Anular desde el admin** (`POST /api/admin/pedidos/{id}/anulacion`) es la misma anulación del
+  cliente: cierra la página de pago o devuelve el cobro, y las unidades vuelven al almacén.
+- **Bandejas:** por preparar, en camino, pendientes de pago, cerrados y todos. Cada tarjeta lleva
+  el comprador (cuenta o invitado), su correo para escribirle, la entrega, los productos y el cobro.
+
+## Cobro con Stripe Checkout
+
+La tarjeta nunca pasa por este servidor: el comprador paga en la página de Stripe y vuelve.
+
+```
+Confirmar ──▶ pedido PENDIENTE_PAGO, unidades reservadas ──▶ página de pago de Stripe (30 min)
+                                                               │
+        ┌───────────── pagado ──────────────────────────────────┤
+        ▼                                                       │ cancelado o caducado
+  CONFIRMADO  ◀── aviso firmado, o consulta a Stripe            ▼
+        │                                             ANULADO, unidades de vuelta
+        └── anular ──▶ reembolso en Stripe ──▶ ANULADO, unidades de vuelta
+```
+
+- **Importes del servidor.** `StripePasarela` abre la sesión con las líneas del pedido ya
+  calculado (en céntimos) y una clave de idempotencia por pedido: un reintento no crea dos cobros.
+- **El aviso es un timbre, no la verdad.** `POST /api/tienda/pagos/aviso` comprueba la firma
+  (`STRIPE_WEBHOOK_SECRET`) y su antigüedad, y luego pregunta a Stripe por el estado real de la
+  sesión. Así da igual la versión de la API con que se escribió el aviso, y repetirlo no cambia nada.
+- **Sin depender del aviso.** Al volver de pagar, el historial o la página del pedido preguntan a
+  Stripe por los pedidos pendientes; y `RepasoPagos`, cada cinco minutos, repasa los que pasaron su
+  plazo. Si un aviso se pierde, el pedido pagado se confirma igual y el abandonado se anula.
+- **Sin carreras.** El aviso, la consulta y una anulación pueden llegar a la vez: cada cambio de
+  estado bloquea antes la fila del pedido (`SELECT … FOR UPDATE`) y vuelve a mirar el estado, así
+  que las unidades no vuelven dos veces al almacén.
+- **Anular.** Pendiente: se cierra la página de pago antes de devolver las unidades (si resulta que
+  se acaba de pagar, se sigue como pagado). Pagado: primero el reembolso; si Stripe falla, el pedido
+  se queda como estaba.
+- **Vuelta a la tienda.** Antes de salir, el navegador guarda en `sessionStorage` qué pedido se
+  paga (`features/shop/pending-payment.ts`). Con `?pago=hecho` enseña el resguardo y vacía el
+  carrito; con `?pago=cancelado` anula ese intento y deja el carrito como estaba.
+
+### Probarlo en local
+
+Claves del entorno de prueba en `.env.local` (`STRIPE_SECRET_KEY`), y la CLI de Stripe para recibir
+los avisos en el ordenador. Tarjeta de prueba: `4242 4242 4242 4242`, fecha futura y CVC cualquiera.
+
+```bash
+set -a; . ./.env.local; set +a
+export STRIPE_API_KEY="$STRIPE_SECRET_KEY"
+# Imprime el secreto de los avisos (whsec_…), que el backend necesita en STRIPE_WEBHOOK_SECRET:
+nix shell nixpkgs#stripe-cli -c stripe listen --print-secret
+nix shell nixpkgs#stripe-cli -c stripe listen --forward-to http://127.0.0.1:8081/api/tienda/pagos/aviso
+```
+
+Sin la CLI también funciona: los pedidos se ponen al día al volver de Stripe.
+
+## Comprar sin cuenta
+
+La cuenta es opcional: lo que aporta es el historial, no el permiso para comprar. Sin sesión, el
+pedido pide además nombre y correo y se guarda como **pedido de invitado** (sin usuario).
+
+- **Enlace privado.** Al crearlo, el servidor genera una clave de 32 bytes al azar y la devuelve
+  una sola vez. El resguardo la muestra como `/tienda/pedido/<referencia>#<clave>`: tras la
+  almohadilla, el navegador no la envía a ningún servidor ni la pasa a otras páginas. La página del
+  pedido la manda en la cabecera `X-Clave-Pedido`, que tampoco queda en los registros de acceso.
+- **En la base, solo la huella.** `pedidos.clave_hash` guarda el SHA-256 de la clave, y se compara
+  en tiempo constante. Con una copia de la base no se puede abrir ni anular ningún pedido.
+- **Sin pistas.** Referencia inexistente, pedido de una cuenta o clave equivocada responden el mismo
+  404: la referencia (`AMD-2026-0007`) es fácil de adivinar, pero no basta.
+- **Freno.** Los pedidos de invitado pasan por `LimitadorSolicitudes`, el mismo de los formularios
+  públicos, para que nadie pueda vaciar el almacén con un script. Solo cuentan los pedidos bien
+  formados.
+- **Pendiente:** el correo de confirmación con el enlace, cuando esté configurado el aviso por correo
+  (ver [formularios](formularios.md#aviso-por-correo)).
 
 ## Productos
 
@@ -41,5 +132,13 @@ con una fila en `productos`:
 
 ## Base de datos
 
-Aplicar `reto-eventos-backend/migraciones/2026-10-09-tienda.sql` en cualquier base existente. Es
-idempotente y crea `productos`, `pedidos` y `lineas_pedido` con el catálogo inicial.
+Aplicar, en este orden y en cualquier base existente (las cuatro son idempotentes):
+
+1. `reto-eventos-backend/migraciones/2026-10-09-tienda.sql`: crea `productos`, `pedidos` y
+   `lineas_pedido` con el catálogo inicial.
+2. `reto-eventos-backend/migraciones/2026-10-10-tienda-invitados.sql`: pedidos sin usuario, con
+   nombre, correo y huella de la clave.
+3. `reto-eventos-backend/migraciones/2026-10-12-tienda-pagos.sql`: estado `PENDIENTE_PAGO` y los
+   datos del cobro (sesión, plazo, pago y reembolso).
+4. `reto-eventos-backend/migraciones/2026-10-13-tienda-envios.sql`: cuándo salió y cuándo se
+   entregó cada pedido.

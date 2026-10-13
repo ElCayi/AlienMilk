@@ -231,6 +231,8 @@ export interface CondicionesTienda {
   gastosEnvio: number;
   envioGratisDesde: number;
   unidadesMaximas: number;
+  /** Se paga con tarjeta en Stripe; si no, la tienda confirma sin cobrar (demostración). */
+  pagoConTarjeta: boolean;
 }
 
 export interface CatalogoTienda {
@@ -240,12 +242,15 @@ export interface CatalogoTienda {
 
 export type EntregaPedido = 'ENVIO' | 'RECOGIDA';
 
-export type EstadoPedido = 'CONFIRMADO' | 'ENVIADO' | 'ENTREGADO' | 'ANULADO';
+export type EstadoPedido = 'PENDIENTE_PAGO' | 'CONFIRMADO' | 'ENVIADO' | 'ENTREGADO' | 'ANULADO';
 
 export interface PedidoPayload {
   lineas: { producto: string; cantidad: number }[];
   entrega: EntregaPedido;
   direccion?: string;
+  /** Solo sin sesión: el pedido es de invitado. */
+  nombre?: string;
+  correo?: string;
 }
 
 export interface LineaPedido {
@@ -267,5 +272,32 @@ export interface Pedido {
   total: number;
   creadoEn: string;
   anuladoEn: string | null;
+  /** Cuándo salió del centro de distribución y cuándo se entregó (o se recogió en la sede). */
+  enviadoEn?: string;
+  entregadoEn?: string;
   lineas: LineaPedido[];
+  /** Pedido sin cuenta: se abre con su enlace privado, no está en ningún historial. */
+  invitado: boolean;
+  nombre: string | null;
+  /** Mientras está pendiente de pago: la página de Stripe y hasta cuándo se puede pagar. */
+  pagoUrl?: string;
+  pagoCaducaEn?: string;
+  /** La clave del enlace privado. Solo llega una vez, al crear un pedido de invitado. */
+  clave?: string;
+}
+
+/**
+ * Un pedido visto desde el centro de distribución (/admin). `siguiente` es el paso que le toca y
+ * `anulable`, si aún se puede anular: las reglas las decide el servidor.
+ */
+export interface PedidoAdmin {
+  pedido: Pedido;
+  /** Usuario de la cuenta; vacío en los pedidos de invitado. */
+  cuenta: string | null;
+  correo: string | null;
+  /** Cuándo se cobró con tarjeta; vacío en la tienda de demostración. */
+  pagadoEn: string | null;
+  reembolsado: boolean;
+  siguiente: Extract<EstadoPedido, 'ENVIADO' | 'ENTREGADO'> | null;
+  anulable: boolean;
 }

@@ -280,8 +280,12 @@ CREATE TABLE IF NOT EXISTS productos (
 CREATE TABLE IF NOT EXISTS pedidos (
 	id_pedido INT AUTO_INCREMENT PRIMARY KEY,
 	referencia VARCHAR(20) UNIQUE,
-	username VARCHAR(45) NOT NULL,
-	estado VARCHAR(12) NOT NULL,
+	-- Sin usuario es un pedido de invitado: nombre, correo y la huella de la clave de su enlace.
+	username VARCHAR(45),
+	nombre VARCHAR(80),
+	correo VARCHAR(120),
+	clave_hash CHAR(64),
+	estado VARCHAR(16) NOT NULL,
 	entrega VARCHAR(12) NOT NULL,
 	direccion VARCHAR(200),
 	subtotal DECIMAL(9,2) NOT NULL,
@@ -289,9 +293,23 @@ CREATE TABLE IF NOT EXISTS pedidos (
 	total DECIMAL(9,2) NOT NULL,
 	creado_en DATETIME NOT NULL,
 	anulado_en DATETIME,
+	-- Cobro con Stripe Checkout: la sesión de pago, hasta cuándo se puede pagar, el pago y su devolución.
+	pago_sesion VARCHAR(255),
+	pago_url VARCHAR(1024),
+	pago_caduca_en DATETIME,
+	pago_id VARCHAR(255),
+	pagado_en DATETIME,
+	reembolso_id VARCHAR(255),
+	-- Gestión desde /admin: salida del centro de distribución y entrega (o recogida en la sede).
+	enviado_en DATETIME,
+	entregado_en DATETIME,
 	CONSTRAINT fk_pedidos_usuarios FOREIGN KEY (username) REFERENCES usuarios(username),
-	CONSTRAINT ck_pedido_estado CHECK (estado IN ('CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'ANULADO')),
+	CONSTRAINT ck_pedido_estado CHECK (estado IN ('PENDIENTE_PAGO', 'CONFIRMADO', 'ENVIADO', 'ENTREGADO', 'ANULADO')),
 	CONSTRAINT ck_pedido_entrega CHECK (entrega IN ('ENVIO', 'RECOGIDA')),
+	CONSTRAINT ck_pedido_comprador CHECK (
+		username IS NOT NULL OR (nombre IS NOT NULL AND correo IS NOT NULL AND clave_hash IS NOT NULL)),
+	UNIQUE INDEX uk_pedidos_pago_sesion (pago_sesion),
+	INDEX idx_pedidos_pendientes (estado, pago_caduca_en),
 	INDEX idx_pedidos_usuario (username, creado_en)
 );
 

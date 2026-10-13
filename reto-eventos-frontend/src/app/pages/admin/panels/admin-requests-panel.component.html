@@ -1,74 +1,111 @@
-<section class="admin-grid">
-  <div class="panel requests-panel">
-    <div class="block-header compact">
-      <div>
-        <h2>Solicitudes</h2>
-        <p class="block-helper">
-          Lo que llega desde los formularios públicos, como los de los operadores asociados.
-          {{ newCount() }} sin atender.
-        </p>
-      </div>
-      <button type="button" class="ghost" (click)="load()">Actualizar</button>
-    </div>
+<header class="section-head">
+  <div>
+    <h2>Solicitudes</h2>
+    <p>
+      Lo que llega desde los formularios públicos: operadores asociados, propuestas de Collaborators.
+      Cada solicitud trae los campos de su formulario, con sus etiquetas.
+    </p>
+  </div>
+  <div class="section-head-actions">
+    <button type="button" class="btn" [disabled]="loading()" (click)="load()">Actualizar</button>
+  </div>
+</header>
 
-    <div class="request-filters" role="group" aria-label="Filtrar solicitudes">
-      @for (option of filters; track option.value) {
-        <button
-          type="button"
-          class="ghost"
-          [attr.aria-pressed]="filter() === option.value"
-          (click)="filter.set(option.value)"
-        >
-          {{ option.label }}
-        </button>
-      }
-    </div>
-
-    @if (feedback(); as aviso) {
-      <p class="panel-feedback" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
-    }
-
-    @if (loading()) {
-      <p>Cargando solicitudes...</p>
-    } @else {
-      <div class="table-list">
-        @for (solicitud of visible(); track solicitud.idSolicitud) {
-          <article class="request-card" [class.is-new]="solicitud.estado === 'NUEVA'">
-            <div class="request-card-head">
-              <div>
-                <strong>{{ solicitud.referencia }} · {{ solicitud.asunto }}</strong>
-                <p>
-                  {{ solicitud.nombre }} ·
-                  <a [href]="replyHref(solicitud)">{{ solicitud.email }}</a> ·
-                  {{ solicitud.creadaEn | date: 'dd.MM.yyyy HH:mm' }}
-                </p>
-              </div>
-              <div class="actions">
-                @if (solicitud.estado === 'NUEVA') {
-                  <button type="button" class="ghost" (click)="setStatus(solicitud, 'ATENDIDA')">
-                    Marcar atendida
-                  </button>
-                } @else {
-                  <button type="button" class="ghost" (click)="setStatus(solicitud, 'NUEVA')">
-                    Volver a pendiente
-                  </button>
-                }
-                <button type="button" class="danger" (click)="remove(solicitud)">Borrar</button>
-              </div>
-            </div>
-            <dl class="request-data">
-              @for (dato of details(solicitud); track dato.clave) {
-                <div [class.is-wide]="dato.valor.length > 60">
-                  <dt>{{ dato.etiqueta }}</dt>
-                  <dd>{{ dato.valor }}</dd>
-                </div>
-              }
-            </dl>
-          </article>
-        } @empty {
-          <p>No hay solicitudes en esta bandeja.</p>
-        }
-      </div>
+<div class="toolbar">
+  <label class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+    <span class="visually-hidden">Buscar solicitudes</span>
+    <input
+      type="search"
+      placeholder="Referencia, nombre o texto"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+  </label>
+  <div class="segmented" role="group" aria-label="Filtrar solicitudes">
+    @for (option of filters(); track option.value) {
+      <button
+        type="button"
+        [attr.aria-pressed]="filter() === option.value"
+        (click)="filter.set(option.value)"
+      >
+        {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
+      </button>
     }
   </div>
-</section>
+</div>
+
+@if (feedback(); as aviso) {
+  <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+}
+
+@if (loading() && !all().length) {
+  <p class="empty">Cargando solicitudes…</p>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se han podido cargar las solicitudes.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else {
+  <ul class="inbox">
+    @for (solicitud of visible(); track solicitud.idSolicitud) {
+      <li class="inbox-item" [class.is-new]="solicitud.estado === 'NUEVA'">
+        <div class="inbox-head">
+          <div class="inbox-title">
+            <span class="cell-main">{{ solicitud.asunto }}</span>
+            <span class="cell-sub">
+              {{ solicitud.referencia }} · {{ solicitud.nombre }} ·
+              <a class="text-link" [href]="replyHref(solicitud)">{{ solicitud.email }}</a> ·
+              {{ when(solicitud.creadaEn) }}
+            </span>
+          </div>
+          <span class="badge" [attr.data-tone]="solicitud.estado === 'NUEVA' ? 'alert' : 'off'">{{
+            solicitud.estado === 'NUEVA' ? 'Sin atender' : 'Atendida'
+          }}</span>
+        </div>
+        <dl class="inbox-data">
+          @for (dato of details(solicitud); track dato.clave) {
+            <div [class.is-wide]="dato.valor.length > 60">
+              <dt>{{ dato.etiqueta }}</dt>
+              <dd>{{ dato.valor }}</dd>
+            </div>
+          }
+        </dl>
+        <div class="row-actions inbox-actions">
+          <a class="btn btn-small" [href]="replyHref(solicitud)">Responder</a>
+          @if (solicitud.estado === 'NUEVA') {
+            <button
+              type="button"
+              class="btn btn-small"
+              [disabled]="busy() === solicitud.idSolicitud"
+              (click)="setStatus(solicitud, 'ATENDIDA')"
+            >
+              Marcar atendida
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-small"
+              [disabled]="busy() === solicitud.idSolicitud"
+              (click)="setStatus(solicitud, 'NUEVA')"
+            >
+              Volver a pendiente
+            </button>
+          }
+          <button
+            type="button"
+            class="btn btn-small btn-danger"
+            [disabled]="busy() === solicitud.idSolicitud"
+            (click)="remove(solicitud)"
+          >
+            Borrar<span class="visually-hidden"> {{ solicitud.referencia }}</span>
+          </button>
+        </div>
+      </li>
+    } @empty {
+      <li class="empty">
+        {{ all().length ? 'No hay solicitudes en esta bandeja.' : 'Todavía no ha llegado ninguna solicitud.' }}
+      </li>
+    }
+  </ul>
+}

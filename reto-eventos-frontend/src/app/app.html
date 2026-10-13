@@ -38,7 +38,7 @@
       <span class="user-pill">
         {{ authService.currentUser()?.nombre }} · {{ authService.currentUser()?.perfil === 'ROLE_ADMON' ? 'Admin' : 'Cliente' }}
       </span>
-      <a class="ghost-btn auth-action" *ngIf="!authService.isAdmin()" routerLink="/reservas" (click)="closeMenu()">Mi panel</a>
+      <a class="ghost-btn auth-action" *ngIf="!authService.isAdmin()" routerLink="/cuenta" (click)="closeMenu()">Mi panel</a>
       <a class="ghost-btn auth-action" *ngIf="authService.isAdmin()" routerLink="/admin" (click)="closeMenu()">Admin</a>
       <button type="button" class="secondary-btn auth-action" (click)="logout()">Salir</button>
     </div>

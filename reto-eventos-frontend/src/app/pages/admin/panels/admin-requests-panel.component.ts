@@ -1,15 +1,11 @@
-import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { RequestService } from '../../../core/services/request.service';
 import { EstadoSolicitud, Solicitud } from '../../../models/api.models';
+import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
+import { errorMessage, formatDayTime, matches } from '../../../shared/panel/panel-format';
+import { AdminSummaryService } from '../admin-summary.service';
 
 type Filter = 'NUEVA' | 'ATENDIDA' | 'TODAS';
 
@@ -20,110 +16,50 @@ type Filter = 'NUEVA' | 'ATENDIDA' | 'TODAS';
 @Component({
   selector: 'app-admin-requests-panel',
   standalone: true,
-  imports: [DatePipe],
+  imports: [FormsModule],
   templateUrl: './admin-requests-panel.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: `
-    .requests-panel {
-      grid-column: 1 / -1;
-    }
-
-    .request-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .request-filters button[aria-pressed='true'] {
-      background: #ff7f7f;
-      color: #211e24;
-    }
-
-    .request-card,
-    .request-card :is(p, dl) {
-      font-family: 'Nunito', sans-serif;
-    }
-
-    .request-card a {
-      color: #f1ecef;
-      text-underline-offset: 0.2em;
-    }
-
-    .request-card {
-      display: grid;
-      gap: 0.75rem;
-      padding: 1rem 1.1rem;
-      border-radius: 18px;
-      background: #211e24;
-    }
-
-    .request-card.is-new {
-      box-shadow: inset 3px 0 0 #ff7f7f;
-    }
-
-    .request-card-head {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 0.5rem 1rem;
-    }
-
-    .request-card-head p {
-      margin: 0.2rem 0 0;
-      color: #b9afb6;
-    }
-
-    .request-data {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-      gap: 0.5rem 1.25rem;
-      margin: 0;
-    }
-
-    .request-data dt {
-      color: #b9afb6;
-      font-size: 0.8rem;
-    }
-
-    .request-data dd {
-      margin: 0.1rem 0 0;
-      overflow-wrap: anywhere;
-      white-space: pre-line;
-    }
-
-    .request-data .is-wide {
-      grid-column: 1 / -1;
-    }
-
-    .panel-feedback {
-      margin: 0;
-      color: #b9afb6;
-    }
-
-    .panel-feedback.is-error {
-      color: #fca5a5;
-    }
-  `,
+  styleUrls: ['../../../shared/panel/panel.css', './admin-requests-panel.component.css'],
 })
 export class AdminRequestsPanelComponent implements OnInit {
   private readonly requests = inject(RequestService);
+  private readonly confirm = inject(PanelConfirmService);
+  private readonly summary = inject(AdminSummaryService);
 
   readonly all = signal<Solicitud[]>([]);
   readonly filter = signal<Filter>('NUEVA');
+  readonly query = signal('');
   readonly loading = signal(true);
+  readonly loadError = signal(false);
+  readonly busy = signal<number | null>(null);
   readonly feedback = signal<{ text: string; error: boolean } | null>(null);
+
+  readonly filters = computed(() => {
+    const list = this.all();
+    return [
+      { value: 'NUEVA' as Filter, label: 'Sin atender', count: list.filter((s) => s.estado === 'NUEVA').length },
+      { value: 'ATENDIDA' as Filter, label: 'Atendidas', count: list.filter((s) => s.estado === 'ATENDIDA').length },
+      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
+    ];
+  });
 
   readonly visible = computed(() => {
     const filter = this.filter();
-    return filter === 'TODAS' ? this.all() : this.all().filter(({ estado }) => estado === filter);
+    const query = this.query();
+    return this.all().filter(
+      (solicitud) =>
+        (filter === 'TODAS' || solicitud.estado === filter) &&
+        matches(
+          query,
+          solicitud.referencia,
+          solicitud.asunto,
+          solicitud.nombre,
+          solicitud.email,
+          ...solicitud.datos.map(({ valor }) => valor),
+        ),
+    );
   });
-  readonly newCount = computed(() => this.all().filter(({ estado }) => estado === 'NUEVA').length);
 
-  readonly filters: { value: Filter; label: string }[] = [
-    { value: 'NUEVA', label: 'Nuevas' },
-    { value: 'ATENDIDA', label: 'Atendidas' },
-    { value: 'TODAS', label: 'Todas' },
-  ];
+  readonly when = formatDayTime;
 
   ngOnInit(): void {
     this.load();
@@ -131,6 +67,7 @@ export class AdminRequestsPanelComponent implements OnInit {
 
   load(): void {
     this.loading.set(true);
+    this.loadError.set(false);
     this.requests.list().subscribe({
       next: (solicitudes) => {
         this.all.set(solicitudes);
@@ -139,14 +76,17 @@ export class AdminRequestsPanelComponent implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.feedback.set({ text: 'No se han podido cargar las solicitudes.', error: true });
+        this.loadError.set(true);
       },
     });
+    this.summary.refresh();
   }
 
   setStatus(solicitud: Solicitud, estado: EstadoSolicitud): void {
+    this.busy.set(solicitud.idSolicitud);
     this.requests.setStatus(solicitud.idSolicitud, estado).subscribe({
       next: (updated) => {
+        this.busy.set(null);
         this.all.update((list) =>
           list.map((item) => (item.idSolicitud === updated.idSolicitud ? updated : item)),
         );
@@ -154,25 +94,37 @@ export class AdminRequestsPanelComponent implements OnInit {
           text: `${updated.referencia}: ${estado === 'ATENDIDA' ? 'atendida' : 'pendiente de nuevo'}.`,
           error: false,
         });
+        this.summary.refresh();
       },
-      error: () => this.feedback.set({ text: 'No se ha podido cambiar el estado.', error: true }),
+      error: (error) => {
+        this.busy.set(null);
+        this.feedback.set({ text: errorMessage(error, 'No se ha podido cambiar el estado.'), error: true });
+      },
     });
   }
 
-  remove(solicitud: Solicitud): void {
-    if (
-      !confirm(`¿Borrar la solicitud ${solicitud.referencia}? Sus datos se eliminan para siempre.`)
-    ) {
+  async remove(solicitud: Solicitud): Promise<void> {
+    const confirmed = await this.confirm.ask({
+      title: `¿Borrar la solicitud ${solicitud.referencia}?`,
+      message: 'Sus datos se eliminan para siempre. Si solo está resuelta, márcala como atendida.',
+      confirm: 'Borrar solicitud',
+      danger: true,
+    });
+    if (!confirmed) {
       return;
     }
+    this.busy.set(solicitud.idSolicitud);
     this.requests.remove(solicitud.idSolicitud).subscribe({
       next: () => {
-        this.all.update((list) =>
-          list.filter((item) => item.idSolicitud !== solicitud.idSolicitud),
-        );
+        this.busy.set(null);
+        this.all.update((list) => list.filter((item) => item.idSolicitud !== solicitud.idSolicitud));
         this.feedback.set({ text: `${solicitud.referencia} borrada.`, error: false });
+        this.summary.refresh();
       },
-      error: () => this.feedback.set({ text: 'No se ha podido borrar la solicitud.', error: true }),
+      error: (error) => {
+        this.busy.set(null);
+        this.feedback.set({ text: errorMessage(error, 'No se ha podido borrar la solicitud.'), error: true });
+      },
     });
   }
 

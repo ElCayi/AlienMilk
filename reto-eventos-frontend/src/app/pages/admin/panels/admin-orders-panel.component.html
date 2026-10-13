@@ -1,124 +1,134 @@
-<section class="admin-grid">
-  <div class="panel orders-panel">
-    <div class="block-header compact">
-      <div>
-        <h2>Pedidos</h2>
-        <p class="block-helper">
-          Lo que sale del centro de distribución: márcalo cuando salga y cuando se entregue.
-          {{ toPrepare() }} por preparar.
-        </p>
-      </div>
-      <button type="button" class="ghost" (click)="load()">Actualizar</button>
-    </div>
+<header class="section-head">
+  <div>
+    <h2>Pedidos</h2>
+    <p>
+      Lo que sale del centro de distribución: márcalo cuando salga y cuando se entregue. Un pedido se
+      puede anular mientras no haya salido; si se pagó con tarjeta, se devuelve el importe.
+    </p>
+  </div>
+  <div class="section-head-actions">
+    <button type="button" class="btn" [disabled]="loading()" (click)="load()">Actualizar</button>
+  </div>
+</header>
 
-    <div class="order-filters" role="group" aria-label="Filtrar pedidos">
-      @for (option of filters; track option.value) {
-        <button
-          type="button"
-          class="ghost"
-          [attr.aria-pressed]="filter() === option.value"
-          (click)="filter.set(option.value)"
-        >
-          {{ option.label }}
-        </button>
-      }
-    </div>
-
-    @if (feedback(); as aviso) {
-      <p class="panel-feedback" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+<div class="toolbar">
+  <label class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+    <span class="visually-hidden">Buscar pedidos</span>
+    <input
+      type="search"
+      placeholder="Referencia, cliente o dirección"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+  </label>
+  <div class="segmented" role="group" aria-label="Filtrar pedidos">
+    @for (option of filters(); track option.value) {
+      <button
+        type="button"
+        [attr.aria-pressed]="filter() === option.value"
+        (click)="filter.set(option.value)"
+      >
+        {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
+      </button>
     }
+  </div>
+</div>
 
-    @if (loading() && !all().length) {
-      <p>Cargando pedidos...</p>
-    } @else {
-      <div class="table-list">
+@if (feedback(); as aviso) {
+  <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+}
+
+@if (loading() && !all().length) {
+  <p class="empty">Cargando pedidos…</p>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se han podido cargar los pedidos.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data-table">
+      <caption>Pedidos de la tienda</caption>
+      <thead>
+        <tr>
+          <th scope="col">Pedido</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Entrega</th>
+          <th scope="col" class="num">Total</th>
+          <th scope="col">Estado</th>
+          <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
         @for (order of visible(); track order.pedido.idPedido) {
           @let pedido = order.pedido;
-          <article class="order-card" [class.is-pending]="pedido.estado === 'CONFIRMADO'">
-            <div class="order-card-head">
-              <div>
-                <strong>{{ pedido.referencia }} · {{ price(pedido.total) }}</strong>
-                <span class="order-state">{{ stateLabels[pedido.estado] }}</span>
-                <p>
-                  {{ pedido.nombre ?? order.cuenta }}
-                  ({{ order.cuenta ? 'cuenta ' + order.cuenta : 'invitado' }})
-                  @if (order.correo) {
-                    · <a [href]="replyHref(order)">{{ order.correo }}</a>
-                  }
-                  · {{ pedido.creadoEn | date: 'dd.MM.yyyy HH:mm' }}
-                </p>
-              </div>
-              <div class="actions">
+          <tr>
+            <td class="cell-title">
+              <span class="cell-main">{{ pedido.referencia }}</span>
+              <span class="cell-sub">{{ when(pedido.creadoEn) }}</span>
+              <span class="cell-sub">
+                @for (line of pedido.lineas; track line.producto; let last = $last) {
+                  {{ line.cantidad }} × {{ line.nombre }}{{ last ? '' : ', ' }}
+                }
+              </span>
+            </td>
+            <td data-label="Cliente">
+              {{ pedido.nombre ?? order.cuenta }}
+              <span class="cell-sub">{{ order.cuenta ? 'Cuenta ' + order.cuenta : 'Sin cuenta' }}</span>
+              @if (order.correo) {
+                <span class="cell-sub"><a class="text-link" [href]="replyHref(order)">{{ order.correo }}</a></span>
+              }
+            </td>
+            <td data-label="Entrega">
+              {{ deliveryLabels[pedido.entrega] }}
+              <span class="cell-sub">{{ pedido.direccion ?? 'En la sede' }}</span>
+            </td>
+            <td data-label="Total" class="num">
+              {{ money(pedido.total) }}
+              <span class="cell-sub">{{ payment(order) }}</span>
+            </td>
+            <td data-label="Estado">
+              <span class="badge" [attr.data-tone]="stateTones[pedido.estado]">{{ stateLabels[pedido.estado] }}</span>
+              @if (lastStep(order); as step) {
+                <span class="cell-sub">{{ step }}</span>
+              }
+            </td>
+            <td class="row-actions-cell">
+              <div class="row-actions">
                 @if (order.siguiente) {
                   <button
                     type="button"
-                    class="ghost"
+                    class="btn btn-small"
                     [disabled]="busy() === pedido.idPedido"
                     (click)="advance(order)"
                   >
-                    {{ nextLabel(order) }}
+                    {{ nextLabel(order) }}<span class="visually-hidden"> {{ pedido.referencia }}</span>
                   </button>
                 }
                 @if (order.anulable) {
                   <button
                     type="button"
-                    class="danger"
+                    class="btn btn-small btn-danger"
                     [disabled]="busy() === pedido.idPedido"
                     (click)="cancel(order)"
                   >
-                    Anular
+                    Anular<span class="visually-hidden"> {{ pedido.referencia }}</span>
                   </button>
                 }
               </div>
-            </div>
-            <dl class="order-data">
-              <div>
-                <dt>{{ deliveryLabels[pedido.entrega] }}</dt>
-                <dd>{{ pedido.direccion ?? 'En la sede' }}</dd>
-              </div>
-              <div>
-                <dt>Productos</dt>
-                <dd>
-                  <ul class="order-lines">
-                    @for (line of pedido.lineas; track line.producto) {
-                      <li>{{ line.cantidad }} × {{ line.nombre }}</li>
-                    }
-                  </ul>
-                </dd>
-              </div>
-              <div>
-                <dt>Cobro</dt>
-                <dd>
-                  {{ payment(order) }}
-                  @if (order.pagadoEn && !order.reembolsado) {
-                    · {{ order.pagadoEn | date: 'dd.MM.yyyy HH:mm' }}
-                  }
-                </dd>
-              </div>
-              @if (pedido.enviadoEn) {
-                <div>
-                  <dt>Salida</dt>
-                  <dd>{{ pedido.enviadoEn | date: 'dd.MM.yyyy HH:mm' }}</dd>
-                </div>
-              }
-              @if (pedido.entregadoEn) {
-                <div>
-                  <dt>{{ pedido.entrega === 'RECOGIDA' ? 'Recogida' : 'Entrega' }}</dt>
-                  <dd>{{ pedido.entregadoEn | date: 'dd.MM.yyyy HH:mm' }}</dd>
-                </div>
-              }
-              @if (pedido.anuladoEn) {
-                <div>
-                  <dt>Anulación</dt>
-                  <dd>{{ pedido.anuladoEn | date: 'dd.MM.yyyy HH:mm' }}</dd>
-                </div>
-              }
-            </dl>
-          </article>
+            </td>
+          </tr>
         } @empty {
-          <p>No hay pedidos en esta bandeja.</p>
+          <tr>
+            <td colspan="6" class="cell-title">
+              <p class="empty">
+                {{ all().length ? 'No hay pedidos en esta bandeja.' : 'Todavía no hay pedidos en la tienda.' }}
+              </p>
+            </td>
+          </tr>
         }
-      </div>
-    }
+      </tbody>
+    </table>
   </div>
-</section>
+}

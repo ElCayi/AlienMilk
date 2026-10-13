@@ -1,23 +1,269 @@
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
-import { EventoListado, EventoPayload, TipoEvento } from '../../../models/api.models';
+import { AdminService } from '../../../core/services/admin.service';
+import { EstadoEvento, EventoAdmin, EventoPayload, TipoEvento } from '../../../models/api.models';
+import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
+import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
+import {
+  errorMessage,
+  fieldErrors,
+  formatDay,
+  formatMoney,
+  humanizeCode,
+  matches,
+  plural,
+  sessionState,
+} from '../../../shared/panel/panel-format';
+import { AdminSummaryService } from '../admin-summary.service';
 
+type Filter = 'TODAS' | EstadoEvento;
+
+/**
+ * Sesiones: el programa, con su ocupación. Una sesión nace activa; se cancela (y se puede
+ * reactivar) con sus acciones, no desde el formulario. Con reservas no se borra: se cancela, y sus
+ * clientes la ven cancelada en su panel.
+ */
 @Component({
   selector: 'app-admin-sessions-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, CurrencyPipe],
+  imports: [FormsModule, RouterLink, PanelDialogComponent],
   templateUrl: './admin-sessions-panel.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrl: '../../../shared/panel/panel.css',
 })
-export class AdminSessionsPanelComponent {
-  @Input({ required: true }) eventos: EventoListado[] = [];
-  @Input({ required: true }) tipos: TipoEvento[] = [];
-  @Input({ required: true }) form!: EventoPayload;
-  @Input() editingId: number | null = null;
-  @Output() readonly save = new EventEmitter<void>();
-  @Output() readonly edit = new EventEmitter<number>();
-  @Output() readonly removeRequested = new EventEmitter<number>();
-  @Output() readonly cancelRequested = new EventEmitter<void>();
+export class AdminSessionsPanelComponent implements OnInit {
+  private readonly admin = inject(AdminService);
+  private readonly confirm = inject(PanelConfirmService);
+  private readonly summary = inject(AdminSummaryService);
+
+  readonly sessions = signal<EventoAdmin[]>([]);
+  readonly types = signal<TipoEvento[]>([]);
+  readonly loading = signal(true);
+  readonly loadError = signal(false);
+  readonly notice = signal<{ text: string; error: boolean } | null>(null);
+  /** La sesión con una petición en curso, para no pulsar dos veces. */
+  readonly busy = signal<number | null>(null);
+
+  readonly query = signal('');
+  readonly filter = signal<Filter>('TODAS');
+
+  readonly filters = computed(() => {
+    const list = this.sessions();
+    const count = (estado: EstadoEvento) => list.filter((session) => session.estado === estado).length;
+    return [
+      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
+      { value: 'ACTIVO' as Filter, label: 'Activas', count: count('ACTIVO') },
+      { value: 'CANCELADO' as Filter, label: 'Canceladas', count: count('CANCELADO') },
+      { value: 'TERMINADO' as Filter, label: 'Terminadas', count: count('TERMINADO') },
+    ];
+  });
+
+  readonly visible = computed(() => {
+    const filter = this.filter();
+    const query = this.query();
+    return this.sessions().filter(
+      (session) =>
+        (filter === 'TODAS' || session.estado === filter) &&
+        matches(query, session.nombre, humanizeCode(session.tipoEvento), session.direccion),
+    );
+  });
+
+  // Formulario de alta y edición, en el diálogo.
+  readonly dialog = viewChild.required(PanelDialogComponent);
+  readonly editing = signal<EventoAdmin | null>(null);
+  readonly saving = signal(false);
+  readonly errors = signal<Record<string, string>>({});
+  readonly formError = signal<string | null>(null);
+  form: EventoPayload = emptyForm();
+
+  readonly state = sessionState;
+  readonly day = formatDay;
+  readonly money = formatMoney;
+  readonly typeLabel = humanizeCode;
+  readonly plural = plural;
+
+  ngOnInit(): void {
+    this.load();
+    this.admin.getTipos().subscribe({ next: (types) => this.types.set(types) });
+  }
+
+  load(): void {
+    this.loading.set(true);
+    this.loadError.set(false);
+    this.admin.getEventos().subscribe({
+      next: (sessions) => {
+        this.sessions.set(sessions);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.loadError.set(true);
+      },
+    });
+  }
+
+  /** Porcentaje de ocupación, para la barra. */
+  occupancy(session: EventoAdmin): number {
+    return session.aforoMaximo ? Math.min(100, (session.plazasReservadas / session.aforoMaximo) * 100) : 0;
+  }
+
+  openNew(): void {
+    this.editing.set(null);
+    this.form = emptyForm(this.types()[0]?.idTipo ?? null);
+    this.resetErrors();
+    this.dialog().open();
+  }
+
+  openEdit(session: EventoAdmin): void {
+    this.editing.set(session);
+    this.form = {
+      nombre: session.nombre,
+      descripcion: session.descripcion ?? '',
+      fechaInicio: session.fechaInicio,
+      duracion: session.duracion,
+      direccion: session.direccion ?? '',
+      aforoMaximo: session.aforoMaximo,
+      minimoAsistencia: session.minimoAsistencia,
+      precio: session.precio,
+      idTipo: session.idTipo,
+    };
+    this.resetErrors();
+    this.dialog().open();
+  }
+
+  save(): void {
+    if (this.saving()) {
+      return;
+    }
+    const editing = this.editing();
+    this.saving.set(true);
+    this.resetErrors();
+    const request = editing
+      ? this.admin.actualizarEvento(editing.idEvento, this.form)
+      : this.admin.crearEvento(this.form);
+    request.subscribe({
+      next: (saved) => {
+        this.saving.set(false);
+        this.sessions.update((list) =>
+          editing
+            ? list.map((item) => (item.idEvento === saved.idEvento ? saved : item))
+            : [...list, saved].sort(byDate),
+        );
+        this.dialog().close();
+        this.notice.set({
+          text: editing ? `«${saved.nombre}» actualizada.` : `«${saved.nombre}» creada y activa.`,
+          error: false,
+        });
+        this.summary.refresh();
+      },
+      error: (error) => {
+        this.saving.set(false);
+        const errors = fieldErrors(error);
+        this.errors.set(errors);
+        this.formError.set(
+          Object.keys(errors).length
+            ? 'Revisa los campos marcados.'
+            : errorMessage(error, 'No se ha podido guardar la sesión.'),
+        );
+      },
+    });
+  }
+
+  async cancelSession(session: EventoAdmin): Promise<void> {
+    const reservations =
+      session.reservas === 0
+        ? 'No tiene reservas.'
+        : session.reservas === 1
+          ? 'Su reserva se conserva y su cliente la verá cancelada.'
+          : `Sus ${session.reservas} reservas se conservan y sus clientes la verán cancelada.`;
+    const confirmed = await this.confirm.ask({
+      title: '¿Cancelar la sesión?',
+      message: `«${session.nombre}» dejará de admitir reservas. ${reservations} Podrás reactivarla después.`,
+      confirm: 'Cancelar sesión',
+      danger: true,
+    });
+    if (confirmed) {
+      this.changeState(session, this.admin.cancelarEvento(session.idEvento), 'cancelada');
+    }
+  }
+
+  reactivate(session: EventoAdmin): void {
+    this.changeState(session, this.admin.reactivarEvento(session.idEvento), 'activa de nuevo');
+  }
+
+  async remove(session: EventoAdmin): Promise<void> {
+    const confirmed = await this.confirm.ask({
+      title: '¿Borrar la sesión?',
+      message: `«${session.nombre}» desaparecerá del programa y del panel. No se puede deshacer.`,
+      confirm: 'Borrar sesión',
+      danger: true,
+    });
+    if (!confirmed) {
+      return;
+    }
+    this.busy.set(session.idEvento);
+    this.admin.borrarEvento(session.idEvento).subscribe({
+      next: () => {
+        this.busy.set(null);
+        this.sessions.update((list) => list.filter((item) => item.idEvento !== session.idEvento));
+        this.notice.set({ text: `«${session.nombre}» borrada.`, error: false });
+        this.summary.refresh();
+      },
+      error: (error) => this.fail(error, 'No se ha podido borrar la sesión.'),
+    });
+  }
+
+  error(field: string): string | null {
+    return this.errors()[field] ?? null;
+  }
+
+  private changeState(
+    session: EventoAdmin,
+    request: ReturnType<AdminService['cancelarEvento']>,
+    done: string,
+  ): void {
+    this.busy.set(session.idEvento);
+    request.subscribe({
+      next: (updated) => {
+        this.busy.set(null);
+        this.sessions.update((list) =>
+          list.map((item) => (item.idEvento === updated.idEvento ? updated : item)),
+        );
+        this.notice.set({ text: `«${updated.nombre}» ${done}.`, error: false });
+        this.summary.refresh();
+      },
+      error: (error) => this.fail(error, 'No se ha podido cambiar el estado de la sesión.'),
+    });
+  }
+
+  private fail(error: unknown, fallback: string): void {
+    this.busy.set(null);
+    this.notice.set({ text: errorMessage(error, fallback), error: true });
+    // Lo más probable es que la sesión haya cambiado entretanto (una reserva nueva, por ejemplo).
+    this.load();
+  }
+
+  private resetErrors(): void {
+    this.errors.set({});
+    this.formError.set(null);
+  }
+}
+
+function emptyForm(idTipo: number | null = null): EventoPayload {
+  return {
+    nombre: '',
+    descripcion: '',
+    fechaInicio: '',
+    duracion: 90,
+    direccion: '',
+    aforoMaximo: 50,
+    minimoAsistencia: 10,
+    precio: 20,
+    idTipo,
+  };
+}
+
+function byDate(a: EventoAdmin, b: EventoAdmin): number {
+  return a.fechaInicio.localeCompare(b.fechaInicio) || a.idEvento - b.idEvento;
 }

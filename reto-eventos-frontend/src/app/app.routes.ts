@@ -96,28 +96,25 @@ export const routes: Routes = [
         ({ EventDetailPageComponent }) => EventDetailPageComponent,
       ),
   },
+  // Mi panel: las reservas y los pedidos de la cuenta, cada uno en su dirección.
   {
-    path: 'reservas',
+    path: 'cuenta',
     loadComponent: () =>
-      import('./pages/reservations/reservations-page.component').then(
-        ({ ReservationsPageComponent }) => ReservationsPageComponent,
+      import('./pages/account/account-page.component').then(
+        ({ AccountPageComponent }) => AccountPageComponent,
       ),
+    loadChildren: () => import('./pages/account/account.routes').then(({ ACCOUNT_ROUTES }) => ACCOUNT_ROUTES),
     canActivate: [authGuard],
   },
+  // La antigua dirección de «Mis reservas», por si alguien la guardó.
+  { path: 'reservas', pathMatch: 'full', redirectTo: 'cuenta/reservas' },
   {
     path: 'admin',
     loadComponent: () =>
       import('./pages/admin/admin-page.component').then(
         ({ AdminPageComponent }) => AdminPageComponent,
       ),
-    canActivate: [adminGuard],
-  },
-  {
-    path: 'admin/reservas',
-    loadComponent: () =>
-      import('./pages/admin-reservations/admin-reservations-page.component').then(
-        ({ AdminReservationsPageComponent }) => AdminReservationsPageComponent,
-      ),
+    loadChildren: () => import('./pages/admin/admin.routes').then(({ ADMIN_ROUTES }) => ADMIN_ROUTES),
     canActivate: [adminGuard],
   },
   { path: '**', redirectTo: '' },

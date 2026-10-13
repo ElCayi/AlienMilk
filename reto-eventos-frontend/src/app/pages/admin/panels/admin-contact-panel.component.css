@@ -1,0 +1,123 @@
+/* Ficha de contacto: el formulario a la izquierda y, a la derecha, cómo quedará. */
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+  margin-top: 1.5rem;
+}
+
+/* Los días, en cajas iguales que se marcan como pulsadas. */
+.day-picker {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.day-picker label {
+  position: relative;
+  cursor: pointer;
+}
+
+.day-picker input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.day-picker span {
+  display: block;
+  padding: 0.6rem 0.4rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-muted);
+  background: var(--field);
+  font:
+    700 0.9rem / 1.2 'Nunito',
+    sans-serif;
+  text-align: center;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.day-picker label:hover span {
+  border-color: var(--paper-ink);
+}
+
+.day-picker input:checked + span {
+  border-color: var(--paper-ink);
+  color: var(--paper);
+  background: var(--paper-ink);
+}
+
+.day-picker input:focus-visible + span {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* La vista previa, en una ficha como las de datos de la web: rótulo pequeño y valor. */
+.contact-preview {
+  position: sticky;
+  top: calc(var(--topbar-height, 4rem) + 1rem);
+  padding: 1.25rem 1.35rem 1.4rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.75rem;
+  background: var(--field);
+}
+
+.contact-preview h3 {
+  margin: 0;
+  font: 400 1.6rem / 1.1 var(--condensed);
+}
+
+.contact-preview dl {
+  display: grid;
+  margin: 1rem 0 0;
+}
+
+.contact-preview dl div {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.contact-preview dt {
+  color: var(--paper-faint);
+  font:
+    800 0.62rem / 1.6 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contact-preview dd {
+  margin: 0.2rem 0 0;
+  font:
+    600 0.98rem / 1.45 'Nunito',
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.contact-unsaved {
+  margin: 0.5rem 0 0;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--coral);
+  color: var(--coral-ink);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1100px) {
+  .contact-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contact-preview {
+    position: static;
+  }
+}
+
+@media (max-width: 420px) {
+  .day-picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

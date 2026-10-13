@@ -67,7 +67,7 @@ export class LoginPageComponent {
           return;
         }
 
-        this.router.navigateByUrl(user.perfil === 'ROLE_ADMON' ? '/admin' : '/reservas');
+        this.router.navigateByUrl(user.perfil === 'ROLE_ADMON' ? '/admin' : '/cuenta');
       },
       error: () => {
         this.loading.set(false);

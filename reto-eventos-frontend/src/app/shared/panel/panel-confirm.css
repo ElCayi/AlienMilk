@@ -1,0 +1,36 @@
+/* La confirmación: el diálogo de los paneles, más estrecho y sin cabecera aparte. */
+.panel-confirm {
+  width: min(28rem, calc(100vw - 2rem));
+}
+
+.panel-confirm-body {
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+}
+
+.panel-confirm h2 {
+  margin: 0;
+  font:
+    400 clamp(1.7rem, 2.2vw, 2rem) / 1.1 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+}
+
+.panel-confirm p {
+  margin: 0.85rem 0 0;
+  color: var(--paper-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.panel-confirm .form-actions {
+  margin-top: 1.5rem;
+}
+
+/* El botón que borra o anula, relleno de coral oscuro. */
+.btn-danger-fill {
+  border-color: var(--coral-ink);
+  background: var(--coral-ink);
+}

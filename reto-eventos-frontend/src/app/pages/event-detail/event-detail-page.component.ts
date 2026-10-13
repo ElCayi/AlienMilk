@@ -69,7 +69,7 @@ export class EventDetailPageComponent implements OnInit {
     this.reservationService.reservar(evento.idEvento, this.cantidad, this.observaciones).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigateByUrl('/reservas');
+        this.router.navigateByUrl('/cuenta/reservas');
       },
       error: (err) => {
         this.loading.set(false);

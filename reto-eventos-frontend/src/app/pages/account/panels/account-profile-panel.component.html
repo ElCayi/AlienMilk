@@ -1,0 +1,85 @@
+<header class="section-head">
+  <div>
+    <h2>Mi cuenta</h2>
+    <p>Los datos con los que entras en AlienMilk Sessions.</p>
+  </div>
+</header>
+
+@if (user(); as cuenta) {
+  <dl class="account-data">
+    <div>
+      <dt>Usuario</dt>
+      <dd>{{ cuenta.username }}</dd>
+    </div>
+    <div>
+      <dt>Nombre</dt>
+      <dd>{{ cuenta.nombre }}</dd>
+    </div>
+    <div>
+      <dt>Perfil</dt>
+      <dd>{{ profile(cuenta.perfil) }}</dd>
+    </div>
+  </dl>
+}
+
+<section class="danger-zone" aria-labelledby="delete-title">
+  <h3 id="delete-title" class="subsection-title">Eliminar la cuenta</h3>
+  @if (isAdmin()) {
+    <p>
+      Esta es una cuenta de administración: solo la puede borrar otra cuenta de administración, desde
+      el panel de control.
+    </p>
+  } @else {
+    <p>
+      Se borran tu cuenta y tus reservas, y las plazas quedan libres para otras personas. Los pedidos
+      ya entregados o anulados se conservan como registro de la venta, sin enlace a ninguna cuenta.
+      No se puede deshacer.
+    </p>
+    @if (ordersInProgress()) {
+      <p class="notice is-error">
+        Tienes pedidos en curso. Podrás borrar la cuenta cuando se entreguen, o si los anulas desde
+        <a class="text-link" routerLink="/cuenta/pedidos">Mis pedidos</a>.
+      </p>
+    }
+    <button type="button" class="btn btn-danger" [disabled]="blocked()" (click)="openDelete()">
+      Eliminar mi cuenta
+    </button>
+  }
+</section>
+
+<app-panel-dialog heading="Eliminar mi cuenta">
+  <form novalidate (ngSubmit)="confirmDelete()">
+    <p class="dialog-text">
+      @if (activeReservations()) {
+        {{ activeReservations() === 1 ? 'Se cancela también tu reserva activa.' : 'Se cancelan también tus ' + activeReservations() + ' reservas activas.' }}
+      }
+      Escribe tu contraseña para confirmar. Después se cerrará la sesión.
+    </p>
+    <div class="form-grid">
+      <div class="field is-wide" [class.is-invalid]="passwordError()">
+        <label class="field-label" for="delete-password">Contraseña</label>
+        <input
+          id="delete-password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          [(ngModel)]="password"
+        />
+        @if (passwordError(); as message) {
+          <p class="field-error">{{ message }}</p>
+        }
+      </div>
+    </div>
+
+    @if (formError(); as message) {
+      <p class="notice is-error form-error" role="alert">{{ message }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="dialog().close()">Volver</button>
+      <button type="submit" class="btn btn-primary btn-danger-fill" [disabled]="deleting()" [attr.aria-busy]="deleting()">
+        {{ deleting() ? 'Eliminando…' : 'Eliminar mi cuenta' }}
+      </button>
+    </div>
+  </form>
+</app-panel-dialog>

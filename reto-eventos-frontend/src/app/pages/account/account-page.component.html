@@ -1,0 +1,68 @@
+<article class="secondary-page panel-page" aria-labelledby="account-title">
+  <div class="secondary-stage panel-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/cuenta">Mi panel</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ section() }}</span>
+    </nav>
+
+    <header class="panel-header">
+      <div class="panel-heading">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>AlienMilk / Área personal</span>
+        </p>
+        <h1 id="account-title">Mi panel</h1>
+        <p class="panel-subtitle">
+          @if (name()) {
+            Hola, {{ name() }}.
+          } @else {
+            Hola.
+          }
+          Tus sesiones reservadas y tus pedidos de la tienda.
+        </p>
+      </div>
+
+      <div class="account-shortcuts">
+        <a class="line-action" routerLink="/sesiones">
+          <span class="line-action-label">Ver el programa</span>
+          <span class="line-action-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+          ></span>
+        </a>
+        <a class="line-action" routerLink="/tienda">
+          <span class="line-action-label">Ir a la tienda</span>
+          <span class="line-action-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+          ></span>
+        </a>
+      </div>
+    </header>
+  </div>
+
+  <nav class="panel-tabs account-tabs" aria-label="Secciones de Mi panel">
+    <a class="panel-tab" routerLink="reservas" routerLinkActive="is-open" ariaCurrentWhenActive="page">
+      <span class="panel-tab-label">Reservas</span>
+      @if (store.activeReservations(); as count) {
+        <span class="panel-tab-total" [attr.aria-label]="count + ' activas'">{{ count }}</span>
+      }
+    </a>
+    <a class="panel-tab" routerLink="pedidos" routerLinkActive="is-open" ariaCurrentWhenActive="page">
+      <span class="panel-tab-label">Pedidos</span>
+      @if (store.ordersInProgress(); as count) {
+        <span class="panel-tab-total" [attr.aria-label]="count + ' en curso'">{{ count }}</span>
+      }
+    </a>
+    <a class="panel-tab" routerLink="datos" routerLinkActive="is-open" ariaCurrentWhenActive="page">
+      <span class="panel-tab-label">Cuenta</span>
+    </a>
+  </nav>
+
+  <section class="panel-surface">
+    <router-outlet />
+  </section>
+
+  <app-panel-confirm />
+</article>

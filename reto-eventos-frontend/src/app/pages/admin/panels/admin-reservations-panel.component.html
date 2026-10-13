@@ -1,0 +1,190 @@
+<header class="section-head">
+  <div>
+    <h2>Reservas</h2>
+    <p>
+      Las plazas reservadas por cada cuenta. Desde aquí se apunta a alguien a mano o se cancela su
+      reserva; el aforo y el máximo de diez plazas por persona y sesión los comprueba el servidor.
+    </p>
+  </div>
+  <div class="section-head-actions">
+    <button type="button" class="btn btn-primary" [disabled]="loading()" (click)="openNew()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      Nueva reserva
+    </button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <label class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+    <span class="visually-hidden">Buscar reservas</span>
+    <input
+      type="search"
+      placeholder="Cliente, cuenta o sesión"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+  </label>
+  <label>
+    <span class="visually-hidden">Filtrar por sesión</span>
+    <select [ngModel]="sessionFilter()" (ngModelChange)="filterBySession($event)">
+      <option [ngValue]="0">Todas las sesiones</option>
+      @for (session of sessions(); track session.idEvento) {
+        <option [ngValue]="session.idEvento">{{ session.nombre }} · {{ day(session.fechaInicio) }}</option>
+      }
+    </select>
+  </label>
+</div>
+
+@if (notice(); as aviso) {
+  <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+}
+
+@if (loading() && !reservations().length) {
+  <p class="empty">Cargando reservas…</p>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se han podido cargar las reservas.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data-table">
+      <caption>Reservas</caption>
+      <thead>
+        <tr>
+          <th scope="col">Cliente</th>
+          <th scope="col">Sesión</th>
+          <th scope="col" class="num">Plazas</th>
+          <th scope="col" class="num">Importe</th>
+          <th scope="col">Estado</th>
+          <th scope="col">Observaciones</th>
+          <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (reserva of visible(); track reserva.idReserva) {
+          @let estado = state(reserva.estadoEvento);
+          <tr>
+            <td class="cell-title">
+              <span class="cell-main">{{ reserva.nombreCliente }}</span>
+              <span class="cell-sub">{{ reserva.username }}</span>
+            </td>
+            <td data-label="Sesión">
+              {{ reserva.nombreEvento }}
+              <span class="cell-sub">{{ day(reserva.fechaInicioEvento) }}</span>
+            </td>
+            <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
+            <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
+            <td data-label="Estado">
+              <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+            </td>
+            <td data-label="Observaciones">
+              @if (reserva.observaciones) {
+                <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
+              } @else {
+                <span class="cell-sub">—</span>
+              }
+            </td>
+            <td class="row-actions-cell">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="btn btn-small btn-danger"
+                  [disabled]="busy() === reserva.idReserva"
+                  (click)="cancel(reserva)"
+                >
+                  Cancelar<span class="visually-hidden"> la reserva de {{ reserva.nombreCliente }}</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="cell-title">
+              <p class="empty">
+                {{ reservations().length ? 'Ninguna reserva coincide con la búsqueda.' : 'Todavía no hay reservas.' }}
+              </p>
+            </td>
+          </tr>
+        }
+      </tbody>
+      @if (visible().length > 1) {
+        <tfoot>
+          <tr>
+            <td class="cell-title" colspan="2">
+              <span class="cell-sub">{{ plural(visible().length, 'reserva', 'reservas') }}</span>
+            </td>
+            <td data-label="Plazas" class="num">{{ totals().plazas }}</td>
+            <td data-label="Importe" class="num">{{ money(totals().importe) }}</td>
+            <td colspan="3"></td>
+          </tr>
+        </tfoot>
+      }
+    </table>
+  </div>
+}
+
+<app-panel-dialog heading="Nueva reserva">
+  <form novalidate (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field is-wide">
+        <label class="field-label" for="reservation-user">Cuenta</label>
+        <select id="reservation-user" name="username" [(ngModel)]="form.username">
+          <option value="" disabled>Elige una cuenta</option>
+          @for (user of users(); track user.username) {
+            <option [value]="user.username" [disabled]="!user.enabled">
+              {{ user.nombre }} {{ user.apellidos }} · {{ user.username }} ({{ profile(user.perfil) }}){{ user.enabled ? '' : ' · desactivada' }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="field is-wide">
+        <label class="field-label" for="reservation-session">Sesión <span class="field-note">solo las activas</span></label>
+        <select id="reservation-session" name="idEvento" [(ngModel)]="form.idEvento">
+          <option [ngValue]="null" disabled>Elige una sesión</option>
+          @for (session of openSessions(); track session.idEvento) {
+            <option [ngValue]="session.idEvento" [disabled]="!free(session)">
+              {{ session.nombre }} · {{ day(session.fechaInicio) }} · {{ free(session) ? plural(free(session), 'plaza libre', 'plazas libres') : 'completa' }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="reservation-seats">Plazas <span class="field-note">de 1 a {{ maxForSelected() }}</span></label>
+        <input id="reservation-seats" name="cantidad" type="number" min="1" [max]="maxForSelected()" [(ngModel)]="form.cantidad" />
+      </div>
+
+      <div class="field">
+        <span class="field-label">Importe</span>
+        <p class="field-help">
+          @if (selectedSession(); as session) {
+            {{ money(session.precio * (form.cantidad || 0)) }} ({{ money(session.precio) }} por plaza)
+          } @else {
+            Según la sesión
+          }
+        </p>
+      </div>
+
+      <div class="field is-wide">
+        <label class="field-label" for="reservation-notes">
+          Observaciones <span class="field-note">{{ form.observaciones.length }}/200</span>
+        </label>
+        <textarea id="reservation-notes" name="observaciones" rows="3" maxlength="200" [(ngModel)]="form.observaciones"></textarea>
+      </div>
+    </div>
+
+    @if (formError(); as message) {
+      <p class="notice is-error form-error" role="alert">{{ message }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="dialog().close()">Volver</button>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()">
+        {{ saving() ? 'Reservando…' : 'Crear reserva' }}
+      </button>
+    </div>
+  </form>
+</app-panel-dialog>

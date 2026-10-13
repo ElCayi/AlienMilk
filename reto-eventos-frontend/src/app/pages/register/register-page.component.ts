@@ -51,7 +51,7 @@ export class RegisterPageComponent {
           this.authService.login(this.username, this.password).subscribe({
             next: () => {
               this.loading.set(false);
-              this.router.navigateByUrl('/reservas');
+              this.router.navigateByUrl('/cuenta/reservas');
             },
             error: () => {
               this.loading.set(false);

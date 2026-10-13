@@ -1,41 +1,126 @@
-<section class="admin-grid">
-        <form class="panel small-panel" (ngSubmit)="save.emit()">
-          <div class="block-header compact">
-            <div>
-              <h2>{{ editingId === null ? 'Alta tipo' : 'Editar tipo' }}</h2>
-              <p class="block-helper">Clasificacion de sesiones.</p>
-            </div>
-            <button *ngIf="editingId !== null" type="button" class="ghost" (click)="cancelRequested.emit()">
-              Nuevo
-            </button>
-          </div>
+<header class="section-head">
+  <div>
+    <h2>Tipos de sesión</h2>
+    <p>
+      La clasificación del programa, que es también el filtro de la página de sesiones. Un tipo con
+      sesiones no se puede borrar.
+    </p>
+  </div>
+  <div class="section-head-actions">
+    <button type="button" class="btn btn-primary" (click)="openNew()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      Nuevo tipo
+    </button>
+  </div>
+</header>
 
-          <input [(ngModel)]="form.nombre" name="tipoNombre" placeholder="Nombre" required />
-          <textarea
-            [(ngModel)]="form.descripcion"
-            name="tipoDescripcion"
-            rows="3"
-            placeholder="Descripcion"
-          ></textarea>
-          <button type="submit">{{ editingId === null ? 'Crear tipo' : 'Guardar tipo' }}</button>
-        </form>
+@if (notice(); as aviso) {
+  <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+}
 
-        <div class="panel small-panel">
-          <div>
-            <h2>Tipos</h2>
-            <p class="block-helper">Editar o eliminar tipos de evento.</p>
-          </div>
-          <div class="mini-list">
-            <article *ngFor="let tipo of tipos">
-              <div>
-                <strong>{{ tipo.nombre }}</strong>
-                <p>{{ tipo.descripcion }}</p>
+@if (loading() && !types().length) {
+  <p class="empty">Cargando tipos…</p>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se han podido cargar los tipos.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data-table">
+      <caption>Tipos de sesión</caption>
+      <thead>
+        <tr>
+          <th scope="col">Tipo</th>
+          <th scope="col">Descripción</th>
+          <th scope="col" class="num">Sesiones</th>
+          <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (type of types(); track type.idTipo) {
+          <tr>
+            <td class="cell-title">
+              <span class="cell-main">{{ label(type.nombre) }}</span>
+              <span class="cell-sub">{{ type.nombre }}</span>
+            </td>
+            <td data-label="Descripción">
+              @if (type.descripcion) {
+                {{ type.descripcion }}
+              } @else {
+                <span class="cell-sub">—</span>
+              }
+            </td>
+            <td data-label="Sesiones" class="num">{{ type.sesiones }}</td>
+            <td class="row-actions-cell">
+              <div class="row-actions">
+                <button type="button" class="btn btn-small" (click)="openEdit(type)">
+                  Editar<span class="visually-hidden"> {{ label(type.nombre) }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-small btn-danger"
+                  [disabled]="type.sesiones > 0 || busy() === type.idTipo"
+                  [title]="type.sesiones > 0 ? 'Tiene ' + plural(type.sesiones, 'sesión', 'sesiones') + ': no se puede borrar' : ''"
+                  (click)="remove(type)"
+                >
+                  Borrar<span class="visually-hidden"> {{ label(type.nombre) }}</span>
+                </button>
               </div>
-              <div class="actions">
-                <button type="button" class="ghost" (click)="edit.emit(tipo)">Editar</button>
-                <button type="button" class="danger" (click)="removeRequested.emit(tipo.idTipo)">Borrar</button>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="cell-title"><p class="empty">Todavía no hay tipos de sesión.</p></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<app-panel-dialog [heading]="editing() ? 'Editar tipo' : 'Nuevo tipo'">
+  <form novalidate (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field is-wide" [class.is-invalid]="error('nombre')">
+        <label class="field-label" for="type-name">
+          Nombre <span class="field-note">{{ form.nombre.length }}/45</span>
+        </label>
+        <input id="type-name" name="nombre" maxlength="45" autocomplete="off" [(ngModel)]="form.nombre" />
+        @if (error('nombre'); as message) {
+          <p class="field-error">{{ message }}</p>
+        } @else {
+          <p class="field-help">
+            En la web se lee «{{ form.nombre ? label(form.nombre) : '…' }}». Los tipos de siempre van en
+            mayúsculas y con guiones bajos: CATA_COSMICA.
+            @if (editing()?.sesiones) {
+              Las fichas públicas de sus sesiones toman parte de su texto de este nombre: si lo cambias,
+              revísalas.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="field is-wide" [class.is-invalid]="error('descripcion')">
+        <label class="field-label" for="type-description">
+          Descripción <span class="field-note">{{ form.descripcion.length }}/200</span>
+        </label>
+        <textarea id="type-description" name="descripcion" rows="3" maxlength="200" [(ngModel)]="form.descripcion"></textarea>
+        @if (error('descripcion'); as message) {
+          <p class="field-error">{{ message }}</p>
+        }
+      </div>
+    </div>
+
+    @if (formError(); as message) {
+      <p class="notice is-error form-error" role="alert">{{ message }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="dialog().close()">Volver</button>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()">
+        {{ saving() ? 'Guardando…' : editing() ? 'Guardar cambios' : 'Crear tipo' }}
+      </button>
+    </div>
+  </form>
+</app-panel-dialog>

@@ -17,12 +17,18 @@ import retotransversal.modelo.dto.ReservaCrearDto;
 import retotransversal.modelo.dto.ReservaDto;
 import retotransversal.modelo.service.ReservaService;
 
+/** Reservas desde el panel de administración: todas, las de una cuenta, altas manuales y cancelaciones. */
 @RestController
 @RequestMapping("/api/admin/reservas")
 @RequiredArgsConstructor
 public class AdminReservaRestController {
 
 	private final ReservaService reservaService;
+
+	@GetMapping
+	public ResponseEntity<List<ReservaDto>> todas() {
+		return ResponseEntity.ok(reservaService.findTodas().stream().map(ReservaDto::fromEntity).toList());
+	}
 
 	@GetMapping("/usuario/{username}")
 	public ResponseEntity<List<ReservaDto>> reservasDeUsuario(@PathVariable String username) {

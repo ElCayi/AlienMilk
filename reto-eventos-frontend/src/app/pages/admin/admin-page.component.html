@@ -1,108 +1,77 @@
-    <section class="page-card panel-card">
-      <div class="header">
-        <div>
-          <p class="eyebrow">
-            <img src="alienmilk-ufo.svg" alt="" aria-hidden="true" />
-            <span>Zona admin · 2026</span>
-          </p>
-          <h1>Control de AlienMilk Sessions</h1>
-          <p class="helper">
-            Revisa y gestiona sesiones, usuarios, tipos, perfiles, reservas, la ficha de contacto, las solicitudes y los pedidos de la tienda desde la cabina central.
-          </p>
-        </div>
+<article class="secondary-page panel-page" aria-labelledby="admin-title">
+  <div class="secondary-stage panel-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/admin">Administración</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{{ current().label }}</span>
+    </nav>
+
+    <header class="panel-header">
+      <div class="panel-heading">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>AlienMilk / Administración</span>
+        </p>
+        <h1 id="admin-title">Panel de control</h1>
+        <p class="panel-subtitle">
+          Sesiones, cuentas, tienda y atención al público, en un solo sitio.
+        </p>
       </div>
 
-      <section class="admin-shell">
-        <aside class="sidebar">
-          <h3>Panel admin</h3>
-          <nav>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'sesiones'"
-              (click)="setTab('sesiones')"
-            >
-              Sesiones
-            </button>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'usuarios'"
-              (click)="setTab('usuarios')"
-            >
-              Usuarios
-            </button>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'tipos'"
-              (click)="setTab('tipos')"
-            >
-              Tipos
-            </button>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'perfiles'"
-              (click)="setTab('perfiles')"
-            >
-              Perfiles
-            </button>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'contacto'"
-              (click)="setTab('contacto')"
-            >
-              Contacto
-            </button>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'solicitudes'"
-              (click)="setTab('solicitudes')"
-            >
-              Solicitudes
-            </button>
-            <button
-              type="button"
-              [class.active]="activeTab() === 'pedidos'"
-              (click)="setTab('pedidos')"
-            >
-              Pedidos
-            </button>
-            <a routerLink="/admin/reservas">Gestionar reservas por usuario</a>
-          </nav>
-        </aside>
+      <ul class="panel-figures" aria-label="Resumen">
+        <li>
+          <a routerLink="sesiones">
+            <strong>{{ figure(summary()?.sesionesActivas) }}</strong>
+            <span>Sesiones activas</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="reservas">
+            <strong>{{ figure(summary()?.plazasReservadas) }}</strong>
+            <span>Plazas reservadas</span>
+          </a>
+        </li>
+        <li [class.is-pending]="(summary()?.pedidosPorPreparar ?? 0) > 0">
+          <a routerLink="pedidos">
+            <strong>{{ figure(summary()?.pedidosPorPreparar) }}</strong>
+            <span>Pedidos por preparar</span>
+          </a>
+        </li>
+        <li [class.is-pending]="(summary()?.solicitudesNuevas ?? 0) > 0">
+          <a routerLink="solicitudes">
+            <strong>{{ figure(summary()?.solicitudesNuevas) }}</strong>
+            <span>Solicitudes sin atender</span>
+          </a>
+        </li>
+      </ul>
+    </header>
+  </div>
 
-        <div class="admin-content">
+  <nav class="panel-tabs" aria-label="Secciones del panel">
+    @for (section of sections; track section.path) {
+      <a
+        class="panel-tab"
+        [routerLink]="section.path"
+        routerLinkActive="is-open"
+        ariaCurrentWhenActive="page"
+        (click)="reveal($event)"
+      >
+        <span class="panel-tab-label">{{ section.label }}</span>
+        @if (pendingCount(section); as count) {
+          <span class="panel-tab-count"
+            ><span class="panel-tab-number">{{ count }}</span
+            ><span class="visually-hidden"> pendientes</span></span
+          >
+        }
+      </a>
+    }
+  </nav>
 
-      <section class="panel-block summary-block">
-        <div class="stats">
-          <div><span>Eventos</span><strong>{{ eventos().length }}</strong></div>
-          <div><span>Usuarios</span><strong>{{ usuarios().length }}</strong></div>
-          <div><span>Tipos</span><strong>{{ tipos().length }}</strong></div>
-          <div><span>Perfiles</span><strong>{{ perfiles().length }}</strong></div>
-        </div>
-      </section>
+  <section class="panel-surface">
+    <router-outlet />
+  </section>
 
-      <app-admin-sessions-panel *ngIf="activeTab() === 'sesiones'" [eventos]="eventos()" [tipos]="tipos()" [form]="eventoForm" [editingId]="eventoEditandoId" (save)="guardarEvento()" (edit)="editarEvento($event)" (removeRequested)="borrarEvento($event)" (cancelRequested)="cancelarEdicionEvento()" />
-
-      
-
-      <app-admin-users-panel *ngIf="activeTab() === 'usuarios'" [usuarios]="usuarios()" [perfiles]="perfiles()" [form]="usuarioForm" [editingUsername]="usuarioEditandoUsername" (save)="guardarUsuario()" (edit)="editarUsuario($event)" (removeRequested)="borrarUsuario($event)" (cancelRequested)="cancelarEdicionUsuario()" />
-
-      
-
-      <app-admin-types-panel *ngIf="activeTab() === 'tipos'" [tipos]="tipos()" [form]="tipoForm" [editingId]="tipoEditandoId" (save)="guardarTipo()" (edit)="editarTipo($event)" (removeRequested)="borrarTipo($event)" (cancelRequested)="cancelarEdicionTipo()" />
-
-      
-
-      <app-admin-profiles-panel *ngIf="activeTab() === 'perfiles'" [perfiles]="perfiles()" [form]="perfilForm" [editingId]="perfilEditandoId" (save)="guardarPerfil()" (edit)="editarPerfil($event)" (removeRequested)="borrarPerfil($event)" (cancelRequested)="cancelarEdicionPerfil()" />
-
-      <app-admin-contact-panel *ngIf="activeTab() === 'contacto'" />
-
-      <app-admin-requests-panel *ngIf="activeTab() === 'solicitudes'" />
-
-      <app-admin-orders-panel *ngIf="activeTab() === 'pedidos'" />
-
-      
-
-          <p class="feedback" *ngIf="feedback()">{{ feedback() }}</p>
-        </div>
-      </section>
-    </section>
+  <app-panel-confirm />
+</article>

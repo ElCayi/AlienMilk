@@ -22,4 +22,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
 	/** Pedidos cuyo plazo de pago ya ha pasado, para repasarlos si no llegó el aviso. */
 	List<Pedido> findAllByEstadoAndPagoCaducaEnBefore(EstadoPedido estado, LocalDateTime limite);
+
+	long countByEstado(EstadoPedido estado);
 }

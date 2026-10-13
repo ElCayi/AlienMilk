@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** Datos de una sesión desde el formulario del panel; el estado no viaja aquí (ver AdminEventoRestController). */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -19,7 +20,6 @@ public class EventoEntradaDto {
 	private LocalDate fechaInicio;
 	private Integer duracion;
 	private String direccion;
-	private String estado;
 	private Integer aforoMaximo;
 	private Integer minimoAsistencia;
 	private BigDecimal precio;

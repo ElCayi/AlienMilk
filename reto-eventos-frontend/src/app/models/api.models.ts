@@ -16,11 +16,25 @@ export interface EventoDetalle extends EventoListado {
   idTipo: number;
 }
 
+export type EstadoEvento = 'ACTIVO' | 'CANCELADO' | 'TERMINADO';
+
+/**
+ * Una sesión vista desde el panel de administración: todos sus datos y su ocupación. Con reservas no
+ * se puede borrar (se cancela) ni bajar el aforo por debajo de las plazas reservadas.
+ */
+export interface EventoAdmin extends Omit<EventoDetalle, 'estado'> {
+  estado: EstadoEvento;
+  plazasReservadas: number;
+  reservas: number;
+}
+
 export interface Reserva {
   idReserva: number;
   idEvento: number;
   nombreEvento: string;
   username: string;
+  /** Nombre y apellidos de la cuenta. */
+  nombreCliente: string;
   cantidad: number;
   precioVenta: number;
   observaciones: string;
@@ -31,12 +45,18 @@ export interface Reserva {
 export interface Perfil {
   idPerfil: number;
   nombre: string;
+  /** Cuentas con este perfil. */
+  usuarios: number;
+  /** Administrador o cliente: los que dan acceso; no se renombran ni se borran. */
+  sistema: boolean;
 }
 
 export interface TipoEvento {
   idTipo: number;
   nombre: string;
   descripcion: string;
+  /** Sesiones de este tipo; con alguna, no se puede borrar. */
+  sesiones: number;
 }
 
 export interface Usuario {
@@ -67,16 +87,19 @@ export interface RegisterPayload {
   direccion?: string;
 }
 
+/**
+ * Formulario de una cuenta. La contraseña es obligatoria al dar de alta y, al editar, vacía conserva
+ * la actual; la fecha de alta la pone el servidor.
+ */
 export interface UsuarioPayload {
   username: string;
-  password?: string;
+  password: string;
   email: string;
   nombre: string;
   apellidos: string;
   direccion: string;
   enabled: number;
-  fechaRegistro: string;
-  idPerfil: number;
+  idPerfil: number | null;
 }
 
 export interface TipoEventoPayload {
@@ -88,17 +111,17 @@ export interface PerfilPayload {
   nombre: string;
 }
 
+/** Formulario de una sesión. El estado no va aquí: cambia con las acciones de cancelar y reactivar. */
 export interface EventoPayload {
   nombre: string;
   descripcion: string;
   fechaInicio: string;
-  duracion: number;
+  duracion: number | null;
   direccion: string;
-  estado: string;
-  aforoMaximo: number;
-  minimoAsistencia: number;
-  precio: number;
-  idTipo: number;
+  aforoMaximo: number | null;
+  minimoAsistencia: number | null;
+  precio: number | null;
+  idTipo: number | null;
 }
 
 export interface Contacto {
@@ -300,4 +323,12 @@ export interface PedidoAdmin {
   reembolsado: boolean;
   siguiente: Extract<EstadoPedido, 'ENVIADO' | 'ENTREGADO'> | null;
   anulable: boolean;
+}
+
+/** Cifras de la cabecera del panel de administración; las dos últimas son también avisos del menú. */
+export interface ResumenAdmin {
+  sesionesActivas: number;
+  plazasReservadas: number;
+  pedidosPorPreparar: number;
+  solicitudesNuevas: number;
 }

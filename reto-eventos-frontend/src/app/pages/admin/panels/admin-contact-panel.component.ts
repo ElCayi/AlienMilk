@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,128 +16,15 @@ import {
   siteStatus,
 } from '../../../features/contact/opening-hours';
 import { Contacto, ContactoPayload } from '../../../models/api.models';
+import { formatDayTime } from '../../../shared/panel/panel-format';
 
 /** Formulario de la ficha de contacto: edita la única fila de la sede y enseña cómo quedará. */
 @Component({
   selector: 'app-admin-contact-panel',
   standalone: true,
-  imports: [DatePipe, FormsModule],
+  imports: [FormsModule],
   templateUrl: './admin-contact-panel.component.html',
-  styles: `
-    .contact-form {
-      grid-column: span 8;
-    }
-
-    .contact-preview {
-      grid-column: span 4;
-      align-self: start;
-    }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.9rem;
-    }
-
-    .day-picker {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    .day-picker label {
-      cursor: pointer;
-    }
-
-    .day-picker input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .day-picker span {
-      display: inline-block;
-      min-width: 3.1rem;
-      padding: 0.55rem 0.7rem;
-      border: 1px solid rgba(241, 236, 239, 0.14);
-      border-radius: 999px;
-      color: #b9afb6;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .day-picker input:checked + span {
-      border-color: #ff7f7f;
-      color: white;
-      background: rgba(255, 127, 127, 0.22);
-    }
-
-    .day-picker input:focus-visible + span {
-      outline: 2px solid rgba(255, 127, 127, 0.5);
-      outline-offset: 2px;
-    }
-
-    .field-hint {
-      color: #91878e;
-      font-size: 0.78rem;
-      padding-left: 0.25rem;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .form-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .contact-preview dl {
-      display: grid;
-      gap: 0.8rem;
-      margin: 0;
-    }
-
-    .contact-preview dt {
-      color: #91878e;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .contact-preview dd {
-      margin: 0.2rem 0 0;
-      color: #f1ecef;
-      overflow-wrap: anywhere;
-    }
-
-    .panel-feedback {
-      margin: 0;
-      color: #b9afb6;
-    }
-
-    .panel-feedback.is-error {
-      color: #fca5a5;
-    }
-
-    @media (max-width: 1100px) {
-      .contact-form,
-      .contact-preview {
-        grid-column: 1 / -1;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .field-row {
-        grid-template-columns: 1fr;
-      }
-    }
-  `,
+  styleUrls: ['../../../shared/panel/panel.css', './admin-contact-panel.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminContactPanelComponent {
@@ -150,6 +36,7 @@ export class AdminContactPanelComponent {
     nombre: DIAS[dia],
   }));
   readonly timeZones = supportedTimeZones();
+  readonly when = formatDayTime;
 
   readonly saved = this.contactService.contacto;
   readonly loadError = this.contactService.error;

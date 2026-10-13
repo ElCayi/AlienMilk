@@ -1,5 +1,7 @@
 <div class="app-shell">
-  <header class="topbar" [class.menu-open]="menuOpen()">
+  <!-- Dentro de los paneles (/cuenta, /admin) manda su propia barra: la de la web se oculta, sin
+       desaparecer, para que su altura se siga midiendo al volver. -->
+  <header class="topbar" [class.menu-open]="menuOpen()" [hidden]="inPanel()">
     <a class="brand" routerLink="/" (click)="closeMenu()">
       <span class="brand-logo" aria-hidden="true"></span>
       <span class="brand-text">
@@ -78,7 +80,7 @@
       <span class="user-pill">
         {{ authService.currentUser()?.nombre }} · {{ authService.currentUser()?.perfil === 'ROLE_ADMON' ? 'Admin' : 'Cliente' }}
       </span>
-      <a class="ghost-btn auth-action" *ngIf="!authService.isAdmin()" routerLink="/reservas" (click)="closeMenu()">Mi panel</a>
+      <a class="ghost-btn auth-action" *ngIf="!authService.isAdmin()" routerLink="/cuenta" (click)="closeMenu()">Mi panel</a>
       <a class="ghost-btn auth-action" *ngIf="authService.isAdmin()" routerLink="/admin" (click)="closeMenu()">Admin</a>
       <button type="button" class="secondary-btn auth-action" (click)="logout()">Salir</button>
     </div>

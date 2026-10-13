@@ -6,6 +6,7 @@ import retotransversal.modelo.service.DemoAccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.AuthUsuarioDto;
+import retotransversal.modelo.dto.EliminarCuentaDto;
 import retotransversal.modelo.dto.RegistroUsuarioDto;
 import retotransversal.modelo.dto.UsuarioSalidaDto;
 import retotransversal.modelo.entities.Usuario;
@@ -58,6 +60,16 @@ public class AuthRestController {
 	// "nombre" holds at most 30 characters; a username may be longer.
 	private static String nombreInicial(String username) {
 		return username == null ? null : username.substring(0, Math.min(30, username.length()));
+	}
+
+	/**
+	 * Un cliente borra su propia cuenta desde Mi panel, con su contraseña como confirmación. Una cuenta
+	 * de administración no: esas solo se gestionan desde otra cuenta de administración.
+	 */
+	@DeleteMapping("/me")
+	public ResponseEntity<Void> eliminarCuenta(@RequestBody EliminarCuentaDto dto, Authentication authentication) {
+		usuarioService.eliminarCuentaPropia(authentication.getName(), dto.password());
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/me")

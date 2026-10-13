@@ -15,42 +15,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import retotransversal.modelo.dto.EventoDetalleDto;
+import retotransversal.modelo.dto.EventoAdminDto;
 import retotransversal.modelo.dto.EventoEntradaDto;
-import retotransversal.modelo.dto.EventoListadoDto;
-import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
+import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.service.EventoService;
-import retotransversal.modelo.service.TipoEventoService;
 
+/**
+ * Sesiones desde el panel de administración. El estado no se edita con el formulario: una sesión
+ * nace activa y cambia con las acciones de cancelar y reactivar.
+ */
 @RestController
 @RequestMapping("/api/admin/eventos")
 @RequiredArgsConstructor
 public class AdminEventoRestController {
 
 	private final EventoService eventoService;
-	private final TipoEventoService tipoEventoService;
+	private final TipoEventoRepository tipoEventoRepository;
 
 	@GetMapping
-	public ResponseEntity<List<EventoListadoDto>> findAll() {
-		return ResponseEntity.ok(eventoService.findAll().stream().map(EventoListadoDto::fromEntity).toList());
+	public ResponseEntity<List<EventoAdminDto>> findAll() {
+		return ResponseEntity.ok(eventoService.listadoAdmin());
 	}
 
 	@PostMapping
-	public ResponseEntity<EventoDetalleDto> create(@RequestBody EventoEntradaDto dto) {
+	public ResponseEntity<EventoAdminDto> create(@RequestBody EventoEntradaDto dto) {
 		Evento guardado = eventoService.insertOne(toEntity(dto, null));
-		return ResponseEntity.status(HttpStatus.CREATED).body(EventoDetalleDto.fromEntity(guardado));
+		return ResponseEntity.status(HttpStatus.CREATED).body(eventoService.aAdminDto(guardado));
 	}
 
 	@PutMapping("/{idEvento}")
-	public ResponseEntity<EventoDetalleDto> update(@PathVariable Integer idEvento, @RequestBody EventoEntradaDto dto) {
+	public ResponseEntity<EventoAdminDto> update(@PathVariable Integer idEvento, @RequestBody EventoEntradaDto dto) {
 		Evento actualizado = eventoService.updateOne(toEntity(dto, idEvento));
-		return ResponseEntity.ok(EventoDetalleDto.fromEntity(actualizado));
+		return ResponseEntity.ok(eventoService.aAdminDto(actualizado));
 	}
 
 	@PatchMapping("/{idEvento}/cancelar")
-	public ResponseEntity<EventoDetalleDto> cancelar(@PathVariable Integer idEvento) {
-		return ResponseEntity.ok(EventoDetalleDto.fromEntity(eventoService.cancelarEvento(idEvento)));
+	public ResponseEntity<EventoAdminDto> cancelar(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.cancelarEvento(idEvento)));
+	}
+
+	@PatchMapping("/{idEvento}/reactivar")
+	public ResponseEntity<EventoAdminDto> reactivar(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.reactivarEvento(idEvento)));
 	}
 
 	@DeleteMapping("/{idEvento}")
@@ -59,6 +66,7 @@ public class AdminEventoRestController {
 		return ResponseEntity.noContent().build();
 	}
 
+	/** Un tipo que no existe llega como vacío: la validación lo señala en su campo. */
 	private Evento toEntity(EventoEntradaDto dto, Integer idEvento) {
 		return Evento.builder()
 				.idEvento(idEvento)
@@ -67,11 +75,10 @@ public class AdminEventoRestController {
 				.fechaInicio(dto.getFechaInicio())
 				.duracion(dto.getDuracion())
 				.direccion(dto.getDireccion())
-				.estado(EstadoEvento.ACTIVO)
 				.aforoMaximo(dto.getAforoMaximo())
 				.minimoAsistencia(dto.getMinimoAsistencia())
 				.precio(dto.getPrecio())
-				.tipoEvento(tipoEventoService.findById(dto.getIdTipo()))
+				.tipoEvento(dto.getIdTipo() == null ? null : tipoEventoRepository.findById(dto.getIdTipo()).orElse(null))
 				.build();
 	}
 }

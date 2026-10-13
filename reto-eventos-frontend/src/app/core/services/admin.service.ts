@@ -4,57 +4,57 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
-  EventoDetalle,
-  EventoListado,
+  EventoAdmin,
   EventoPayload,
   Perfil,
   PerfilPayload,
   Reserva,
+  ResumenAdmin,
   TipoEvento,
   TipoEventoPayload,
   Usuario,
   UsuarioPayload,
 } from '../../models/api.models';
 
+/**
+ * Panel de administración: sesiones, reservas, cuentas, tipos y perfiles. Las reglas (qué se puede
+ * borrar, qué estado tiene cada sesión) las decide el servidor; el panel enseña lo que responde.
+ */
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private readonly http = inject(HttpClient);
   private readonly adminUrl = `${environment.apiUrl}/admin`;
 
-  getEventos(): Observable<EventoListado[]> {
-    return this.http.get<EventoListado[]>(`${this.adminUrl}/eventos`);
+  getResumen(): Observable<ResumenAdmin> {
+    return this.http.get<ResumenAdmin>(`${this.adminUrl}/resumen`);
   }
 
-  getEvento(idEvento: number): Observable<EventoDetalle> {
-    return this.http.get<EventoDetalle>(`${environment.apiUrl}/eventos/${idEvento}`);
+  getEventos(): Observable<EventoAdmin[]> {
+    return this.http.get<EventoAdmin[]>(`${this.adminUrl}/eventos`);
   }
 
-  getUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(`${this.adminUrl}/usuarios`);
+  crearEvento(payload: EventoPayload): Observable<EventoAdmin> {
+    return this.http.post<EventoAdmin>(`${this.adminUrl}/eventos`, payload);
   }
 
-  getTipos(): Observable<TipoEvento[]> {
-    return this.http.get<TipoEvento[]>(`${this.adminUrl}/tipos-evento`);
+  actualizarEvento(idEvento: number, payload: EventoPayload): Observable<EventoAdmin> {
+    return this.http.put<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}`, payload);
   }
 
-  getPerfiles(): Observable<Perfil[]> {
-    return this.http.get<Perfil[]>(`${this.adminUrl}/perfiles`);
+  cancelarEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/cancelar`, {});
   }
 
-  crearEvento(payload: EventoPayload): Observable<EventoDetalle> {
-    return this.http.post<EventoDetalle>(`${this.adminUrl}/eventos`, payload);
-  }
-
-  actualizarEvento(idEvento: number, payload: EventoPayload): Observable<EventoDetalle> {
-    return this.http.put<EventoDetalle>(`${this.adminUrl}/eventos/${idEvento}`, payload);
-  }
-
-  cancelarEvento(idEvento: number): Observable<EventoDetalle> {
-    return this.http.patch<EventoDetalle>(`${this.adminUrl}/eventos/${idEvento}/cancelar`, {});
+  reactivarEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/reactivar`, {});
   }
 
   borrarEvento(idEvento: number): Observable<void> {
     return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`);
+  }
+
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.adminUrl}/usuarios`);
   }
 
   crearUsuario(payload: UsuarioPayload): Observable<Usuario> {
@@ -62,11 +62,18 @@ export class AdminService {
   }
 
   actualizarUsuario(username: string, payload: UsuarioPayload): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.adminUrl}/usuarios/${encodeURIComponent(username)}`, payload);
+    return this.http.put<Usuario>(
+      `${this.adminUrl}/usuarios/${encodeURIComponent(username)}`,
+      payload,
+    );
   }
 
   borrarUsuario(username: string): Observable<void> {
     return this.http.delete<void>(`${this.adminUrl}/usuarios/${encodeURIComponent(username)}`);
+  }
+
+  getTipos(): Observable<TipoEvento[]> {
+    return this.http.get<TipoEvento[]>(`${this.adminUrl}/tipos-evento`);
   }
 
   crearTipo(payload: TipoEventoPayload): Observable<TipoEvento> {
@@ -81,6 +88,10 @@ export class AdminService {
     return this.http.delete<void>(`${this.adminUrl}/tipos-evento/${idTipo}`);
   }
 
+  getPerfiles(): Observable<Perfil[]> {
+    return this.http.get<Perfil[]>(`${this.adminUrl}/perfiles`);
+  }
+
   crearPerfil(payload: PerfilPayload): Observable<Perfil> {
     return this.http.post<Perfil>(`${this.adminUrl}/perfiles`, payload);
   }
@@ -93,8 +104,9 @@ export class AdminService {
     return this.http.delete<void>(`${this.adminUrl}/perfiles/${idPerfil}`);
   }
 
-  getReservasUsuario(username: string): Observable<Reserva[]> {
-    return this.http.get<Reserva[]>(`${this.adminUrl}/reservas/usuario/${encodeURIComponent(username)}`);
+  /** Todas las reservas, de la sesión más reciente a la más antigua. */
+  getReservas(): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.adminUrl}/reservas`);
   }
 
   crearReservaParaUsuario(

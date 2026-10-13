@@ -1,0 +1,104 @@
+/* El diálogo de los paneles: papel, las esquinas del de Collaborators y el fondo oscurecido. */
+:host {
+  display: contents;
+}
+
+.panel-dialog {
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  border-radius: 1.5rem 0.6rem 0.6rem;
+  color: #28333a;
+  background: #f8f6f2;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  scrollbar-width: thin;
+}
+
+.panel-dialog.is-wide {
+  width: min(48rem, calc(100vw - 2rem));
+}
+
+/* El foco va a un campo o a un botón, no a la caja entera. */
+.panel-dialog:focus {
+  outline: none;
+}
+
+.panel-dialog::backdrop {
+  background: rgba(5, 10, 16, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.panel-dialog[open] {
+  animation: panel-dialog-in 180ms ease-out;
+}
+
+.panel-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem) 1rem;
+  border-bottom: 1px solid #dcdedb;
+}
+
+.panel-dialog-head h2 {
+  margin: 0;
+  font:
+    400 clamp(1.7rem, 2.2vw, 2.1rem) / 1.1 'Barlow Condensed',
+    'Arial Narrow',
+    sans-serif;
+}
+
+.panel-dialog-close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 1px solid rgba(40, 51, 58, 0.34);
+  border-radius: 50%;
+  color: #28333a;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.panel-dialog-close svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.panel-dialog-close:is(:hover, :focus-visible) {
+  border-color: #b03c39;
+  color: #b03c39;
+}
+
+.panel-dialog-close:focus-visible {
+  outline: 2px solid #ff7f7f;
+  outline-offset: 2px;
+}
+
+.panel-dialog-body {
+  padding: 1.25rem clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 1.75rem);
+}
+
+@keyframes panel-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-dialog[open] {
+    animation: none;
+  }
+}

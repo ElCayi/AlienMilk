@@ -1,37 +1,113 @@
-<section class="admin-grid">
-        <form class="panel small-panel" (ngSubmit)="save.emit()">
-          <div class="block-header compact">
-            <div>
-              <h2>{{ editingId === null ? 'Alta perfil' : 'Editar perfil' }}</h2>
-              <p class="block-helper">Roles disponibles para usuarios.</p>
-            </div>
-            <button
-              *ngIf="editingId !== null"
-              type="button"
-              class="ghost"
-              (click)="cancelRequested.emit()"
-            >
-              Nuevo
-            </button>
-          </div>
+<header class="section-head">
+  <div>
+    <h2>Perfiles</h2>
+    <p>
+      Administrador y Cliente son los perfiles del sistema, los que dan acceso: no se renombran ni se
+      borran. Uno nuevo sirve para clasificar cuentas, pero no abre ninguna zona de la web.
+    </p>
+  </div>
+  <div class="section-head-actions">
+    <button type="button" class="btn btn-primary" (click)="openNew()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      Nuevo perfil
+    </button>
+  </div>
+</header>
 
-          <input [(ngModel)]="form.nombre" name="perfilNombre" placeholder="Nombre" required />
-          <button type="submit">{{ editingId === null ? 'Crear perfil' : 'Guardar perfil' }}</button>
-        </form>
+@if (notice(); as aviso) {
+  <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+}
 
-        <div class="panel small-panel">
-          <div>
-            <h2>Perfiles</h2>
-            <p class="block-helper">Editar o eliminar perfiles.</p>
-          </div>
-          <div class="mini-list">
-            <article *ngFor="let perfil of perfiles">
-              <strong>{{ perfil.nombre }}</strong>
-              <div class="actions">
-                <button type="button" class="ghost" (click)="edit.emit(perfil)">Editar</button>
-                <button type="button" class="danger" (click)="removeRequested.emit(perfil.idPerfil)">Borrar</button>
+@if (loading() && !profiles().length) {
+  <p class="empty">Cargando perfiles…</p>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se han podido cargar los perfiles.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else {
+  <div class="table-wrap">
+    <table class="data-table">
+      <caption>Perfiles</caption>
+      <thead>
+        <tr>
+          <th scope="col">Perfil</th>
+          <th scope="col">Acceso</th>
+          <th scope="col" class="num">Cuentas</th>
+          <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (profile of profiles(); track profile.idPerfil) {
+          <tr>
+            <td class="cell-title">
+              <span class="cell-main">{{ label(profile.nombre) }}</span>
+              <span class="cell-sub">{{ profile.nombre }}</span>
+            </td>
+            <td data-label="Acceso">
+              @if (profile.sistema) {
+                <span class="badge" data-tone="ok">Del sistema</span>
+              } @else {
+                <span class="badge" data-tone="off">Sin acceso propio</span>
+              }
+            </td>
+            <td data-label="Cuentas" class="num">{{ profile.usuarios }}</td>
+            <td class="row-actions-cell">
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="btn btn-small"
+                  [disabled]="profile.sistema"
+                  [title]="profile.sistema ? 'Perfil del sistema: no se puede renombrar' : ''"
+                  (click)="openEdit(profile)"
+                >
+                  Editar<span class="visually-hidden"> {{ label(profile.nombre) }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-small btn-danger"
+                  [disabled]="profile.sistema || profile.usuarios > 0 || busy() === profile.idPerfil"
+                  [title]="lockReason(profile)"
+                  (click)="remove(profile)"
+                >
+                  Borrar<span class="visually-hidden"> {{ label(profile.nombre) }}</span>
+                </button>
               </div>
-            </article>
-          </div>
-        </div>
-      </section>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<app-panel-dialog [heading]="editing() ? 'Editar perfil' : 'Nuevo perfil'">
+  <form novalidate (ngSubmit)="save()">
+    <div class="form-grid">
+      <div class="field is-wide" [class.is-invalid]="error('nombre')">
+        <label class="field-label" for="profile-name">
+          Nombre <span class="field-note">{{ form.nombre.length }}/45</span>
+        </label>
+        <input id="profile-name" name="nombre" maxlength="45" autocomplete="off" [(ngModel)]="form.nombre" />
+        @if (error('nombre'); as message) {
+          <p class="field-error">{{ message }}</p>
+        } @else {
+          <p class="field-help">
+            Como los del sistema: ROLE_ y el nombre en mayúsculas. Se lee «{{ form.nombre ? label(form.nombre) : '…' }}».
+          </p>
+        }
+      </div>
+    </div>
+
+    @if (formError(); as message) {
+      <p class="notice is-error form-error" role="alert">{{ message }}</p>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="dialog().close()">Volver</button>
+      <button type="submit" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()">
+        {{ saving() ? 'Guardando…' : editing() ? 'Guardar cambios' : 'Crear perfil' }}
+      </button>
+    </div>
+  </form>
+</app-panel-dialog>

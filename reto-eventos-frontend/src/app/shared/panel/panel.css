@@ -1,0 +1,738 @@
+/* Piezas de los paneles (administración y Mi panel): las de cualquier aplicación de gestión, con la
+   paleta y las letras de la casa. Papel para las superficies, tinta para el texto y el coral solo
+   para lo que pide atención. La cargan cada sección y los diálogos; el armazón de la página está en
+   panel-shell.css. */
+:host {
+  --paper: #f8f6f2;
+  --paper-soft: #efece6;
+  --paper-stripe: rgba(40, 51, 58, 0.028);
+  --paper-ink: #28333a;
+  --paper-muted: #3d474e;
+  --paper-faint: #5f696f;
+  --paper-line: #dcdedb;
+  --paper-rule: #c9cdca;
+  --field: #fff;
+  --coral: #ff7f7f;
+  /* El coral en texto sobre papel: el de la casa no llega al contraste mínimo. */
+  --coral-ink: #b03c39;
+  --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  display: block;
+  color: var(--paper-ink);
+  font-family: Arial, sans-serif;
+}
+
+/* Cabecera de sección: título y entradilla a la izquierda, la acción principal a la derecha. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--paper-rule);
+}
+
+.section-head h2 {
+  margin: 0;
+  font: 400 clamp(2rem, 2.4vw, 2.6rem) / 1.05 var(--condensed);
+  letter-spacing: -0.005em;
+}
+
+.section-head p {
+  max-width: 44rem;
+  margin: 0.5rem 0 0;
+  color: var(--paper-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.section-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Botones: cajas con trazo; la acción principal, rellena de tinta. Al pasar por encima, coral. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.6rem;
+  padding: 0.55rem 1.05rem;
+  border: 1px solid var(--paper-ink);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: transparent;
+  font:
+    700 0.92rem / 1.2 'Nunito',
+    sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--coral);
+  background: var(--coral);
+  color: #1b2227;
+}
+
+.btn-primary {
+  color: var(--paper);
+  background: var(--paper-ink);
+}
+
+.btn-small {
+  min-height: 2.1rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+/* Lo que borra o anula: el mismo trazo, en coral oscuro. */
+.btn-danger {
+  border-color: rgba(176, 60, 57, 0.55);
+  color: var(--coral-ink);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.btn[aria-busy='true'] {
+  cursor: wait;
+}
+
+.btn:focus-visible,
+.segmented button:focus-visible,
+.text-link:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.btn svg {
+  width: 1.05em;
+  height: 1.05em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Enlace dentro del texto (correo, ficha pública). */
+.text-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(40, 51, 58, 0.4);
+  text-underline-offset: 0.2em;
+}
+
+.text-link:hover {
+  color: var(--coral-ink);
+  text-decoration-color: currentColor;
+}
+
+/* Barra de herramientas: buscador y filtros. */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin: 1.25rem 0 0;
+}
+
+.search {
+  display: flex;
+  flex: 1 1 16rem;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 24rem;
+  min-height: 2.6rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-faint);
+  background: var(--field);
+}
+
+.search:focus-within {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 2px #ffb8b8;
+}
+
+.search svg {
+  width: 1rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0;
+  border: 0;
+  outline: 0;
+  color: var(--paper-ink);
+  background: transparent;
+  font:
+    0.95rem Arial,
+    sans-serif;
+}
+
+.search input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.toolbar select {
+  min-height: 2.6rem;
+  max-width: 100%;
+  padding: 0 2rem 0 0.8rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font:
+    700 0.9rem 'Nunito',
+    sans-serif;
+}
+
+.toolbar select:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* Filtros: cajas iguales sobre una franja del papel, la etiqueta a la izquierda y la cuenta a la
+   derecha. La elegida, en blanco y perfilada. */
+.segmented {
+  display: grid;
+  grid-auto-columns: minmax(7.5rem, 1fr);
+  grid-auto-flow: column;
+  gap: 0.25rem;
+  max-width: 100%;
+  padding: 0.25rem;
+  overflow-x: auto;
+  border-radius: 0.6rem;
+  background: var(--paper-soft);
+  scrollbar-width: thin;
+}
+
+.segmented button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.1rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.42rem;
+  color: var(--paper-muted);
+  background: transparent;
+  font:
+    700 0.88rem / 1.2 'Nunito',
+    sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.segmented button:hover {
+  color: var(--paper-ink);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.segmented button[aria-pressed='true'] {
+  border-color: var(--paper-rule);
+  color: var(--paper-ink);
+  background: var(--field);
+}
+
+.segmented-count {
+  color: var(--paper-faint);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subapartado dentro de una sección («Próximas», «Historial»). */
+.subsection-title {
+  margin: 2.25rem 0 0;
+  font: 400 clamp(1.45rem, 1.8vw, 1.75rem) / 1.1 var(--condensed);
+}
+
+.subsection-title + .table-wrap {
+  margin-top: 0.75rem;
+}
+
+.subsection-title + .empty {
+  padding: 1.5rem 0;
+  text-align: left;
+}
+
+/* Avisos de la sección: el resultado de la última acción o un error. */
+.notice {
+  margin: 1.25rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 2px solid var(--paper-ink);
+  border-radius: 0.2rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.notice.is-error {
+  border-color: var(--coral);
+  color: var(--coral-ink);
+}
+
+/* Tablas: cabecera en rótulos, filas en franjas de tonos casi iguales. */
+.table-wrap {
+  margin-top: 1.25rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font:
+    0.95rem / 1.4 Arial,
+    sans-serif;
+}
+
+.data-table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.data-table th {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--paper-rule);
+  color: var(--paper-faint);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--paper-line);
+  vertical-align: top;
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: var(--paper-stripe);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(40, 51, 58, 0.05);
+}
+
+.data-table .num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Totales al pie, separados por el filete de la cabecera. */
+.data-table tfoot td {
+  border-top: 1px solid var(--paper-rule);
+  border-bottom: 0;
+  font-weight: 700;
+}
+
+/* Fechas en una línea. */
+.data-table .nowrap {
+  white-space: nowrap;
+}
+
+/* En las columnas de cifras, la cifra no se parte; su nota, sí. */
+.data-table .num .cell-sub {
+  white-space: normal;
+}
+
+.data-table th.actions-col {
+  text-align: right;
+}
+
+.cell-main {
+  display: block;
+  color: var(--paper-ink);
+  font:
+    700 1rem / 1.3 'Nunito',
+    sans-serif;
+  overflow-wrap: break-word;
+}
+
+.cell-sub {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--paper-faint);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+}
+
+/* Las acciones de cada fila, a la derecha y en una línea; si la tabla se estrecha, en dos. */
+.row-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.data-table td.row-actions-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .row-actions {
+    flex-wrap: wrap;
+  }
+}
+
+.clamp-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Estado: una pastilla con su punto. Tinta para lo que está en marcha, coral para lo que pide
+   atención y gris para lo cerrado. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.18rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  color: var(--paper-ink);
+  font:
+    800 0.64rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge[data-tone='alert'] {
+  color: var(--coral-ink);
+}
+
+.badge[data-tone='alert']::before {
+  background: var(--coral);
+}
+
+.badge[data-tone='off'] {
+  color: var(--paper-faint);
+}
+
+.badge[data-tone='off']::before {
+  border: 1px solid currentColor;
+  background: transparent;
+}
+
+/* Ocupación: una barra fina; llena, en coral. */
+.meter {
+  width: 100%;
+  max-width: 9rem;
+  height: 0.35rem;
+  margin-top: 0.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--paper-line);
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--paper-ink);
+}
+
+.meter.is-full span {
+  background: var(--coral);
+}
+
+/* Lista vacía, carga y error. */
+.empty {
+  margin: 0;
+  padding: 2.5rem 1rem;
+  color: var(--paper-muted);
+  text-align: center;
+}
+
+.empty .btn {
+  margin-top: 1rem;
+}
+
+/* Formularios: rótulo encima, campo blanco y el error debajo. */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.field {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.form-grid > .is-wide {
+  grid-column: 1 / -1;
+}
+
+.field-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--paper-ink);
+  font:
+    700 0.9rem / 1.3 'Nunito',
+    sans-serif;
+}
+
+.field-note {
+  color: var(--paper-faint);
+  font-size: 0.8rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.field :is(input, select, textarea) {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font:
+    1rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+}
+
+.field select {
+  min-height: 2.85rem;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field :is(input, select, textarea):focus {
+  border-color: var(--coral);
+  outline: none;
+  box-shadow: 0 0 0 2px #ffb8b8;
+}
+
+.field :is(input, select, textarea):disabled {
+  color: var(--paper-faint);
+  background: var(--paper-soft);
+}
+
+.field.is-invalid :is(input, select, textarea) {
+  border-color: var(--coral-ink);
+}
+
+.field-error,
+.field-help {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.field-error {
+  color: var(--coral-ink);
+}
+
+.field-help {
+  color: var(--paper-faint);
+}
+
+/* Interruptor sí/no: una casilla con su etiqueta al lado. */
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.85rem;
+  color: var(--paper-ink);
+  font:
+    700 0.95rem 'Nunito',
+    sans-serif;
+  cursor: pointer;
+}
+
+.check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--paper-ink);
+}
+
+.check input:disabled + span {
+  color: var(--paper-faint);
+}
+
+.form-error {
+  margin: 1.25rem 0 0;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--paper-line);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Tableta: los formularios, en una columna. */
+@media (max-width: 760px) {
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Móvil: cada fila de tabla es una ficha; el primer dato hace de título y el resto lleva su rótulo
+   delante. */
+@media (max-width: 760px) {
+  .data-table,
+  .data-table tbody,
+  .data-table tfoot,
+  .data-table tr,
+  .data-table td {
+    display: block;
+  }
+
+  .data-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .data-table tr {
+    padding: 0.9rem 0.75rem 1rem;
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .data-table tbody tr:first-child {
+    border-top: 1px solid var(--paper-rule);
+  }
+
+  /* El rótulo, a la izquierda y fuera del flujo: el contenido de la celda sigue como está. */
+  .data-table td {
+    position: relative;
+    min-height: 1.9rem;
+    padding: 0.3rem 0 0.3rem 7.25rem;
+    border: 0;
+  }
+
+  .data-table td::before {
+    position: absolute;
+    top: 0.3rem;
+    left: 0;
+    width: 6.5rem;
+    content: attr(data-label);
+    color: var(--paper-faint);
+    font:
+      800 0.6rem / 2 'Nunito',
+      sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .data-table td.cell-title {
+    padding: 0 0 0.45rem;
+  }
+
+  .data-table td:is(.cell-title, .row-actions-cell)::before {
+    content: none;
+  }
+
+  .data-table td:empty,
+  .data-table td.row-actions-cell:has(.row-actions:empty) {
+    display: none;
+  }
+
+  .data-table .num {
+    text-align: left;
+  }
+
+  .data-table td.row-actions-cell {
+    width: auto;
+    padding: 0.75rem 0 0;
+    white-space: normal;
+  }
+
+  .row-actions {
+    justify-content: flex-start;
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  /* Los filtros, de dos en dos en lugar de desplazarse. */
+  .segmented {
+    flex: 1 1 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+    overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .segmented button {
+    transition: none;
+  }
+}

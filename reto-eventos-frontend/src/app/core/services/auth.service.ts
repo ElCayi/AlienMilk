@@ -54,6 +54,11 @@ export class AuthService {
     return this.http.post<Usuario>(`${this.apiUrl}/auth/register`, payload);
   }
 
+  /** Un cliente borra su cuenta, con su contraseña como confirmación; después hay que cerrar la sesión. */
+  deleteAccount(password: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/auth/me`, { body: { password } });
+  }
+
   logout(): void {
     localStorage.removeItem(this.authHeaderKey);
     this.currentUser.set(null);

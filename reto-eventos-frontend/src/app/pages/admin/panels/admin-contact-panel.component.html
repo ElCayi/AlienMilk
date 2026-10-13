@@ -1,75 +1,80 @@
-<section class="admin-grid">
-  @if (form(); as ficha) {
-    <form class="panel contact-form" (ngSubmit)="save()">
-      <div class="block-header compact">
-        <div>
-          <h2>Ficha de contacto</h2>
-          <p class="block-helper">
-            Datos de la sede que aparecen en la página de contacto y en el pie.
-          </p>
-        </div>
-      </div>
+<header class="section-head">
+  <div>
+    <h2>Ficha de contacto</h2>
+    <p>
+      Los datos de la sede que salen en la página de contacto y en el pie de toda la web. A la derecha,
+      cómo quedarán con los cambios sin guardar.
+    </p>
+  </div>
+</header>
 
-      <label class="field">
-        <span>Nombre de la sede</span>
-        <input
-          [ngModel]="ficha.nombreSede"
-          (ngModelChange)="update('nombreSede', $event)"
-          name="contactoSede"
-          maxlength="80"
-          required
-        />
-      </label>
-
-      <div class="field-row">
-        <label class="field">
-          <span>Recinto</span>
+@if (form(); as ficha) {
+  <div class="contact-layout">
+    <form class="contact-form" novalidate (ngSubmit)="save()">
+      <div class="form-grid">
+        <div class="field is-wide">
+          <label class="field-label" for="contact-site">Nombre de la sede</label>
           <input
+            id="contact-site"
+            [ngModel]="ficha.nombreSede"
+            (ngModelChange)="update('nombreSede', $event)"
+            name="contactoSede"
+            maxlength="80"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contact-venue">Recinto</label>
+          <input
+            id="contact-venue"
             [ngModel]="ficha.direccion"
             (ngModelChange)="update('direccion', $event)"
             name="contactoDireccion"
             maxlength="120"
             required
           />
-        </label>
-        <label class="field">
-          <span>Ciudad</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contact-city">Ciudad</label>
           <input
+            id="contact-city"
             [ngModel]="ficha.ciudad"
             (ngModelChange)="update('ciudad', $event)"
             name="contactoCiudad"
             maxlength="80"
             required
           />
-        </label>
-      </div>
+        </div>
 
-      <div class="field-row">
-        <label class="field">
-          <span>Calle</span>
+        <div class="field">
+          <label class="field-label" for="contact-street">Calle <span class="field-note">opcional</span></label>
           <input
+            id="contact-street"
             [ngModel]="ficha.calle"
             (ngModelChange)="update('calle', $event)"
             name="contactoCalle"
             maxlength="120"
           />
-        </label>
-        <label class="field">
-          <span>Código postal</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contact-postcode">Código postal <span class="field-note">opcional</span></label>
           <input
+            id="contact-postcode"
             [ngModel]="ficha.codigoPostal"
             (ngModelChange)="update('codigoPostal', $event)"
             name="contactoCodigoPostal"
             maxlength="10"
             autocomplete="postal-code"
           />
-        </label>
-      </div>
+        </div>
 
-      <div class="field-row">
-        <label class="field">
-          <span>Correo</span>
+        <div class="field">
+          <label class="field-label" for="contact-email">Correo</label>
           <input
+            id="contact-email"
             [ngModel]="ficha.email"
             (ngModelChange)="update('email', $event)"
             name="contactoEmail"
@@ -77,126 +82,133 @@
             maxlength="100"
             required
           />
-        </label>
-        <label class="field">
-          <span>Teléfono (opcional)</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contact-phone">Teléfono <span class="field-note">opcional</span></label>
           <input
+            id="contact-phone"
             [ngModel]="ficha.telefono"
             (ngModelChange)="update('telefono', $event)"
             name="contactoTelefono"
             type="tel"
             maxlength="30"
           />
-        </label>
-      </div>
-
-      <div class="field">
-        <span id="contacto-dias">Días de apertura</span>
-        <div class="day-picker" role="group" aria-labelledby="contacto-dias">
-          @for (item of days; track item.dia) {
-            <label [title]="item.nombre">
-              <input
-                type="checkbox"
-                [checked]="ficha.diasApertura.includes(item.dia)"
-                (change)="toggleDay(item.dia, $any($event.target).checked)"
-              />
-              <span>{{ item.corto }}</span>
-            </label>
-          }
         </div>
-      </div>
 
-      <div class="field-row">
-        <label class="field">
-          <span>Apertura</span>
+        <div class="field is-wide">
+          <span class="field-label" id="contacto-dias">Días de apertura</span>
+          <div class="day-picker" role="group" aria-labelledby="contacto-dias">
+            @for (item of days; track item.dia) {
+              <label [title]="item.nombre">
+                <input
+                  type="checkbox"
+                  [checked]="ficha.diasApertura.includes(item.dia)"
+                  (change)="toggleDay(item.dia, $any($event.target).checked)"
+                />
+                <span>{{ item.corto }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contact-opens">Apertura</label>
           <input
+            id="contact-opens"
             [ngModel]="ficha.horaApertura"
             (ngModelChange)="update('horaApertura', $event)"
             name="contactoApertura"
             type="time"
             required
           />
-        </label>
-        <label class="field">
-          <span>Cierre</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="contact-closes">Cierre</label>
           <input
+            id="contact-closes"
             [ngModel]="ficha.horaCierre"
             (ngModelChange)="update('horaCierre', $event)"
             name="contactoCierre"
             type="time"
             required
           />
-        </label>
-      </div>
-      <p class="field-hint">
-        Si el cierre es anterior a la apertura, la jornada termina de madrugada.
-      </p>
+        </div>
+        <p class="field-help is-wide">
+          Si el cierre es anterior a la apertura, la jornada termina de madrugada.
+        </p>
 
-      <label class="field">
-        <span>Zona horaria</span>
-        <input
-          [ngModel]="ficha.zonaHoraria"
-          (ngModelChange)="update('zonaHoraria', $event)"
-          name="contactoZona"
-          list="contacto-zonas"
-          maxlength="40"
-          required
-        />
-        <datalist id="contacto-zonas">
-          @for (zona of timeZones; track zona) {
-            <option [value]="zona"></option>
-          }
-        </datalist>
-      </label>
+        <div class="field is-wide">
+          <label class="field-label" for="contact-zone">Zona horaria</label>
+          <input
+            id="contact-zone"
+            [ngModel]="ficha.zonaHoraria"
+            (ngModelChange)="update('zonaHoraria', $event)"
+            name="contactoZona"
+            list="contacto-zonas"
+            maxlength="40"
+            required
+          />
+          <datalist id="contacto-zonas">
+            @for (zona of timeZones; track zona) {
+              <option [value]="zona"></option>
+            }
+          </datalist>
+        </div>
 
-      <label class="field">
-        <span>Cómo llegar · {{ ficha.comoLlegar?.length ?? 0 }}/300</span>
-        <textarea
-          [ngModel]="ficha.comoLlegar"
-          (ngModelChange)="update('comoLlegar', $event)"
-          name="contactoComoLlegar"
-          rows="3"
-          maxlength="300"
-        ></textarea>
-      </label>
+        <div class="field is-wide">
+          <label class="field-label" for="contact-route">
+            Cómo llegar <span class="field-note">{{ ficha.comoLlegar?.length ?? 0 }}/300</span>
+          </label>
+          <textarea
+            id="contact-route"
+            [ngModel]="ficha.comoLlegar"
+            (ngModelChange)="update('comoLlegar', $event)"
+            name="contactoComoLlegar"
+            rows="3"
+            maxlength="300"
+          ></textarea>
+        </div>
 
-      <label class="field">
-        <span>Condiciones de acceso · {{ ficha.condicionesAcceso?.length ?? 0 }}/300</span>
-        <textarea
-          [ngModel]="ficha.condicionesAcceso"
-          (ngModelChange)="update('condicionesAcceso', $event)"
-          name="contactoAcceso"
-          rows="3"
-          maxlength="300"
-        ></textarea>
-      </label>
-
-      <div class="form-actions">
-        <button type="submit" [disabled]="saving() || !dirty()">
-          {{ saving() ? 'Guardando...' : 'Guardar ficha' }}
-        </button>
-        @if (dirty()) {
-          <button type="button" class="ghost" (click)="discard()">Descartar cambios</button>
-        }
+        <div class="field is-wide">
+          <label class="field-label" for="contact-access">
+            Condiciones de acceso <span class="field-note">{{ ficha.condicionesAcceso?.length ?? 0 }}/300</span>
+          </label>
+          <textarea
+            id="contact-access"
+            [ngModel]="ficha.condicionesAcceso"
+            (ngModelChange)="update('condicionesAcceso', $event)"
+            name="contactoAcceso"
+            rows="3"
+            maxlength="300"
+          ></textarea>
+        </div>
       </div>
 
       @if (feedback(); as aviso) {
-        <p class="panel-feedback" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+        <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
       }
+
+      <div class="form-actions">
+        @if (dirty()) {
+          <button type="button" class="btn" (click)="discard()">Descartar cambios</button>
+        }
+        <button type="submit" class="btn btn-primary" [disabled]="saving() || !dirty()" [attr.aria-busy]="saving()">
+          {{ saving() ? 'Guardando…' : 'Guardar ficha' }}
+        </button>
+      </div>
     </form>
 
-    <aside class="panel contact-preview">
-      <div>
-        <h2>Así se verá</h2>
-        <p class="block-helper">Resumen con los cambios sin guardar.</p>
-      </div>
+    <aside class="contact-preview" aria-labelledby="contact-preview-title">
+      <h3 id="contact-preview-title">Así se verá</h3>
       <dl>
         <div>
           <dt>Horario</dt>
           <dd>{{ schedulePreview() }}</dd>
         </div>
         <div>
-          <dt>Estado ahora mismo</dt>
+          <dt>Ahora mismo</dt>
           <dd>
             @if (statusPreview(); as estado) {
               {{ estado.estado }} · {{ estado.detalle }} ({{ estado.horaLocal }} en la sede)
@@ -209,21 +221,23 @@
           <dt>Última revisión</dt>
           <dd>
             @if (saved()?.actualizadoEn) {
-              {{ saved()?.actualizadoEn | date: 'dd.MM.yyyy HH:mm' }} ·
-              {{ saved()?.actualizadoPor }}
+              {{ when(saved()?.actualizadoEn) }} · {{ saved()?.actualizadoPor }}
             } @else {
               Sin cambios desde la carga inicial
             }
           </dd>
         </div>
       </dl>
+      @if (dirty()) {
+        <p class="contact-unsaved">Hay cambios sin guardar.</p>
+      }
     </aside>
-  } @else if (loadError()) {
-    <div class="panel">
-      <p>No se ha podido cargar la ficha de contacto.</p>
-      <button type="button" class="ghost" (click)="retry()">Reintentar</button>
-    </div>
-  } @else {
-    <div class="panel"><p>Cargando la ficha de contacto...</p></div>
-  }
-</section>
+  </div>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se ha podido cargar la ficha de contacto.</p>
+    <button type="button" class="btn" (click)="retry()">Reintentar</button>
+  </div>
+} @else {
+  <p class="empty">Cargando la ficha de contacto…</p>
+}

@@ -69,6 +69,11 @@
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
+/* Oculta dentro de los paneles (ver inPanel en app.ts): sin esto, el display de .topbar la mostraría. */
+.topbar[hidden] {
+  display: none;
+}
+
 .menu-toggle {
   display: none;
 }
@@ -286,6 +291,12 @@
 .page-container:has(app-sessions-page),
 .page-container:has(app-about-page) {
   width: min(1480px, 76vw);
+}
+
+/* Los paneles ocupan la ventana entera: su marco (barra, menú y contenido) lo pone cada uno. */
+.page-container:has(app-admin-page),
+.page-container:has(app-account-page) {
+  width: 100%;
 }
 
 @media (min-width: 1600px) and (max-height: 1200px) {

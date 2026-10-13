@@ -19,6 +19,8 @@ public class ReservaDto {
 	private Integer idEvento;
 	private String nombreEvento;
 	private String username;
+	/** Nombre y apellidos de la cuenta, para el panel de administración. */
+	private String nombreCliente;
 	private Integer cantidad;
 	private BigDecimal precioVenta;
 	private String observaciones;
@@ -31,11 +33,18 @@ public class ReservaDto {
 				.idEvento(reserva.getEvento().getIdEvento())
 				.nombreEvento(reserva.getEvento().getNombre())
 				.username(reserva.getUsuario().getUsername())
+				.nombreCliente(nombreCompleto(reserva))
 				.cantidad(reserva.getCantidad())
 				.precioVenta(reserva.getPrecioVenta())
 				.observaciones(reserva.getObservaciones())
 				.fechaInicioEvento(reserva.getEvento().getFechaInicio())
 				.estadoEvento(reserva.getEvento().getEstado().name())
 				.build();
+	}
+
+	private static String nombreCompleto(Reserva reserva) {
+		String nombre = reserva.getUsuario().getNombre();
+		String apellidos = reserva.getUsuario().getApellidos();
+		return apellidos == null || apellidos.isBlank() ? nombre : nombre + " " + apellidos;
 	}
 }

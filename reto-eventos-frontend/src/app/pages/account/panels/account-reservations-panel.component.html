@@ -1,0 +1,129 @@
+<header class="section-head">
+  <div>
+    <h2>Mis reservas</h2>
+    <p>
+      Las sesiones a las que te has apuntado. Mientras una sesión esté activa puedes cancelar tu
+      reserva; si se cancela o ya se ha celebrado, la reserva se queda en el historial.
+    </p>
+  </div>
+  <div class="section-head-actions">
+    <a class="btn btn-primary" routerLink="/sesiones">Reservar otra sesión <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span></a>
+  </div>
+</header>
+
+@if (notice(); as aviso) {
+  <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+}
+
+@if (store.reservationsError()) {
+  <div class="empty">
+    <p>No se han podido cargar tus reservas.</p>
+    <button type="button" class="btn" (click)="store.loadReservations()">Reintentar</button>
+  </div>
+} @else if (store.reservations() === null) {
+  <p class="empty">Cargando tus reservas…</p>
+} @else if (!store.reservations()!.length) {
+  <div class="empty">
+    <p>Todavía no has reservado ninguna sesión.</p>
+    <a class="btn" routerLink="/sesiones">Ver el programa <svg class="out-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg><span class="visually-hidden">, en la web pública</span></a>
+  </div>
+} @else {
+  <h3 class="subsection-title">Próximas</h3>
+  @if (upcoming().length) {
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption>Reservas en sesiones activas</caption>
+        <thead>
+          <tr>
+            <th scope="col">Sesión</th>
+            <th scope="col" class="num">Plazas</th>
+            <th scope="col" class="num">Importe</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Observaciones</th>
+            <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reserva of upcoming(); track reserva.idReserva) {
+            @let estado = state(reserva.estadoEvento);
+            <tr>
+              <td class="cell-title">
+                <a class="cell-main text-link" routerLink="/sesiones" [queryParams]="{ sesion: reserva.idEvento }">{{
+                  reserva.nombreEvento
+                }}</a>
+                <span class="cell-sub">{{ day(reserva.fechaInicioEvento) }}</span>
+              </td>
+              <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
+              <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
+              <td data-label="Estado">
+                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+              </td>
+              <td data-label="Observaciones">
+                @if (reserva.observaciones) {
+                  <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
+                } @else {
+                  <span class="cell-sub">—</span>
+                }
+              </td>
+              <td class="row-actions-cell">
+                <div class="row-actions">
+                  <button
+                    type="button"
+                    class="btn btn-small btn-danger"
+                    [disabled]="busy() === reserva.idReserva"
+                    (click)="cancel(reserva)"
+                  >
+                    Cancelar<span class="visually-hidden"> la reserva de {{ reserva.nombreEvento }}</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <p class="empty">No tienes reservas en sesiones activas.</p>
+  }
+
+  @if (history().length) {
+    <h3 class="subsection-title">Historial</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <caption>Reservas en sesiones canceladas o celebradas</caption>
+        <thead>
+          <tr>
+            <th scope="col">Sesión</th>
+            <th scope="col" class="num">Plazas</th>
+            <th scope="col" class="num">Importe</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reserva of history(); track reserva.idReserva) {
+            @let estado = state(reserva.estadoEvento);
+            <tr>
+              <td class="cell-title">
+                <span class="cell-main">{{ reserva.nombreEvento }}</span>
+                <span class="cell-sub">{{ day(reserva.fechaInicioEvento) }}</span>
+              </td>
+              <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
+              <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
+              <td data-label="Estado">
+                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+              </td>
+              <td data-label="Observaciones">
+                @if (reserva.observaciones) {
+                  <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
+                } @else {
+                  <span class="cell-sub">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

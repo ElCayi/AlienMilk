@@ -1,0 +1,70 @@
+/* Mi cuenta: los datos en filas de rótulo y valor, y el borrado al final, separado por su filete. */
+.account-data {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem 2rem;
+  margin: 1.5rem 0 0;
+}
+
+.account-data dt {
+  color: var(--paper-faint);
+  font:
+    800 0.62rem / 1.6 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.account-data dd {
+  margin: 0.2rem 0 0;
+  font:
+    600 1.05rem / 1.4 'Nunito',
+    sans-serif;
+  overflow-wrap: break-word;
+}
+
+.danger-zone {
+  margin-top: 2.5rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.danger-zone .subsection-title {
+  margin-top: 1.25rem;
+}
+
+.danger-zone p:not(.notice) {
+  max-width: 44rem;
+  margin: 0.75rem 0 0;
+  color: var(--paper-muted);
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.danger-zone .notice {
+  max-width: 44rem;
+}
+
+.danger-zone .btn {
+  margin-top: 1.25rem;
+}
+
+.dialog-text {
+  margin: 0 0 1.25rem;
+  color: var(--paper-muted);
+  line-height: 1.55;
+}
+
+/* El botón que borra, relleno de coral oscuro, como en las confirmaciones. */
+.btn-danger-fill {
+  border-color: var(--coral-ink);
+  background: var(--coral-ink);
+}
+
+@media (max-width: 760px) {
+  .account-data {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

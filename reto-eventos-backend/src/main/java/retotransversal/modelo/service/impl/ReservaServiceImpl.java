@@ -2,6 +2,8 @@ package retotransversal.modelo.service.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -60,16 +62,24 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	@Override
+	public List<Reserva> findTodas() {
+		return reservaRepository.findAll(Sort.by(Sort.Order.desc("evento.fechaInicio"), Sort.Order.desc("idReserva")));
+	}
+
+	@Override
 	public Reserva reservarEvento(Integer idEvento, String username, Integer cantidad, String observaciones) {
 		Evento evento = eventoService.findById(idEvento);
 		Usuario usuario = usuarioService.findById(username);
 		validarReserva(evento, username, cantidad);
+		if (observaciones != null && observaciones.strip().length() > 200) {
+			throw new ConflictoNegocioException("Las observaciones no pueden superar 200 caracteres");
+		}
 
 		Reserva reserva = Reserva.builder()
 				.evento(evento)
 				.usuario(usuario)
 				.cantidad(cantidad)
-				.observaciones(observaciones)
+				.observaciones(observaciones == null || observaciones.isBlank() ? null : observaciones.strip())
 				.precioVenta(evento.getPrecio().multiply(BigDecimal.valueOf(cantidad.longValue())))
 				.build();
 
@@ -81,6 +91,10 @@ public class ReservaServiceImpl implements ReservaService {
 		Reserva reserva = findById(idReserva);
 		if (!reserva.getUsuario().getUsername().equals(username)) {
 			throw new OperacionNoPermitidaException("Solo puedes cancelar tus propias reservas");
+		}
+		// Una reserva de una sesión cancelada o ya celebrada es historial: se queda en la lista.
+		if (reserva.getEvento().getEstado() != EstadoEvento.ACTIVO) {
+			throw new ConflictoNegocioException("La sesión ya no está activa: la reserva se queda en tu historial");
 		}
 		reservaRepository.deleteById(idReserva);
 		return 1;
@@ -95,13 +109,13 @@ public class ReservaServiceImpl implements ReservaService {
 
 	private void validarReserva(Evento evento, String username, Integer cantidad) {
 		if (cantidad == null || cantidad < 1) {
-			throw new ConflictoNegocioException("La cantidad debe ser al menos 1");
+			throw new ConflictoNegocioException("Reserva al menos una plaza");
 		}
 		if (cantidad > 10) {
-			throw new ConflictoNegocioException("No se permiten reservas superiores a 10 entradas");
+			throw new ConflictoNegocioException("Como máximo 10 plazas por reserva");
 		}
 		if (evento.getEstado() != EstadoEvento.ACTIVO) {
-			throw new ConflictoNegocioException("Solo se permiten reservas en eventos activos");
+			throw new ConflictoNegocioException("Esta sesión ya no admite reservas");
 		}
 
 		int aforoReservado = reservaRepository.findByEventoIdEvento(evento.getIdEvento())
@@ -110,7 +124,7 @@ public class ReservaServiceImpl implements ReservaService {
 				.sum();
 
 		if (aforoReservado + cantidad > evento.getAforoMaximo()) {
-			throw new ConflictoNegocioException("La reserva supera el aforo maximo disponible");
+			throw new ConflictoNegocioException("No quedan plazas suficientes en esta sesión");
 		}
 
 		int entradasUsuario = reservaRepository.findByUsuarioUsernameAndEventoIdEvento(username, evento.getIdEvento())
@@ -119,7 +133,7 @@ public class ReservaServiceImpl implements ReservaService {
 				.sum();
 
 		if (entradasUsuario + cantidad > 10) {
-			throw new ConflictoNegocioException("El usuario no puede superar 10 entradas en el mismo evento");
+			throw new ConflictoNegocioException("Como máximo 10 plazas por persona en la misma sesión");
 		}
 	}
 }

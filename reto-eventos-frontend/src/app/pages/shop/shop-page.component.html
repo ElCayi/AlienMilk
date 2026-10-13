@@ -222,12 +222,23 @@
             </div>
           </div>
         }
-        <button type="button" class="line-action" (click)="newOrder()">
-          <span class="line-action-label">Hacer otro pedido</span>
-          <span class="line-action-arrow" aria-hidden="true"
-            ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
-          ></span>
-        </button>
+        <div class="receipt-actions">
+          <!-- Con cuenta, el pedido queda en Mi panel: el camino de vuelta, como al reservar una sesión. -->
+          @if (!order.invitado) {
+            <a class="line-action" routerLink="/cuenta/pedidos">
+              <span class="line-action-label">Ver en Mi panel</span>
+              <span class="line-action-arrow" aria-hidden="true"
+                ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></span>
+            </a>
+          }
+          <button type="button" class="line-action" (click)="newOrder()">
+            <span class="line-action-label">Hacer otro pedido</span>
+            <span class="line-action-arrow" aria-hidden="true"
+              ><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></span>
+          </button>
+        </div>
       </app-order-receipt>
     } @else if (!lines().length) {
       <h2 id="order-title">

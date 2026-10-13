@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.TipoEventoDto;
 import retotransversal.modelo.dto.TipoEventoPayloadDto;
+import retotransversal.modelo.entities.TipoEvento;
 import retotransversal.modelo.service.TipoEventoService;
 
 @RestController
@@ -26,30 +27,34 @@ public class TipoEventoRestController {
 
 	@GetMapping
 	public ResponseEntity<List<TipoEventoDto>> findAll() {
-		return ResponseEntity.ok(tipoEventoService.findAll().stream().map(TipoEventoDto::fromEntity).toList());
+		return ResponseEntity.ok(tipoEventoService.findAll().stream().map(this::aDto).toList());
 	}
 
 	@GetMapping("/{idTipo}")
 	public ResponseEntity<TipoEventoDto> findById(@PathVariable Integer idTipo) {
-		return ResponseEntity.ok(TipoEventoDto.fromEntity(tipoEventoService.findById(idTipo)));
+		return ResponseEntity.ok(aDto(tipoEventoService.findById(idTipo)));
 	}
 
 	@PostMapping
 	public ResponseEntity<TipoEventoDto> create(@RequestBody TipoEventoPayloadDto dto) {
 		return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
-				.body(TipoEventoDto.fromEntity(tipoEventoService.insertOne(dto.toEntity())));
+				.body(aDto(tipoEventoService.insertOne(dto.toEntity())));
 	}
 
 	@PutMapping("/{idTipo}")
 	public ResponseEntity<TipoEventoDto> update(@PathVariable Integer idTipo, @RequestBody TipoEventoPayloadDto dto) {
 		var tipoEvento = dto.toEntity();
 		tipoEvento.setIdTipo(idTipo);
-		return ResponseEntity.ok(TipoEventoDto.fromEntity(tipoEventoService.updateOne(tipoEvento)));
+		return ResponseEntity.ok(aDto(tipoEventoService.updateOne(tipoEvento)));
 	}
 
 	@DeleteMapping("/{idTipo}")
 	public ResponseEntity<Void> delete(@PathVariable Integer idTipo) {
 		tipoEventoService.deleteOne(idTipo);
 		return ResponseEntity.noContent().build();
+	}
+
+	private TipoEventoDto aDto(TipoEvento tipo) {
+		return TipoEventoDto.fromEntity(tipo, tipoEventoService.sesionesDe(tipo.getIdTipo()));
 	}
 }

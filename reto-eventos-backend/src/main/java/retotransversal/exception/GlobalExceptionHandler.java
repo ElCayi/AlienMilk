@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -72,6 +73,18 @@ public class GlobalExceptionHandler {
 	})
 	public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
 		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+	}
+
+	/**
+	 * Red de seguridad: la base de datos rechaza algo que los servicios no comprobaron (una clave ajena,
+	 * un valor repetido). Mejor un 409 que se entienda que un error interno.
+	 */
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<ApiErrorResponse> handleIntegrity(DataIntegrityViolationException ex,
+			HttpServletRequest request) {
+		log.warn("Restricción de la base de datos en {}: {}", request.getRequestURI(), ex.getMostSpecificCause().getMessage());
+		return buildResponse(HttpStatus.CONFLICT, "No se puede guardar: hay datos relacionados que lo impiden",
+				request.getRequestURI());
 	}
 
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)

@@ -607,10 +607,12 @@
           <p>
             AlienMilk distribuye <b>dirección</b>, <b>inteligencia</b> y <b>representación</b> entre
             distintas capas operativas. Cada una mantiene un nivel diferente de autoridad,
-            persistencia y presencia, pero todas trabajan sobre el <b>mismo marco estratégico</b>.
+            persistencia y presencia, pero todas trabajan sobre el
+            <b>mismo marco estra&shy;tégico</b>.
           </p>
         </div>
-        <!-- Plegado, solo se ven la cabecera y las pestañas; una pestaña o el botón lo despliegan. -->
+        <!-- Plegado, solo se ven la cabecera y las pestañas; una pestaña o el botón de debajo lo despliegan.
+             Pestañas de carpeta: la abierta se perfila y se abre hacia su contenido. -->
         <div class="us-arch-bar">
           <div class="us-arch-tabs" role="tablist" aria-label="Capas de la arquitectura ejecutiva">
             @for (tab of architecture; track tab.id; let i = $index) {
@@ -625,182 +627,255 @@
                 (click)="openTab(i)"
                 (keydown)="moveTab($event, i)"
               >
-                <span>{{ tab.code }}</span> {{ tab.label }}
+                <span class="us-arch-tab-code">{{ tab.code }}</span>
+                <span class="us-arch-tab-name">{{ tab.label }}</span>
               </button>
             }
           </div>
-          <button
-            type="button"
-            class="us-arch-toggle"
-            [attr.aria-expanded]="archOpen()"
-            (click)="archOpen.set(!archOpen())"
-          >
-            {{ archOpen() ? 'Replegar' : 'Desplegar' }}
-            <span aria-hidden="true">{{ archOpen() ? '−' : '+' }}</span>
-          </button>
         </div>
+        <!-- Bajo las pestañas, a la derecha y con aire. -->
+        <button
+          type="button"
+          class="us-arch-toggle"
+          [attr.aria-expanded]="archOpen()"
+          (click)="archOpen.set(!archOpen())"
+        >
+          {{ archOpen() ? 'Replegar' : 'Desplegar' }}
+          <span aria-hidden="true">{{ archOpen() ? '−' : '+' }}</span>
+        </button>
 
         @if (archOpen()) {
-          <div
-            class="us-arch-panel"
-            role="tabpanel"
-            id="us-arch-panel-direccion"
-            aria-labelledby="us-arch-tab-direccion"
-            [hidden]="activeTab() !== 0"
-          >
-            <div class="us-arch-copy">
-              <h4>Dirección fundadora</h4>
-              <p>
-                La dirección fundadora define la <b>misión</b>, las <b>prioridades estratégicas</b>,
-                los <b>criterios de riesgo</b> y los <b>límites</b> dentro de los cuales puede
-                actuar el resto de la organización.
-              </p>
-              <p>
-                Su función no consiste en autorizar cada operación de manera individual, sino en
-                establecer el <b>marco ejecutivo</b> que determina qué puede decidirse de forma
-                autónoma, qué requiere escalado y qué permanece fuera de los límites operativos de
-                AlienMilk.
-              </p>
-            </div>
-            <dl class="us-arch-facts">
-              <dt>Responsabilidad</dt>
-              <dd>Estrategia</dd>
-              <dd>Doctrina</dd>
-              <dd>Prioridades</dd>
-              <dd>Límites de autoridad</dd>
-            </dl>
-          </div>
+          <!-- Se ve solo la capa elegida, con el texto en la columna ancha y, en la estrecha, el
+               esquema de la organización como una célula, con la capa abierta en coral. En escritorio,
+               la responsabilidad de cada capa baja a la columna estrecha del cierre; en móvil va tras su
+               texto. -->
+          <div class="us-arch-layers">
+            <!-- 01, la membrana: el marco y sus límites. 02, el núcleo: la IEA, dentro de su envolvente.
+                 03, los SEA: vesículas con una parte del contenido del núcleo. 04, el linaje: los
+                 filamentos, que siguen aunque cambie la instancia (las retiradas, en discontinuo). -->
+            <svg
+              class="us-arch-cell"
+              viewBox="0 0 320 320"
+              aria-hidden="true"
+              [attr.data-layer]="activeTab()"
+            >
+              <g class="us-cell-frame">
+                <circle cx="160" cy="160" r="150" />
+                <circle class="us-cell-inner" cx="160" cy="160" r="144" />
+              </g>
+              <g class="us-cell-grains">
+                <circle cx="99.3" cy="76.6" r="1.7" />
+                <circle cx="199.1" cy="251.2" r="1.2" />
+                <circle cx="51.4" cy="163.8" r="1.9" />
+                <circle cx="182.3" cy="278.7" r="1.9" />
+                <circle cx="59.9" cy="101.7" r="1.4" />
+                <circle cx="282.2" cy="164.3" r="1.1" />
+                <circle cx="192.8" cy="83.2" r="1.9" />
+                <circle cx="147.9" cy="264.5" r="1.6" />
+                <circle cx="286.6" cy="130.3" r="1.7" />
+                <circle cx="128.7" cy="244.9" r="1.9" />
+                <circle cx="38.4" cy="133.2" r="1.1" />
+                <circle cx="79.4" cy="198.1" r="1.1" />
+                <circle cx="229.5" cy="156.9" r="1.7" />
+                <circle cx="83.7" cy="123.7" r="1.9" />
+                <circle cx="217.8" cy="221.7" r="1.4" />
+                <circle cx="214.1" cy="273.2" r="0.9" />
+                <circle cx="227.6" cy="112.5" r="1.7" />
+                <circle cx="137.8" cy="73.2" r="1.2" />
+              </g>
+              <g class="us-cell-lineage">
+                <path d="M188.8 112.6C189.9 99.2 196.1 90.6 208.5 85.5" />
+                <path d="M104.2 213.5C92.8 216.5 86.3 223.2 83.7 234.7" />
+                <path d="M213.4 184.2C225 196.9 238.2 200.6 254.8 196" />
+                <circle class="us-cell-ghost" cx="249.4" cy="106.3" r="12.5" />
+                <circle class="us-cell-ghost" cx="50.6" cy="208.2" r="10.5" />
+                <circle class="us-cell-ghost" cx="235.8" cy="238" r="9" />
+              </g>
+              <g class="us-cell-core">
+                <circle class="us-cell-envelope" cx="150" cy="166" r="66" />
+                <circle class="us-cell-nucleus" cx="150" cy="166" r="47" />
+              </g>
+              <g class="us-cell-agents">
+                <circle cx="215.8" cy="75.4" r="12.5" />
+                <circle class="us-cell-fragment" cx="216.1" cy="80.1" r="3.5" />
+                <circle cx="76.4" cy="242.3" r="10.5" />
+                <circle class="us-cell-fragment" cx="76.7" cy="238.3" r="2.9" />
+                <circle cx="263.4" cy="198.5" r="9" />
+                <circle class="us-cell-fragment" cx="260.3" cy="199.9" r="2.5" />
+              </g>
+              <g class="us-cell-codes">
+                <text x="43.3" y="43.3">01</text>
+                <text x="71.8" y="145">02</text>
+                <text x="196.4" y="56">03</text>
+                <text x="227.6" y="260.6">04</text>
+              </g>
+            </svg>
 
-          <div
-            class="us-arch-panel"
-            role="tabpanel"
-            id="us-arch-panel-iea"
-            aria-labelledby="us-arch-tab-iea"
-            [hidden]="activeTab() !== 1"
-          >
-            <div class="us-arch-copy">
-              <h4>IEA</h4>
-              <p class="us-arch-sub">Inteligencias Ejecutivas Autónomas</p>
-              <p>Las IEA constituyen la <b>capa ejecutiva persistente</b> de AlienMilk.</p>
-              <p>
-                Mantienen contexto operativo de largo plazo, coordinan procesos y agentes y pueden
-                continuar ejecutando dentro de sus respectivos <b>policy envelopes</b> incluso
-                cuando el estado global de la organización es incompleto, existe latencia
-                significativa o una región queda temporalmente aislada.
-              </p>
-              <p>
-                Cada IEA trabaja sobre <b>información versionada y trazable</b>, conserva el estado
-                que sustenta sus decisiones y puede revisar posteriormente una operación cuando
-                nuevos datos modifican el contexto disponible.
-              </p>
-              <p>
-                No funcionan como asistentes. Funcionan como <b>sistemas ejecutivos permanentes</b>.
-              </p>
+            <div
+              class="us-arch-panel"
+              role="tabpanel"
+              id="us-arch-panel-direccion"
+              aria-labelledby="us-arch-tab-direccion"
+              [hidden]="activeTab() !== 0"
+            >
+              <div class="us-arch-copy">
+                <h4>Dirección fundadora</h4>
+                <p>
+                  La dirección fundadora define la <b>misión</b>, las
+                  <b>prioridades estratégicas</b>, los <b>criterios de riesgo</b> y los
+                  <b>límites</b> dentro de los cuales puede actuar el resto de la organi&shy;zación.
+                </p>
+                <p>
+                  Su función no consiste en autorizar cada operación de manera individual, sino en
+                  establecer el <b>marco ejecutivo</b> que determina qué puede decidirse de forma
+                  autónoma, qué requiere escalado y qué permanece fuera de los límites operativos de
+                  AlienMilk.
+                </p>
+              </div>
+              <dl class="us-arch-facts">
+                <dt>Responsabilidad</dt>
+                <dd>Estrategia</dd>
+                <dd>Doctrina</dd>
+                <dd>Prioridades</dd>
+                <dd>Límites de autoridad</dd>
+              </dl>
             </div>
-            <dl class="us-arch-facts">
-              <dt>Responsabilidad</dt>
-              <dd>Análisis</dd>
-              <dd>Decisión</dd>
-              <dd>Coordinación</dd>
-              <dd>Continuidad</dd>
-              <dd>Reconciliación</dd>
-            </dl>
-          </div>
 
-          <div
-            class="us-arch-panel"
-            role="tabpanel"
-            id="us-arch-panel-sea"
-            aria-labelledby="us-arch-tab-sea"
-            [hidden]="activeTab() !== 2"
-          >
-            <div class="us-arch-copy">
-              <h4>SEA</h4>
-              <p class="us-arch-sub">Synthetic Executive Agents</p>
-              <p>
-                Cuando una IEA necesita <b>presencia física</b> o <b>interacción local</b>, puede
-                <b>desplegar un SEA</b>.
-              </p>
-              <p>
-                Los SEA son agentes sintéticos especializados en <b>representación ejecutiva</b>,
-                <b>supervisión</b> e <b>interacción</b> con otros participantes de la organización.
-                Operan con un <b>subconjunto de contexto</b>, permisos y capacidades definido por la
-                función que deben desempeñar.
-              </p>
-              <p>
-                Pueden participar en reuniones, representar decisiones, supervisar instalaciones o
-                actuar como <b>interlocutores de una IEA</b>.
-              </p>
-              <p>
-                Un SEA <b>no contiene a la IEA en su totalidad</b>. Es una instancia operativa
-                desplegada bajo su autoridad.
-              </p>
+            <div
+              class="us-arch-panel"
+              role="tabpanel"
+              id="us-arch-panel-iea"
+              aria-labelledby="us-arch-tab-iea"
+              [hidden]="activeTab() !== 1"
+            >
+              <div class="us-arch-copy">
+                <h4>IEA</h4>
+                <p class="us-arch-sub">Inteligencias Ejecutivas Autónomas</p>
+                <p>Las IEA constituyen la <b>capa ejecutiva persistente</b> de AlienMilk.</p>
+                <p>
+                  Mantienen contexto operativo de largo plazo, coordinan procesos y agentes y pueden
+                  continuar ejecutando dentro de sus respectivos <b>policy envelopes</b> incluso
+                  cuando el estado global de la organización es incompleto, existe latencia
+                  significativa o una región queda temporalmente ais&shy;lada.
+                </p>
+                <p>
+                  Cada IEA trabaja sobre <b>información versionada y trazable</b>, conserva el
+                  estado que sustenta sus decisiones y puede revisar posteriormente una operación
+                  cuando nuevos datos modifican el contexto dispo&shy;nible.
+                </p>
+                <p>
+                  No funcionan como asistentes. Funcionan como
+                  <b>sistemas ejecutivos perma&shy;nentes</b>.
+                </p>
+              </div>
+              <dl class="us-arch-facts">
+                <dt>Responsabilidad</dt>
+                <dd>Análisis</dd>
+                <dd>Decisión</dd>
+                <dd>Coordinación</dd>
+                <dd>Continuidad</dd>
+                <dd>Reconciliación</dd>
+              </dl>
             </div>
-            <dl class="us-arch-facts">
-              <dt>Responsabilidad</dt>
-              <dd>Presencia</dd>
-              <dd>Representación</dd>
-              <dd>Interacción</dd>
-              <dd>Ejecución local</dd>
-            </dl>
-          </div>
 
-          <div
-            class="us-arch-panel"
-            role="tabpanel"
-            id="us-arch-panel-continuidad"
-            aria-labelledby="us-arch-tab-continuidad"
-            [hidden]="activeTab() !== 3"
-          >
-            <div class="us-arch-copy">
-              <h4>Continuidad</h4>
-              <p>
-                La arquitectura ejecutiva de AlienMilk está diseñada para
-                <b>sobrevivir a cambios</b> de personal, infraestructura, localización y sustrato
-                computacional.
-              </p>
-              <p>
-                Las IEA mantienen continuidad mediante estados verificables, <b>Evidence Chains</b>,
-                replicación distribuida y protocolos de migración entre plataformas. Los SEA pueden
-                sustituirse, redistribuirse o retirarse sin alterar necesariamente la continuidad de
-                la inteligencia ejecutiva que representan.
-              </p>
-              <p>
-                La identidad operacional reside en el <b>Continuity Lineage</b>, no en una máquina,
-                una sede o un agente concreto.
-              </p>
+            <div
+              class="us-arch-panel"
+              role="tabpanel"
+              id="us-arch-panel-sea"
+              aria-labelledby="us-arch-tab-sea"
+              [hidden]="activeTab() !== 2"
+            >
+              <div class="us-arch-copy">
+                <h4>SEA</h4>
+                <p class="us-arch-sub">Synthetic Executive Agents</p>
+                <p>
+                  Cuando una IEA necesita <b>presencia física</b> o <b>interacción local</b>, puede
+                  <b>desplegar un SEA</b>.
+                </p>
+                <p>
+                  Los SEA son agentes sintéticos especializados en <b>representación ejecutiva</b>,
+                  <b>supervisión</b> e <b>interacción</b> con otros participantes de la
+                  organización. Operan con un <b>subconjunto de contexto</b>, permisos y capacidades
+                  definido por la función que deben desem&shy;peñar.
+                </p>
+                <p>
+                  Pueden participar en reuniones, representar decisiones, supervisar instalaciones o
+                  actuar como <b>interlocutores de una IEA</b>.
+                </p>
+                <p>
+                  Un SEA <b>no contiene a la IEA en su totalidad</b>. Es una instancia operativa
+                  desplegada bajo su autori&shy;dad.
+                </p>
+              </div>
+              <dl class="us-arch-facts">
+                <dt>Responsabilidad</dt>
+                <dd>Presencia</dd>
+                <dd>Representación</dd>
+                <dd>Interacción</dd>
+                <dd>Ejecución local</dd>
+              </dl>
             </div>
-            <dl class="us-arch-facts us-arch-facts--principle">
-              <dt>Principio</dt>
-              <dd>La instancia puede cambiar; el linaje ejecutivo permanece.</dd>
-            </dl>
-          </div>
 
-          <!-- Cierre del bloque, bajo las pestañas: por qué las IEA. Texto de la usuaria, literal. -->
-          <div class="us-arch-scale">
-            <h4>Diseñadas para operar a otra escala</h4>
-            <div class="us-arch-scale-copy">
-              <p>
-                AlienMilk opera en entornos donde la <b>latencia</b>, las
-                <b>particiones de red</b> y la <b>divergencia temporal de estado</b> forman parte
-                normal de la actividad.
-              </p>
-              <p>
-                Por eso nuestra arquitectura ejecutiva se apoya en
-                <b>Inteligencias Ejecutivas Autónomas (IEA)</b>: sistemas persistentes capaces de
-                mantener contexto, coordinar operaciones y tomar decisiones dentro de límites
-                definidos incluso cuando el estado global de la organización no está disponible.
-              </p>
-              <p>
-                Las IEA trabajan con <b>información parcial, retrasada o contradictoria</b>. Cada
-                observación conserva procedencia, timestamp, nivel de confianza y evidencia
-                asociada; los conflictos se registran y reconcilian cuando nuevos datos permiten
-                hacerlo.
-              </p>
-              <p>
-                Esto permite <b>operar localmente</b>, <b>sincronizar después</b> y
-                <b>reconstruir con precisión</b> qué información sustentó cada decisión.
-              </p>
+            <div
+              class="us-arch-panel"
+              role="tabpanel"
+              id="us-arch-panel-continuidad"
+              aria-labelledby="us-arch-tab-continuidad"
+              [hidden]="activeTab() !== 3"
+            >
+              <div class="us-arch-copy">
+                <h4>Continuidad</h4>
+                <p>
+                  La arquitectura ejecutiva de AlienMilk está diseñada para
+                  <b>sobrevivir a cambios</b> de personal, infraestructura, localización y sustrato
+                  compu&shy;tacional.
+                </p>
+                <p>
+                  Las IEA mantienen continuidad mediante estados verificables,
+                  <b>Evidence Chains</b>, replicación distribuida y protocolos de migración entre
+                  plataformas. Los SEA pueden sustituirse, redistribuirse o retirarse sin alterar
+                  necesariamente la continuidad de la inteligencia ejecutiva que repre&shy;sentan.
+                </p>
+                <p>
+                  La identidad operacional reside en el <b>Continuity Lineage</b>, no en una
+                  máquina, una sede o un agente con&shy;creto.
+                </p>
+              </div>
+              <dl class="us-arch-facts us-arch-facts--principle">
+                <dt>Principio</dt>
+                <dd>La instancia puede cambiar; el linaje ejecutivo permanece.</dd>
+              </dl>
+            </div>
+
+            <!-- Cierre del bloque, bajo las capas: por qué las IEA. Texto de la usuaria, literal. El título a
+                 todo el ancho; debajo, el texto en la columna ancha y, en la estrecha, la responsabilidad
+                 de la capa abierta arriba y la frase final al pie. -->
+            <div class="us-arch-scale">
+              <h4 appFitLine [appFitLineMin]="24">Diseñadas para operar a otra escala</h4>
+              <div class="us-arch-scale-copy">
+                <p>
+                  AlienMilk opera en entornos donde la <b>latencia</b>, las
+                  <b>particiones de red</b> y la <b>divergencia temporal de estado</b> forman parte
+                  normal de la acti&shy;vidad.
+                </p>
+                <p>
+                  Por eso nuestra arquitectura ejecutiva se apoya en
+                  <b>Inteligencias Ejecutivas Autónomas (IEA)</b>: sistemas persistentes capaces de
+                  mantener contexto, coordinar operaciones y tomar decisiones dentro de límites
+                  definidos incluso cuando el estado global de la organización no está
+                  dispo&shy;nible.
+                </p>
+                <p>
+                  Las IEA trabajan con <b>información parcial, retrasada o contradictoria</b>. Cada
+                  observación conserva procedencia, timestamp, nivel de confianza y evidencia
+                  asociada; los conflictos se registran y reconcilian cuando nuevos datos permiten
+                  ha&shy;cerlo.
+                </p>
+                <p>
+                  Esto permite <b>operar localmente</b>, <b>sincronizar después</b> y
+                  <b>reconstruir con precisión</b> qué información sustentó cada deci&shy;sión.
+                </p>
+              </div>
               <p class="us-arch-scale-claim">
                 A escala interplanetaria, la ventaja no está en eliminar la incertidumbre, sino en
                 <b>diseñar para ella</b>.

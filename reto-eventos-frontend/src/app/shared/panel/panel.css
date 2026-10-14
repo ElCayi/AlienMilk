@@ -355,11 +355,62 @@
   white-space: nowrap;
 }
 
+/* Selector de orden: solo en móvil, donde la tabla no tiene cabecera. */
+.sort-select {
+  display: none;
+}
+
+/* Cabecera ordenable: el rótulo es un botón con su flecha; la de la columna que ordena, en tinta. */
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.sort-button:hover,
+th[aria-sort] .sort-button {
+  color: var(--paper-ink);
+}
+
+.sort-button:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+  border-radius: 0.2rem;
+}
+
+.sort-button svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.45;
+}
+
+th[aria-sort] .sort-button svg {
+  opacity: 1;
+}
+
 /* Totales al pie, separados por el filete de la cabecera. */
 .data-table tfoot td {
   border-top: 1px solid var(--paper-rule);
   border-bottom: 0;
   font-weight: 700;
+}
+
+/* Columnas de chips (estado): la chip y su rótulo, centrados en la casilla. */
+.data-table .center {
+  text-align: center;
 }
 
 /* Fechas en una línea. */
@@ -420,6 +471,197 @@
   -webkit-line-clamp: 2;
 }
 
+/* Tabla desplegable: cada fila dice lo justo para reconocerla y, al pulsarla, abre debajo su ficha
+   con sus acciones. Sin franjas: la fila abierta y su ficha van juntas sobre el mismo tono. */
+.data-table.is-expandable tbody tr:nth-child(even) {
+  background: none;
+}
+
+.data-table.is-expandable .row-summary {
+  cursor: pointer;
+}
+
+.data-table.is-expandable .row-summary td {
+  vertical-align: middle;
+}
+
+.data-table.is-expandable .row-summary.is-open,
+.data-table.is-expandable .row-detail {
+  background: var(--paper-stripe);
+}
+
+.data-table.is-expandable .row-summary.is-open td {
+  border-bottom-color: transparent;
+}
+
+.data-table .cell-num {
+  width: 1%;
+  color: var(--paper-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cell-num-inline {
+  display: none;
+}
+
+/* El nombre es el botón que despliega: se lee como texto, se maneja con el teclado. */
+.row-disclosure {
+  padding: 0;
+  border: 0;
+  color: var(--paper-ink);
+  background: none;
+  font:
+    700 1rem / 1.3 'Nunito',
+    sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row-disclosure:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 3px;
+}
+
+.data-table .cell-chevron {
+  width: 1%;
+  text-align: right;
+}
+
+.cell-chevron svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: var(--paper-faint);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 160ms ease;
+}
+
+.row-summary.is-open .cell-chevron svg {
+  transform: rotate(180deg);
+}
+
+.data-table .row-detail > td {
+  padding: 0.25rem 0.75rem 1.1rem;
+}
+
+/* La ficha desplegada: a la izquierda la ocupación, que es lo que se mira primero; a la derecha los
+   datos fijos en filas de rótulo y valor; debajo, la descripción. */
+.session-detail {
+  display: grid;
+  grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr);
+  gap: 1rem 2.5rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.6rem;
+  background: var(--field);
+}
+
+.occupancy-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0;
+  color: var(--paper-muted);
+}
+
+.occupancy-figure strong {
+  color: var(--paper-ink);
+  font: 400 2.6rem / 1 var(--condensed);
+  font-variant-numeric: tabular-nums;
+}
+
+.occupancy-figure span {
+  font: 600 1.05rem / 1 var(--condensed);
+  letter-spacing: 0.02em;
+}
+
+.meter.occupancy-meter {
+  width: 100%;
+  max-width: none;
+  height: 0.5rem;
+  margin: 0.65rem 0 0.75rem;
+}
+
+.occupancy-notes {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  color: var(--paper-muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  list-style: none;
+}
+
+.occupancy-notes .is-short {
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.occupancy-notes .is-reached {
+  color: #2c6a45;
+}
+
+.detail-facts {
+  display: grid;
+  align-content: start;
+  margin: 0;
+}
+
+.detail-facts > div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.detail-facts > div:first-child {
+  padding-top: 0;
+}
+
+.detail-facts > div:last-child {
+  border-bottom: 0;
+}
+
+.detail-facts dt {
+  color: var(--paper-faint);
+  font:
+    800 0.6rem / 1.6 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.detail-facts dd {
+  margin: 0;
+  color: var(--paper-ink);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.detail-description {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--paper-line);
+  color: var(--paper-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  text-align: justify;
+  text-align-last: left;
+}
+
+.detail-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
 /* Estado: una pastilla con su punto. Tinta para lo que está en marcha, coral para lo que pide
    atención y gris para lo cerrado. */
 .badge {
@@ -447,7 +689,20 @@
   background: currentColor;
 }
 
+/* En marcha: verde, el punto y el borde más claros y el texto más oscuro, para que se lea. */
+.badge[data-tone='live'] {
+  border-color: #5fae7d;
+  color: #2c6a45;
+}
+
+.badge[data-tone='live']::before {
+  background: #5fae7d;
+}
+
+/* Lo que pide atención (una sesión cancelada): borde y punto en el coral de la casa, texto en el
+   coral oscuro. */
 .badge[data-tone='alert'] {
+  border-color: var(--coral);
   color: var(--coral-ink);
 }
 
@@ -496,6 +751,19 @@
 
 .empty .btn {
   margin-top: 1rem;
+}
+
+/* Diálogo con páginas (Modificar sesión: Datos y Expediente): la elegida, y las demás ocultas. */
+.edit-pages {
+  margin-bottom: 1.25rem;
+}
+
+.edit-pages button {
+  justify-content: center;
+}
+
+.edit-page[hidden] {
+  display: none;
 }
 
 /* Formularios: rótulo encima, campo blanco y el error debajo. */
@@ -584,6 +852,62 @@
 
 .field-help {
   color: var(--paper-faint);
+}
+
+/* Foto de un formulario: la vista previa y, al lado, qué pasará al guardar y los botones. */
+.photo-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.photo-preview {
+  width: 7.5rem;
+  aspect-ratio: 4 / 3;
+  flex: none;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.5rem;
+  object-fit: cover;
+  background: var(--paper-soft);
+}
+
+.photo-empty {
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  color: var(--paper-faint);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.photo-actions {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.photo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* El selector de archivo nativo, escondido dentro de su botón; el foco se ve en el botón. */
+.photo-pick {
+  position: relative;
+  cursor: pointer;
+}
+
+.photo-pick input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.photo-pick:focus-within {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
 }
 
 /* Interruptor sí/no: una casilla con su etiqueta al lado. */
@@ -703,7 +1027,7 @@
     display: none;
   }
 
-  .data-table .num {
+  .data-table :is(.num, .center) {
     text-align: left;
   }
 
@@ -721,6 +1045,32 @@
     max-width: none;
   }
 
+  .sort-select {
+    display: grid;
+    flex: 1 1 100%;
+    gap: 0.3rem;
+    color: var(--paper-faint);
+    font:
+      800 0.6rem / 1.5 'Nunito',
+      sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .sort-select select {
+    min-height: 2.6rem;
+    padding: 0 0.8rem;
+    border: 1px solid var(--paper-rule);
+    border-radius: 0.5rem;
+    color: var(--paper-ink);
+    background: var(--field);
+    font:
+      700 0.9rem 'Nunito',
+      sans-serif;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
   /* Los filtros, de dos en dos en lugar de desplazarse. */
   .segmented {
     flex: 1 1 100%;
@@ -730,9 +1080,64 @@
   }
 }
 
+/* Móvil: en la tabla desplegable, el número va delante del nombre y la flecha arriba a la derecha. */
+@media (max-width: 760px) {
+  .data-table.is-expandable td.cell-num {
+    display: none;
+  }
+
+  .cell-num-inline {
+    display: inline;
+    margin-right: 0.4rem;
+    color: var(--paper-faint);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .data-table.is-expandable .row-summary {
+    position: relative;
+    padding-right: 2.5rem;
+  }
+
+  .data-table.is-expandable td.cell-chevron {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.75rem;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .data-table.is-expandable td.cell-chevron::before {
+    content: none;
+  }
+
+  .data-table.is-expandable .row-detail {
+    padding-top: 0;
+  }
+
+  .data-table .row-detail > td {
+    padding: 0;
+  }
+
+  .data-table .row-detail > td::before {
+    content: none;
+  }
+
+  .session-detail {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.9rem;
+  }
+
+  .detail-facts > div {
+    grid-template-columns: 6rem minmax(0, 1fr);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn,
-  .segmented button {
+  .segmented button,
+  .cell-chevron svg {
     transition: none;
   }
 }

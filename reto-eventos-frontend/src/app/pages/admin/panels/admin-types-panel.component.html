@@ -55,7 +55,7 @@
             <td class="row-actions-cell">
               <div class="row-actions">
                 <button type="button" class="btn btn-small" (click)="openEdit(type)">
-                  Editar<span class="visually-hidden"> {{ label(type.nombre) }}</span>
+                  Modificar<span class="visually-hidden"> {{ label(type.nombre) }}</span>
                 </button>
                 <button
                   type="button"
@@ -79,9 +79,23 @@
   </div>
 }
 
-<app-panel-dialog [heading]="editing() ? 'Editar tipo' : 'Nuevo tipo'">
+<app-panel-dialog [heading]="editing() ? 'Modificar tipo' : 'Nuevo tipo'" [wide]="true" [tall]="true">
   <form novalidate (ngSubmit)="save()">
-    <div class="form-grid">
+    <!-- Dos páginas: los datos del tipo y su expediente, lo que heredan las fichas de sus sesiones. -->
+    <div class="segmented edit-pages" role="group" aria-label="Páginas del tipo">
+      <button type="button" [attr.aria-pressed]="page() === 'datos'" (click)="page.set('datos')">
+        Datos
+      </button>
+      <button type="button" [attr.aria-pressed]="page() === 'expediente'" (click)="page.set('expediente')">
+        Expediente
+      </button>
+    </div>
+
+    <div class="edit-page" [hidden]="page() !== 'expediente'">
+      <app-admin-dossier-form />
+    </div>
+
+    <div class="form-grid edit-page" [hidden]="page() !== 'datos'">
       <div class="field is-wide" [class.is-invalid]="error('nombre')">
         <label class="field-label" for="type-name">
           Nombre <span class="field-note">{{ form.nombre.length }}/45</span>
@@ -93,10 +107,6 @@
           <p class="field-help">
             En la web se lee «{{ form.nombre ? label(form.nombre) : '…' }}». Los tipos de siempre van en
             mayúsculas y con guiones bajos: CATA_COSMICA.
-            @if (editing()?.sesiones) {
-              Las fichas públicas de sus sesiones toman parte de su texto de este nombre: si lo cambias,
-              revísalas.
-            }
           </p>
         }
       </div>
@@ -124,3 +134,4 @@
     </div>
   </form>
 </app-panel-dialog>
+

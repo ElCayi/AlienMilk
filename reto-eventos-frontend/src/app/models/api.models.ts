@@ -6,6 +6,8 @@ export interface EventoListado {
   aforoMaximo: number;
   estado: string;
   tipoEvento: string;
+  /** La foto propia subida desde el panel (nombre del archivo), o null si usa la de la web. */
+  imagen?: string | null;
 }
 
 export interface EventoDetalle extends EventoListado {
@@ -24,6 +26,8 @@ export type EstadoEvento = 'ACTIVO' | 'CANCELADO' | 'TERMINADO';
  */
 export interface EventoAdmin extends Omit<EventoDetalle, 'estado'> {
   estado: EstadoEvento;
+  /** Fuera de la lista del panel, en «Archivadas» (solo las que ya no están activas). */
+  archivada: boolean;
   plazasReservadas: number;
   reservas: number;
 }

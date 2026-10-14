@@ -95,7 +95,13 @@
             <span class="index-meta">&nbsp;</span>
           </span>
         </span>
-        <p class="program-status">Ningún expediente coincide con estos parámetros.</p>
+        <p class="program-status">
+          {{
+            sessions().length
+              ? "Ningún expediente coincide con estos parámetros."
+              : "Ahora mismo no hay sesiones disponibles. Vuelve pronto para descubrir las siguientes."
+          }}
+        </p>
       </li>
       <li *ngFor="let session of filteredSessions(); trackBy: trackSession">
         <button

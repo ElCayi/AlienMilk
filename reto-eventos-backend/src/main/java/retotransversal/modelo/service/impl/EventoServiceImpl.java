@@ -1,16 +1,20 @@
 package retotransversal.modelo.service.impl;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.RecursoNoEncontradoException;
 import retotransversal.modelo.dto.EventoAdminDto;
@@ -24,14 +28,28 @@ import retotransversal.modelo.service.ErroresCampos;
 import retotransversal.modelo.service.EventoService;
 
 @Service
-@RequiredArgsConstructor
 public class EventoServiceImpl implements EventoService {
 
 	/** El precio se guarda con DECIMAL(9, 2). */
 	private static final BigDecimal PRECIO_MAXIMO = new BigDecimal("9999999.99");
 
+	/** Las sesiones son en hora peninsular: el día cambia a medianoche de Madrid. */
+	public static final ZoneId ZONA = ZoneId.of("Europe/Madrid");
+
 	private final EventoRepository eventoRepository;
 	private final ReservaRepository reservaRepository;
+	private final Clock reloj;
+
+	@Autowired
+	public EventoServiceImpl(EventoRepository eventoRepository, ReservaRepository reservaRepository) {
+		this(eventoRepository, reservaRepository, Clock.system(ZONA));
+	}
+
+	public EventoServiceImpl(EventoRepository eventoRepository, ReservaRepository reservaRepository, Clock reloj) {
+		this.eventoRepository = eventoRepository;
+		this.reservaRepository = reservaRepository;
+		this.reloj = reloj;
+	}
 
 	@Override
 	public Evento findById(Integer id) {
@@ -44,29 +62,35 @@ public class EventoServiceImpl implements EventoService {
 		return eventoRepository.findAll();
 	}
 
-	/** Una sesión nueva siempre empieza activa. */
+	/** Una sesión nueva siempre empieza activa, y no puede ser de una fecha que ya pasó. */
 	@Override
 	public Evento insertOne(Evento entidad) {
 		limpiar(entidad);
-		validar(entidad, 0);
+		validar(entidad, 0, null);
 		entidad.setEstado(EstadoEvento.ACTIVO);
 		return eventoRepository.save(entidad);
 	}
 
 	/**
 	 * Editar no cambia el estado: una sesión cancelada sigue cancelada hasta que se reactive. El aforo
-	 * no puede quedar por debajo de las plazas ya reservadas.
+	 * no puede quedar por debajo de las plazas ya reservadas. La fecha solo puede cambiar a una que no
+	 * haya pasado; la que ya tenía se respeta, para poder corregir otros datos de una sesión celebrada.
 	 */
 	@Override
 	public Evento updateOne(Evento entidad) {
 		Evento actual = findById(entidad.getIdEvento());
 		limpiar(entidad);
-		validar(entidad, plazasReservadas(actual.getIdEvento()));
+		validar(entidad, plazasReservadas(actual.getIdEvento()), actual.getFechaInicio());
 		entidad.setEstado(actual.getEstado());
+		entidad.setImagen(actual.getImagen());
+		entidad.setArchivada(actual.isArchivada());
 		return eventoRepository.save(entidad);
 	}
 
-	/** Solo se borra una sesión sin reservas; con reservas, se cancela y quedan en el historial. */
+	/**
+	 * Una sesión con reservas no se borra por descuido: se pide confirmarlo aparte (borrarConReservas)
+	 * o cancelarla, y entonces las reservas se quedan en el historial de sus clientes.
+	 */
 	@Override
 	@Transactional
 	public int deleteOne(Integer id) {
@@ -78,6 +102,15 @@ public class EventoServiceImpl implements EventoService {
 					: "Tiene %d reservas: cancela la sesión en lugar de borrarla".formatted(reservas));
 		}
 		eventoRepository.deleteById(id);
+		return 1;
+	}
+
+	@Override
+	@Transactional
+	public int borrarConReservas(Integer idEvento) {
+		findById(idEvento);
+		reservaRepository.deleteAll(reservaRepository.findByEventoIdEvento(idEvento));
+		eventoRepository.deleteById(idEvento);
 		return 1;
 	}
 
@@ -112,13 +145,35 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
+	public Evento archivar(Integer idEvento, boolean archivada) {
+		Evento evento = findById(idEvento);
+		if (archivada && evento.getEstado() == EstadoEvento.ACTIVO) {
+			throw new ConflictoNegocioException("Una sesión activa no se archiva: cancélala o espera a que termine");
+		}
+		evento.setArchivada(archivada);
+		return eventoRepository.save(evento);
+	}
+
+	@Override
 	public Evento reactivarEvento(Integer idEvento) {
 		Evento evento = findById(idEvento);
 		if (evento.getEstado() != EstadoEvento.CANCELADO) {
 			throw new ConflictoNegocioException("Solo se puede reactivar una sesión cancelada");
 		}
+		if (evento.isArchivada()) {
+			throw new ConflictoNegocioException("Está archivada: sácala del archivo antes de reactivarla");
+		}
+		if (evento.getFechaInicio().isBefore(hoy())) {
+			throw new ConflictoNegocioException("Su fecha ya pasó: cámbiala antes de reactivarla");
+		}
 		evento.setEstado(EstadoEvento.ACTIVO);
 		return eventoRepository.save(evento);
+	}
+
+	@Override
+	@Transactional
+	public int terminarCelebradas() {
+		return eventoRepository.terminarAnterioresA(hoy());
 	}
 
 	@Override
@@ -142,6 +197,10 @@ public class EventoServiceImpl implements EventoService {
 		return EventoAdminDto.de(evento, reservas.stream().mapToLong(Reserva::getCantidad).sum(), reservas.size());
 	}
 
+	private LocalDate hoy() {
+		return LocalDate.now(reloj);
+	}
+
 	private int plazasReservadas(Integer idEvento) {
 		return reservaRepository.findByEventoIdEvento(idEvento).stream().mapToInt(Reserva::getCantidad).sum();
 	}
@@ -152,11 +211,14 @@ public class EventoServiceImpl implements EventoService {
 		evento.setDireccion(ErroresCampos.limpio(evento.getDireccion()));
 	}
 
-	private static void validar(Evento evento, int plazasReservadas) {
+	private void validar(Evento evento, int plazasReservadas, LocalDate fechaActual) {
+		LocalDate fecha = evento.getFechaInicio();
 		ErroresCampos errores = new ErroresCampos()
 				.obligatorio("nombre", evento.getNombre(), 50, "Escribe el nombre de la sesión")
 				.maximo("descripcion", evento.getDescripcion(), 200)
-				.si(evento.getFechaInicio() == null, "fechaInicio", "Indica la fecha")
+				.si(fecha == null, "fechaInicio", "Indica la fecha")
+				.si(fecha != null && fecha.isBefore(hoy()) && !Objects.equals(fecha, fechaActual), "fechaInicio",
+						"Esa fecha ya ha pasado")
 				.obligatorio("direccion", evento.getDireccion(), 100, "Indica dónde se celebra")
 				.si(evento.getTipoEvento() == null, "idTipo", "Elige un tipo de sesión");
 

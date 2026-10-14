@@ -1,0 +1,220 @@
+/* Editor del expediente: las pestañas de la ficha pública arriba y, en cada una, sus apartados. Lo
+   heredado, en una franja del papel y atenuado; lo propio, en campos blancos como el resto del panel. */
+.dossier-intro {
+  margin: 0 0 1rem;
+  color: var(--paper-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Las siete pestañas en dos filas iguales (cuatro y tres), y en móvil de dos en dos: nunca con barra
+   de desplazamiento. */
+.dossier-tabs {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: row;
+  margin-bottom: 1.25rem;
+}
+
+.dossier-tabs button {
+  justify-content: center;
+}
+
+.dossier-tabs button.has-error {
+  color: var(--coral-ink);
+}
+
+.dossier-tab {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.dossier-field {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dossier-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0;
+  color: var(--paper-ink);
+  font:
+    700 0.95rem / 1.3 'Nunito',
+    sans-serif;
+}
+
+.dossier-own {
+  min-height: 0;
+  font-size: 0.88rem;
+}
+
+.dossier-inherited {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  color: var(--paper-faint);
+  background: var(--paper-soft);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.dossier-inherited p {
+  margin: 0;
+}
+
+.dossier-inherited b {
+  color: var(--paper-muted);
+}
+
+.dossier-inherited-note {
+  font-size: 0.8rem;
+}
+
+.dossier-field :is(input, textarea) {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font:
+    0.95rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+}
+
+.dossier-field textarea {
+  resize: vertical;
+}
+
+.dossier-field :is(input, textarea):focus {
+  border-color: var(--coral);
+  outline: none;
+  box-shadow: 0 0 0 2px #ffb8b8;
+}
+
+.dossier-field.is-invalid :is(input, textarea) {
+  border-color: var(--coral-ink);
+}
+
+/* Filas: sus campos en rejilla y, a la derecha, subir, bajar y quitar. */
+.dossier-rows {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dossier-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.dossier-row[data-kind='pairs'],
+.dossier-row[data-kind='partners'] {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) auto;
+}
+
+.dossier-row[data-kind='steps'] {
+  grid-template-columns: 6rem minmax(0, 1fr) auto;
+}
+
+.dossier-row[data-kind='faq'] {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.dossier-row .is-full {
+  grid-column: 1 / -2;
+}
+
+.dossier-row[data-kind='faq'] .is-full {
+  grid-column: 1;
+}
+
+.dossier-row-tools {
+  display: flex;
+  gap: 0.15rem;
+  grid-column: -2;
+  grid-row: 1;
+}
+
+.dossier-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.45rem;
+  color: var(--paper-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.dossier-icon:hover:not(:disabled) {
+  border-color: var(--paper-rule);
+  background: var(--field);
+}
+
+.dossier-icon.is-danger:hover {
+  color: var(--coral-ink);
+}
+
+.dossier-icon:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.dossier-icon:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.dossier-icon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dossier-add {
+  justify-self: start;
+}
+
+/* Móvil: cada fila en una columna, con sus botones encima. */
+@media (max-width: 560px) {
+  .dossier-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dossier-row,
+  .dossier-row[data-kind] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dossier-row .is-full,
+  .dossier-row[data-kind='faq'] .is-full {
+    grid-column: 1;
+  }
+
+  .dossier-row-tools {
+    grid-column: 1;
+    grid-row: auto;
+    justify-content: flex-end;
+  }
+}

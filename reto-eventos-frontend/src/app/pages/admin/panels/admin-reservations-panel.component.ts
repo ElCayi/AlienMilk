@@ -17,6 +17,7 @@ import {
   profileLabel,
   reservationState,
 } from '../../../shared/panel/panel-format';
+import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
@@ -30,7 +31,7 @@ const MAX_PLAZAS = 10;
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent],
+  imports: [FormsModule, PanelDialogComponent, KeepHeightDirective],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

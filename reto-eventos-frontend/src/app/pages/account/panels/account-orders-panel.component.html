@@ -36,7 +36,7 @@
           <th scope="col">Pedido</th>
           <th scope="col">Entrega</th>
           <th scope="col" class="num">Total</th>
-          <th scope="col">Estado</th>
+          <th scope="col" class="center">Estado</th>
           <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
         </tr>
       </thead>
@@ -60,7 +60,7 @@
               {{ money(order.total) }}
               <span class="cell-sub">{{ order.gastosEnvio ? 'Envío ' + money(order.gastosEnvio) : 'Sin gastos de envío' }}</span>
             </td>
-            <td data-label="Estado">
+            <td data-label="Estado" class="center">
               <span class="badge" [attr.data-tone]="stateTones[order.estado]">{{ stateLabels[order.estado] }}</span>
               @if (progress(order); as text) {
                 <span class="cell-sub">{{ text }}</span>

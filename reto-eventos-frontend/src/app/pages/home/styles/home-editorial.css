@@ -228,6 +228,7 @@
 .sessions-status {
   margin: 0;
   padding: 2rem;
+  font-family: Arial, sans-serif;
   border: 1px solid rgba(31, 36, 48, 0.12);
   border-radius: 18px;
   color: var(--gallery-muted);

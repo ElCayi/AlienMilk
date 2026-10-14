@@ -91,3 +91,9 @@ html .backdrop-inked [data-backdrop-ink-filler]::before,
 html .backdrop-inked [data-backdrop-ink-filler]::after {
   visibility: hidden;
 }
+
+/* En los paneles, el hueco de la barra de desplazamiento siempre reservado: al cambiar de sección
+   la página se queda corta un instante mientras llegan los datos, y sin esto todo saltaba 15 px. */
+html:has(app-panel-frame) {
+  scrollbar-gutter: stable;
+}

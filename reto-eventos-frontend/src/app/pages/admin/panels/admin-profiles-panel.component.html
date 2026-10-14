@@ -32,7 +32,7 @@
       <thead>
         <tr>
           <th scope="col">Perfil</th>
-          <th scope="col">Acceso</th>
+          <th scope="col" class="center">Acceso</th>
           <th scope="col" class="num">Cuentas</th>
           <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
         </tr>
@@ -44,7 +44,7 @@
               <span class="cell-main">{{ label(profile.nombre) }}</span>
               <span class="cell-sub">{{ profile.nombre }}</span>
             </td>
-            <td data-label="Acceso">
+            <td data-label="Acceso" class="center">
               @if (profile.sistema) {
                 <span class="badge" data-tone="ok">Del sistema</span>
               } @else {
@@ -61,7 +61,7 @@
                   [title]="profile.sistema ? 'Perfil del sistema: no se puede renombrar' : ''"
                   (click)="openEdit(profile)"
                 >
-                  Editar<span class="visually-hidden"> {{ label(profile.nombre) }}</span>
+                  Modificar<span class="visually-hidden"> {{ label(profile.nombre) }}</span>
                 </button>
                 <button
                   type="button"
@@ -81,7 +81,7 @@
   </div>
 }
 
-<app-panel-dialog [heading]="editing() ? 'Editar perfil' : 'Nuevo perfil'">
+<app-panel-dialog [heading]="editing() ? 'Modificar perfil' : 'Nuevo perfil'">
   <form novalidate (ngSubmit)="save()">
     <div class="form-grid">
       <div class="field is-wide" [class.is-invalid]="error('nombre')">

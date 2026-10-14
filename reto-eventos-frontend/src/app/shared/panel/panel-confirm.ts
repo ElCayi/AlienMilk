@@ -17,10 +17,15 @@ export interface ConfirmOptions {
   confirm: string;
   /** Si borra o anula algo: el botón va en coral. */
   danger?: boolean;
+  /** Una tercera salida, entre «Volver» y la principal: «Cancelar sesión» en lugar de borrarla. */
+  alternative?: string;
 }
 
+/** Lo que eligió quien confirma: la acción principal, la alternativa o nada (Volver, Escape). */
+export type ConfirmChoice = 'confirm' | 'alternative' | null;
+
 interface PendingConfirm extends ConfirmOptions {
-  resolve: (confirmed: boolean) => void;
+  resolve: (choice: ConfirmChoice) => void;
 }
 
 /**
@@ -32,14 +37,19 @@ export class PanelConfirmService {
   readonly pending = signal<PendingConfirm | null>(null);
 
   ask(options: ConfirmOptions): Promise<boolean> {
-    this.pending()?.resolve(false);
+    return this.choose(options).then((choice) => choice === 'confirm');
+  }
+
+  /** Como `ask`, con una tercera salida (`alternative`). */
+  choose(options: ConfirmOptions): Promise<ConfirmChoice> {
+    this.pending()?.resolve(null);
     return new Promise((resolve) => this.pending.set({ ...options, resolve }));
   }
 
-  answer(confirmed: boolean): void {
+  answer(choice: ConfirmChoice): void {
     const pending = this.pending();
     this.pending.set(null);
-    pending?.resolve(confirmed);
+    pending?.resolve(choice);
   }
 }
 
@@ -53,7 +63,7 @@ export class PanelConfirmService {
       role="alertdialog"
       aria-labelledby="panel-confirm-title"
       aria-describedby="panel-confirm-text"
-      (close)="confirmService.answer(false)"
+      (close)="confirmService.answer(null)"
     >
       @if (confirmService.pending(); as pending) {
         <div class="panel-confirm-body">
@@ -61,11 +71,16 @@ export class PanelConfirmService {
           <p id="panel-confirm-text">{{ pending.message }}</p>
           <div class="form-actions">
             <button type="button" class="btn" autofocus (click)="dialog.close()">Volver</button>
+            @if (pending.alternative) {
+              <button type="button" class="btn" (click)="confirmService.answer('alternative'); dialog.close()">
+                {{ pending.alternative }}
+              </button>
+            }
             <button
               type="button"
               class="btn btn-primary"
               [class.btn-danger-fill]="pending.danger"
-              (click)="confirmService.answer(true); dialog.close()"
+              (click)="confirmService.answer('confirm'); dialog.close()"
             >
               {{ pending.confirm }}
             </button>

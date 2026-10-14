@@ -34,6 +34,7 @@ import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
 import retotransversal.modelo.service.EventoService;
+import retotransversal.modelo.service.ExpedienteService;
 import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.PerfilRestController;
 import retotransversal.restcontroller.ReservaRestController;
@@ -48,7 +49,7 @@ class AdminCatalogosTest {
 	private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
 
 	private final MockMvc tiposMvc = MockMvcBuilders
-			.standaloneSetup(new TipoEventoRestController(new TipoEventoServiceImpl(tipos, eventos)))
+			.standaloneSetup(new TipoEventoRestController(new TipoEventoServiceImpl(tipos, eventos), mock(ExpedienteService.class)))
 			.setControllerAdvice(new GlobalExceptionHandler()).build();
 	private final MockMvc perfilesMvc = MockMvcBuilders
 			.standaloneSetup(new PerfilRestController(new PerfilServiceImpl(perfiles, usuarios)))

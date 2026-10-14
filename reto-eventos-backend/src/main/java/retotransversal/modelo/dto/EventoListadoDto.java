@@ -22,6 +22,8 @@ public class EventoListadoDto {
 	private Integer aforoMaximo;
 	private String estado;
 	private String tipoEvento;
+	/** El nombre de la foto propia, o null si usa la de la web. */
+	private String imagen;
 
 	public static EventoListadoDto fromEntity(Evento evento) {
 		return EventoListadoDto.builder()
@@ -32,6 +34,7 @@ public class EventoListadoDto {
 				.aforoMaximo(evento.getAforoMaximo())
 				.estado(evento.getEstado().name())
 				.tipoEvento(evento.getTipoEvento().getNombre())
+				.imagen(evento.getImagen())
 				.build();
 	}
 }

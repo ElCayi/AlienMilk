@@ -48,7 +48,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap">
+  <div class="table-wrap" appKeepHeight>
     <table class="data-table">
       <caption>Reservas</caption>
       <thead>
@@ -57,7 +57,7 @@
           <th scope="col">Sesión</th>
           <th scope="col" class="num">Plazas</th>
           <th scope="col" class="num">Importe</th>
-          <th scope="col">Estado</th>
+          <th scope="col" class="center">Estado</th>
           <th scope="col">Observaciones</th>
           <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
         </tr>
@@ -76,7 +76,7 @@
             </td>
             <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
             <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
-            <td data-label="Estado">
+            <td data-label="Estado" class="center">
               <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
             </td>
             <td data-label="Observaciones">

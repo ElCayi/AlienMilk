@@ -1,0 +1,38 @@
+<header class="section-head">
+  <div>
+    <h2>Demo</h2>
+    <p>
+      AlienMilk Sessions es una demostración: puedes crear, cambiar y borrar lo que quieras. Cuando
+      quieras empezar de cero, restaura los datos de partida.
+    </p>
+  </div>
+</header>
+
+<section class="danger-zone" aria-labelledby="restore-title">
+  <div class="danger-zone-text">
+    <h3 id="restore-title">Restaurar el estado de fábrica</h3>
+    <p>
+      Vuelven las sesiones, los tipos, las cuentas, las reservas, los productos y la ficha de contacto
+      de partida, con sus expedientes. Se borra todo lo demás: lo creado, lo cambiado, las fotos
+      subidas, los pedidos y las solicitudes. Las sesiones de partida vuelven fechadas a partir de
+      dentro de un mes.
+    </p>
+    <p>
+      Las cuentas de partida recuperan su contraseña. Si la tuya no es una de ellas, o la has cambiado,
+      tendrás que volver a entrar.
+    </p>
+  </div>
+  <button
+    type="button"
+    class="btn btn-danger"
+    [disabled]="restoring()"
+    [attr.aria-busy]="restoring()"
+    (click)="restore()"
+  >
+    {{ restoring() ? 'Restaurando…' : 'Restaurar la demo' }}
+  </button>
+</section>
+
+@if (failure(); as message) {
+  <p class="notice is-error" role="alert">{{ message }}</p>
+}

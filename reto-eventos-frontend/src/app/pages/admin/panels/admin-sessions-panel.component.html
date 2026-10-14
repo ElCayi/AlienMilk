@@ -2,11 +2,12 @@
   <div>
     <h2>Sesiones</h2>
     <p>
-      El programa de AlienMilk Sessions con su ocupación. Una sesión con reservas no se borra: se
-      cancela, y sus clientes la ven cancelada en su panel.
+      El programa de AlienMilk Sessions con su ocupación. Una sesión con reservas se puede cancelar,
+      y sus clientes la ven cancelada en su panel, o borrar con sus reservas.
     </p>
   </div>
   <div class="section-head-actions">
+    <button type="button" class="btn" (click)="openCommonDossier()">Expediente común</button>
     <button type="button" class="btn btn-primary" (click)="openNew()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
       Nueva sesión
@@ -20,7 +21,7 @@
     <span class="visually-hidden">Buscar sesiones</span>
     <input
       type="search"
-      placeholder="Nombre, tipo o lugar"
+      placeholder="Nº, nombre, referencia, tipo o lugar"
       [ngModel]="query()"
       (ngModelChange)="query.set($event)"
     />
@@ -36,6 +37,15 @@
       </button>
     }
   </div>
+  <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->
+  <label class="sort-select">
+    <span>Ordenar por</span>
+    <select [ngModel]="sortValue()" (ngModelChange)="setSort($event)">
+      @for (option of sortOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </label>
 </div>
 
 @if (notice(); as aviso) {
@@ -50,106 +60,211 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap">
-    <table class="data-table">
-      <caption>Sesiones del programa</caption>
+  <div class="table-wrap" appKeepHeight>
+    <table class="data-table is-expandable">
+      <caption>Sesiones del programa. Pulsa una para ver su ficha y sus acciones.</caption>
       <thead>
         <tr>
-          <th scope="col">Sesión</th>
-          <th scope="col">Fecha</th>
-          <th scope="col" class="num">Precio</th>
-          <th scope="col">Ocupación</th>
-          <th scope="col">Estado</th>
-          <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+          <th scope="col" class="cell-num center" [attr.aria-sort]="ariaSort('numero')">
+            <button type="button" class="sort-button" (click)="sortBy('numero')">
+              Nº
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('numero')" /></svg>
+            </button>
+          </th>
+          <th scope="col" [attr.aria-sort]="ariaSort('nombre')">
+            <button type="button" class="sort-button" (click)="sortBy('nombre')">
+              Nombre
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('nombre')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="center" [attr.aria-sort]="ariaSort('fecha')">
+            <button type="button" class="sort-button" (click)="sortBy('fecha')">
+              Fecha
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('fecha')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="center" [attr.aria-sort]="ariaSort('aforo')">
+            <button type="button" class="sort-button" (click)="sortBy('aforo')">
+              Aforo
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('aforo')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="center" [attr.aria-sort]="ariaSort('estado')">
+            <button type="button" class="sort-button" (click)="sortBy('estado')">
+              Estado
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('estado')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
         </tr>
       </thead>
       <tbody>
         @for (session of visible(); track session.idEvento) {
           @let estado = state(session.estado);
-          <tr>
+          @let open = expanded() === session.idEvento;
+          <tr class="row-summary" [class.is-open]="open" (click)="toggle(session)">
+            <td class="cell-num center">{{ number(session) }}</td>
             <td class="cell-title">
-              <span class="cell-main">{{ session.nombre }}</span>
-              <span class="cell-sub">{{ typeLabel(session.tipoEvento) }} · {{ session.direccion }}</span>
+              <button
+                type="button"
+                class="row-disclosure"
+                [attr.aria-expanded]="open"
+                [attr.aria-controls]="'session-detail-' + session.idEvento"
+              >
+                <span class="cell-num-inline" aria-hidden="true">{{ number(session) }}</span>
+                {{ session.nombre }}
+              </button>
             </td>
-            <td data-label="Fecha" class="nowrap">
-              {{ day(session.fechaInicio) }}
-              <span class="cell-sub">{{ session.duracion }} min</span>
-            </td>
-            <td data-label="Precio" class="num">{{ money(session.precio) }}</td>
-            <td data-label="Ocupación">
-              <div>
-                {{ session.plazasReservadas }} / {{ session.aforoMaximo }}
-                <div
-                  class="meter"
-                  [class.is-full]="session.plazasReservadas >= session.aforoMaximo"
-                  role="img"
-                  [attr.aria-label]="session.plazasReservadas + ' de ' + session.aforoMaximo + ' plazas reservadas'"
-                >
-                  <span [style.width.%]="occupancy(session)"></span>
-                </div>
-                <span class="cell-sub">
-                  @if (session.reservas) {
-                    <a class="text-link" routerLink="/admin/reservas" [queryParams]="{ sesion: session.idEvento }">{{
-                      plural(session.reservas, 'reserva', 'reservas')
-                    }}</a>
-                  } @else {
-                    Sin reservas
-                  }
-                  @if (session.minimoAsistencia) {
-                    · mínimo {{ session.minimoAsistencia }}
-                  }
-                </span>
-              </div>
-            </td>
-            <td data-label="Estado">
+            <td data-label="Fecha" class="nowrap center">{{ day(session.fechaInicio) }}</td>
+            <td data-label="Aforo" class="num center">{{ session.plazasReservadas }} / {{ session.aforoMaximo }}</td>
+            <td data-label="Estado" class="center">
               <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
             </td>
-            <td class="row-actions-cell">
-              <div class="row-actions">
-                <button
-                  type="button"
-                  class="btn btn-small"
-                  [disabled]="busy() === session.idEvento"
-                  (click)="openEdit(session)"
-                >
-                  Editar<span class="visually-hidden"> {{ session.nombre }}</span>
-                </button>
-                @if (session.estado === 'ACTIVO') {
-                  <button
-                    type="button"
-                    class="btn btn-small btn-danger"
-                    [disabled]="busy() === session.idEvento"
-                    (click)="cancelSession(session)"
-                  >
-                    Cancelar<span class="visually-hidden"> {{ session.nombre }}</span>
-                  </button>
-                } @else if (session.estado === 'CANCELADO') {
+            <td class="cell-chevron" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+            </td>
+          </tr>
+          @if (open) {
+            <tr class="row-detail" [id]="'session-detail-' + session.idEvento">
+              <td colspan="6">
+                <div class="session-detail">
+                  <!-- Lo primero que se mira: cuántas plazas hay reservadas, cuántas quedan y si llega al mínimo. -->
+                  <section class="occupancy" aria-label="Ocupación">
+                    @let left = session.aforoMaximo - session.plazasReservadas;
+                    <p class="occupancy-figure">
+                      <strong>{{ session.plazasReservadas }}</strong>
+                      <span>/ {{ session.aforoMaximo }} plazas</span>
+                    </p>
+                    <div
+                      class="meter occupancy-meter"
+                      [class.is-full]="left <= 0"
+                      role="img"
+                      [attr.aria-label]="session.plazasReservadas + ' de ' + session.aforoMaximo + ' plazas reservadas'"
+                    >
+                      <span [style.width.%]="occupancy(session)"></span>
+                    </div>
+                    <ul class="occupancy-notes">
+                      <li>{{ left > 0 ? plural(left, 'plaza libre', 'plazas libres') : 'Completa' }}</li>
+                      @if (session.minimoAsistencia) {
+                        @let missing = session.minimoAsistencia - session.plazasReservadas;
+                        <li [class.is-short]="missing > 0" [class.is-reached]="missing <= 0">
+                          {{
+                            missing > 0
+                              ? 'Faltan ' + missing + ' para el mínimo (' + session.minimoAsistencia + ')'
+                              : 'Mínimo alcanzado (' + session.minimoAsistencia + ')'
+                          }}
+                        </li>
+                      }
+                      <li>
+                        @if (session.reservas) {
+                          <a class="text-link" routerLink="/admin/reservas" [queryParams]="{ sesion: session.idEvento }">{{
+                            plural(session.reservas, 'reserva', 'reservas')
+                          }}</a>
+                        } @else {
+                          Sin reservas
+                        }
+                      </li>
+                    </ul>
+                  </section>
+
+                  <dl class="detail-facts">
+                    <div>
+                      <dt>Referencia</dt>
+                      <dd>{{ code(session) }}</dd>
+                    </div>
+                    <div>
+                      <dt>Tipo</dt>
+                      <dd>{{ typeLabel(session.tipoEvento) }}</dd>
+                    </div>
+                    <div>
+                      <dt>Lugar</dt>
+                      <dd>{{ session.direccion }}</dd>
+                    </div>
+                    <div>
+                      <dt>Duración</dt>
+                      <dd>{{ session.duracion }} min</dd>
+                    </div>
+                    <div>
+                      <dt>Precio</dt>
+                      <dd>{{ money(session.precio) }} por plaza</dd>
+                    </div>
+                  </dl>
+
+                  @if (session.descripcion) {
+                    <p class="detail-description">{{ session.descripcion }}</p>
+                  }
+                </div>
+
+                <div class="row-actions detail-actions">
                   <button
                     type="button"
                     class="btn btn-small"
                     [disabled]="busy() === session.idEvento"
-                    (click)="reactivate(session)"
+                    (click)="openEdit(session)"
                   >
-                    Reactivar<span class="visually-hidden"> {{ session.nombre }}</span>
+                    Modificar
                   </button>
-                }
-                <button
-                  type="button"
-                  class="btn btn-small btn-danger"
-                  [disabled]="session.reservas > 0 || busy() === session.idEvento"
-                  [title]="session.reservas > 0 ? 'Tiene reservas: cancélala en lugar de borrarla' : ''"
-                  (click)="remove(session)"
-                >
-                  Borrar<span class="visually-hidden"> {{ session.nombre }}</span>
-                </button>
-              </div>
-            </td>
-          </tr>
+                  @if (session.archivada) {
+                    <button
+                      type="button"
+                      class="btn btn-small"
+                      [disabled]="busy() === session.idEvento"
+                      (click)="unarchive(session)"
+                    >
+                      Desarchivar
+                    </button>
+                  } @else if (session.estado === 'ACTIVO') {
+                    <button
+                      type="button"
+                      class="btn btn-small btn-danger"
+                      [disabled]="busy() === session.idEvento"
+                      (click)="cancelSession(session)"
+                    >
+                      Cancelar sesión
+                    </button>
+                  } @else if (session.estado === 'CANCELADO') {
+                    <button
+                      type="button"
+                      class="btn btn-small"
+                      [disabled]="busy() === session.idEvento"
+                      (click)="reactivate(session)"
+                    >
+                      Reactivar
+                    </button>
+                  }
+                  @if (!session.archivada && session.estado !== 'ACTIVO') {
+                    <button
+                      type="button"
+                      class="btn btn-small"
+                      [disabled]="busy() === session.idEvento"
+                      (click)="archive(session)"
+                    >
+                      Archivar
+                    </button>
+                  }
+                  <button
+                    type="button"
+                    class="btn btn-small btn-danger"
+                    [disabled]="busy() === session.idEvento"
+                    (click)="remove(session)"
+                  >
+                    Borrar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
             <td colspan="6" class="cell-title">
               <p class="empty">
-                {{ sessions().length ? 'Ninguna sesión coincide con la búsqueda.' : 'Todavía no hay sesiones.' }}
+                {{
+                  !sessions().length
+                    ? 'Todavía no hay sesiones.'
+                    : filter() === 'ARCHIVADAS' && !query()
+                      ? 'No hay sesiones archivadas. Las canceladas o terminadas se pueden archivar para sacarlas de la lista.'
+                      : 'Ninguna sesión coincide con la búsqueda.'
+                }}
               </p>
             </td>
           </tr>
@@ -159,9 +274,27 @@
   </div>
 }
 
-<app-panel-dialog [heading]="editing() ? 'Editar sesión' : 'Nueva sesión'" [wide]="true">
+<app-panel-dialog
+  [heading]="reactivating() ? 'Reactivar sesión' : editing() ? 'Modificar sesión' : 'Nueva sesión'"
+  [wide]="true"
+  [tall]="true"
+>
   <form novalidate (ngSubmit)="save()">
-    <div class="form-grid">
+    <!-- Dos páginas: los datos de la sesión y su expediente (lo que enseña su ficha pública). -->
+    <div class="segmented edit-pages" role="group" aria-label="Páginas de la sesión">
+      <button type="button" [attr.aria-pressed]="page() === 'datos'" (click)="page.set('datos')">
+        Datos
+      </button>
+      <button type="button" [attr.aria-pressed]="page() === 'expediente'" (click)="page.set('expediente')">
+        Expediente
+      </button>
+    </div>
+
+    <div class="edit-page" [hidden]="page() !== 'expediente'">
+      <app-admin-dossier-form />
+    </div>
+
+    <div class="form-grid edit-page" [hidden]="page() !== 'datos'">
       <div class="field is-wide" [class.is-invalid]="error('nombre')">
         <label class="field-label" for="session-name">
           Nombre <span class="field-note">{{ form.nombre.length || 0 }}/50</span>
@@ -174,7 +307,7 @@
 
       <div class="field" [class.is-invalid]="error('idTipo')">
         <label class="field-label" for="session-type">Tipo</label>
-        <select id="session-type" name="idTipo" [(ngModel)]="form.idTipo">
+        <select id="session-type" name="idTipo" [(ngModel)]="form.idTipo" (ngModelChange)="typeChanged($event)">
           <option [ngValue]="null" disabled>Elige un tipo</option>
           @for (type of types(); track type.idTipo) {
             <option [ngValue]="type.idTipo">{{ typeLabel(type.nombre) }}</option>
@@ -187,9 +320,11 @@
 
       <div class="field" [class.is-invalid]="error('fechaInicio')">
         <label class="field-label" for="session-date">Fecha</label>
-        <input id="session-date" name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio" />
+        <input id="session-date" name="fechaInicio" type="date" [min]="reactivating() ? today : minDate()" [(ngModel)]="form.fechaInicio" />
         @if (error('fechaInicio'); as message) {
           <p class="field-error">{{ message }}</p>
+        } @else if (reactivating()) {
+          <p class="field-help">La que tenía ya pasó: elige otra para reactivarla.</p>
         }
       </div>
 
@@ -239,6 +374,49 @@
         }
       </div>
 
+      <div class="field is-wide photo-field">
+        <span class="field-label" id="session-photo-label">
+          Foto <span class="field-note">JPG, PNG o WebP · hasta 5 MB</span>
+        </span>
+        <div class="photo-box">
+          @if (shownPhoto(); as src) {
+            <img class="photo-preview" [src]="src" alt="" />
+          } @else {
+            <div class="photo-preview photo-empty">Una de la web</div>
+          }
+          <div class="photo-actions">
+            <p class="field-help">
+              @if (photoFile()) {
+                Foto nueva: se subirá al guardar.
+              } @else if (hasOwnPhoto()) {
+                Foto propia.
+              } @else if (removePhoto()) {
+                Se quitará la propia y volverá la de la web.
+              } @else {
+                Sin foto propia: usa una de las de la web.
+              }
+            </p>
+            <div class="photo-buttons">
+              <label class="btn btn-small photo-pick">
+                {{ hasOwnPhoto() ? 'Cambiar foto' : 'Subir foto' }}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  aria-labelledby="session-photo-label"
+                  (change)="pickPhoto($event)"
+                />
+              </label>
+              @if (hasOwnPhoto()) {
+                <button type="button" class="btn btn-small" (click)="dropPhoto()">Usar la de la web</button>
+              }
+            </div>
+          </div>
+        </div>
+        @if (photoError(); as message) {
+          <p class="field-error">{{ message }}</p>
+        }
+      </div>
+
       <div class="field is-wide" [class.is-invalid]="error('descripcion')">
         <label class="field-label" for="session-description">
           Descripción <span class="field-note">{{ form.descripcion.length || 0 }}/200</span>
@@ -257,8 +435,10 @@
     <div class="form-actions">
       <button type="button" class="btn" (click)="dialog().close()">Volver</button>
       <button type="submit" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()">
-        {{ saving() ? 'Guardando…' : editing() ? 'Guardar cambios' : 'Crear sesión' }}
+        {{ saving() ? 'Guardando…' : reactivating() ? 'Guardar y reactivar' : editing() ? 'Guardar cambios' : 'Crear sesión' }}
       </button>
     </div>
   </form>
 </app-panel-dialog>
+
+<app-admin-dossier-editor (saved)="dossierSaved($event)" />

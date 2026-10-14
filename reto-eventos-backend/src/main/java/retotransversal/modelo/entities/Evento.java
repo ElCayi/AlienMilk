@@ -59,6 +59,18 @@ public class Evento {
 	@Column(nullable = false, precision = 9, scale = 2)
 	private BigDecimal precio;
 
+	/**
+	 * Archivada: fuera de la lista del panel, en su filtro «Archivadas». Solo las que ya no están
+	 * activas (canceladas o terminadas); a la web y a las reservas de sus clientes no les cambia nada.
+	 */
+	@Builder.Default
+	@Column(nullable = false)
+	private boolean archivada = false;
+
+	/** La foto propia, si se subió desde el panel: el nombre del archivo (ver ImagenSesionService). */
+	@Column(length = 80)
+	private String imagen;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_tipo", nullable = false)
 	private TipoEvento tipoEvento;

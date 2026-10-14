@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal, viewChild } from '@angular
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 
 import { AdminService } from '../../../core/services/admin.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -27,7 +28,7 @@ type Filter = 'TODOS' | 'CLIENTES' | 'ADMINS' | 'DESACTIVADOS';
 @Component({
   selector: 'app-admin-users-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent],
+  imports: [FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective],
   templateUrl: './admin-users-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

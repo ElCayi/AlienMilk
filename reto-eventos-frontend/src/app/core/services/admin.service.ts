@@ -15,6 +15,10 @@ import {
   Usuario,
   UsuarioPayload,
 } from '../../models/api.models';
+import { SessionDossierLayer, SessionDossierSource } from '../../models/session-dossier.models';
+
+/** De quién es una capa del expediente: la común, la de un tipo o la de una sesión. */
+export type ExpedienteAmbito = { tipo: 'general' } | { tipo: 'tipo' | 'sesion'; id: number };
 
 /**
  * Panel de administración: sesiones, reservas, cuentas, tipos y perfiles. Las reglas (qué se puede
@@ -45,12 +49,57 @@ export class AdminService {
     return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/cancelar`, {});
   }
 
+  /** Archiva una sesión que ya no está activa: sale de la lista y queda en «Archivadas». */
+  archivarEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/archivar`, {});
+  }
+
+  desarchivarEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/desarchivar`, {});
+  }
+
   reactivarEvento(idEvento: number): Observable<EventoAdmin> {
     return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/reactivar`, {});
   }
 
-  borrarEvento(idEvento: number): Observable<void> {
-    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`);
+  /** Con reservas, el servidor solo la borra si se confirma aparte (`conReservas`): se van con ella. */
+  borrarEvento(idEvento: number, conReservas = false): Observable<void> {
+    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`, {
+      params: conReservas ? { conReservas: true } : {},
+    });
+  }
+
+  /** Sube la foto propia de la sesión (JPG, PNG o WebP, hasta 5 MB); sustituye la anterior. */
+  subirFotoEvento(idEvento: number, archivo: File): Observable<EventoAdmin> {
+    const datos = new FormData();
+    datos.append('archivo', archivo);
+    return this.http.post<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/imagen`, datos);
+  }
+
+  /** Quita la foto propia: la sesión vuelve a la de la web. */
+  quitarFotoEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.delete<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/imagen`);
+  }
+
+  /** Todas las capas del expediente, las mismas que lee la ficha pública. */
+  getExpedientes(): Observable<SessionDossierSource> {
+    return this.http.get<SessionDossierSource>(`${environment.apiUrl}/eventos/expedientes`);
+  }
+
+  /** Guarda una capa entera; vacía, se borra y su ámbito vuelve a heredarlo todo. */
+  guardarExpediente(ambito: ExpedienteAmbito, capa: SessionDossierLayer): Observable<SessionDossierLayer> {
+    const ruta =
+      ambito.tipo === 'general'
+        ? 'general'
+        : ambito.tipo === 'tipo'
+          ? `tipos/${ambito.id}`
+          : `sesiones/${ambito.id}`;
+    return this.http.put<SessionDossierLayer>(`${this.adminUrl}/expedientes/${ruta}`, capa);
+  }
+
+  /** Devuelve la demo a su estado de fábrica: borra todo lo creado o cambiado. */
+  restaurarFabrica(): Observable<void> {
+    return this.http.post<void>(`${this.adminUrl}/fabrica`, {});
   }
 
   getUsuarios(): Observable<Usuario[]> {

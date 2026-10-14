@@ -47,7 +47,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap">
+  <div class="table-wrap" appKeepHeight>
     <table class="data-table">
       <caption>Pedidos de la tienda</caption>
       <thead>
@@ -56,7 +56,7 @@
           <th scope="col">Cliente</th>
           <th scope="col">Entrega</th>
           <th scope="col" class="num">Total</th>
-          <th scope="col">Estado</th>
+          <th scope="col" class="center">Estado</th>
           <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
         </tr>
       </thead>
@@ -88,7 +88,7 @@
               {{ money(pedido.total) }}
               <span class="cell-sub">{{ payment(order) }}</span>
             </td>
-            <td data-label="Estado">
+            <td data-label="Estado" class="center">
               <span class="badge" [attr.data-tone]="stateTones[pedido.estado]">{{ stateLabels[pedido.estado] }}</span>
               @if (lastStep(order); as step) {
                 <span class="cell-sub">{{ step }}</span>

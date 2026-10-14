@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.EventoAdminDto;
@@ -20,6 +22,8 @@ import retotransversal.modelo.dto.EventoEntradaDto;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.service.EventoService;
+import retotransversal.modelo.service.ExpedienteService;
+import retotransversal.modelo.service.ImagenSesionService;
 
 /**
  * Sesiones desde el panel de administración. El estado no se edita con el formulario: una sesión
@@ -32,6 +36,8 @@ public class AdminEventoRestController {
 
 	private final EventoService eventoService;
 	private final TipoEventoRepository tipoEventoRepository;
+	private final ExpedienteService expedienteService;
+	private final ImagenSesionService imagenSesionService;
 
 	@GetMapping
 	public ResponseEntity<List<EventoAdminDto>> findAll() {
@@ -55,14 +61,49 @@ public class AdminEventoRestController {
 		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.cancelarEvento(idEvento)));
 	}
 
+	@PatchMapping("/{idEvento}/archivar")
+	public ResponseEntity<EventoAdminDto> archivar(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.archivar(idEvento, true)));
+	}
+
+	@PatchMapping("/{idEvento}/desarchivar")
+	public ResponseEntity<EventoAdminDto> desarchivar(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.archivar(idEvento, false)));
+	}
+
 	@PatchMapping("/{idEvento}/reactivar")
 	public ResponseEntity<EventoAdminDto> reactivar(@PathVariable Integer idEvento) {
 		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.reactivarEvento(idEvento)));
 	}
 
+	/** Sube la foto propia de la sesión (JPG, PNG o WebP, hasta 5 MB) y sustituye la anterior. */
+	@PostMapping("/{idEvento}/imagen")
+	public ResponseEntity<EventoAdminDto> subirImagen(@PathVariable Integer idEvento,
+			@RequestParam("archivo") MultipartFile archivo) {
+		return ResponseEntity.ok(eventoService.aAdminDto(imagenSesionService.guardar(idEvento, archivo)));
+	}
+
+	/** Quita la foto propia: la sesión vuelve a la de la web. */
+	@DeleteMapping("/{idEvento}/imagen")
+	public ResponseEntity<EventoAdminDto> quitarImagen(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(imagenSesionService.quitar(idEvento)));
+	}
+
+	/**
+	 * Con la sesión se van su expediente propio y su foto. Si tiene reservas, hace falta
+	 * {@code ?conReservas=true}: se borran con ella (sin eso, 409 y la propuesta de cancelarla).
+	 */
 	@DeleteMapping("/{idEvento}")
-	public ResponseEntity<Void> delete(@PathVariable Integer idEvento) {
-		eventoService.deleteOne(idEvento);
+	public ResponseEntity<Void> delete(@PathVariable Integer idEvento,
+			@RequestParam(defaultValue = "false") boolean conReservas) {
+		String imagen = eventoService.findById(idEvento).getImagen();
+		if (conReservas) {
+			eventoService.borrarConReservas(idEvento);
+		} else {
+			eventoService.deleteOne(idEvento);
+		}
+		expedienteService.borrarDeSesion(idEvento);
+		imagenSesionService.borrarArchivo(imagen);
 		return ResponseEntity.noContent().build();
 	}
 

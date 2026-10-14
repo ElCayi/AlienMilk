@@ -12,6 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import retotransversal.modelo.pagos.AvisoPagoNoValidoException;
@@ -61,6 +63,13 @@ public class GlobalExceptionHandler {
 		return buildResponse(HttpStatus.BAD_REQUEST, "Aviso no válido", request.getRequestURI());
 	}
 
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<ApiErrorResponse> handleTooLarge(MaxUploadSizeExceededException ex,
+			HttpServletRequest request) {
+		return buildResponse(HttpStatus.PAYLOAD_TOO_LARGE, "La foto pesa demasiado: como máximo 5 MB",
+				request.getRequestURI());
+	}
+
 	@ExceptionHandler(DemasiadasSolicitudesException.class)
 	public ResponseEntity<ApiErrorResponse> handleTooMany(DemasiadasSolicitudesException ex, HttpServletRequest request) {
 		return buildResponse(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage(), request.getRequestURI());
@@ -68,11 +77,18 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler({
 			IllegalArgumentException.class,
-			MethodArgumentTypeMismatchException.class,
 			MethodArgumentNotValidException.class
 	})
 	public ResponseEntity<ApiErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
 		return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+	}
+
+	/** Un dato de la dirección que no es lo que toca (letras donde va un número): se dice sin jerga. */
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ApiErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex,
+			HttpServletRequest request) {
+		log.debug("Parámetro {} no válido: {}", ex.getName(), ex.getValue());
+		return buildResponse(HttpStatus.BAD_REQUEST, "La dirección pedida no es válida", request.getRequestURI());
 	}
 
 	/**
@@ -91,6 +107,12 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ApiErrorResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex,
 			HttpServletRequest request) {
 		return buildResponse(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), request.getRequestURI());
+	}
+
+	/** Una dirección que no existe es un 404, no un error interno. */
+	@ExceptionHandler(NoResourceFoundException.class)
+	public ResponseEntity<ApiErrorResponse> handleNoRoute(NoResourceFoundException ex, HttpServletRequest request) {
+		return buildResponse(HttpStatus.NOT_FOUND, "Esa dirección no existe", request.getRequestURI());
 	}
 
 	@ExceptionHandler(Exception.class)

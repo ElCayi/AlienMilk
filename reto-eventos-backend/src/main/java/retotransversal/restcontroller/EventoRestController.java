@@ -2,6 +2,7 @@ package retotransversal.restcontroller;
 
 import java.util.List;
 
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.EventoDetalleDto;
 import retotransversal.modelo.dto.EventoListadoDto;
+import retotransversal.modelo.dto.ExpedientesDto;
 import retotransversal.modelo.service.EventoService;
+import retotransversal.modelo.service.ExpedienteService;
+import retotransversal.modelo.service.ImagenSesionService;
+import retotransversal.modelo.service.ImagenSesionService.Foto;
 
 @RestController
 @RequestMapping("/api/eventos")
@@ -19,6 +24,27 @@ import retotransversal.modelo.service.EventoService;
 public class EventoRestController {
 
 	private final EventoService eventoService;
+	private final ExpedienteService expedienteService;
+	private final ImagenSesionService imagenSesionService;
+
+	/** Las capas del expediente de las sesiones: la ficha pública las compone (ver ExpedienteCapaDto). */
+	@GetMapping("/expedientes")
+	public ResponseEntity<ExpedientesDto> expedientes() {
+		return ResponseEntity.ok(expedienteService.todas());
+	}
+
+	/**
+	 * La foto propia de una sesión. Cada foto nueva tiene otro nombre y la web la pide con él
+	 * ({@code ?v=<nombre>}), así que se puede guardar en caché sin miedo.
+	 */
+	@GetMapping("/{idEvento}/imagen")
+	public ResponseEntity<org.springframework.core.io.Resource> imagen(@PathVariable Integer idEvento) {
+		Foto foto = imagenSesionService.leer(idEvento);
+		return ResponseEntity.ok()
+				.contentType(foto.tipo())
+				.cacheControl(CacheControl.maxAge(java.time.Duration.ofDays(30)).cachePublic())
+				.body(foto.archivo());
+	}
 
 	@GetMapping("/activos")
 	public ResponseEntity<List<EventoListadoDto>> activos() {

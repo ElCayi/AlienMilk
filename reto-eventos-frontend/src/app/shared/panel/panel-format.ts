@@ -3,17 +3,18 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiError, EstadoEvento } from '../../models/api.models';
 
 /** El tono de una pastilla de estado: en marcha, pide atención o cerrado. */
-export type Tone = 'ok' | 'alert' | 'off';
+/** live: lo que está en marcha (verde); ok: lo normal; alert: lo que pide atención; off: lo cerrado. */
+export type Tone = 'live' | 'ok' | 'alert' | 'off';
 
 export const SESSION_STATES: Record<EstadoEvento, { label: string; tone: Tone }> = {
-  ACTIVO: { label: 'Activa', tone: 'ok' },
+  ACTIVO: { label: 'Activa', tone: 'live' },
   CANCELADO: { label: 'Cancelada', tone: 'alert' },
   TERMINADO: { label: 'Terminada', tone: 'off' },
 };
 
 /** Una reserva según cómo está su sesión. */
 export const RESERVATION_STATES: Record<EstadoEvento, { label: string; tone: Tone }> = {
-  ACTIVO: { label: 'Confirmada', tone: 'ok' },
+  ACTIVO: { label: 'Confirmada', tone: 'live' },
   CANCELADO: { label: 'Sesión cancelada', tone: 'alert' },
   TERMINADO: { label: 'Celebrada', tone: 'off' },
 };
@@ -42,14 +43,15 @@ export function humanizeCode(code: string): string {
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
+/** El día siempre a dos cifras (05 dic 2026): en columna, las fechas quedan alineadas. */
 const DAY = new Intl.DateTimeFormat('es-ES', {
-  day: 'numeric',
+  day: '2-digit',
   month: 'short',
   year: 'numeric',
   timeZone: 'UTC',
 });
 const DAY_TIME = new Intl.DateTimeFormat('es-ES', {
-  day: 'numeric',
+  day: '2-digit',
   month: 'short',
   year: 'numeric',
   hour: '2-digit',

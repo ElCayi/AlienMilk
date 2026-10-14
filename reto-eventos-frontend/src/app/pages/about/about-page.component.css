@@ -2056,6 +2056,7 @@ h2 em {
 
 .us-invitation-door app-collaborators-door {
   zoom: 0.6;
+  --door-title-scale: 1.1;
 }
 
 @media (min-width: 1700px) {

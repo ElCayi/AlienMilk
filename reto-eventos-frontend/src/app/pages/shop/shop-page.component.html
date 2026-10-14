@@ -460,70 +460,72 @@
         </div>
       </div>
     }
+
+    <!-- Lo ya comprado, al pie del pedido y plegado: se consulta cuando hace falta, sin empujar el
+         carrito. Solo con cuenta; sin ella, cada pedido se consulta con su enlace privado. -->
+    @if (orders().length) {
+      <details class="order-history">
+        <summary>
+          <span class="order-history-title">Sus pedidos</span>
+          <span class="order-history-count"
+            >{{ orders().length }} {{ orders().length === 1 ? "pedido" : "pedidos" }}@if (ordersInProgress(); as open) {
+              · {{ open }} en curso}</span
+          >
+          <svg class="order-history-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+        <p class="order-history-note">
+          Un pedido se puede anular mientras no haya salido del centro de distribución.
+        </p>
+        <ol class="history-list">
+        @for (order of orders(); track order.idPedido) {
+          <li [class.is-cancelled]="order.estado === 'ANULADO'">
+            <div class="history-row">
+              <span class="history-ref">{{ order.referencia }}</span>
+              <span class="history-total">{{ price(order.total) }}</span>
+            </div>
+            <p class="history-detail">
+              {{ orderDate(order.creadoEn) }} · {{ units(order) }}
+              {{ units(order) === 1 ? 'unidad' : 'unidades' }} · {{ deliveryLabels[order.entrega] }}
+            </p>
+            <div class="history-row">
+              <span class="history-state" [attr.data-state]="order.estado">{{
+                stateLabels[order.estado]
+              }}</span>
+              <span class="history-actions">
+                @if (order.estado === 'PENDIENTE_PAGO' && order.pagoUrl) {
+                  <button type="button" class="history-cancel history-pay" (click)="pay(order)">
+                    Pagar<span class="visually-hidden"> el pedido {{ order.referencia }}</span>
+                  </button>
+                }
+                @if (order.estado === 'CONFIRMADO' || order.estado === 'PENDIENTE_PAGO') {
+                  <button
+                    type="button"
+                    class="history-cancel"
+                    [disabled]="cancelling() === order.idPedido"
+                    (click)="cancel(order)"
+                  >
+                    {{ cancelling() === order.idPedido ? 'Anulando…' : 'Anular' }}
+                    <span class="visually-hidden"> el pedido {{ order.referencia }}</span>
+                  </button>
+                }
+              </span>
+            </div>
+          </li>
+        }
+      </ol>
+      </details>
+    }
   </section>
 
-  @if (orders().length) {
-    <section class="secondary-closing history" aria-labelledby="history-title">
-      <div>
-        <p class="section-label section-kicker">
-          <span class="eyebrow-icon" aria-hidden="true"></span>
-          03 / Historial
-        </p>
-        <h2 id="history-title">Sus pedidos.</h2>
-        <p class="section-copy">
-          Un pedido se puede anular mientras no haya salido del centro de distribución. Sus
-          unidades vuelven al almacén en ese mismo momento.
-        </p>
-      </div>
-      <fieldset class="legend-box history-box">
-        <legend>Pedidos</legend>
-        <ol class="history-list">
-          @for (order of orders(); track order.idPedido) {
-            <li [class.is-cancelled]="order.estado === 'ANULADO'">
-              <div class="history-row">
-                <span class="history-ref">{{ order.referencia }}</span>
-                <span class="history-total">{{ price(order.total) }}</span>
-              </div>
-              <p class="history-detail">
-                {{ orderDate(order.creadoEn) }} · {{ units(order) }}
-                {{ units(order) === 1 ? 'unidad' : 'unidades' }} · {{ deliveryLabels[order.entrega] }}
-              </p>
-              <div class="history-row">
-                <span class="history-state" [attr.data-state]="order.estado">{{
-                  stateLabels[order.estado]
-                }}</span>
-                <span class="history-actions">
-                  @if (order.estado === 'PENDIENTE_PAGO' && order.pagoUrl) {
-                    <button type="button" class="history-cancel history-pay" (click)="pay(order)">
-                      Pagar<span class="visually-hidden"> el pedido {{ order.referencia }}</span>
-                    </button>
-                  }
-                  @if (order.estado === 'CONFIRMADO' || order.estado === 'PENDIENTE_PAGO') {
-                    <button
-                      type="button"
-                      class="history-cancel"
-                      [disabled]="cancelling() === order.idPedido"
-                      (click)="cancel(order)"
-                    >
-                      {{ cancelling() === order.idPedido ? 'Anulando…' : 'Anular' }}
-                      <span class="visually-hidden"> el pedido {{ order.referencia }}</span>
-                    </button>
-                  }
-                </span>
-              </div>
-            </li>
-          }
-        </ol>
-      </fieldset>
-    </section>
-  }
-
-  <!-- Las reglas, al final: lo primero de la tienda son los productos. -->
-  <section class="secondary-closing returns" id="devoluciones" aria-labelledby="returns-title">
-    <div>
+  <!-- Las reglas, al final: lo primero de la tienda son los productos. Los cuatro casos en
+       columnas, como los bloques de tres columnas de las páginas secundarias. -->
+  <section class="returns" id="devoluciones" aria-labelledby="returns-title">
+    <div class="returns-heading">
       <p class="section-label section-kicker">
         <span class="eyebrow-icon" aria-hidden="true"></span>
-        {{ orders().length ? '04' : '03' }} / Devoluciones
+        03 / Devoluciones
       </p>
       <h2 id="returns-title">Anulaciones y devoluciones.</h2>
       <p class="section-copy">
@@ -531,38 +533,37 @@
         Por eso la regla depende de si el pedido ha salido y de lo que lleva.
       </p>
     </div>
-    <fieldset class="legend-box returns-box">
-      <legend>Política</legend>
-      <dl class="returns-list">
-        <div>
-          <dt>Antes del envío</dt>
-          <dd>
-            Se anula desde el enlace privado del pedido o desde Mi panel. Le devolvemos el importe
-            completo y las unidades vuelven al almacén.
-          </dd>
-        </div>
-        <div>
-          <dt>Leches y derivados</dt>
-          <dd>
-            Son perecederos: una vez entregados no se devuelven. Si llegan dañados o con la cadena
-            de frío rota, avísenos en 48 horas y los reponemos o le devolvemos el importe.
-          </dd>
-        </div>
-        <div>
-          <dt>Mesa</dt>
-          <dd>
-            La copa, el estuche y el catálogo se pueden devolver durante 14 días desde la entrega,
-            sin dar motivo, tal como llegaron.
-          </dd>
-        </div>
-        <div>
-          <dt>Cómo avisar</dt>
-          <dd>
-            Desde <a routerLink="/contacto">Contacto</a>, con su número de pedido.
-          </dd>
-        </div>
-      </dl>
-    </fieldset>
+    <ol class="returns-list">
+      <li>
+        <span class="column-number">01</span>
+        <h3>Antes del envío</h3>
+        <p>
+          Se anula desde el enlace privado del pedido o desde Mi panel. Le devolvemos el importe
+          completo y las unidades vuelven al almacén.
+        </p>
+      </li>
+      <li>
+        <span class="column-number">02</span>
+        <h3>Leches y derivados</h3>
+        <p>
+          Son perecederos: una vez entregados no se devuelven. Si llegan dañados o con la cadena de
+          frío rota, avísenos en 48 horas y los reponemos o le devolvemos el importe.
+        </p>
+      </li>
+      <li>
+        <span class="column-number">03</span>
+        <h3>Mesa</h3>
+        <p>
+          La copa, el estuche y el catálogo se pueden devolver durante 14 días desde la entrega, sin
+          dar motivo, tal como llegaron.
+        </p>
+      </li>
+      <li>
+        <span class="column-number">04</span>
+        <h3>Cómo avisar</h3>
+        <p>Desde <a routerLink="/contacto">Contacto</a>, con su número de pedido.</p>
+      </li>
+    </ol>
   </section>
 
   <footer class="secondary-footnote">

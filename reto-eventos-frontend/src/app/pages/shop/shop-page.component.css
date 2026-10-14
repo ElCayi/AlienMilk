@@ -610,23 +610,156 @@
   margin-bottom: 1.75rem;
 }
 
-/* Anulaciones y devoluciones: cada caso, una fila del recuadro con leyenda, con su rótulo encima
-   y la regla en una frase corta. */
-.legend-box .returns-list div {
-  display: grid;
-  gap: 0.5rem;
+/* Sus pedidos: el historial de la cuenta, al pie del bloque del pedido y plegado, en un recuadro
+   con la hoja de la casa. Se abre desde su rótulo; dentro, los pedidos en dos columnas. */
+.order-history {
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+  padding-inline: clamp(1.15rem, 1.8vw, 2rem);
+  border: 1px solid rgba(247, 248, 249, 0.24);
+  border-radius: clamp(1.25rem, 2vw, 2rem) 0.35rem;
 }
 
-.legend-box .returns-list dd {
-  color: var(--ink);
+.order-history summary {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  padding-block: 1.15rem;
+  list-style: none;
+  cursor: pointer;
+}
+
+.order-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.order-history-title {
+  font: 400 clamp(1.35rem, 1.5vw, 1.6rem) / 1.1 var(--condensed);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+}
+
+.order-history-count {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
   font:
-    400 clamp(1rem, 0.95vw, 1.05rem) / 1.55 Arial,
+    800 0.62rem / 1.5 'Nunito',
     sans-serif;
-  letter-spacing: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.order-history-chevron {
+  align-self: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-left: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition:
+    transform 200ms ease,
+    color 160ms ease;
+}
+
+.order-history summary:is(:hover, :focus-visible) :is(.order-history-title, .order-history-chevron),
+.order-history[open] .order-history-chevron {
+  color: var(--coral);
+}
+
+.order-history[open] .order-history-chevron {
+  transform: rotate(180deg);
+}
+
+.order-history-note {
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Al abrirse, el contenido entra con el fundido y la subida leve de los cambios de la web. */
+.order-history[open] > :not(summary) {
+  animation: history-in 240ms ease both;
+}
+
+@keyframes history-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+}
+
+.order-history .history-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(2rem, 4vw, 4rem);
+  padding-bottom: 1.25rem;
+}
+
+/* La primera fila ya tiene encima el filete de la nota. */
+.order-history .history-list li:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+/* Anulaciones y devoluciones: el título y su frase en una fila, y los cuatro casos debajo, en
+   columnas numeradas con su filete, como los bloques de columnas de las páginas secundarias. */
+.returns {
+  margin-top: clamp(3.5rem, 6vw, 6rem);
+}
+
+.returns-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0 clamp(2.5rem, 6vw, 7rem);
+  align-items: end;
+}
+
+.returns-heading .section-kicker {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.returns-heading h2 {
+  margin-bottom: 0;
+}
+
+.returns-heading .section-copy {
+  max-width: none;
+}
+
+.returns-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2.5rem clamp(2rem, 3.5vw, 4rem);
+  margin: clamp(2.5rem, 4vw, 3.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.returns-list li {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.returns-list h3 {
+  margin: 0.85rem 0;
+  font: 400 clamp(1.5rem, 1.8vw, 1.8rem) / 1.1 var(--condensed);
+}
+
+.returns-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1vw, 1.1rem);
+  line-height: 1.6;
   text-align: justify;
+  text-align-last: left;
   hyphens: auto;
-  text-transform: none;
-  white-space: normal;
 }
 
 .returns-list a {
@@ -639,7 +772,7 @@
   color: var(--coral);
 }
 
-/* 03 · Historial: cada pedido, una fila del recuadro con leyenda. */
+/* Cada pedido del historial: referencia e importe, el detalle y el estado con sus acciones. */
 .history-list {
   margin: 0;
   padding: 0;
@@ -649,15 +782,6 @@
 .history-list li {
   padding-block: 1.25rem;
   border-top: 1px solid var(--line);
-}
-
-.history-list li:first-child {
-  padding-top: 0.5rem;
-  border-top: 0;
-}
-
-.history-list li:last-child {
-  padding-bottom: 0;
 }
 
 .history-row {
@@ -865,6 +989,48 @@
   }
 }
 
+/* Devoluciones e historial: los cuatro casos en dos filas y el título encima de su frase cuando las
+   columnas se estrechan; en el móvil, todo en una columna. */
+@media (max-width: 1200px) {
+  .returns-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .returns-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .returns-heading h2 {
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .returns-list,
+  .order-history .history-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .order-history .history-list li:nth-child(2) {
+    border-top: 1px solid var(--line);
+  }
+
+  /* El rótulo y, debajo, la cuenta de pedidos; la flecha, a la derecha de los dos. */
+  .order-history summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 1rem;
+    align-items: center;
+  }
+
+  .order-history-chevron {
+    grid-row: 1 / 3;
+    grid-column: 2;
+  }
+}
+
 /* Móvil: las condiciones en una columna y, en el pedido, la muestra a la izquierda de cada línea. */
 @media (max-width: 700px) {
   .terms-box dl {
@@ -904,7 +1070,13 @@
   .catalog-filter button,
   .order-line-name,
   .history-cancel,
+  .order-history-chevron,
+  .order-history-title,
   .guest-link-copy {
     transition: none;
+  }
+
+  .order-history[open] > :not(summary) {
+    animation: none;
   }
 }

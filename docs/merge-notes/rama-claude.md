@@ -192,3 +192,14 @@ primera cata» (Distribution).
 - **En todos los anchos:** fuera «Todas vigentes» junto al rótulo de Distinciones.
 - **Comprobar tras el merge:** scroll por la portada desde Distribution, con ratón y en táctil (sin
   desfase); «Cómo colaborar» y Distinciones a 912×1368.
+
+## Distinciones y cinta de socios en tableta
+
+- **Solo en 901–1000:** botón «Síntesis» más grande; la medalla, centrada con el nombre de la
+  distinción y no con todo su texto (`--medal-shift`, medido en `trust-network.component.ts`); los
+  rótulos de la cinta como en móvil («El resto prefiere no figurar», bajo ella) y más aire bajo su
+  barra.
+- **Móvil y tableta:** la cinta se solapa 1 px con la tinta de arriba y de abajo, que además se
+  alarga 2 px sobre ella: con anchos fraccionarios asomaban dos rayas claras a todo lo ancho.
+- **Comprobar tras el merge:** a 375×667 y 912×1368, la cinta de socios sin rayas; en tableta,
+  medalla y nombre al mismo nivel al elegir otra distinción del palmarés.

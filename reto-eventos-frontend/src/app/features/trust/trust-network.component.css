@@ -1405,7 +1405,8 @@
   display: none;
 }
 
-@media (max-width: 600px) {
+/* También en tableta (901–1000 px), donde arriba se pisaban. */
+@media (max-width: 600px), (min-width: 901px) and (max-width: 1000px) {
   .trust-reel-caption .trust-reel-rest {
     position: absolute;
     width: 1px;
@@ -1437,12 +1438,72 @@
     --body-gap: 3.25rem;
   }
 
+  /* La medalla, centrada con el nombre de la distinción (--medal-shift, medido en el componente). */
+  .trust-medal {
+    translate: 0 var(--medal-shift, 0px);
+  }
+
   .trust-award-detail {
     grid-column: 1 / -1;
+  }
+
+  /* El botón de la síntesis, más grande: rótulo e icono. */
+  .trust-award-more {
+    font-size: 0.9rem;
+  }
+
+  .trust-award-more-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .trust-award-more svg {
+    width: 1.3rem;
+    height: 1.3rem;
   }
 
   /* Aire entre el botón de la síntesis y su texto. Cerrada no cuenta: va dentro del panel plegado. */
   .trust-award-detail p {
     margin-top: 1.75rem;
+  }
+}
+
+/* Tableta (901–1000 px): el rótulo de la cinta, como en móvil: centrado y algo mayor, con más aire
+   bajo la barra (su compañero baja bajo la cinta, ver .trust-reel-aside). */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .trust-reel-caption {
+    justify-content: center;
+    padding-top: 2rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-align: center;
+  }
+}
+
+/* Tableta (901–1000 px): bajo la barra de «El resto prefiere no figurar», el mismo aire que encima. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .trust-figures {
+    margin-top: 2rem;
+  }
+}
+
+/* Móvil y tableta: la franja son tres bloques de tinta apilados (arriba, la cinta y abajo). La cinta
+   se pinta en su propia capa y su borde caía a medio píxel, mezclado con el fondo claro de detrás:
+   dos rayas claras a todo lo ancho. Solapada un píxel con la tinta de arriba y la de abajo, su borde
+   cae siempre sobre tinta. */
+@media (max-width: 1000px) {
+  .trust-reel-window {
+    margin-block: -1px;
+    padding-block: 1px;
+  }
+
+  /* Arriba, el bloque de tinta queda por encima de la cinta: su propio borde caía también a medio
+     píxel. Se alarga 2px en tinta sobre ella (y el de abajo, igual hacia arriba). */
+  .trust-reel-ink:first-child {
+    box-shadow: 0 2px 0 var(--gallery-ink, #211e24);
+  }
+
+  .trust-reel-ink:last-child {
+    box-shadow: 0 -2px 0 var(--gallery-ink, #211e24);
   }
 }

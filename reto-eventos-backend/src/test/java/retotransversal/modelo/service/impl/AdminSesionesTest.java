@@ -125,6 +125,34 @@ class AdminSesionesTest {
 	}
 
 	@Test
+	void aSessionWithReservationsIsDeletedWithThemOnlyWhenConfirmed() throws Exception {
+		when(eventos.findById(7)).thenReturn(Optional.of(sesion(7, EstadoEvento.ACTIVO)));
+		List<Reserva> suyas = List.of(reserva(2), reserva(3));
+		when(reservas.findByEventoIdEvento(7)).thenReturn(suyas);
+
+		mvc.perform(delete("/api/admin/eventos/7").param("conReservas", "true")).andExpect(status().isNoContent());
+		verify(reservas).deleteAll(suyas);
+		verify(eventos).deleteById(7);
+	}
+
+	@Test
+	void onlySessionsNoLongerActiveAreArchivedAndArchivedOnesAreNotReactivated() throws Exception {
+		Evento cancelada = sesion(8, EstadoEvento.CANCELADO);
+		when(eventos.findById(7)).thenReturn(Optional.of(sesion(7, EstadoEvento.ACTIVO)));
+		when(eventos.findById(8)).thenReturn(Optional.of(cancelada));
+		when(eventos.save(any())).thenAnswer(call -> call.getArgument(0));
+
+		mvc.perform(patch("/api/admin/eventos/7/archivar")).andExpect(status().isConflict());
+		mvc.perform(patch("/api/admin/eventos/8/archivar"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.archivada").value(true));
+		mvc.perform(patch("/api/admin/eventos/8/reactivar")).andExpect(status().isConflict());
+		mvc.perform(patch("/api/admin/eventos/8/desarchivar"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.archivada").value(false));
+	}
+
+	@Test
 	void aSessionWithoutReservationsCanBeDeleted() throws Exception {
 		when(eventos.findById(9)).thenReturn(Optional.of(sesion(9, EstadoEvento.ACTIVO)));
 		when(reservas.findByEventoIdEvento(9)).thenReturn(List.of());

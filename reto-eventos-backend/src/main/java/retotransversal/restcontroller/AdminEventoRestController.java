@@ -61,6 +61,16 @@ public class AdminEventoRestController {
 		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.cancelarEvento(idEvento)));
 	}
 
+	@PatchMapping("/{idEvento}/archivar")
+	public ResponseEntity<EventoAdminDto> archivar(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.archivar(idEvento, true)));
+	}
+
+	@PatchMapping("/{idEvento}/desarchivar")
+	public ResponseEntity<EventoAdminDto> desarchivar(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.archivar(idEvento, false)));
+	}
+
 	@PatchMapping("/{idEvento}/reactivar")
 	public ResponseEntity<EventoAdminDto> reactivar(@PathVariable Integer idEvento) {
 		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.reactivarEvento(idEvento)));
@@ -79,11 +89,19 @@ public class AdminEventoRestController {
 		return ResponseEntity.ok(eventoService.aAdminDto(imagenSesionService.quitar(idEvento)));
 	}
 
-	/** Con la sesión se van su expediente propio y su foto. */
+	/**
+	 * Con la sesión se van su expediente propio y su foto. Si tiene reservas, hace falta
+	 * {@code ?conReservas=true}: se borran con ella (sin eso, 409 y la propuesta de cancelarla).
+	 */
 	@DeleteMapping("/{idEvento}")
-	public ResponseEntity<Void> delete(@PathVariable Integer idEvento) {
+	public ResponseEntity<Void> delete(@PathVariable Integer idEvento,
+			@RequestParam(defaultValue = "false") boolean conReservas) {
 		String imagen = eventoService.findById(idEvento).getImagen();
-		eventoService.deleteOne(idEvento);
+		if (conReservas) {
+			eventoService.borrarConReservas(idEvento);
+		} else {
+			eventoService.deleteOne(idEvento);
+		}
 		expedienteService.borrarDeSesion(idEvento);
 		imagenSesionService.borrarArchivo(imagen);
 		return ResponseEntity.noContent().build();

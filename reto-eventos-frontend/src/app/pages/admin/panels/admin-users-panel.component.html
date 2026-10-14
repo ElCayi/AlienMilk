@@ -50,7 +50,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap">
+  <div class="table-wrap" appKeepHeight>
     <table class="data-table">
       <caption>Cuentas</caption>
       <thead>
@@ -58,7 +58,7 @@
           <th scope="col">Cuenta</th>
           <th scope="col">Correo</th>
           <th scope="col">Perfil</th>
-          <th scope="col">Estado</th>
+          <th scope="col" class="center">Estado</th>
           <th scope="col">Alta</th>
           <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
         </tr>
@@ -74,8 +74,8 @@
               <a class="text-link" [href]="'mailto:' + user.email">{{ user.email }}</a>
             </td>
             <td data-label="Perfil">{{ profile(user.perfil) }}</td>
-            <td data-label="Estado">
-              <span class="badge" [attr.data-tone]="user.enabled ? 'ok' : 'off'">{{
+            <td data-label="Estado" class="center">
+              <span class="badge" [attr.data-tone]="user.enabled ? 'live' : 'off'">{{
                 user.enabled ? 'Activa' : 'Desactivada'
               }}</span>
             </td>
@@ -83,7 +83,7 @@
             <td class="row-actions-cell">
               <div class="row-actions">
                 <button type="button" class="btn btn-small" (click)="openEdit(user)">
-                  Editar<span class="visually-hidden"> {{ user.username }}</span>
+                  Modificar<span class="visually-hidden"> {{ user.username }}</span>
                 </button>
                 <a class="btn btn-small" routerLink="/admin/reservas" [queryParams]="{ cuenta: user.username }">
                   Reservas<span class="visually-hidden"> de {{ user.username }}</span>
@@ -112,7 +112,7 @@
   </div>
 }
 
-<app-panel-dialog [heading]="editing() ? 'Editar cuenta' : 'Nueva cuenta'" [wide]="true">
+<app-panel-dialog [heading]="editing() ? 'Modificar cuenta' : 'Nueva cuenta'" [wide]="true">
   <form novalidate (ngSubmit)="save()">
     <div class="form-grid">
       @if (editing(); as user) {

@@ -49,12 +49,24 @@ export class AdminService {
     return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/cancelar`, {});
   }
 
+  /** Archiva una sesión que ya no está activa: sale de la lista y queda en «Archivadas». */
+  archivarEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/archivar`, {});
+  }
+
+  desarchivarEvento(idEvento: number): Observable<EventoAdmin> {
+    return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/desarchivar`, {});
+  }
+
   reactivarEvento(idEvento: number): Observable<EventoAdmin> {
     return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/reactivar`, {});
   }
 
-  borrarEvento(idEvento: number): Observable<void> {
-    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`);
+  /** Con reservas, el servidor solo la borra si se confirma aparte (`conReservas`): se van con ella. */
+  borrarEvento(idEvento: number, conReservas = false): Observable<void> {
+    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`, {
+      params: conReservas ? { conReservas: true } : {},
+    });
   }
 
   /** Sube la foto propia de la sesión (JPG, PNG o WebP, hasta 5 MB); sustituye la anterior. */

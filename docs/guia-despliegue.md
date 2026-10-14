@@ -50,7 +50,7 @@ mysql -u retoeventos -p reserva_eventos_bbdd < /opt/reto-eventos/reto-eventos-ba
 Las del 2026-10-14 van **antes** de desplegar el backend de esa fecha: `sesiones-fechas` mueve las
 sesiones de ejemplo al futuro (el backend da por terminadas cada noche las que ya pasaron, y sin
 ella la web se quedaría sin programa) y `expedientes-fotos` crea la tabla del expediente de las
-sesiones y la columna de su foto.
+sesiones y la columna de su foto. `sesiones-archivo` añade el archivo de sesiones del panel.
 
 Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
 el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.

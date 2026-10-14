@@ -24,6 +24,7 @@ public record EventoAdminDto(
 		Integer idTipo,
 		String tipoEvento,
 		String imagen,
+		boolean archivada,
 		long plazasReservadas,
 		long reservas) {
 
@@ -42,6 +43,7 @@ public record EventoAdminDto(
 				evento.getTipoEvento().getIdTipo(),
 				evento.getTipoEvento().getNombre(),
 				evento.getImagen(),
+				evento.isArchivada(),
 				plazasReservadas,
 				reservas);
 	}

@@ -57,6 +57,7 @@ CREATE TABLE eventos (
 	minimo_asistencia INT,
 	precio DECIMAL(9,2) NOT NULL,
 	imagen VARCHAR(80),
+	archivada BOOLEAN NOT NULL DEFAULT FALSE,
 	id_tipo INT NOT NULL,
 	CONSTRAINT fk_eventos_tipos
 		FOREIGN KEY (id_tipo) REFERENCES tipos_evento(id_tipo),

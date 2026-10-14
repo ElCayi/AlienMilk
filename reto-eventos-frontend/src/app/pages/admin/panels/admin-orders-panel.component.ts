@@ -13,6 +13,7 @@ import {
   plural,
   Tone,
 } from '../../../shared/panel/panel-format';
+import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 
 type Filter = 'PREPARAR' | 'CAMINO' | 'PAGO' | 'CERRADOS' | 'TODOS';
@@ -41,7 +42,7 @@ const STATE_TONES: Record<EstadoPedido, Tone> = {
 @Component({
   selector: 'app-admin-orders-panel',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, KeepHeightDirective],
   templateUrl: './admin-orders-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

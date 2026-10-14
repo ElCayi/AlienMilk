@@ -5,6 +5,7 @@ import { RequestService } from '../../../core/services/request.service';
 import { EstadoSolicitud, Solicitud } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { errorMessage, formatDayTime, matches } from '../../../shared/panel/panel-format';
+import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 
 type Filter = 'NUEVA' | 'ATENDIDA' | 'TODAS';
@@ -16,7 +17,7 @@ type Filter = 'NUEVA' | 'ATENDIDA' | 'TODAS';
 @Component({
   selector: 'app-admin-requests-panel',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, KeepHeightDirective],
   templateUrl: './admin-requests-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-requests-panel.component.css'],
 })

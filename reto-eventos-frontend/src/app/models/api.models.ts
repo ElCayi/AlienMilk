@@ -26,6 +26,8 @@ export type EstadoEvento = 'ACTIVO' | 'CANCELADO' | 'TERMINADO';
  */
 export interface EventoAdmin extends Omit<EventoDetalle, 'estado'> {
   estado: EstadoEvento;
+  /** Fuera de la lista del panel, en «Archivadas» (solo las que ya no están activas). */
+  archivada: boolean;
   plazasReservadas: number;
   reservas: number;
 }

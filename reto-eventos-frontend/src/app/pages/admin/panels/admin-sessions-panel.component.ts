@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
-import { sessionImage } from '../../../features/sessions/session.presenter';
+import { archiveCode, sessionImage } from '../../../features/sessions/session.presenter';
 import { EstadoEvento, EventoAdmin, EventoPayload, TipoEvento } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
@@ -18,24 +18,51 @@ import {
   plural,
   sessionState,
 } from '../../../shared/panel/panel-format';
+import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 import { AdminDossierEditorComponent } from './admin-dossier-editor.component';
+import { AdminDossierFormComponent } from './admin-dossier-form.component';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
-type Filter = 'TODAS' | EstadoEvento;
+/** «Todas» son las que no están archivadas; las archivadas tienen su propio filtro. */
+type Filter = 'TODAS' | EstadoEvento | 'ARCHIVADAS';
+
+/** Columnas por las que se ordena la tabla. */
+type SortKey = 'numero' | 'nombre' | 'fecha' | 'aforo' | 'estado';
+
+/** Orden de los estados al ordenar por estado: lo que está en marcha, lo anulado, lo cerrado. */
+const STATE_ORDER: Record<EstadoEvento, number> = { ACTIVO: 0, CANCELADO: 1, TERMINADO: 2 };
+
+const COMPARE: Record<SortKey, (a: EventoAdmin, b: EventoAdmin) => number> = {
+  numero: (a, b) => a.idEvento - b.idEvento,
+  nombre: (a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }),
+  fecha: (a, b) => a.fechaInicio.localeCompare(b.fechaInicio),
+  aforo: (a, b) => a.plazasReservadas - b.plazasReservadas || a.aforoMaximo - b.aforoMaximo,
+  estado: (a, b) => STATE_ORDER[a.estado] - STATE_ORDER[b.estado],
+};
+
+/** Las dos páginas de Modificar sesión. */
+type EditPage = 'datos' | 'expediente';
 
 /**
  * Sesiones: el programa, con su ocupación. Una sesión nace activa; se cancela (y se puede
- * reactivar) con sus acciones, no desde el formulario. Con reservas no se borra: se cancela, y sus
- * clientes la ven cancelada en su panel.
+ * reactivar) con sus acciones, no desde el formulario. Con reservas, borrarla pide confirmarlo aparte
+ * (y propone cancelarla, que deja las reservas en el panel de sus clientes).
  */
 @Component({
   selector: 'app-admin-sessions-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent, AdminDossierEditorComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    PanelDialogComponent,
+    AdminDossierEditorComponent,
+    AdminDossierFormComponent,
+    KeepHeightDirective,
+  ],
   templateUrl: './admin-sessions-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -51,29 +78,96 @@ export class AdminSessionsPanelComponent implements OnInit {
   readonly notice = signal<{ text: string; error: boolean } | null>(null);
   /** La sesión con una petición en curso, para no pulsar dos veces. */
   readonly busy = signal<number | null>(null);
+  /** La sesión desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
+  readonly expanded = signal<number | null>(null);
 
   readonly query = signal('');
   readonly filter = signal<Filter>('TODAS');
 
   readonly filters = computed(() => {
-    const list = this.sessions();
+    const list = this.sessions().filter((session) => !session.archivada);
     const count = (estado: EstadoEvento) => list.filter((session) => session.estado === estado).length;
     return [
       { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
       { value: 'ACTIVO' as Filter, label: 'Activas', count: count('ACTIVO') },
       { value: 'CANCELADO' as Filter, label: 'Canceladas', count: count('CANCELADO') },
       { value: 'TERMINADO' as Filter, label: 'Terminadas', count: count('TERMINADO') },
+      {
+        value: 'ARCHIVADAS' as Filter,
+        label: 'Archivadas',
+        count: this.sessions().length - list.length,
+      },
     ];
   });
+
+  /** El orden de la tabla: por fecha, de la más próxima a la más lejana, hasta que se pulse otra columna. */
+  readonly sort = signal<{ key: SortKey; dir: 1 | -1 }>({ key: 'fecha', dir: 1 });
+
+  /** Pulsar una columna ordena por ella de menor a mayor; volver a pulsarla, al revés. */
+  sortBy(key: SortKey): void {
+    this.sort.update((sort) => ({ key, dir: sort.key === key ? (sort.dir === 1 ? -1 : 1) : 1 }));
+  }
+
+  /** Para `aria-sort` en la cabecera: así un lector de pantalla sabe cómo está ordenada. */
+  ariaSort(key: SortKey): 'ascending' | 'descending' | null {
+    const sort = this.sort();
+    return sort.key === key ? (sort.dir === 1 ? 'ascending' : 'descending') : null;
+  }
+
+  /** Las mismas ordenaciones, para el selector de móvil. */
+  readonly sortOptions: { value: string; label: string }[] = [
+    { value: 'fecha:1', label: 'Fecha, la más próxima primero' },
+    { value: 'fecha:-1', label: 'Fecha, la más lejana primero' },
+    { value: 'numero:1', label: 'Nº, de menor a mayor' },
+    { value: 'numero:-1', label: 'Nº, de mayor a menor' },
+    { value: 'nombre:1', label: 'Nombre, de la A a la Z' },
+    { value: 'nombre:-1', label: 'Nombre, de la Z a la A' },
+    { value: 'aforo:-1', label: 'Más plazas reservadas primero' },
+    { value: 'aforo:1', label: 'Menos plazas reservadas primero' },
+    { value: 'estado:1', label: 'Estado: activas primero' },
+    { value: 'estado:-1', label: 'Estado: terminadas primero' },
+  ];
+
+  sortValue(): string {
+    const sort = this.sort();
+    return `${sort.key}:${sort.dir}`;
+  }
+
+  setSort(value: string): void {
+    const [key, dir] = value.split(':');
+    this.sort.set({ key: key as SortKey, dir: dir === '-1' ? -1 : 1 });
+  }
+
+  /** La flecha de cada columna: hacia arriba o abajo en la que ordena; doble y tenue en las demás. */
+  sortIcon(key: SortKey): string {
+    const sort = this.sort();
+    if (sort.key !== key) {
+      return 'M8 10l4-4 4 4M8 14l4 4 4-4';
+    }
+    return sort.dir === 1 ? 'M7 14l5-5 5 5' : 'M7 10l5 5 5-5';
+  }
 
   readonly visible = computed(() => {
     const filter = this.filter();
     const query = this.query();
-    return this.sessions().filter(
+    const { key, dir } = this.sort();
+    const compare = COMPARE[key];
+    return this.sessions()
+      .filter(
       (session) =>
-        (filter === 'TODAS' || session.estado === filter) &&
-        matches(query, session.nombre, humanizeCode(session.tipoEvento), session.direccion),
-    );
+        (filter === 'ARCHIVADAS'
+          ? session.archivada
+          : !session.archivada && (filter === 'TODAS' || session.estado === filter)) &&
+        matches(
+          query,
+          session.nombre,
+          this.number(session),
+          this.code(session),
+          humanizeCode(session.tipoEvento),
+          session.direccion,
+        ),
+      )
+      .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idEvento - b.idEvento);
   });
 
   // Formulario de alta y edición, en el diálogo.
@@ -93,6 +187,8 @@ export class AdminSessionsPanelComponent implements OnInit {
   readonly photoError = signal<string | null>(null);
 
   readonly dossierEditor = viewChild.required(AdminDossierEditorComponent);
+  readonly dossierForm = viewChild.required(AdminDossierFormComponent);
+  readonly page = signal<EditPage>('datos');
 
   readonly state = sessionState;
   readonly day = formatDay;
@@ -100,6 +196,18 @@ export class AdminSessionsPanelComponent implements OnInit {
   readonly typeLabel = humanizeCode;
   readonly plural = plural;
   readonly image = sessionImage;
+  /** El número interno, a dos cifras (01, 02…): el id de la sesión, que no cambia. */
+  number(session: EventoAdmin): string {
+    return String(session.idEvento).padStart(2, '0');
+  }
+
+  /** Despliega la ficha de la sesión, o la recoge si ya estaba abierta. */
+  toggle(session: EventoAdmin): void {
+    this.expanded.update((id) => (id === session.idEvento ? null : session.idEvento));
+  }
+
+  /** La referencia del archivo (AM-S/025): sale del id, así que no cambia aunque cambie el nombre. */
+  readonly code = archiveCode;
 
   /** Hoy, en el formato del campo de fecha (aaaa-mm-dd), en la hora de quien usa el panel. */
   readonly today = isoToday();
@@ -144,6 +252,12 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.editing.set(null);
     this.reactivating.set(false);
     this.resetPhoto();
+    this.page.set('datos');
+    this.dossierForm().load({
+      scope: { tipo: 'sesion', id: 0 },
+      name: 'Nueva sesión',
+      typeName: this.types()[0]?.nombre,
+    });
     this.form = emptyForm(this.types()[0]?.idTipo ?? null);
     this.resetErrors();
     this.dialog().open();
@@ -153,6 +267,12 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.editing.set(session);
     this.reactivating.set(reactivating);
     this.resetPhoto();
+    this.page.set('datos');
+    this.dossierForm().load({
+      scope: { tipo: 'sesion', id: session.idEvento },
+      name: session.nombre,
+      typeName: session.tipoEvento,
+    });
     this.form = {
       nombre: session.nombre,
       descripcion: session.descripcion ?? '',
@@ -192,20 +312,13 @@ export class AdminSessionsPanelComponent implements OnInit {
         this.applyPhoto(saved).subscribe({
           next: (withPhoto) => {
             this.upsert(withPhoto);
-            this.saving.set(false);
-            this.dialog().close();
-            if (reactivating) {
-              this.changeState(withPhoto, this.admin.reactivarEvento(withPhoto.idEvento), 'con fecha nueva y activa de nuevo');
-              return;
-            }
-            this.notice.set({
-              text: editing ? `«${withPhoto.nombre}» actualizada.` : `«${withPhoto.nombre}» creada y activa.`,
-              error: false,
-            });
-            this.summary.refresh();
+            this.photoFile.set(null);
+            this.removePhoto.set(false);
+            this.saveDossier(withPhoto, () => this.finishSave(withPhoto, !!editing, reactivating));
           },
           error: (error) => {
             this.saving.set(false);
+            this.page.set('datos');
             this.photoError.set(errorMessage(error, 'No se ha podido subir la foto.'));
             this.formError.set('Los datos se han guardado, pero la foto no.');
           },
@@ -213,6 +326,7 @@ export class AdminSessionsPanelComponent implements OnInit {
       },
       error: (error) => {
         this.saving.set(false);
+        this.page.set('datos');
         const errors = fieldErrors(error);
         this.errors.set(errors);
         this.formError.set(
@@ -222,6 +336,19 @@ export class AdminSessionsPanelComponent implements OnInit {
         );
       },
     });
+  }
+
+  /** Al cambiar de tipo, el expediente hereda del nuevo. */
+  typeChanged(idTipo: number | null): void {
+    this.dossierForm().typeName.set(this.types().find((type) => type.idTipo === idTipo)?.nombre);
+  }
+
+  archive(session: EventoAdmin): void {
+    this.changeState(session, this.admin.archivarEvento(session.idEvento), 'archivada');
+  }
+
+  unarchive(session: EventoAdmin): void {
+    this.changeState(session, this.admin.desarchivarEvento(session.idEvento), 'fuera del archivo');
   }
 
   /** La foto elegida: se comprueba aquí lo mismo que en el servidor, para avisar antes de enviarla. */
@@ -271,14 +398,6 @@ export class AdminSessionsPanelComponent implements OnInit {
     return !!this.photoFile() || (!!this.editing()?.imagen && !this.removePhoto());
   }
 
-  openDossier(session: EventoAdmin): void {
-    this.dossierEditor().open({
-      scope: { tipo: 'sesion', id: session.idEvento },
-      name: session.nombre,
-      typeName: session.tipoEvento,
-    });
-  }
-
   openCommonDossier(): void {
     this.dossierEditor().open({ scope: { tipo: 'general' }, name: 'todas las sesiones' });
   }
@@ -314,18 +433,43 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.changeState(session, this.admin.reactivarEvento(session.idEvento), 'activa de nuevo');
   }
 
+  /**
+   * Sin reservas, se confirma y se borra. Con reservas, el aviso propone cancelarla (sus clientes la
+   * siguen viendo, cancelada) o borrarla con ellas (desaparecen también de su panel).
+   */
   async remove(session: EventoAdmin): Promise<void> {
-    const confirmed = await this.confirm.ask({
-      title: '¿Borrar la sesión?',
-      message: `«${session.nombre}» desaparecerá del programa y del panel. No se puede deshacer.`,
-      confirm: 'Borrar sesión',
-      danger: true,
-    });
-    if (!confirmed) {
+    const withReservations = session.reservas > 0;
+    const cancellable = session.estado === 'ACTIVO';
+    const choice = await this.confirm.choose(
+      withReservations
+        ? {
+            title: '¿Borrar una sesión con reservas?',
+            message:
+              `«${session.nombre}» tiene ${plural(session.reservas, 'reserva', 'reservas')}. Si la borras, ` +
+              (session.reservas === 1 ? 'se borra con ella y desaparece' : 'se borran con ella y desaparecen') +
+              ' también del panel de sus clientes. ' +
+              (cancellable ? 'Si la cancelas, la siguen viendo, cancelada. ' : '') +
+              'Borrarla no se puede deshacer.',
+            confirm: 'Borrar',
+            alternative: cancellable ? 'Cancelar sesión' : undefined,
+            danger: true,
+          }
+        : {
+            title: '¿Borrar la sesión?',
+            message: `«${session.nombre}» desaparecerá del programa y del panel. No se puede deshacer.`,
+            confirm: 'Borrar sesión',
+            danger: true,
+          },
+    );
+    if (choice === 'alternative') {
+      this.changeState(session, this.admin.cancelarEvento(session.idEvento), 'cancelada');
+      return;
+    }
+    if (choice !== 'confirm') {
       return;
     }
     this.busy.set(session.idEvento);
-    this.admin.borrarEvento(session.idEvento).subscribe({
+    this.admin.borrarEvento(session.idEvento, withReservations).subscribe({
       next: () => {
         this.busy.set(null);
         this.sessions.update((list) => list.filter((item) => item.idEvento !== session.idEvento));
@@ -364,6 +508,40 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.notice.set({ text: errorMessage(error, fallback), error: true });
     // Lo más probable es que la sesión haya cambiado entretanto (una reserva nueva, por ejemplo).
     this.load();
+  }
+
+  /** El expediente, si ha cambiado, después de los datos y la foto; si falla, se queda abierto en él. */
+  private saveDossier(saved: EventoAdmin, done: () => void): void {
+    const form = this.dossierForm();
+    if (!form.changed()) {
+      done();
+      return;
+    }
+    form.save({ tipo: 'sesion', id: saved.idEvento }).subscribe({
+      next: () => {
+        form.markSaved();
+        done();
+      },
+      error: (error) => {
+        this.saving.set(false);
+        this.page.set('expediente');
+        this.formError.set(`Los datos se han guardado, pero el expediente no. ${form.showErrors(error)}`);
+      },
+    });
+  }
+
+  private finishSave(saved: EventoAdmin, edited: boolean, reactivating: boolean): void {
+    this.saving.set(false);
+    this.dialog().close();
+    if (reactivating) {
+      this.changeState(saved, this.admin.reactivarEvento(saved.idEvento), 'con fecha nueva y activa de nuevo');
+      return;
+    }
+    this.notice.set({
+      text: edited ? `«${saved.nombre}» actualizada.` : `«${saved.nombre}» creada y activa.`,
+      error: false,
+    });
+    this.summary.refresh();
   }
 
   private applyPhoto(saved: EventoAdmin): Observable<EventoAdmin> {

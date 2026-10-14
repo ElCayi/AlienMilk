@@ -715,7 +715,8 @@
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
   gap: 1.5rem clamp(2rem, 4vw, 4rem);
   align-items: start;
-  margin-top: clamp(3.5rem, 6vw, 6rem);
+  /* Pegado al pedido como el pedido al catálogo: el margen de .ink-card. */
+  margin-top: 1.25rem;
   padding: clamp(1.5rem, 2.5vw, 2.5rem);
   border: 1px solid rgba(247, 248, 249, 0.24);
   /* La hoja de la casa, como las fichas de producto. */

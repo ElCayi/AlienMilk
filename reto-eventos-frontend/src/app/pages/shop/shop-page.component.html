@@ -128,17 +128,17 @@
             <li class="product" [attr.data-tone]="product.tono">
               <a class="product-link" [routerLink]="['/tienda', product.slug]">
                 <app-molecule class="product-sample" [slug]="product.slug" />
-                <span class="product-kicker">
+                <span class="product-kicker" appFitLine>
                   {{ categoryLabels[product.categoria] }} · {{ product.formato }}
                 </span>
-                <h3 class="product-name" appFitLine>{{ product.nombre }}</h3>
+                <h3 class="product-name" appFitLine [appFitLineMin]="19">{{ product.nombre }}</h3>
               </a>
               <p class="product-summary">{{ product.resumen }}</p>
               <p class="product-origin" appFitLine>{{ product.procedencia }}</p>
               <div class="product-foot">
                 <div class="product-price">
                   <p class="price">{{ price(product.precio) }}</p>
-                  <p class="stock" [attr.data-level]="stockLevel(product)">{{ stockLabel(product) }}</p>
+                  <p class="stock" appFitLine [attr.data-level]="stockLevel(product)">{{ stockLabel(product) }}</p>
                 </div>
                 @if (stockLevel(product) !== 'out') {
                   @if (quantity(product); as units) {

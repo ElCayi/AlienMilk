@@ -33,6 +33,7 @@ import { TrustAward, TrustNetworkService } from './trust-network.service';
 export class TrustNetworkComponent implements OnInit {
   private readonly trust = inject(TrustNetworkService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** La sigla de la distinción elegida en el palmarés; sin elegir, la primera (la de Custodia
    *  Continuada). */
@@ -105,6 +106,7 @@ export class TrustNetworkComponent implements OnInit {
   );
 
   constructor() {
+    afterNextRender(() => this.alignMedal());
     afterNextRender(() => {
       const list = this.voicesList()?.nativeElement;
       if (!list) {
@@ -165,6 +167,55 @@ export class TrustNetworkComponent implements OnInit {
         list.removeEventListener('touchend', touchEnd);
         list.removeEventListener('wheel', onWheel);
       });
+    });
+  }
+
+  /**
+   * La medalla, centrada con el nombre de la distinción y no con todo su texto (fecha, nombre,
+   * organismo y el (+)). El nombre cambia de alto con cada distinción: se mide y la medalla se
+   * desplaza lo que haga falta (--medal-shift; solo lo usa la tableta, en el CSS). Se mide sin
+   * transformaciones, porque el texto entra subiendo con una animación.
+   */
+  private alignMedal(): void {
+    const host = this.host.nativeElement;
+    const pageTop = (element: HTMLElement) => {
+      let top = 0;
+      for (let at: HTMLElement | null = element; at; at = at.offsetParent as HTMLElement | null) {
+        top += at.offsetTop;
+      }
+      return top;
+    };
+    const align = () => {
+      const featured = host.querySelector<HTMLElement>('.trust-award-featured');
+      const medal = featured?.querySelector<HTMLElement>('.trust-medal');
+      const name = featured?.querySelector<HTMLElement>('.trust-award-name');
+      if (!featured || !medal || !name) {
+        return;
+      }
+      const shift =
+        pageTop(name) + name.offsetHeight / 2 - (pageTop(medal) + medal.offsetHeight / 2);
+      featured.style.setProperty('--medal-shift', `${Math.round(shift)}px`);
+    };
+
+    // Una medida por fotograma, por muchos cambios que lleguen (la cinta de marcas no para).
+    let frame = 0;
+    const schedule = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          align();
+        });
+      }
+    };
+    const resize = new ResizeObserver(schedule);
+    resize.observe(host);
+    const changes = new MutationObserver(schedule);
+    changes.observe(host, { childList: true, subtree: true });
+    document.fonts?.ready.then(schedule);
+    this.destroyRef.onDestroy(() => {
+      cancelAnimationFrame(frame);
+      resize.disconnect();
+      changes.disconnect();
     });
   }
 

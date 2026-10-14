@@ -5,6 +5,7 @@ import { AdminService } from '../../../core/services/admin.service';
 import { TipoEvento, TipoEventoPayload } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
+import { AdminDossierEditorComponent } from './admin-dossier-editor.component';
 import {
   errorMessage,
   fieldErrors,
@@ -19,7 +20,7 @@ import {
 @Component({
   selector: 'app-admin-types-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent],
+  imports: [FormsModule, PanelDialogComponent, AdminDossierEditorComponent],
   templateUrl: './admin-types-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -34,6 +35,20 @@ export class AdminTypesPanelComponent implements OnInit {
   readonly busy = signal<number | null>(null);
 
   readonly dialog = viewChild.required(PanelDialogComponent);
+  readonly dossierEditor = viewChild.required(AdminDossierEditorComponent);
+
+  /** El expediente del tipo: lo que heredan todas sus sesiones. */
+  openDossier(type: TipoEvento): void {
+    this.dossierEditor().open({
+      scope: { tipo: 'tipo', id: type.idTipo },
+      name: this.label(type.nombre),
+      typeName: type.nombre,
+    });
+  }
+
+  dossierSaved(text: string): void {
+    this.notice.set({ text, error: false });
+  }
   readonly editing = signal<TipoEvento | null>(null);
   readonly saving = signal(false);
   readonly errors = signal<Record<string, string>>({});

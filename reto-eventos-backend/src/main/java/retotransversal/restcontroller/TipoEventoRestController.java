@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.TipoEventoDto;
 import retotransversal.modelo.dto.TipoEventoPayloadDto;
 import retotransversal.modelo.entities.TipoEvento;
+import retotransversal.modelo.service.ExpedienteService;
 import retotransversal.modelo.service.TipoEventoService;
 
 @RestController
@@ -24,6 +25,7 @@ import retotransversal.modelo.service.TipoEventoService;
 public class TipoEventoRestController {
 
 	private final TipoEventoService tipoEventoService;
+	private final ExpedienteService expedienteService;
 
 	@GetMapping
 	public ResponseEntity<List<TipoEventoDto>> findAll() {
@@ -51,6 +53,7 @@ public class TipoEventoRestController {
 	@DeleteMapping("/{idTipo}")
 	public ResponseEntity<Void> delete(@PathVariable Integer idTipo) {
 		tipoEventoService.deleteOne(idTipo);
+		expedienteService.borrarDeTipo(idTipo);
 		return ResponseEntity.noContent().build();
 	}
 

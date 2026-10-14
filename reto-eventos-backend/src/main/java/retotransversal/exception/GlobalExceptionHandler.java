@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import retotransversal.modelo.pagos.AvisoPagoNoValidoException;
@@ -59,6 +60,13 @@ public class GlobalExceptionHandler {
 			HttpServletRequest request) {
 		log.warn("Aviso de pago rechazado: {}", ex.getMessage());
 		return buildResponse(HttpStatus.BAD_REQUEST, "Aviso no válido", request.getRequestURI());
+	}
+
+	@ExceptionHandler(MaxUploadSizeExceededException.class)
+	public ResponseEntity<ApiErrorResponse> handleTooLarge(MaxUploadSizeExceededException ex,
+			HttpServletRequest request) {
+		return buildResponse(HttpStatus.PAYLOAD_TOO_LARGE, "La foto pesa demasiado: como máximo 5 MB",
+				request.getRequestURI());
 	}
 
 	@ExceptionHandler(DemasiadasSolicitudesException.class)

@@ -45,5 +45,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./panels/admin-contact-panel.component').then((m) => m.AdminContactPanelComponent),
   },
+  {
+    path: 'demo',
+    loadComponent: () =>
+      import('./panels/admin-demo-panel.component').then((m) => m.AdminDemoPanelComponent),
+  },
   { path: '**', redirectTo: 'sesiones' },
 ];

@@ -1,8 +1,10 @@
 import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Observable, of } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
+import { sessionImage } from '../../../features/sessions/session.presenter';
 import { EstadoEvento, EventoAdmin, EventoPayload, TipoEvento } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
@@ -17,6 +19,11 @@ import {
   sessionState,
 } from '../../../shared/panel/panel-format';
 import { AdminSummaryService } from '../admin-summary.service';
+import { AdminDossierEditorComponent } from './admin-dossier-editor.component';
+
+/** Fotos que admite el servidor (ver ImagenSesionService). */
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
 type Filter = 'TODAS' | EstadoEvento;
 
@@ -28,7 +35,7 @@ type Filter = 'TODAS' | EstadoEvento;
 @Component({
   selector: 'app-admin-sessions-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent],
+  imports: [FormsModule, RouterLink, PanelDialogComponent, AdminDossierEditorComponent],
   templateUrl: './admin-sessions-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -72,16 +79,41 @@ export class AdminSessionsPanelComponent implements OnInit {
   // Formulario de alta y edición, en el diálogo.
   readonly dialog = viewChild.required(PanelDialogComponent);
   readonly editing = signal<EventoAdmin | null>(null);
+  /** Reactivar una sesión cuya fecha ya pasó: primero se le da otra fecha, después se reactiva. */
+  readonly reactivating = signal(false);
   readonly saving = signal(false);
   readonly errors = signal<Record<string, string>>({});
   readonly formError = signal<string | null>(null);
   form: EventoPayload = emptyForm();
+
+  // La foto, en el mismo formulario: se sube (o se quita) después de guardar los datos.
+  readonly photoFile = signal<File | null>(null);
+  readonly photoPreview = signal<string | null>(null);
+  readonly removePhoto = signal(false);
+  readonly photoError = signal<string | null>(null);
+
+  readonly dossierEditor = viewChild.required(AdminDossierEditorComponent);
 
   readonly state = sessionState;
   readonly day = formatDay;
   readonly money = formatMoney;
   readonly typeLabel = humanizeCode;
   readonly plural = plural;
+  readonly image = sessionImage;
+
+  /** Hoy, en el formato del campo de fecha (aaaa-mm-dd), en la hora de quien usa el panel. */
+  readonly today = isoToday();
+
+  /** Una sesión cuya fecha ya pasó: no se reactiva sin cambiarle antes la fecha. */
+  isPast(session: EventoAdmin): boolean {
+    return session.fechaInicio < this.today;
+  }
+
+  /** La fecha más temprana del formulario: hoy, o la que ya tenía la sesión si es anterior. */
+  minDate(): string {
+    const current = this.editing()?.fechaInicio;
+    return current && current < this.today ? current : this.today;
+  }
 
   ngOnInit(): void {
     this.load();
@@ -110,13 +142,17 @@ export class AdminSessionsPanelComponent implements OnInit {
 
   openNew(): void {
     this.editing.set(null);
+    this.reactivating.set(false);
+    this.resetPhoto();
     this.form = emptyForm(this.types()[0]?.idTipo ?? null);
     this.resetErrors();
     this.dialog().open();
   }
 
-  openEdit(session: EventoAdmin): void {
+  openEdit(session: EventoAdmin, reactivating = false): void {
     this.editing.set(session);
+    this.reactivating.set(reactivating);
+    this.resetPhoto();
     this.form = {
       nombre: session.nombre,
       descripcion: session.descripcion ?? '',
@@ -137,25 +173,43 @@ export class AdminSessionsPanelComponent implements OnInit {
       return;
     }
     const editing = this.editing();
-    this.saving.set(true);
+    const reactivating = this.reactivating();
     this.resetErrors();
+    if (reactivating && (!this.form.fechaInicio || this.form.fechaInicio < this.today)) {
+      this.errors.set({ fechaInicio: 'Elige una fecha que no haya pasado' });
+      this.formError.set('Revisa los campos marcados.');
+      return;
+    }
+    this.saving.set(true);
     const request = editing
       ? this.admin.actualizarEvento(editing.idEvento, this.form)
       : this.admin.crearEvento(this.form);
     request.subscribe({
       next: (saved) => {
-        this.saving.set(false);
-        this.sessions.update((list) =>
-          editing
-            ? list.map((item) => (item.idEvento === saved.idEvento ? saved : item))
-            : [...list, saved].sort(byDate),
-        );
-        this.dialog().close();
-        this.notice.set({
-          text: editing ? `«${saved.nombre}» actualizada.` : `«${saved.nombre}» creada y activa.`,
-          error: false,
+        this.upsert(saved);
+        // Guardada: si la foto falla, se reintenta como edición, sin crearla dos veces.
+        this.editing.set(saved);
+        this.applyPhoto(saved).subscribe({
+          next: (withPhoto) => {
+            this.upsert(withPhoto);
+            this.saving.set(false);
+            this.dialog().close();
+            if (reactivating) {
+              this.changeState(withPhoto, this.admin.reactivarEvento(withPhoto.idEvento), 'con fecha nueva y activa de nuevo');
+              return;
+            }
+            this.notice.set({
+              text: editing ? `«${withPhoto.nombre}» actualizada.` : `«${withPhoto.nombre}» creada y activa.`,
+              error: false,
+            });
+            this.summary.refresh();
+          },
+          error: (error) => {
+            this.saving.set(false);
+            this.photoError.set(errorMessage(error, 'No se ha podido subir la foto.'));
+            this.formError.set('Los datos se han guardado, pero la foto no.');
+          },
         });
-        this.summary.refresh();
       },
       error: (error) => {
         this.saving.set(false);
@@ -168,6 +222,69 @@ export class AdminSessionsPanelComponent implements OnInit {
         );
       },
     });
+  }
+
+  /** La foto elegida: se comprueba aquí lo mismo que en el servidor, para avisar antes de enviarla. */
+  pickPhoto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    input.value = '';
+    this.photoError.set(null);
+    if (!file) {
+      return;
+    }
+    if (!PHOTO_TYPES.includes(file.type)) {
+      this.photoError.set('La foto tiene que ser JPG, PNG o WebP.');
+      return;
+    }
+    if (file.size > PHOTO_MAX_BYTES) {
+      this.photoError.set('La foto pesa demasiado: como máximo 5 MB.');
+      return;
+    }
+    this.setPreview(URL.createObjectURL(file));
+    this.photoFile.set(file);
+    this.removePhoto.set(false);
+  }
+
+  /** Vuelve a la foto de la web: si había una nueva sin guardar, se descarta; si había propia, se quitará. */
+  dropPhoto(): void {
+    this.setPreview(null);
+    this.photoFile.set(null);
+    this.photoError.set(null);
+    this.removePhoto.set(!!this.editing()?.imagen);
+  }
+
+  /** La foto que verá el público tras guardar. Una sesión nueva sin foto recibe una de la web al crearse. */
+  shownPhoto(): string | null {
+    const preview = this.photoPreview();
+    if (preview) {
+      return preview;
+    }
+    const editing = this.editing();
+    if (!editing) {
+      return null;
+    }
+    return this.image(this.removePhoto() ? { ...editing, imagen: null } : editing);
+  }
+
+  hasOwnPhoto(): boolean {
+    return !!this.photoFile() || (!!this.editing()?.imagen && !this.removePhoto());
+  }
+
+  openDossier(session: EventoAdmin): void {
+    this.dossierEditor().open({
+      scope: { tipo: 'sesion', id: session.idEvento },
+      name: session.nombre,
+      typeName: session.tipoEvento,
+    });
+  }
+
+  openCommonDossier(): void {
+    this.dossierEditor().open({ scope: { tipo: 'general' }, name: 'todas las sesiones' });
+  }
+
+  dossierSaved(text: string): void {
+    this.notice.set({ text, error: false });
   }
 
   async cancelSession(session: EventoAdmin): Promise<void> {
@@ -188,7 +305,12 @@ export class AdminSessionsPanelComponent implements OnInit {
     }
   }
 
+  /** Si su fecha ya pasó, antes hay que darle otra: se abre el formulario para eso. */
   reactivate(session: EventoAdmin): void {
+    if (this.isPast(session)) {
+      this.openEdit(session, true);
+      return;
+    }
     this.changeState(session, this.admin.reactivarEvento(session.idEvento), 'activa de nuevo');
   }
 
@@ -244,6 +366,40 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.load();
   }
 
+  private applyPhoto(saved: EventoAdmin): Observable<EventoAdmin> {
+    const file = this.photoFile();
+    if (file) {
+      return this.admin.subirFotoEvento(saved.idEvento, file);
+    }
+    if (this.removePhoto() && saved.imagen) {
+      return this.admin.quitarFotoEvento(saved.idEvento);
+    }
+    return of(saved);
+  }
+
+  private upsert(saved: EventoAdmin): void {
+    this.sessions.update((list) =>
+      list.some((item) => item.idEvento === saved.idEvento)
+        ? list.map((item) => (item.idEvento === saved.idEvento ? saved : item))
+        : [...list, saved].sort(byDate),
+    );
+  }
+
+  private setPreview(url: string | null): void {
+    const old = this.photoPreview();
+    if (old) {
+      URL.revokeObjectURL(old);
+    }
+    this.photoPreview.set(url);
+  }
+
+  private resetPhoto(): void {
+    this.setPreview(null);
+    this.photoFile.set(null);
+    this.removePhoto.set(false);
+    this.photoError.set(null);
+  }
+
   private resetErrors(): void {
     this.errors.set({});
     this.formError.set(null);
@@ -266,4 +422,10 @@ function emptyForm(idTipo: number | null = null): EventoPayload {
 
 function byDate(a: EventoAdmin, b: EventoAdmin): number {
   return a.fechaInicio.localeCompare(b.fechaInicio) || a.idEvento - b.idEvento;
+}
+
+function isoToday(): string {
+  const now = new Date();
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }

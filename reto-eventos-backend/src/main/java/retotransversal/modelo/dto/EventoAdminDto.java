@@ -23,6 +23,7 @@ public record EventoAdminDto(
 		BigDecimal precio,
 		Integer idTipo,
 		String tipoEvento,
+		String imagen,
 		long plazasReservadas,
 		long reservas) {
 
@@ -40,6 +41,7 @@ public record EventoAdminDto(
 				evento.getPrecio(),
 				evento.getTipoEvento().getIdTipo(),
 				evento.getTipoEvento().getNombre(),
+				evento.getImagen(),
 				plazasReservadas,
 				reservas);
 	}

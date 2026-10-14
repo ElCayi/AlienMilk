@@ -13,6 +13,7 @@ export type PanelIcon =
   | 'pedidos'
   | 'solicitudes'
   | 'contacto'
+  | 'demo'
   | 'cuenta';
 
 export interface PanelNavItem {
@@ -39,6 +40,7 @@ const ICONS: Record<PanelIcon, string> = {
   solicitudes: 'M3 13h5l1.5 3h5l1.5-3h5M5.5 5h13L21 13v6H3v-6z',
   contacto: 'M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12zM12 6.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z',
   cuenta: 'M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM4 21a8 8 0 0 1 16 0',
+  demo: 'M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5M12 8v4l2.5 2.5',
 };
 
 /**

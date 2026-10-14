@@ -59,6 +59,10 @@ public class Evento {
 	@Column(nullable = false, precision = 9, scale = 2)
 	private BigDecimal precio;
 
+	/** La foto propia, si se subió desde el panel: el nombre del archivo (ver ImagenSesionService). */
+	@Column(length = 80)
+	private String imagen;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_tipo", nullable = false)
 	private TipoEvento tipoEvento;

@@ -27,6 +27,8 @@ public class EventoDetalleDto {
 	private BigDecimal precio;
 	private Integer idTipo;
 	private String tipoEvento;
+	/** El nombre de la foto propia, o null si usa la de la web. */
+	private String imagen;
 
 	public static EventoDetalleDto fromEntity(Evento evento) {
 		return EventoDetalleDto.builder()
@@ -42,6 +44,7 @@ public class EventoDetalleDto {
 				.precio(evento.getPrecio())
 				.idTipo(evento.getTipoEvento().getIdTipo())
 				.tipoEvento(evento.getTipoEvento().getNombre())
+				.imagen(evento.getImagen())
 				.build();
 	}
 }

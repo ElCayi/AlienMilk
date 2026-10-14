@@ -33,6 +33,11 @@ function applyLayer(base: SessionDossier, layer: SessionDossierLayer | undefined
   };
 }
 
+/** Superpone capas del expediente, de la más general a la más concreta. */
+export function composeDossierLayers(...layers: (SessionDossierLayer | undefined)[]): SessionDossier {
+  return layers.reduce(applyLayer, EMPTY_DOSSIER);
+}
+
 /**
  * Compone el expediente de una sesión a partir de sus capas. Lo que la API ya sabe de la sesión
  * (su descripción) sirve de respaldo para que ningún expediente quede vacío.
@@ -41,11 +46,11 @@ export function buildSessionDossier(
   session: EventoDetalle,
   source: SessionDossierSource,
 ): SessionDossier {
-  const dossier = [
+  const dossier = composeDossierLayers(
     source.general,
     source.porTipo[session.tipoEvento],
     source.porSesion[String(session.idEvento)],
-  ].reduce(applyLayer, EMPTY_DOSSIER);
+  );
 
   return {
     ...dossier,

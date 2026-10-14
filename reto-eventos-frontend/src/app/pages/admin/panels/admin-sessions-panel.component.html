@@ -7,6 +7,7 @@
     </p>
   </div>
   <div class="section-head-actions">
+    <button type="button" class="btn" (click)="openCommonDossier()">Expediente común</button>
     <button type="button" class="btn btn-primary" (click)="openNew()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
       Nueva sesión
@@ -68,8 +69,13 @@
           @let estado = state(session.estado);
           <tr>
             <td class="cell-title">
-              <span class="cell-main">{{ session.nombre }}</span>
-              <span class="cell-sub">{{ typeLabel(session.tipoEvento) }} · {{ session.direccion }}</span>
+              <div class="cell-with-thumb">
+                <img class="cell-thumb" [src]="image(session)" alt="" loading="lazy" />
+                <div>
+                  <span class="cell-main">{{ session.nombre }}</span>
+                  <span class="cell-sub">{{ typeLabel(session.tipoEvento) }} · {{ session.direccion }}</span>
+                </div>
+              </div>
             </td>
             <td data-label="Fecha" class="nowrap">
               {{ day(session.fechaInicio) }}
@@ -113,6 +119,9 @@
                   (click)="openEdit(session)"
                 >
                   Editar<span class="visually-hidden"> {{ session.nombre }}</span>
+                </button>
+                <button type="button" class="btn btn-small" (click)="openDossier(session)">
+                  Expediente<span class="visually-hidden"> de {{ session.nombre }}</span>
                 </button>
                 @if (session.estado === 'ACTIVO') {
                   <button
@@ -159,7 +168,7 @@
   </div>
 }
 
-<app-panel-dialog [heading]="editing() ? 'Editar sesión' : 'Nueva sesión'" [wide]="true">
+<app-panel-dialog [heading]="reactivating() ? 'Reactivar sesión' : editing() ? 'Editar sesión' : 'Nueva sesión'" [wide]="true">
   <form novalidate (ngSubmit)="save()">
     <div class="form-grid">
       <div class="field is-wide" [class.is-invalid]="error('nombre')">
@@ -187,9 +196,11 @@
 
       <div class="field" [class.is-invalid]="error('fechaInicio')">
         <label class="field-label" for="session-date">Fecha</label>
-        <input id="session-date" name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio" />
+        <input id="session-date" name="fechaInicio" type="date" [min]="reactivating() ? today : minDate()" [(ngModel)]="form.fechaInicio" />
         @if (error('fechaInicio'); as message) {
           <p class="field-error">{{ message }}</p>
+        } @else if (reactivating()) {
+          <p class="field-help">La que tenía ya pasó: elige otra para reactivarla.</p>
         }
       </div>
 
@@ -239,6 +250,49 @@
         }
       </div>
 
+      <div class="field is-wide photo-field">
+        <span class="field-label" id="session-photo-label">
+          Foto <span class="field-note">JPG, PNG o WebP · hasta 5 MB</span>
+        </span>
+        <div class="photo-box">
+          @if (shownPhoto(); as src) {
+            <img class="photo-preview" [src]="src" alt="" />
+          } @else {
+            <div class="photo-preview photo-empty">Una de la web</div>
+          }
+          <div class="photo-actions">
+            <p class="field-help">
+              @if (photoFile()) {
+                Foto nueva: se subirá al guardar.
+              } @else if (hasOwnPhoto()) {
+                Foto propia.
+              } @else if (removePhoto()) {
+                Se quitará la propia y volverá la de la web.
+              } @else {
+                Sin foto propia: usa una de las de la web.
+              }
+            </p>
+            <div class="photo-buttons">
+              <label class="btn btn-small photo-pick">
+                {{ hasOwnPhoto() ? 'Cambiar foto' : 'Subir foto' }}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  aria-labelledby="session-photo-label"
+                  (change)="pickPhoto($event)"
+                />
+              </label>
+              @if (hasOwnPhoto()) {
+                <button type="button" class="btn btn-small" (click)="dropPhoto()">Usar la de la web</button>
+              }
+            </div>
+          </div>
+        </div>
+        @if (photoError(); as message) {
+          <p class="field-error">{{ message }}</p>
+        }
+      </div>
+
       <div class="field is-wide" [class.is-invalid]="error('descripcion')">
         <label class="field-label" for="session-description">
           Descripción <span class="field-note">{{ form.descripcion.length || 0 }}/200</span>
@@ -257,8 +311,10 @@
     <div class="form-actions">
       <button type="button" class="btn" (click)="dialog().close()">Volver</button>
       <button type="submit" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()">
-        {{ saving() ? 'Guardando…' : editing() ? 'Guardar cambios' : 'Crear sesión' }}
+        {{ saving() ? 'Guardando…' : reactivating() ? 'Guardar y reactivar' : editing() ? 'Guardar cambios' : 'Crear sesión' }}
       </button>
     </div>
   </form>
 </app-panel-dialog>
+
+<app-admin-dossier-editor (saved)="dossierSaved($event)" />

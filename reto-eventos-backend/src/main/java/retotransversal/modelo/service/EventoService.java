@@ -20,6 +20,9 @@ public interface EventoService extends CrudGenerico<Evento, Integer> {
 	/** Deshace una cancelación: la sesión vuelve a admitir reservas. */
 	Evento reactivarEvento(Integer idEvento);
 
+	/** Da por terminadas las sesiones activas cuya fecha ya pasó; devuelve cuántas. */
+	int terminarCelebradas();
+
 	/** Todas las sesiones con su ocupación, para el panel de administración. */
 	List<EventoAdminDto> listadoAdmin();
 

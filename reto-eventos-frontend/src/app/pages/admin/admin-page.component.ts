@@ -17,6 +17,7 @@ const SECTIONS: PanelNavItem[] = [
   { path: 'pedidos', label: 'Pedidos', icon: 'pedidos' },
   { path: 'solicitudes', label: 'Solicitudes', icon: 'solicitudes' },
   { path: 'contacto', label: 'Contacto', icon: 'contacto' },
+  { path: 'demo', label: 'Demo', icon: 'demo' },
 ];
 
 /**

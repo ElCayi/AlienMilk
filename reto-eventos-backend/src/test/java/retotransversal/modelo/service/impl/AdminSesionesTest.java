@@ -16,7 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,10 +37,17 @@ import retotransversal.modelo.repository.EventoRepository;
 import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.repository.ReservaRepository.OcupacionEvento;
 import retotransversal.modelo.repository.TipoEventoRepository;
+import retotransversal.modelo.service.ExpedienteService;
+import retotransversal.modelo.service.ImagenSesionService;
 import retotransversal.restcontroller.AdminEventoRestController;
 
 /** Sesiones desde el panel: el estado no cambia al editar, la ocupación manda y con reservas se cancela. */
 class AdminSesionesTest {
+
+	/** Hoy es el 14 de octubre de 2026 en Madrid. */
+	private static final Clock HOY = Clock.fixed(
+			LocalDate.of(2026, 10, 14).atTime(12, 0).atZone(ZoneId.of("Europe/Madrid")).toInstant(),
+			ZoneId.of("Europe/Madrid"));
 
 	private final EventoRepository eventos = mock(EventoRepository.class);
 	private final ReservaRepository reservas = mock(ReservaRepository.class);
@@ -46,7 +55,8 @@ class AdminSesionesTest {
 	private final TipoEvento cata = TipoEvento.builder().idTipo(1).nombre("CATA_COSMICA").build();
 
 	private final MockMvc mvc = MockMvcBuilders
-			.standaloneSetup(new AdminEventoRestController(new EventoServiceImpl(eventos, reservas), tipos))
+			.standaloneSetup(new AdminEventoRestController(new EventoServiceImpl(eventos, reservas, HOY), tipos,
+					mock(ExpedienteService.class), mock(ImagenSesionService.class)))
 			.setControllerAdvice(new GlobalExceptionHandler()).build();
 
 	@Test
@@ -153,12 +163,65 @@ class AdminSesionesTest {
 		return Reserva.builder().cantidad(plazas).build();
 	}
 
+	@Test
+	void theNightlyCloseEndsTheSessionsBeforeTodayInMadrid() {
+		when(eventos.terminarAnterioresA(any())).thenReturn(3);
+
+		assertThat(new EventoServiceImpl(eventos, reservas, HOY).terminarCelebradas()).isEqualTo(3);
+		verify(eventos).terminarAnterioresA(LocalDate.of(2026, 10, 14));
+	}
+
+	@Test
+	void aNewSessionCannotBeDatedInThePast() throws Exception {
+		when(tipos.findById(1)).thenReturn(Optional.of(cata));
+
+		mvc.perform(post("/api/admin/eventos").contentType(MediaType.APPLICATION_JSON)
+				.content(formulario(40, "2026-10-13")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errores.fechaInicio").value("Esa fecha ya ha pasado"));
+		verify(eventos, never()).save(any());
+	}
+
+	@Test
+	void aPastSessionKeepsItsDateWhenEditedButCannotMoveToAnotherPastOne() throws Exception {
+		Evento celebrada = sesion(5, EstadoEvento.TERMINADO);
+		celebrada.setFechaInicio(LocalDate.of(2026, 6, 1));
+		when(eventos.findById(5)).thenReturn(Optional.of(celebrada));
+		when(tipos.findById(1)).thenReturn(Optional.of(cata));
+		when(eventos.save(any())).thenAnswer(call -> call.getArgument(0));
+
+		mvc.perform(put("/api/admin/eventos/5").contentType(MediaType.APPLICATION_JSON)
+				.content(formulario(40, "2026-06-01")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.estado").value("TERMINADO"));
+		mvc.perform(put("/api/admin/eventos/5").contentType(MediaType.APPLICATION_JSON)
+				.content(formulario(40, "2026-06-02")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errores.fechaInicio").value("Esa fecha ya ha pasado"));
+	}
+
+	@Test
+	void aCancelledSessionWhoseDatePassedCannotBeReactivated() throws Exception {
+		Evento pasada = sesion(6, EstadoEvento.CANCELADO);
+		pasada.setFechaInicio(LocalDate.of(2026, 10, 13));
+		when(eventos.findById(6)).thenReturn(Optional.of(pasada));
+
+		mvc.perform(patch("/api/admin/eventos/6/reactivar"))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.message").value("Su fecha ya pasó: cámbiala antes de reactivarla"));
+		verify(eventos, never()).save(any());
+	}
+
 	private static String formulario(int aforo) {
+		return formulario(aforo, "2026-11-20");
+	}
+
+	private static String formulario(int aforo, String fecha) {
 		return """
-				{"nombre": "  Cata de Leche Abducida ", "descripcion": "", "fechaInicio": "2026-11-20",
+				{"nombre": "  Cata de Leche Abducida ", "descripcion": "", "fechaInicio": "%s",
 				 "duracion": 120, "direccion": "Hangar 7", "aforoMaximo": %d, "minimoAsistencia": 10,
 				 "precio": 35.5, "idTipo": 1}
-				""".formatted(aforo);
+				""".formatted(fecha, aforo);
 	}
 
 	private static OcupacionEvento ocupacion(int idEvento, long plazas, long numero) {

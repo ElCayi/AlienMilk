@@ -26,6 +26,9 @@ describe('session presenter', () => {
   it('selects images deterministically and safely for any numeric id', () => {
     expect(sessionImage(session(2))).toBe('alienmilk-session-unnamed.jpg');
     expect(sessionImage(session(-1))).toBe('alienmilk-session-road2.jpg');
+    expect(sessionImage({ ...session(2), imagen: 'sesion-2-ab12.jpg' })).toBe(
+      '/api/eventos/2/imagen?v=sesion-2-ab12.jpg',
+    );
     expect(sampleCode(session(-1))).toBe('CL-93');
   });
 });

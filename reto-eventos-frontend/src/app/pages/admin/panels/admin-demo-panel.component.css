@@ -1,0 +1,42 @@
+/* La zona de peligro: una caja perfilada en coral con lo que pasa y, a la derecha, el botón. */
+.danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 2.5rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--coral);
+  border-radius: 0.75rem;
+}
+
+.danger-zone-text {
+  max-width: 46rem;
+}
+
+.danger-zone h3 {
+  margin: 0;
+  font:
+    800 1rem / 1.3 'Nunito',
+    sans-serif;
+}
+
+.danger-zone p {
+  margin: 0.5rem 0 0;
+  color: var(--paper-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+}
+
+.danger-zone .btn {
+  flex: none;
+}
+
+@media (max-width: 760px) {
+  .danger-zone {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

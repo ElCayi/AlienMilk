@@ -6,6 +6,8 @@ export interface EventoListado {
   aforoMaximo: number;
   estado: string;
   tipoEvento: string;
+  /** La foto propia subida desde el panel (nombre del archivo), o null si usa la de la web. */
+  imagen?: string | null;
 }
 
 export interface EventoDetalle extends EventoListado {

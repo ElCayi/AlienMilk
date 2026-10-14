@@ -47,6 +47,14 @@ base que ya tiene datos, aplica en su lugar las migraciones de
 mysql -u retoeventos -p reserva_eventos_bbdd < /opt/reto-eventos/reto-eventos-backend/migraciones/2026-09-26-contacto.sql
 ```
 
+Las del 2026-10-14 van **antes** de desplegar el backend de esa fecha: `sesiones-fechas` mueve las
+sesiones de ejemplo al futuro (el backend da por terminadas cada noche las que ya pasaron, y sin
+ella la web se quedaría sin programa) y `expedientes-fotos` crea la tabla del expediente de las
+sesiones y la columna de su foto.
+
+Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
+el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.
+
 ## Fase 3 — Backend como servicio systemd
 
 Crear `/etc/systemd/system/reto-eventos-backend.service`:
@@ -103,6 +111,15 @@ TIENDA_URL=https://DOMINIO
 
 Al arrancar, el log dice si el aviso quedó `activo` o por qué está apagado.
 También dice si el pago de la tienda está activo.
+
+Las fotos de las sesiones, subidas desde /admin, se guardan en `datos/imagenes-sesiones` dentro de
+`WorkingDirectory` (`/opt/reto-eventos/datos/imagenes-sesiones`). La carpeta tiene que poder
+escribirla `www-data`. `backup-db.sh` no la copia: solo la base de datos. Para ponerla en
+otro sitio, `SESIONES_IMAGENES_DIRECTORIO=/ruta` en `backend.env`.
+
+```bash
+install -d -o www-data -g www-data -m 755 /opt/reto-eventos/datos/imagenes-sesiones
+```
 
 ```bash
 systemctl daemon-reload

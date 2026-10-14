@@ -297,7 +297,15 @@ export class LocationsAtlasComponent implements AfterViewInit, OnDestroy {
       summary.getBoundingClientRect().bottom +
       parseFloat(getComputedStyle(panel).marginTop) +
       panel.offsetHeight;
-    const overflow = panelBottom + air - window.innerHeight;
+    // En móvil y tableta, la estación es una tarjeta del carrusel y se ve entera, hasta sus puntos.
+    // La tarjeta aún no ha crecido (lo hace animada): acabará lo que le falta al desplegable.
+    const card = window.matchMedia('(max-width: 1000px)').matches
+      ? target.closest<HTMLElement>('.locations-chart-viewport')
+      : null;
+    const bottom = card
+      ? card.getBoundingClientRect().bottom + panelBottom - target.getBoundingClientRect().bottom - air + 16
+      : panelBottom;
+    const overflow = bottom + air - window.innerHeight;
     const room = target.getBoundingClientRect().top - topbar - air;
     const distance = Math.min(overflow, room);
     if (distance <= 0) {

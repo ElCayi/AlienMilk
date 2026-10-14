@@ -165,3 +165,30 @@ primera cata» (Distribution).
 - **En todos los anchos:** el menú hamburguesa se abre por encima de la página en vez de empujarla
   (`--menu-overlap`, medido en `app.ts`).
 - **Comprobar tras el merge:** portada a 912×1368 sin huecos; menú abierto a 390 y a 912.
+
+## Tableta, segunda tanda, y desplegables que se dejan ver
+
+- **Solo en 901–1000:** la raíz pasa del 150 % al 180 % (toda la letra ×1,2) y el héroe se recalcula
+  para no desbordarse (marca más pequeña, botones abajo). La intro mide lo que se ve bajo el header;
+  la tarjeta de sesión cabe entera en pantalla (la foto cede con el alto) y su pista ocupa todo el
+  ancho, así la ficha que se desliza sale por el borde de la pantalla. Los pasos de «Antes de su
+  visita», en columna más estrecha, centrada y justificada (cortes de sílaba a mano en el HTML).
+- **Móvil y tableta:** al abrir «Características» (sesiones) o el «+» de una estación, la página baja
+  hasta ver la tarjeta entera. En las estaciones, sin la matrícula EST-… y con los puntos pequeños
+  junto al borde inferior, la estación centrada en su tarjeta.
+- **En todos los anchos con hamburguesa (≤1200):** las flechas del menú desplegable, más grandes.
+- **Comprobar tras el merge:** portada a 912×1368 (héroe, intro, sesiones y estaciones) y a 390×844
+  (abrir «Características» y el «+» de una estación).
+
+## Fondo líquido a tiempo, y tercera tanda de tableta
+
+- **En todos los anchos:** la tinta de las piezas `data-backdrop-ink` (desde AlienMilk Distribution)
+  la pintaba el fondo WebGL, fijo y un fotograma tarde al hacer scroll: las secciones parecían
+  despegarse. Ahora la pinta su CSS en táctil y, con ratón, mientras se desplaza la página; el fondo
+  la retoma al parar (`liquid-backdrop.component.ts`).
+- **Solo en 901–1000:** tarjetas de «Cómo colaborar» más altas (muestra y número más grandes, título
+  de corrido, texto mayor) y en Distinciones más aire entre bloques, síntesis a todo el ancho y con
+  aire bajo su botón.
+- **En todos los anchos:** fuera «Todas vigentes» junto al rótulo de Distinciones.
+- **Comprobar tras el merge:** scroll por la portada desde Distribution, con ratón y en táctil (sin
+  desfase); «Cómo colaborar» y Distinciones a 912×1368.

@@ -323,7 +323,8 @@ export class LiquidBackdropComponent {
     // escritorio, donde las ponen sus ::before y ::after) y, en la ventana de la cinta
     // ("window"), el hueco traslúcido, metido a los lados como su hijo data-backdrop-ink-hole.
     const setPieces = () => {
-      const pieces = this.deepen ? [...this.deepen.querySelectorAll<HTMLElement>('[data-backdrop-ink]')] : [];
+      const pieces =
+        this.deepen && !inkByCss ? [...this.deepen.querySelectorAll<HTMLElement>('[data-backdrop-ink]')] : [];
       const wide = wideLayout.matches;
       let count = 0;
       for (const piece of pieces.slice(0, MAX_PIECES)) {
@@ -366,6 +367,19 @@ export class LiquidBackdropComponent {
     let strength = 0;
     let frame = 0;
     let running = false;
+    // El lienzo es fijo y se redibuja un fotograma después del scroll: la tinta que pintase iría a
+    // destiempo del contenido. Sin remolino (táctil) o mientras se desplaza la página, la pinta su
+    // CSS; el fondo la retoma al pararse, para que el remolino asome sobre ella.
+    let inkByCss = true;
+    let scrollIdle = 0;
+    // El relevo, en el mismo fotograma: se redibuja el lienzo en el acto a la vez que cambia la clase.
+    const setInkByCss = (value: boolean) => {
+      inkByCss = value;
+      if (ready) {
+        draw(performance.now());
+      }
+      this.deepen?.classList.toggle('backdrop-inked', ready && !value);
+    };
 
     const draw = (time: number) => {
       gl.uniform2f(uniforms.canvas, canvas.width, canvas.height);
@@ -522,10 +536,9 @@ export class LiquidBackdropComponent {
         gl.texParameteri(gl.TEXTURE_2D, key, value);
       }
       ready = true;
-      draw(performance.now());
-      // Desde aquí, la tinta de las piezas la pinta el fondo: sus estilos dejan de pintarla (ver
-      // styles.css), así no tapan el remolino.
-      this.deepen?.classList.add('backdrop-inked');
+      // Desde aquí, con remolino, la tinta de las piezas la pinta el fondo: sus estilos dejan de
+      // pintarla (ver styles.css), así no tapan el remolino.
+      setInkByCss(!interactive);
     };
     image.src = this.src;
 
@@ -534,9 +547,21 @@ export class LiquidBackdropComponent {
     if (interactive) {
       window.addEventListener('pointermove', onMove, { passive: true });
     }
+    const onScroll = () => {
+      if (interactive && ready) {
+        if (!inkByCss) {
+          setInkByCss(true);
+        }
+        window.clearTimeout(scrollIdle);
+        scrollIdle = window.setTimeout(() => {
+          setInkByCss(false);
+        }, 200);
+      }
+      redraw();
+    };
     let blockResize: ResizeObserver | undefined;
     if (this.deepen) {
-      window.addEventListener('scroll', redraw, { passive: true });
+      window.addEventListener('scroll', onScroll, { passive: true });
       blockResize = new ResizeObserver(redraw);
       blockResize.observe(this.deepen);
     }
@@ -546,7 +571,8 @@ export class LiquidBackdropComponent {
       window.cancelAnimationFrame(pending);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('scroll', redraw);
+      window.removeEventListener('scroll', onScroll);
+      window.clearTimeout(scrollIdle);
       blockResize?.disconnect();
       this.deepen?.classList.remove('backdrop-inked');
       gl.getExtension('WEBGL_lose_context')?.loseContext();

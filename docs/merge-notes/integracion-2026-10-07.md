@@ -26,7 +26,7 @@ las dos ampliaciones: red de confianza y solicitudes, con sus contratos propios.
 Las reglas públicas de seguridad de ambas API conviven con la protección del admin.
 
 La nota de claude estaba sin commit: se archiva una copia con fecha en
-[claude-2026-10-07.md](claude-2026-10-07.md). El original local y sus cuatro imágenes
+[rama-claude-2026-10-07.md](rama-claude-2026-10-07.md). El original local y sus cuatro imágenes
 alternativas `alienmilk-closing-{bubbles,milkyway,shop,sphere}.webp` se conservan
 sin incorporarlas a Git. El cierre integrado usa `alienmilk-closing-toast.webp`.
 El vídeo local de Getty permanece igualmente fuera de Git.

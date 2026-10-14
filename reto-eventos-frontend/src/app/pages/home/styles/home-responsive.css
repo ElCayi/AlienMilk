@@ -517,3 +517,61 @@
         display: none;
       }
     }
+
+    /* Tableta (901–1000 px): el héroe de móvil, más grande (marca ×1,2, botones e iconos ×1,5). Medido
+       en rem sobre la raíz de tableta (180 %, styles.css), por eso las cifras salen menores. */
+    @media (min-width: 901px) and (max-width: 1000px) {
+      .hero-mobile-actions {
+        top: 1.6rem;
+        right: 1.75rem;
+        gap: 0.85rem;
+      }
+
+      .hero-mobile-actions button {
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+
+      .hero-mobile-actions svg {
+        width: 2.1rem;
+        height: 2.1rem;
+      }
+
+      .hero-copy {
+        --mobile-brand-width: min(85vw, 21.4rem);
+        gap: calc(2.15rem - 16px);
+      }
+
+      .hero-lockup-logo {
+        width: 7.5rem;
+        height: 7.5rem;
+      }
+
+      .hero-lockup,
+      .hero-title {
+        transform: translateY(calc(-3.75rem + 25px));
+      }
+
+      .hero-title {
+        gap: 0.9rem;
+      }
+
+      .hero-title h1 {
+        font-size: 4.5rem;
+      }
+
+      .hero-subtitle {
+        font-size: 3rem;
+      }
+
+      .hero-actions {
+        bottom: 0.6rem;
+        width: 25rem;
+        gap: 1.25rem;
+      }
+
+      .hero-button {
+        padding: 0.9rem 1.05rem;
+        font-size: 1.25rem;
+      }
+    }

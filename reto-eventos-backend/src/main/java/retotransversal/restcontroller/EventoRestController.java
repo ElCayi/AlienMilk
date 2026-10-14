@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.EventoDetalleDto;
 import retotransversal.modelo.dto.EventoListadoDto;
-import retotransversal.modelo.dto.ExpedientesDto;
+import retotransversal.modelo.dto.ExpedienteCapaDto;
 import retotransversal.modelo.service.EventoService;
 import retotransversal.modelo.service.ExpedienteService;
 import retotransversal.modelo.service.ImagenSesionService;
@@ -27,10 +27,10 @@ public class EventoRestController {
 	private final ExpedienteService expedienteService;
 	private final ImagenSesionService imagenSesionService;
 
-	/** Las capas del expediente de las sesiones: la ficha pública las compone (ver ExpedienteCapaDto). */
-	@GetMapping("/expedientes")
-	public ResponseEntity<ExpedientesDto> expedientes() {
-		return ResponseEntity.ok(expedienteService.todas());
+	/** El expediente de la sesión: lo que enseña su ficha pública además de sus datos. */
+	@GetMapping("/{idEvento}/expediente")
+	public ResponseEntity<ExpedienteCapaDto> expediente(@PathVariable Integer idEvento) {
+		return ResponseEntity.ok(expedienteService.deSesion(idEvento));
 	}
 
 	/**

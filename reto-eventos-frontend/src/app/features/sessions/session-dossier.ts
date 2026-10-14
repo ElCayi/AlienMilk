@@ -1,9 +1,5 @@
 import { EventoDetalle } from '../../models/api.models';
-import {
-  SessionDossier,
-  SessionDossierLayer,
-  SessionDossierSource,
-} from '../../models/session-dossier.models';
+import { SessionDossier, SessionDossierLayer } from '../../models/session-dossier.models';
 
 const EMPTY_DOSSIER: SessionDossier = {
   entradilla: '',
@@ -20,43 +16,24 @@ const EMPTY_DOSSIER: SessionDossier = {
   creditos: '',
 };
 
-function applyLayer(base: SessionDossier, layer: SessionDossierLayer | undefined): SessionDossier {
-  if (!layer) {
-    return base;
-  }
-
-  return {
-    ...base,
-    ...layer,
-    acceso: [...base.acceso, ...(layer.acceso ?? [])],
-    preguntas: [...base.preguntas, ...(layer.preguntas ?? [])],
-  };
-}
-
-/** Superpone capas del expediente, de la más general a la más concreta. */
-export function composeDossierLayers(...layers: (SessionDossierLayer | undefined)[]): SessionDossier {
-  return layers.reduce(applyLayer, EMPTY_DOSSIER);
-}
-
 /**
- * Compone el expediente de una sesión a partir de sus capas. Lo que la API ya sabe de la sesión
- * (su descripción) sirve de respaldo para que ningún expediente quede vacío.
+ * El expediente completo de una sesión: lo que tenga guardado y, en lo que falte, vacío. Lo que la API
+ * ya sabe de la sesión (su descripción) sirve de respaldo para que ningún expediente quede en blanco.
  */
 export function buildSessionDossier(
   session: EventoDetalle,
-  source: SessionDossierSource,
+  stored: SessionDossierLayer | null | undefined,
 ): SessionDossier {
-  const dossier = composeDossierLayers(
-    source.general,
-    source.porTipo[session.tipoEvento],
-    source.porSesion[String(session.idEvento)],
-  );
-
+  const dossier: SessionDossier = { ...EMPTY_DOSSIER, ...stripNulls(stored ?? {}) };
   return {
     ...dossier,
     entradilla: dossier.entradilla || session.descripcion,
     texto: dossier.texto.length ? dossier.texto : [session.descripcion].filter(Boolean),
   };
+}
+
+function stripNulls(layer: SessionDossierLayer): SessionDossierLayer {
+  return Object.fromEntries(Object.entries(layer).filter(([, value]) => value != null));
 }
 
 /** Las fechas de la API son `yyyy-MM-dd` sin zona: se leen como fecha local, no como UTC. */

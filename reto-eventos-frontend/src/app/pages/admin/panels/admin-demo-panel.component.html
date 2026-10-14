@@ -25,14 +25,14 @@
   <button
     type="button"
     class="btn btn-danger"
-    [disabled]="restoring()"
-    [attr.aria-busy]="restoring()"
-    (click)="restore()"
+    [disabled]="demo.restoring()"
+    [attr.aria-busy]="demo.restoring()"
+    (click)="demo.restore()"
   >
-    {{ restoring() ? 'Restaurando…' : 'Restaurar la demo' }}
+    {{ demo.restoring() ? 'Restaurando…' : 'Restaurar la demo' }}
   </button>
 </section>
 
-@if (failure(); as message) {
+@if (demo.failure(); as message) {
   <p class="notice is-error" role="alert">{{ message }}</p>
 }

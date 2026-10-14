@@ -81,8 +81,8 @@
 }
 
 .panel-dialog-close:is(:hover, :focus-visible) {
-  border-color: #b03c39;
-  color: #b03c39;
+  border-color: #ff7f7f;
+  color: #ff7f7f;
 }
 
 .panel-dialog-close:focus-visible {

@@ -3,16 +3,26 @@
 } @else if (loadError(); as message) {
   <p class="notice is-error" role="alert">{{ message }}</p>
 } @else {
-  @if (inherited()) {
-    <p class="dossier-intro">
-      Lo atenuado se hereda {{ inheritedFrom() }}. Marca <strong>Propio</strong> para cambiarlo solo
-      aquí.
+  <div class="dossier-intro">
+    <p>
+      Es lo que enseña la ficha pública de <strong>esta sesión</strong>. Para cambiar varias a la vez,
+      usa <strong>Edición en lote</strong>, en Sesiones.
     </p>
-  } @else {
-    <p class="dossier-intro">
-      La capa común: lo que no cambien los tipos ni las sesiones sale así en todas.
-    </p>
-  }
+    @if (sources().length) {
+      <label class="dossier-copy">
+        <span>Partir del contenido de otra sesión</span>
+        <select #copy (change)="copyFrom(copy.value); copy.value = ''">
+          <option value="">Elige una sesión…</option>
+          @for (source of sources(); track source.idEvento) {
+            <option [value]="source.idEvento">{{ source.nombre }}</option>
+          }
+        </select>
+      </label>
+    }
+    @if (copiedFrom(); as name) {
+      <p class="dossier-copied" role="status">Copiado de «{{ name }}». Se guarda al pulsar Guardar.</p>
+    }
+  </div>
 
   <div class="segmented dossier-tabs" role="group" aria-label="Apartados del expediente">
     @for (item of tabs; track item.id) {
@@ -32,224 +42,74 @@
       <div class="dossier-tab">
         @for (field of item.fields; track field.key) {
           <fieldset class="dossier-field" [class.is-invalid]="error(field)">
-            <legend class="dossier-legend">
-              <span>{{ field.label }}</span>
-              @if (inherited() && !field.additive) {
-                <label class="check dossier-own">
-                  <input
-                    type="checkbox"
-                    [ngModel]="isOwn(field)"
-                    [ngModelOptions]="{ standalone: true }"
-                    (ngModelChange)="setOwn(field, $event)"
-                  />
-                  <span>Propio</span>
-                </label>
-              }
-            </legend>
+            <legend class="dossier-legend">{{ field.label }}</legend>
             @if (field.help) {
               <p class="field-help">{{ field.help }}</p>
             }
 
-            <!-- Lo heredado: atenuado, y en los apartados que se suman, encima de lo propio. -->
-            @if (inherited() && (field.additive || !isOwn(field))) {
-              <div class="dossier-inherited">
-                @if (field.additive && inheritedRows(field).length) {
-                  <p class="dossier-inherited-note">Heredado {{ inheritedFrom() }}:</p>
+            @if (field.kind === 'text') {
+              <input
+                class="dossier-input"
+                [attr.aria-label]="field.label"
+                [(ngModel)]="draft[field.key]"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            } @else if (field.kind === 'textarea') {
+              <textarea
+                class="dossier-input"
+                rows="3"
+                [attr.aria-label]="field.label"
+                [(ngModel)]="draft[field.key]"
+                [ngModelOptions]="{ standalone: true }"
+              ></textarea>
+            } @else {
+              <ol class="dossier-rows">
+                @for (row of rows(field); track $index; let index = $index, first = $first, last = $last) {
+                  <li class="dossier-row" [attr.data-kind]="field.kind">
+                    <app-dossier-row-editor
+                      [kind]="field.kind"
+                      [label]="field.label + ' ' + (index + 1)"
+                      [value]="row"
+                      (valueChange)="rows(field)[index] = $event"
+                    />
+                    <div class="dossier-row-tools">
+                      <button
+                        type="button"
+                        class="dossier-icon"
+                        [disabled]="first"
+                        aria-label="Subir"
+                        title="Subir"
+                        (click)="moveRow(field, index, -1)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="dossier-icon"
+                        [disabled]="last"
+                        aria-label="Bajar"
+                        title="Bajar"
+                        (click)="moveRow(field, index, 1)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="dossier-icon is-danger"
+                        aria-label="Quitar"
+                        title="Quitar"
+                        (click)="removeRow(field, index)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                      </button>
+                    </div>
+                  </li>
                 }
-                @switch (field.kind) {
-                  @case ('text') {
-                    <p>{{ inheritedText(field) || 'Nada' }}</p>
-                  }
-                  @case ('textarea') {
-                    <p>{{ inheritedText(field) || 'Nada' }}</p>
-                  }
-                  @default {
-                    @for (row of inheritedRows(field); track $index) {
-                      @switch (field.kind) {
-                        @case ('pairs') {
-                          <p><b>{{ asRecord(row)['etiqueta'] }}</b> {{ asRecord(row)['valor'] }}</p>
-                        }
-                        @case ('steps') {
-                          <p><b>{{ asRecord(row)['hora'] }}</b> {{ asRecord(row)['titulo'] }}</p>
-                        }
-                        @case ('faq') {
-                          <p><b>{{ asRecord(row)['pregunta'] }}</b></p>
-                        }
-                        @case ('partners') {
-                          <p><b>{{ asRecord(row)['rol'] }}</b> {{ asRecord(row)['nombre'] }}</p>
-                        }
-                        @default {
-                          <p>{{ asText(row) }}</p>
-                        }
-                      }
-                    } @empty {
-                      @if (!field.additive) {
-                        <p>Nada</p>
-                      }
-                    }
-                  }
-                }
-              </div>
-            }
-
-            @if (isOwn(field)) {
-              @switch (field.kind) {
-                @case ('text') {
-                  <input
-                    class="dossier-input"
-                    [attr.aria-label]="field.label"
-                    [(ngModel)]="draft[field.key]"
-                    [ngModelOptions]="{ standalone: true }"
-                  />
-                }
-                @case ('textarea') {
-                  <textarea
-                    class="dossier-input"
-                    rows="3"
-                    [attr.aria-label]="field.label"
-                    [(ngModel)]="draft[field.key]"
-                    [ngModelOptions]="{ standalone: true }"
-                  ></textarea>
-                }
-                @default {
-                  <ol class="dossier-rows">
-                    @for (row of rows(field); track trackIndex($index); let index = $index, first = $first, last = $last) {
-                      <li class="dossier-row" [attr.data-kind]="field.kind">
-                        @switch (field.kind) {
-                          @case ('paragraphs') {
-                            <textarea
-                              rows="3"
-                              [attr.aria-label]="'Párrafo ' + (index + 1)"
-                              [ngModel]="asText(row)"
-                              [ngModelOptions]="{ standalone: true }"
-                              (ngModelChange)="setLine(field, index, $event)"
-                            ></textarea>
-                          }
-                          @case ('lines') {
-                            <input
-                              [attr.aria-label]="field.label + ' ' + (index + 1)"
-                              [ngModel]="asText(row)"
-                              [ngModelOptions]="{ standalone: true }"
-                              (ngModelChange)="setLine(field, index, $event)"
-                            />
-                          }
-                          @case ('pairs') {
-                            <input
-                              placeholder="Etiqueta"
-                              [attr.aria-label]="'Etiqueta ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['etiqueta']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                            <input
-                              placeholder="Valor"
-                              [attr.aria-label]="'Valor ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['valor']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                          }
-                          @case ('steps') {
-                            <input
-                              class="is-short"
-                              placeholder="Hora"
-                              [attr.aria-label]="'Hora ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['hora']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                            <input
-                              placeholder="Título"
-                              [attr.aria-label]="'Título ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['titulo']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                            <textarea
-                              class="is-full"
-                              rows="2"
-                              placeholder="Detalle (opcional)"
-                              [attr.aria-label]="'Detalle ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['detalle']"
-                              [ngModelOptions]="{ standalone: true }"
-                            ></textarea>
-                          }
-                          @case ('faq') {
-                            <input
-                              class="is-full"
-                              placeholder="Pregunta"
-                              [attr.aria-label]="'Pregunta ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['pregunta']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                            <textarea
-                              class="is-full"
-                              rows="3"
-                              placeholder="Respuesta"
-                              [attr.aria-label]="'Respuesta ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['respuesta']"
-                              [ngModelOptions]="{ standalone: true }"
-                            ></textarea>
-                          }
-                          @case ('partners') {
-                            <input
-                              placeholder="Papel"
-                              [attr.aria-label]="'Papel ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['rol']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                            <input
-                              placeholder="Nombre"
-                              [attr.aria-label]="'Nombre ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['nombre']"
-                              [ngModelOptions]="{ standalone: true }"
-                            />
-                            <textarea
-                              class="is-full"
-                              rows="2"
-                              placeholder="Detalle (opcional)"
-                              [attr.aria-label]="'Detalle ' + (index + 1)"
-                              [(ngModel)]="asRecord(row)['detalle']"
-                              [ngModelOptions]="{ standalone: true }"
-                            ></textarea>
-                          }
-                        }
-                        <div class="dossier-row-tools">
-                          <button
-                            type="button"
-                            class="dossier-icon"
-                            [disabled]="first"
-                            aria-label="Subir"
-                            title="Subir"
-                            (click)="moveRow(field, index, -1)"
-                          >
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" /></svg>
-                          </button>
-                          <button
-                            type="button"
-                            class="dossier-icon"
-                            [disabled]="last"
-                            aria-label="Bajar"
-                            title="Bajar"
-                            (click)="moveRow(field, index, 1)"
-                          >
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
-                          </button>
-                          <button
-                            type="button"
-                            class="dossier-icon is-danger"
-                            aria-label="Quitar"
-                            title="Quitar"
-                            (click)="removeRow(field, index)"
-                          >
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
-                          </button>
-                        </div>
-                      </li>
-                    }
-                  </ol>
-                  <button type="button" class="btn btn-small dossier-add" (click)="addRow(field)">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-                    {{ field.additive && inherited() ? 'Añadir propia' : 'Añadir' }}
-                  </button>
-                }
-              }
+              </ol>
+              <button type="button" class="btn btn-small dossier-add" (click)="addRow(field)">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                Añadir
+              </button>
             }
 
             @if (error(field); as message) {

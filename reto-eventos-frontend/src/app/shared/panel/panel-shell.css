@@ -8,7 +8,6 @@
   --paper-line: #dcdedb;
   --paper-rule: #c9cdca;
   --coral: #ff7f7f;
-  --coral-ink: #b03c39;
   --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   display: block;
   font-family: Arial, sans-serif;
@@ -29,6 +28,9 @@
 }
 
 .page-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
   margin: 0;
   color: var(--paper-faint);
   font:
@@ -36,6 +38,15 @@
     sans-serif;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* La minimilk delante de cada rótulo, como en el resto de la web: siempre en caja cuadrada. */
+.eyebrow-icon {
+  width: 1.2em;
+  height: 1.2em;
+  flex: none;
+  background: currentColor;
+  mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
 .page-head h1 {
@@ -120,7 +131,7 @@
   width: 1.6rem;
   height: 1.6rem;
   fill: none;
-  stroke: var(--coral-ink);
+  stroke: var(--coral);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;

@@ -1,0 +1,394 @@
+/* Edición en lote: dos pasos (elegir sesiones, cambiar su contenido) y una barra fija con lo pendiente. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--paper-faint);
+  font:
+    800 0.72rem / 1.4 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.back-link:hover {
+  color: var(--paper-ink);
+}
+
+.back-link svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bulk-step {
+  margin-top: 1.75rem;
+}
+
+.bulk-step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.bulk-step-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font: 400 clamp(1.45rem, 1.8vw, 1.75rem) / 1.1 var(--condensed);
+}
+
+.bulk-step-number {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  color: var(--field);
+  background: var(--paper-ink);
+  font: 700 0.95rem / 1 var(--condensed);
+}
+
+.bulk-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0;
+  color: var(--paper-faint);
+  font-size: 0.92rem;
+}
+
+.bulk-count strong {
+  color: var(--paper-ink);
+}
+
+.bulk-type select {
+  min-height: 2.6rem;
+  padding: 0 2rem 0 0.8rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font:
+    700 0.9rem 'Nunito',
+    sans-serif;
+}
+
+/* La lista, en su caja con desplazamiento propio: con muchas sesiones, el contenido sigue cerca. */
+.bulk-list {
+  max-height: 22rem;
+  margin-top: 1rem;
+  overflow-y: auto;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.6rem;
+  overscroll-behavior: contain;
+}
+
+.bulk-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--field);
+}
+
+.bulk-table tbody tr {
+  cursor: pointer;
+}
+
+.bulk-table tbody tr.is-chosen {
+  background: rgba(40, 51, 58, 0.06);
+}
+
+.bulk-table td,
+.bulk-table th {
+  vertical-align: middle;
+}
+
+.bulk-check {
+  width: 1%;
+}
+
+.bulk-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  accent-color: var(--paper-ink);
+  cursor: pointer;
+}
+
+.bulk-placeholder {
+  margin: 1rem 0 0;
+  padding: 1.5rem;
+  border: 1px dashed var(--paper-rule);
+  border-radius: 0.6rem;
+  color: var(--paper-faint);
+  text-align: center;
+}
+
+.bulk-tabs {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-flow: row;
+  margin-top: 1rem;
+}
+
+.bulk-tabs button {
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.bulk-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  align-self: center;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+/* Cada apartado: su nombre, cómo está en las elegidas y qué se puede hacer. */
+.bulk-field {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.6rem;
+  background: var(--field);
+}
+
+.bulk-field-head h4 {
+  margin: 0;
+  font:
+    800 1rem / 1.3 'Nunito',
+    sans-serif;
+}
+
+.bulk-state {
+  margin: 0;
+}
+
+.bulk-chip {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  padding: 0.12rem 0.55rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 999px;
+  color: var(--paper-muted);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bulk-chip.is-mixed {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.bulk-versions,
+.bulk-rows {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bulk-versions li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: baseline;
+  font-size: 0.92rem;
+}
+
+.bulk-version-text {
+  color: var(--paper-muted);
+}
+
+.bulk-text-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.bulk-text-editor :is(input, textarea) {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font:
+    0.95rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+}
+
+.bulk-text-editor :is(input, textarea):focus {
+  border-color: var(--coral);
+  outline: none;
+  box-shadow: 0 0 0 2px #ffb8b8;
+}
+
+.bulk-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--paper-line);
+  font-size: 0.92rem;
+}
+
+.bulk-row:has(.bulk-row-editor) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bulk-row-text {
+  color: var(--paper-ink);
+  line-height: 1.45;
+}
+
+.bulk-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+/* Los campos de una fila (los pone DossierRowEditorComponent), en rejilla según su tipo. */
+.bulk-row-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+.bulk-row-editor:is([data-kind='pairs'], [data-kind='partners']) {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.bulk-row-editor[data-kind='steps'] {
+  grid-template-columns: 6rem minmax(0, 1fr);
+}
+
+.bulk-add {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  padding-top: 0.25rem;
+}
+
+.bulk-add .bulk-row-editor {
+  width: 100%;
+}
+
+.bulk-errors {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  color: var(--coral);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* Lo pendiente: pegado abajo mientras haya cambios sin guardar. */
+.bulk-bar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1.5rem;
+  padding: 0.8rem 1rem 0.8rem 1.25rem;
+  border-radius: 0.75rem;
+  color: #f7f8f9;
+  background: #0d151e;
+  box-shadow: 0 12px 30px rgba(13, 21, 30, 0.25);
+}
+
+.bulk-bar p {
+  margin: 0;
+}
+
+.bulk-bar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bulk-bar .btn:not(.btn-primary) {
+  border-color: rgba(247, 248, 249, 0.4);
+  color: #f7f8f9;
+  background: transparent;
+}
+
+.bulk-bar .btn-primary {
+  border-color: #f7f8f9;
+  color: #0d151e;
+  background: #f7f8f9;
+}
+
+@media (max-width: 1100px) {
+  .bulk-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .bulk-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bulk-list {
+    max-height: 26rem;
+  }
+
+  .bulk-row,
+  .bulk-versions li,
+  .bulk-text-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bulk-row-actions {
+    justify-content: flex-start;
+  }
+
+  .bulk-row-editor:is([data-kind='pairs'], [data-kind='partners'], [data-kind='steps']) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* En la lista de fichas de móvil, la casilla va arriba a la derecha. */
+  .bulk-table td.bulk-check {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.75rem;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .bulk-table tbody tr {
+    position: relative;
+    padding-right: 2.5rem;
+  }
+
+  .bulk-table td.cell-num {
+    display: none;
+  }
+}

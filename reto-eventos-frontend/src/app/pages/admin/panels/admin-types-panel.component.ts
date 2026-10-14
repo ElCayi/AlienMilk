@@ -5,7 +5,6 @@ import { AdminService } from '../../../core/services/admin.service';
 import { TipoEvento, TipoEventoPayload } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
-import { AdminDossierFormComponent } from './admin-dossier-form.component';
 import {
   errorMessage,
   fieldErrors,
@@ -20,7 +19,7 @@ import {
 @Component({
   selector: 'app-admin-types-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent, AdminDossierFormComponent],
+  imports: [FormsModule, PanelDialogComponent],
   templateUrl: './admin-types-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -35,9 +34,6 @@ export class AdminTypesPanelComponent implements OnInit {
   readonly busy = signal<number | null>(null);
 
   readonly dialog = viewChild.required(PanelDialogComponent);
-  /** El expediente del tipo (lo que heredan todas sus sesiones), segunda página de Modificar tipo. */
-  readonly dossierForm = viewChild.required(AdminDossierFormComponent);
-  readonly page = signal<'datos' | 'expediente'>('datos');
   readonly editing = signal<TipoEvento | null>(null);
   readonly saving = signal(false);
   readonly errors = signal<Record<string, string>>({});
@@ -70,8 +66,6 @@ export class AdminTypesPanelComponent implements OnInit {
     this.editing.set(null);
     this.form = { nombre: '', descripcion: '' };
     this.resetErrors();
-    this.page.set('datos');
-    this.dossierForm().load({ scope: { tipo: 'tipo', id: 0 }, name: 'Nuevo tipo' });
     this.dialog().open();
   }
 
@@ -79,12 +73,6 @@ export class AdminTypesPanelComponent implements OnInit {
     this.editing.set(type);
     this.form = { nombre: type.nombre, descripcion: type.descripcion ?? '' };
     this.resetErrors();
-    this.page.set('datos');
-    this.dossierForm().load({
-      scope: { tipo: 'tipo', id: type.idTipo },
-      name: this.label(type.nombre),
-      typeName: type.nombre,
-    });
     this.dialog().open();
   }
 
@@ -100,42 +88,20 @@ export class AdminTypesPanelComponent implements OnInit {
       : this.admin.crearTipo(this.form);
     request.subscribe({
       next: (saved) => {
+        this.saving.set(false);
         this.types.update((list) =>
-          (list.some((item) => item.idTipo === saved.idTipo)
-            ? list.map((item) => (item.idTipo === saved.idTipo ? saved : item))
-            : [...list, saved]
-          ).sort(byName),
+          (editing ? list.map((item) => (item.idTipo === saved.idTipo ? saved : item)) : [...list, saved]).sort(
+            byName,
+          ),
         );
-        // Guardado: si el expediente falla, se reintenta como modificación, sin crearlo dos veces.
-        this.editing.set(saved);
-        const finish = () => {
-          this.saving.set(false);
-          this.dialog().close();
-          this.notice.set({
-            text: `Tipo «${humanizeCode(saved.nombre)}» ${editing ? 'actualizado' : 'creado'}.`,
-            error: false,
-          });
-        };
-        const dossier = this.dossierForm();
-        if (!dossier.changed()) {
-          finish();
-          return;
-        }
-        dossier.save({ tipo: 'tipo', id: saved.idTipo }).subscribe({
-          next: () => {
-            dossier.markSaved();
-            finish();
-          },
-          error: (error) => {
-            this.saving.set(false);
-            this.page.set('expediente');
-            this.formError.set(`Los datos se han guardado, pero el expediente no. ${dossier.showErrors(error)}`);
-          },
+        this.dialog().close();
+        this.notice.set({
+          text: `Tipo «${humanizeCode(saved.nombre)}» ${editing ? 'actualizado' : 'creado'}.`,
+          error: false,
         });
       },
       error: (error) => {
         this.saving.set(false);
-        this.page.set('datos');
         const errors = fieldErrors(error);
         this.errors.set(errors);
         this.formError.set(

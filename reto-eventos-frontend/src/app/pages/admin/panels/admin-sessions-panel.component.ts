@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -20,7 +20,7 @@ import {
 } from '../../../shared/panel/panel-format';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
-import { AdminDossierEditorComponent } from './admin-dossier-editor.component';
+import { DemoRestoreService } from '../demo-restore.service';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
@@ -59,7 +59,6 @@ type EditPage = 'datos' | 'expediente';
     FormsModule,
     RouterLink,
     PanelDialogComponent,
-    AdminDossierEditorComponent,
     AdminDossierFormComponent,
     KeepHeightDirective,
   ],
@@ -70,6 +69,9 @@ export class AdminSessionsPanelComponent implements OnInit {
   private readonly admin = inject(AdminService);
   private readonly confirm = inject(PanelConfirmService);
   private readonly summary = inject(AdminSummaryService);
+  /** El atajo al pie para restaurar la demo, el mismo que en la pestaña Demo. */
+  readonly demo = inject(DemoRestoreService);
+  private readonly injector = inject(Injector);
 
   readonly sessions = signal<EventoAdmin[]>([]);
   readonly types = signal<TipoEvento[]>([]);
@@ -186,9 +188,14 @@ export class AdminSessionsPanelComponent implements OnInit {
   readonly removePhoto = signal(false);
   readonly photoError = signal<string | null>(null);
 
-  readonly dossierEditor = viewChild.required(AdminDossierEditorComponent);
   readonly dossierForm = viewChild.required(AdminDossierFormComponent);
   readonly page = signal<EditPage>('datos');
+  /** De qué sesiones se puede copiar el expediente: todas menos la que se modifica. */
+  readonly dossierSources = computed(() =>
+    this.sessions()
+      .filter((session) => session.idEvento !== this.editing()?.idEvento)
+      .map((session) => ({ idEvento: session.idEvento, nombre: `${this.number(session)} · ${session.nombre}` })),
+  );
 
   readonly state = sessionState;
   readonly day = formatDay;
@@ -201,9 +208,23 @@ export class AdminSessionsPanelComponent implements OnInit {
     return String(session.idEvento).padStart(2, '0');
   }
 
-  /** Despliega la ficha de la sesión, o la recoge si ya estaba abierta. */
+  /**
+   * Despliega la ficha de la sesión, o la recoge si ya estaba abierta. Al desplegar, la vista baja lo
+   * justo para enseñarla entera; al recoger no se mueve (ver KeepHeightDirective).
+   */
   toggle(session: EventoAdmin): void {
-    this.expanded.update((id) => (id === session.idEvento ? null : session.idEvento));
+    const id = this.expanded() === session.idEvento ? null : session.idEvento;
+    this.expanded.set(id);
+    if (id !== null) {
+      afterNextRender(
+        () => {
+          const detail = document.getElementById(`session-detail-${id}`);
+          const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          detail?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+        },
+        { injector: this.injector },
+      );
+    }
   }
 
   /** La referencia del archivo (AM-S/025): sale del id, así que no cambia aunque cambie el nombre. */
@@ -253,11 +274,7 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.reactivating.set(false);
     this.resetPhoto();
     this.page.set('datos');
-    this.dossierForm().load({
-      scope: { tipo: 'sesion', id: 0 },
-      name: 'Nueva sesión',
-      typeName: this.types()[0]?.nombre,
-    });
+    this.dossierForm().load(null);
     this.form = emptyForm(this.types()[0]?.idTipo ?? null);
     this.resetErrors();
     this.dialog().open();
@@ -268,11 +285,7 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.reactivating.set(reactivating);
     this.resetPhoto();
     this.page.set('datos');
-    this.dossierForm().load({
-      scope: { tipo: 'sesion', id: session.idEvento },
-      name: session.nombre,
-      typeName: session.tipoEvento,
-    });
+    this.dossierForm().load(session.idEvento);
     this.form = {
       nombre: session.nombre,
       descripcion: session.descripcion ?? '',
@@ -338,11 +351,6 @@ export class AdminSessionsPanelComponent implements OnInit {
     });
   }
 
-  /** Al cambiar de tipo, el expediente hereda del nuevo. */
-  typeChanged(idTipo: number | null): void {
-    this.dossierForm().typeName.set(this.types().find((type) => type.idTipo === idTipo)?.nombre);
-  }
-
   archive(session: EventoAdmin): void {
     this.changeState(session, this.admin.archivarEvento(session.idEvento), 'archivada');
   }
@@ -373,7 +381,7 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.removePhoto.set(false);
   }
 
-  /** Vuelve a la foto de la web: si había una nueva sin guardar, se descarta; si había propia, se quitará. */
+  /** Vuelve a la foto genérica: si había una nueva sin guardar, se descarta; si había propia, se quitará. */
   dropPhoto(): void {
     this.setPreview(null);
     this.photoFile.set(null);
@@ -381,7 +389,7 @@ export class AdminSessionsPanelComponent implements OnInit {
     this.removePhoto.set(!!this.editing()?.imagen);
   }
 
-  /** La foto que verá el público tras guardar. Una sesión nueva sin foto recibe una de la web al crearse. */
+  /** La foto que verá el público tras guardar. Una sesión nueva sin foto recibe una genérica al crearse. */
   shownPhoto(): string | null {
     const preview = this.photoPreview();
     if (preview) {
@@ -396,14 +404,6 @@ export class AdminSessionsPanelComponent implements OnInit {
 
   hasOwnPhoto(): boolean {
     return !!this.photoFile() || (!!this.editing()?.imagen && !this.removePhoto());
-  }
-
-  openCommonDossier(): void {
-    this.dossierEditor().open({ scope: { tipo: 'general' }, name: 'todas las sesiones' });
-  }
-
-  dossierSaved(text: string): void {
-    this.notice.set({ text, error: false });
   }
 
   async cancelSession(session: EventoAdmin): Promise<void> {
@@ -517,7 +517,7 @@ export class AdminSessionsPanelComponent implements OnInit {
       done();
       return;
     }
-    form.save({ tipo: 'sesion', id: saved.idEvento }).subscribe({
+    form.save(saved.idEvento).subscribe({
       next: () => {
         form.markSaved();
         done();

@@ -29,8 +29,9 @@
   margin-top: 1.5rem;
 }
 
-/* El botón que borra o anula, relleno de coral oscuro. */
+/* El botón que borra o anula, relleno de coral. */
 .btn-danger-fill {
-  border-color: var(--coral-ink);
-  background: var(--coral-ink);
+  border-color: var(--coral);
+  background: var(--coral);
+  color: var(--paper-ink);
 }

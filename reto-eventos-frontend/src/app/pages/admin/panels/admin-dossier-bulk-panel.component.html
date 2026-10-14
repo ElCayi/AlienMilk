@@ -1,0 +1,290 @@
+<header class="section-head">
+  <div>
+    <a class="back-link" routerLink="/admin/sesiones">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+      Sesiones
+    </a>
+    <h2>Edición en lote</h2>
+    <p>
+      Cambia el contenido de la ficha pública de varias sesiones a la vez. Elige las sesiones y, en cada
+      apartado, verás cómo está en ellas. Nada se guarda hasta pulsar Guardar.
+    </p>
+  </div>
+</header>
+
+@if (loading()) {
+  <p class="empty">Cargando sesiones y expedientes…</p>
+} @else if (loadError()) {
+  <div class="empty">
+    <p>No se han podido cargar las sesiones.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else {
+  <!-- 1. Las sesiones: los mismos filtros que la lista y una casilla por sesión. -->
+  <section class="bulk-step" aria-labelledby="bulk-sessions">
+    <div class="bulk-step-head">
+      <h3 id="bulk-sessions"><span class="bulk-step-number">1</span> Elige las sesiones</h3>
+      <p class="bulk-count" role="status">
+        @if (selected().size) {
+          <strong>{{ plural(selected().size, 'sesión elegida', 'sesiones elegidas') }}</strong>
+          <button type="button" class="text-link" (click)="clearSelection()">Quitar todas</button>
+        } @else {
+          Ninguna elegida
+        }
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <span class="visually-hidden">Buscar sesiones</span>
+        <input
+          type="search"
+          placeholder="Nº, nombre, tipo o lugar"
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)"
+        />
+      </label>
+      <label class="bulk-type">
+        <span class="visually-hidden">Tipo</span>
+        <select [ngModel]="type()" (ngModelChange)="type.set($event)">
+          <option value="">Todos los tipos</option>
+          @for (item of types(); track item) {
+            <option [value]="item">{{ typeLabel(item) }}</option>
+          }
+        </select>
+      </label>
+      <div class="segmented" role="group" aria-label="Filtrar por estado">
+        @for (option of filters(); track option.value) {
+          <button
+            type="button"
+            [attr.aria-pressed]="filter() === option.value"
+            (click)="filter.set(option.value)"
+          >
+            {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="bulk-list">
+      <table class="data-table bulk-table">
+        <caption>Sesiones que se pueden elegir</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="bulk-check">
+              <input
+                type="checkbox"
+                aria-label="Elegir todas las de la lista"
+                [checked]="allVisible() === 'all'"
+                [indeterminate]="allVisible() === 'some'"
+                [disabled]="!visible().length"
+                (change)="toggleVisible()"
+              />
+            </th>
+            <th scope="col" class="cell-num center">Nº</th>
+            <th scope="col">Nombre</th>
+            <th scope="col" class="center">Fecha</th>
+            <th scope="col" class="center">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (session of visible(); track session.idEvento) {
+            @let estado = state(session.estado);
+            <tr [class.is-chosen]="selected().has(session.idEvento)" (click)="toggle(session)">
+              <td class="bulk-check">
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'Elegir ' + session.nombre"
+                  [checked]="selected().has(session.idEvento)"
+                  (click)="$event.stopPropagation()"
+                  (change)="toggle(session)"
+                />
+              </td>
+              <td class="cell-num center">{{ number(session) }}</td>
+              <td class="cell-title">
+                <span class="cell-main">{{ session.nombre }}</span>
+                <span class="cell-sub">{{ typeLabel(session.tipoEvento) }}</span>
+              </td>
+              <td data-label="Fecha" class="nowrap center">{{ day(session.fechaInicio) }}</td>
+              <td data-label="Estado" class="center">
+                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5"><p class="empty">Ninguna sesión coincide con la búsqueda.</p></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2. El contenido: cada apartado, cómo está en las elegidas y qué se puede hacer con él. -->
+  <section class="bulk-step" aria-labelledby="bulk-content">
+    <div class="bulk-step-head">
+      <h3 id="bulk-content"><span class="bulk-step-number">2</span> Cambia su contenido</h3>
+    </div>
+
+    @if (!selected().size) {
+      <p class="bulk-placeholder">Elige al menos una sesión arriba para ver y cambiar su contenido.</p>
+    } @else {
+      <div class="segmented bulk-tabs" role="group" aria-label="Apartados del expediente">
+        @for (item of tabs; track item.id) {
+          <button type="button" [attr.aria-pressed]="tab() === item.id" (click)="tab.set(item.id)">
+            {{ item.label }}
+            @if (tabChanged(item.id)) {
+              <span class="bulk-dot" aria-label="con cambios sin guardar"></span>
+            }
+          </button>
+        }
+      </div>
+
+      @for (item of tabs; track item.id) {
+        @if (tab() === item.id) {
+          @for (field of item.fields; track field.key) {
+            <article class="bulk-field">
+              <header class="bulk-field-head">
+                <h4>{{ field.label }}</h4>
+                @if (field.help) {
+                  <p class="field-help">{{ field.help }}</p>
+                }
+              </header>
+
+              @if (!isList(field)) {
+                @let versions = textVersions(field);
+                @if (versions.length === 1) {
+                  <p class="bulk-state">
+                    <span class="bulk-chip">{{ versions[0].value ? 'Igual' : 'Vacío' }} {{ coverage(versions[0].ids).toLowerCase() }}</span>
+                  </p>
+                } @else {
+                  <p class="bulk-state">
+                    <span class="bulk-chip is-mixed">Distinto: {{ versions.length }} versiones</span>
+                  </p>
+                  <ul class="bulk-versions">
+                    @for (version of versions; track version.value) {
+                      <li>
+                        <span class="bulk-chip" [title]="names(version.ids)">{{ coverage(version.ids) }}</span>
+                        <span class="bulk-version-text">{{ version.value || 'Vacío' }}</span>
+                        @if (version.value) {
+                          <button type="button" class="text-link" (click)="setTextDraft(field, version.value)">
+                            Usar este
+                          </button>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+                <div class="bulk-text-editor">
+                  @if (field.kind === 'textarea') {
+                    <textarea
+                      rows="3"
+                      [attr.aria-label]="field.label + ' para las elegidas'"
+                      [placeholder]="versions.length > 1 ? 'Escribe aquí para igualarlas' : ''"
+                      [value]="textDraft(field)"
+                      (input)="setTextDraft(field, $any($event.target).value)"
+                    ></textarea>
+                  } @else {
+                    <input
+                      [attr.aria-label]="field.label + ' para las elegidas'"
+                      [placeholder]="versions.length > 1 ? 'Escribe aquí para igualarlas' : ''"
+                      [value]="textDraft(field)"
+                      (input)="setTextDraft(field, $any($event.target).value)"
+                    />
+                  }
+                  <button type="button" class="btn btn-small" (click)="applyText(field)">
+                    {{ textDraft(field).trim() ? 'Poner' : 'Vaciar' }} {{ coverage(selectedIds()).toLowerCase() }}
+                  </button>
+                </div>
+              } @else {
+                @let rows = sharedRows(field);
+                @if (!rows.length) {
+                  <p class="bulk-state"><span class="bulk-chip">Vacío {{ coverage(selectedIds()).toLowerCase() }}</span></p>
+                }
+                <ul class="bulk-rows">
+                  @for (row of rows; track row.key) {
+                    <li class="bulk-row" [class.is-partial]="row.ids.length < selected().size">
+                      @if (isEditing(field, row)) {
+                        <div class="bulk-row-editor dossier-like" [attr.data-kind]="field.kind">
+                          <app-dossier-row-editor
+                            [kind]="field.kind"
+                            [label]="field.label"
+                            [value]="editingRow()!.value"
+                            (valueChange)="setEditValue($event)"
+                          />
+                        </div>
+                        <div class="bulk-row-actions">
+                          <button type="button" class="btn btn-small" (click)="cancelEdit()">Volver</button>
+                          <button type="button" class="btn btn-small btn-primary" (click)="saveEdit(field, row)">
+                            Cambiar {{ coverage(row.ids).toLowerCase() }}
+                          </button>
+                        </div>
+                      } @else {
+                        <span class="bulk-chip" [class.is-mixed]="row.ids.length < selected().size" [title]="names(row.ids)">
+                          {{ coverage(row.ids) }}
+                        </span>
+                        <span class="bulk-row-text">{{ rowText(field, row.value) }}</span>
+                        <div class="bulk-row-actions">
+                          @if (row.ids.length < selected().size) {
+                            <button type="button" class="btn btn-small" (click)="spread(field, row)">
+                              Poner en todas
+                            </button>
+                          }
+                          <button type="button" class="btn btn-small" (click)="startEdit(field, row)">Modificar</button>
+                          <button type="button" class="btn btn-small btn-danger" (click)="removeRow(field, row)">
+                            Quitar
+                          </button>
+                        </div>
+                      }
+                    </li>
+                  }
+                </ul>
+                <div class="bulk-add">
+                  <div class="bulk-row-editor dossier-like" [attr.data-kind]="field.kind">
+                    <app-dossier-row-editor
+                      [kind]="field.kind"
+                      [label]="'Nueva fila de ' + field.label"
+                      [value]="newRow(field)"
+                      (valueChange)="setNewRow(field, $event)"
+                    />
+                  </div>
+                  <button type="button" class="btn btn-small" [disabled]="!canAdd(field)" (click)="addRow(field)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                    Añadir {{ coverage(selectedIds()).toLowerCase() }}
+                  </button>
+                </div>
+              }
+            </article>
+          }
+        }
+      }
+    }
+  </section>
+
+  @if (notice(); as aviso) {
+    <p class="notice" [class.is-error]="aviso.error" role="status">{{ aviso.text }}</p>
+  }
+  @if (saveErrors().length) {
+    <ul class="bulk-errors" role="alert">
+      @for (message of saveErrors(); track message) {
+        <li>{{ message }}</li>
+      }
+    </ul>
+  }
+
+  <!-- Lo pendiente, siempre a la vista mientras haya algo sin guardar. -->
+  @if (changedIds().length) {
+    <div class="bulk-bar" role="region" aria-label="Cambios sin guardar">
+      <p>
+        <strong>{{ plural(changedIds().length, 'sesión', 'sesiones') }}</strong> con cambios sin guardar
+      </p>
+      <div class="bulk-bar-actions">
+        <button type="button" class="btn" [disabled]="saving()" (click)="discard()">Descartar</button>
+        <button type="button" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()" (click)="save()">
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  }
+}

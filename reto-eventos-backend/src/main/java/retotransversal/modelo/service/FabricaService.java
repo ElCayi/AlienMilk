@@ -46,11 +46,14 @@ public class FabricaService {
 
 	private final DataSource dataSource;
 	private final ImagenSesionService imagenSesionService;
+	private final ExpedienteService expedienteService;
 	private final Clock reloj = Clock.system(EventoServiceImpl.ZONA);
 
-	public FabricaService(DataSource dataSource, ImagenSesionService imagenSesionService) {
+	public FabricaService(DataSource dataSource, ImagenSesionService imagenSesionService,
+			ExpedienteService expedienteService) {
 		this.dataSource = dataSource;
 		this.imagenSesionService = imagenSesionService;
+		this.expedienteService = expedienteService;
 	}
 
 	public void restaurar() {
@@ -86,6 +89,8 @@ public class FabricaService {
 			throw new IllegalStateException("No se ha podido restaurar el estado de fábrica", e);
 		}
 		imagenSesionService.borrarTodas();
+		// Por si los datos de fábrica traen aún las capas antiguas del expediente.
+		expedienteService.aplanarCapasAntiguas();
 		log.info("Demo restaurada al estado de fábrica");
 	}
 

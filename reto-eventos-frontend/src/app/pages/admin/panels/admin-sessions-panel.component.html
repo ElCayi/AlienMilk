@@ -2,12 +2,13 @@
   <div>
     <h2>Sesiones</h2>
     <p>
-      El programa de AlienMilk Sessions con su ocupación. Una sesión con reservas se puede cancelar,
-      y sus clientes la ven cancelada en su panel, o borrar con sus reservas.
+      Todas las sesiones. Pulsa una fila para ver su ocupación,
+      modificarla o cancelarla. Las celebradas pasan solas a Terminadas cada noche y, desde ahí, se
+      pueden archivar.
     </p>
   </div>
   <div class="section-head-actions">
-    <button type="button" class="btn" (click)="openCommonDossier()">Expediente común</button>
+    <a class="btn" routerLink="lote">Edición en lote</a>
     <button type="button" class="btn btn-primary" (click)="openNew()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
       Nueva sesión
@@ -60,7 +61,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap" appKeepHeight>
+  <div class="table-wrap" [appKeepHeight]="filter() + query()">
     <table class="data-table is-expandable">
       <caption>Sesiones del programa. Pulsa una para ver su ficha y sus acciones.</caption>
       <thead>
@@ -272,6 +273,22 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Un atajo a la pestaña Demo, para deshacer pruebas sin salir de aquí. -->
+  <footer class="panel-foot">
+    @if (demo.failure(); as message) {
+      <p class="field-error" role="alert">{{ message }}</p>
+    }
+    <button
+      type="button"
+      class="btn btn-small btn-danger"
+      [disabled]="demo.restoring()"
+      [attr.aria-busy]="demo.restoring()"
+      (click)="demo.restore()"
+    >
+      {{ demo.restoring() ? "Restaurando…" : "Restaurar demo" }}
+    </button>
+  </footer>
 }
 
 <app-panel-dialog
@@ -291,7 +308,7 @@
     </div>
 
     <div class="edit-page" [hidden]="page() !== 'expediente'">
-      <app-admin-dossier-form />
+      <app-admin-dossier-form [sources]="dossierSources()" />
     </div>
 
     <div class="form-grid edit-page" [hidden]="page() !== 'datos'">
@@ -307,7 +324,7 @@
 
       <div class="field" [class.is-invalid]="error('idTipo')">
         <label class="field-label" for="session-type">Tipo</label>
-        <select id="session-type" name="idTipo" [(ngModel)]="form.idTipo" (ngModelChange)="typeChanged($event)">
+        <select id="session-type" name="idTipo" [(ngModel)]="form.idTipo">
           <option [ngValue]="null" disabled>Elige un tipo</option>
           @for (type of types(); track type.idTipo) {
             <option [ngValue]="type.idTipo">{{ typeLabel(type.nombre) }}</option>
@@ -382,18 +399,22 @@
           @if (shownPhoto(); as src) {
             <img class="photo-preview" [src]="src" alt="" />
           } @else {
-            <div class="photo-preview photo-empty">Una de la web</div>
+            <div class="photo-preview photo-empty">Sin foto</div>
           }
           <div class="photo-actions">
             <p class="field-help">
               @if (photoFile()) {
                 Foto nueva: se subirá al guardar.
               } @else if (hasOwnPhoto()) {
-                Foto propia.
+                Foto propia de esta sesión, subida desde aquí.
               } @else if (removePhoto()) {
-                Se quitará la propia y volverá la de la web.
+                Al guardar se quita la propia y vuelve la foto genérica.
               } @else {
-                Sin foto propia: usa una de las de la web.
+                @if (editing()) {
+                  Ahora lleva una foto genérica de AlienMilk. Sube una propia para esta sesión.
+                } @else {
+                  Opcional. Si no subes ninguna, la ficha pública llevará una foto genérica de AlienMilk.
+                }
               }
             </p>
             <div class="photo-buttons">
@@ -407,7 +428,7 @@
                 />
               </label>
               @if (hasOwnPhoto()) {
-                <button type="button" class="btn btn-small" (click)="dropPhoto()">Usar la de la web</button>
+                <button type="button" class="btn btn-small" (click)="dropPhoto()">Quitar foto</button>
               }
             </div>
           </div>
@@ -441,4 +462,3 @@
   </form>
 </app-panel-dialog>
 
-<app-admin-dossier-editor (saved)="dossierSaved($event)" />

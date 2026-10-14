@@ -2,12 +2,9 @@
  * Expediente ampliado de una sesión: todo lo que la ficha pública muestra además de los datos de la
  * sesión (texto editorial, notas de cata, programa, equipo, condiciones...).
  *
- * Llega del backend (`GET /api/eventos/expedientes`, ver ExpedienteCapaDto) y se edita desde el panel
- * de administración. Cada expediente se resuelve en tres capas: `general` → `porTipo[tipoEvento]` →
- * `porSesion[idEvento]`. Una sesión nueva creada desde el panel hereda así el contenido de su tipo.
- *
- * Cada capa sustituye los campos que declara, salvo `acceso` y `preguntas`, que se acumulan: las
- * condiciones generales siguen vigentes aunque una sesión añada las suyas.
+ * Cada sesión tiene el suyo, en el backend (`GET /api/eventos/{id}/expediente`). Se edita desde el
+ * panel de administración: el de una sesión en Modificar sesión, y muchos a la vez en la edición en
+ * lote. Lo que no tenga guardado sale vacío (ver buildSessionDossier).
  */
 export interface SessionField {
   etiqueta: string;
@@ -47,10 +44,6 @@ export interface SessionDossier {
   creditos: string;
 }
 
+/** Lo guardado de un expediente: los apartados que no tenga no llegan. */
 export type SessionDossierLayer = Partial<SessionDossier>;
 
-export interface SessionDossierSource {
-  general: SessionDossierLayer;
-  porTipo: Record<string, SessionDossierLayer>;
-  porSesion: Record<string, SessionDossierLayer>;
-}

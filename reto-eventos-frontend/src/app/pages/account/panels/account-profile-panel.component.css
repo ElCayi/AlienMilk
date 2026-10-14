@@ -57,10 +57,11 @@
   line-height: 1.55;
 }
 
-/* El botón que borra, relleno de coral oscuro, como en las confirmaciones. */
+/* El botón que borra, relleno de coral, como en las confirmaciones. */
 .btn-danger-fill {
-  border-color: var(--coral-ink);
-  background: var(--coral-ink);
+  border-color: var(--coral);
+  background: var(--coral);
+  color: var(--paper-ink);
 }
 
 @media (max-width: 760px) {

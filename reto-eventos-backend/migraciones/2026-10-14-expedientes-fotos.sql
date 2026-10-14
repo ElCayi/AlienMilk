@@ -4,6 +4,9 @@
 -- Y la foto propia de cada sesión, subida desde /admin: eventos.imagen guarda el nombre del archivo.
 -- Idempotente: se puede aplicar sobre una base existente tantas veces como haga falta (no pisa
 -- expedientes ya editados). Las capas de sesión solo se cargan si la sesión conserva id y nombre.
+-- Desde el 2026-10-15 cada sesión tiene su expediente completo: al arrancar, el backend reparte en
+-- cada sesión las capas GENERAL y TIPO:<id> que inserta este archivo y las borra (AplanadoExpedientes),
+-- sin duplicar lo que la sesión ya tenga.
 --   mariadb reserva_eventos_bbdd < reto-eventos-backend/migraciones/2026-10-14-expedientes-fotos.sql
 
 CREATE TABLE IF NOT EXISTS expedientes (

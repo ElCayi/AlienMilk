@@ -1,5 +1,4 @@
 import { EventoDetalle } from '../../models/api.models';
-import { SessionDossierSource } from '../../models/session-dossier.models';
 import {
   buildSessionDossier,
   humanizeSessionType,
@@ -22,41 +21,27 @@ const session: EventoDetalle = {
   tipoEvento: 'CATA_COSMICA',
 };
 
-const source: SessionDossierSource = {
-  general: {
-    horario: 'General',
-    acceso: [{ etiqueta: 'Acreditación', valor: '45 minutos antes' }],
-  },
-  porTipo: {
-    CATA_COSMICA: {
-      horario: 'Del tipo',
-      acceso: [{ etiqueta: 'Edad', valor: '18' }],
-    },
-  },
-  porSesion: {
-    '7': { procedencia: 'Órbita de Orión' },
-  },
-};
-
 describe('session dossier', () => {
-  it('layers general, type and session content', () => {
-    const dossier = buildSessionDossier(session, source);
+  it('completes what the session has stored', () => {
+    const dossier = buildSessionDossier(session, {
+      horario: 'De noche',
+      acceso: [{ etiqueta: 'Edad', valor: '18' }],
+      procedencia: 'Órbita de Orión',
+    });
 
-    expect(dossier.horario).toBe('Del tipo');
+    expect(dossier.horario).toBe('De noche');
     expect(dossier.procedencia).toBe('Órbita de Orión');
-    expect(dossier.acceso.map((item) => item.etiqueta)).toEqual(['Acreditación', 'Edad']);
+    expect(dossier.acceso.map((item) => item.etiqueta)).toEqual(['Edad']);
+    expect(dossier.preguntas).toEqual([]);
   });
 
   it('falls back to the API description for sessions without editorial content', () => {
-    const dossier = buildSessionDossier(
-      { ...session, idEvento: 99, tipoEvento: 'NUEVO_TIPO' },
-      source,
-    );
+    const dossier = buildSessionDossier(session, null);
 
     expect(dossier.entradilla).toBe('Descripción registrada en la API');
     expect(dossier.texto).toEqual(['Descripción registrada en la API']);
     expect(dossier.procedencia).toBe('No declarada');
-    expect(dossier.horario).toBe('General');
+    expect(dossier.horario).toBe('');
   });
 
   it('formats dates and durations for the public file', () => {

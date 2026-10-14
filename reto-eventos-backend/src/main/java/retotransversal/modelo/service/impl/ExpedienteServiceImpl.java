@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -15,25 +16,23 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import retotransversal.exception.DatosNoValidosException;
 import retotransversal.exception.RecursoNoEncontradoException;
 import retotransversal.modelo.dto.ExpedienteCapaDto;
 import retotransversal.modelo.dto.ExpedienteCapaDto.Campo;
 import retotransversal.modelo.dto.ExpedienteCapaDto.Colaborador;
 import retotransversal.modelo.dto.ExpedienteCapaDto.Paso;
 import retotransversal.modelo.dto.ExpedienteCapaDto.Pregunta;
-import retotransversal.modelo.dto.ExpedientesDto;
+import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Expediente;
-import retotransversal.modelo.entities.TipoEvento;
 import retotransversal.modelo.repository.EventoRepository;
 import retotransversal.modelo.repository.ExpedienteRepository;
-import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.service.ErroresCampos;
 import retotransversal.modelo.service.ExpedienteService;
 
 /**
- * El expediente de las sesiones, en tres capas (ver Expediente). Antes de guardar una capa se limpia:
- * textos sin espacios sobrantes, filas vacías fuera; una capa que se queda sin nada se borra, y su
- * ámbito vuelve a heredarlo todo.
+ * El expediente de cada sesión. Antes de guardarlo se limpia: textos sin espacios sobrantes, filas
+ * vacías fuera; uno que se queda sin nada se borra.
  */
 @Service
 @RequiredArgsConstructor
@@ -46,55 +45,67 @@ public class ExpedienteServiceImpl implements ExpedienteService {
 			.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 	private final ExpedienteRepository expedienteRepository;
-	private final TipoEventoRepository tipoEventoRepository;
 	private final EventoRepository eventoRepository;
 
 	@Override
-	public ExpedientesDto todas() {
-		Map<String, String> nombresTipo = new LinkedHashMap<>();
-		for (TipoEvento tipo : tipoEventoRepository.findAll()) {
-			nombresTipo.put(Expediente.deTipo(tipo.getIdTipo()), tipo.getNombre());
-		}
-
-		ExpedienteCapaDto general = ExpedienteCapaDto.VACIA;
-		Map<String, ExpedienteCapaDto> porTipo = new LinkedHashMap<>();
-		Map<String, ExpedienteCapaDto> porSesion = new LinkedHashMap<>();
-		for (Expediente expediente : expedienteRepository.findAll()) {
-			String clave = expediente.getClave();
-			ExpedienteCapaDto capa = leer(expediente.getContenido());
-			if (Expediente.GENERAL.equals(clave)) {
-				general = capa;
-			} else if (nombresTipo.containsKey(clave)) {
-				porTipo.put(nombresTipo.get(clave), capa);
-			} else if (clave.startsWith("SESION:")) {
-				porSesion.put(clave.substring("SESION:".length()), capa);
-			}
-		}
-		return new ExpedientesDto(general, porTipo, porSesion);
-	}
-
-	@Override
-	@Transactional
-	public ExpedienteCapaDto guardarGeneral(ExpedienteCapaDto capa) {
-		return guardar(Expediente.GENERAL, capa);
-	}
-
-	@Override
-	@Transactional
-	public ExpedienteCapaDto guardarDeTipo(Integer idTipo, ExpedienteCapaDto capa) {
-		if (!tipoEventoRepository.existsById(idTipo)) {
-			throw new RecursoNoEncontradoException("Tipo de evento no encontrado");
-		}
-		return guardar(Expediente.deTipo(idTipo), capa);
-	}
-
-	@Override
-	@Transactional
-	public ExpedienteCapaDto guardarDeSesion(Integer idEvento, ExpedienteCapaDto capa) {
+	public ExpedienteCapaDto deSesion(Integer idEvento) {
 		if (!eventoRepository.existsById(idEvento)) {
 			throw new RecursoNoEncontradoException("Evento no encontrado");
 		}
-		return guardar(Expediente.deSesion(idEvento), capa);
+		return expedienteRepository.findById(Expediente.deSesion(idEvento))
+				.map(expediente -> leer(expediente.getContenido()))
+				.orElse(ExpedienteCapaDto.VACIA);
+	}
+
+	@Override
+	public Map<Integer, ExpedienteCapaDto> todos() {
+		Map<Integer, ExpedienteCapaDto> todos = new TreeMap<>();
+		for (Expediente expediente : expedienteRepository.findAll()) {
+			if (expediente.getClave().startsWith(Expediente.PREFIJO_SESION)) {
+				todos.put(Integer.valueOf(expediente.getClave().substring(Expediente.PREFIJO_SESION.length())),
+						leer(expediente.getContenido()));
+			}
+		}
+		return todos;
+	}
+
+	@Override
+	@Transactional
+	public ExpedienteCapaDto guardarDeSesion(Integer idEvento, ExpedienteCapaDto expediente) {
+		if (!eventoRepository.existsById(idEvento)) {
+			throw new RecursoNoEncontradoException("Evento no encontrado");
+		}
+		ExpedienteCapaDto limpio = limpiar(expediente == null ? ExpedienteCapaDto.VACIA : expediente);
+		guardar(idEvento, limpio);
+		return limpio;
+	}
+
+	/**
+	 * Primero se limpian y validan todos; si alguno falla, no se guarda ninguno y los errores llegan
+	 * juntos, cada uno con la sesión delante: {@code "7.preguntas"}.
+	 */
+	@Override
+	@Transactional
+	public Map<Integer, ExpedienteCapaDto> guardarLote(Map<Integer, ExpedienteCapaDto> expedientes) {
+		Map<Integer, ExpedienteCapaDto> limpios = new LinkedHashMap<>();
+		Map<String, String> errores = new LinkedHashMap<>();
+		for (Map.Entry<Integer, ExpedienteCapaDto> entrada : expedientes.entrySet()) {
+			Integer idEvento = entrada.getKey();
+			if (!eventoRepository.existsById(idEvento)) {
+				errores.put(idEvento + ".sesion", "Esta sesión ya no existe");
+				continue;
+			}
+			try {
+				limpios.put(idEvento, limpiar(entrada.getValue() == null ? ExpedienteCapaDto.VACIA : entrada.getValue()));
+			} catch (DatosNoValidosException e) {
+				e.getErrores().forEach((apartado, mensaje) -> errores.put(idEvento + "." + apartado, mensaje));
+			}
+		}
+		if (!errores.isEmpty()) {
+			throw new DatosNoValidosException(errores);
+		}
+		limpios.forEach(this::guardar);
+		return limpios;
 	}
 
 	@Override
@@ -102,22 +113,89 @@ public class ExpedienteServiceImpl implements ExpedienteService {
 		expedienteRepository.deleteById(Expediente.deSesion(idEvento));
 	}
 
+	/**
+	 * Cada sesión se queda con lo que enseñaba su ficha: lo común, encima lo de su tipo y encima lo
+	 * suyo; acceso y preguntas, sumados. Después se borran las capas común y de tipo.
+	 */
 	@Override
-	public void borrarDeTipo(Integer idTipo) {
-		expedienteRepository.deleteById(Expediente.deTipo(idTipo));
+	@Transactional
+	public int aplanarCapasAntiguas() {
+		Map<String, ExpedienteCapaDto> capas = new LinkedHashMap<>();
+		for (Expediente expediente : expedienteRepository.findAll()) {
+			capas.put(expediente.getClave(), leer(expediente.getContenido()));
+		}
+		List<String> antiguas = capas.keySet().stream()
+				.filter(clave -> clave.equals(Expediente.GENERAL) || clave.startsWith(Expediente.PREFIJO_TIPO))
+				.toList();
+		if (antiguas.isEmpty()) {
+			return 0;
+		}
+		ExpedienteCapaDto general = capas.get(Expediente.GENERAL);
+		int completadas = 0;
+		for (Evento evento : eventoRepository.findAll()) {
+			ExpedienteCapaDto deTipo = capas.get(Expediente.PREFIJO_TIPO + evento.getTipoEvento().getIdTipo());
+			ExpedienteCapaDto propio = capas.get(Expediente.deSesion(evento.getIdEvento()));
+			ExpedienteCapaDto completo = superponer(superponer(general, deTipo), propio);
+			if (completo != null && !completo.equals(ExpedienteCapaDto.VACIA)) {
+				guardar(evento.getIdEvento(), completo);
+				completadas++;
+			}
+		}
+		expedienteRepository.deleteAllById(antiguas);
+		return completadas;
 	}
 
-	private ExpedienteCapaDto guardar(String clave, ExpedienteCapaDto entrada) {
-		ExpedienteCapaDto capa = limpiar(entrada == null ? ExpedienteCapaDto.VACIA : entrada);
-		if (capa.equals(ExpedienteCapaDto.VACIA)) {
+	private void guardar(Integer idEvento, ExpedienteCapaDto expediente) {
+		String clave = Expediente.deSesion(idEvento);
+		if (expediente.equals(ExpedienteCapaDto.VACIA)) {
 			expedienteRepository.deleteById(clave);
 		} else {
-			expedienteRepository.save(new Expediente(clave, escribir(capa)));
+			expedienteRepository.save(new Expediente(clave, escribir(expediente)));
 		}
-		return capa;
 	}
 
-	/** Limpia la capa y, si algo no cabe o falta, lanza todos los errores a la vez, por apartado. */
+	/** Lo que declara `encima` sustituye a lo de `base`, salvo acceso y preguntas, que se suman. */
+	static ExpedienteCapaDto superponer(ExpedienteCapaDto base, ExpedienteCapaDto encima) {
+		if (base == null) {
+			return encima;
+		}
+		if (encima == null) {
+			return base;
+		}
+		return new ExpedienteCapaDto(
+				elegir(encima.entradilla(), base.entradilla()),
+				elegir(encima.texto(), base.texto()),
+				elegir(encima.procedencia(), base.procedencia()),
+				elegir(encima.horario(), base.horario()),
+				elegir(encima.notasCata(), base.notasCata()),
+				elegir(encima.programa(), base.programa()),
+				elegir(encima.equipo(), base.equipo()),
+				sumar(base.acceso(), encima.acceso()),
+				elegir(encima.recomendaciones(), base.recomendaciones()),
+				sumar(base.preguntas(), encima.preguntas()),
+				elegir(encima.colaboradores(), base.colaboradores()),
+				elegir(encima.creditos(), base.creditos()));
+	}
+
+	private static <T> T elegir(T encima, T base) {
+		return encima != null ? encima : base;
+	}
+
+	private static <T> List<T> sumar(List<T> base, List<T> encima) {
+		if (base == null) {
+			return encima;
+		}
+		if (encima == null) {
+			return base;
+		}
+		// Sin repetir: si una capa antigua vuelve a aparecer (otra pasada de la migración), lo que la
+		// sesión ya tiene no se duplica.
+		List<T> suma = new ArrayList<>(base);
+		encima.stream().filter(fila -> !suma.contains(fila)).forEach(suma::add);
+		return List.copyOf(suma);
+	}
+
+	/** Limpia el expediente y, si algo no cabe o falta, lanza todos los errores a la vez, por apartado. */
 	static ExpedienteCapaDto limpiar(ExpedienteCapaDto capa) {
 		ErroresCampos errores = new ErroresCampos()
 				.maximo("entradilla", capa.entradilla(), 600)

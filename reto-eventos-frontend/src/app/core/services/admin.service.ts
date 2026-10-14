@@ -15,10 +15,7 @@ import {
   Usuario,
   UsuarioPayload,
 } from '../../models/api.models';
-import { SessionDossierLayer, SessionDossierSource } from '../../models/session-dossier.models';
-
-/** De quién es una capa del expediente: la común, la de un tipo o la de una sesión. */
-export type ExpedienteAmbito = { tipo: 'general' } | { tipo: 'tipo' | 'sesion'; id: number };
+import { SessionDossierLayer } from '../../models/session-dossier.models';
 
 /**
  * Panel de administración: sesiones, reservas, cuentas, tipos y perfiles. Las reglas (qué se puede
@@ -81,20 +78,24 @@ export class AdminService {
     return this.http.delete<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/imagen`);
   }
 
-  /** Todas las capas del expediente, las mismas que lee la ficha pública. */
-  getExpedientes(): Observable<SessionDossierSource> {
-    return this.http.get<SessionDossierSource>(`${environment.apiUrl}/eventos/expedientes`);
+  /** Los expedientes de todas las sesiones, por id (las que no tienen, no vienen). */
+  getExpedientes(): Observable<Record<string, SessionDossierLayer>> {
+    return this.http.get<Record<string, SessionDossierLayer>>(`${this.adminUrl}/expedientes`);
   }
 
-  /** Guarda una capa entera; vacía, se borra y su ámbito vuelve a heredarlo todo. */
-  guardarExpediente(ambito: ExpedienteAmbito, capa: SessionDossierLayer): Observable<SessionDossierLayer> {
-    const ruta =
-      ambito.tipo === 'general'
-        ? 'general'
-        : ambito.tipo === 'tipo'
-          ? `tipos/${ambito.id}`
-          : `sesiones/${ambito.id}`;
-    return this.http.put<SessionDossierLayer>(`${this.adminUrl}/expedientes/${ruta}`, capa);
+  /** Guarda el expediente entero de una sesión; vacío, se borra. */
+  guardarExpediente(idEvento: number, expediente: SessionDossierLayer): Observable<SessionDossierLayer> {
+    return this.http.put<SessionDossierLayer>(`${this.adminUrl}/expedientes/sesiones/${idEvento}`, expediente);
+  }
+
+  /**
+   * Guarda los expedientes de varias sesiones a la vez, por id: todos o ninguno. Los errores llegan
+   * con la sesión delante («7.preguntas»).
+   */
+  guardarExpedientesLote(
+    expedientes: Record<string, SessionDossierLayer>,
+  ): Observable<Record<string, SessionDossierLayer>> {
+    return this.http.put<Record<string, SessionDossierLayer>>(`${this.adminUrl}/expedientes/lote`, expedientes);
   }
 
   /** Devuelve la demo a su estado de fábrica: borra todo lo creado o cambiado. */

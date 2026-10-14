@@ -96,10 +96,10 @@
   font-size: 0.85rem;
 }
 
-/* Lo que borra o anula: el mismo trazo, en coral oscuro. */
+/* Lo que borra o anula: el mismo trazo, en coral. */
 .btn-danger {
-  border-color: rgba(176, 60, 57, 0.55);
-  color: var(--coral-ink);
+  border-color: var(--coral);
+  color: var(--coral);
 }
 
 .btn:disabled {
@@ -137,8 +137,17 @@
   text-underline-offset: 0.2em;
 }
 
+/* Como botón (acciones pequeñas dentro de un texto), sin la caja del navegador. */
+button.text-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
 .text-link:hover {
-  color: var(--coral-ink);
+  color: var(--coral);
   text-decoration-color: currentColor;
 }
 
@@ -297,7 +306,7 @@
 
 .notice.is-error {
   border-color: var(--coral);
-  color: var(--coral-ink);
+  color: var(--coral);
 }
 
 /* Tablas: cabecera en rótulos, filas en franjas de tonos casi iguales. */
@@ -481,13 +490,18 @@ th[aria-sort] .sort-button svg {
   cursor: pointer;
 }
 
+/* La regla de arriba gana a la del hover general en las filas pares: aquí se repite para todas. */
+.data-table.is-expandable .row-summary:not(.is-open):hover {
+  background: rgba(40, 51, 58, 0.05);
+}
+
 .data-table.is-expandable .row-summary td {
   vertical-align: middle;
 }
 
 .data-table.is-expandable .row-summary.is-open,
 .data-table.is-expandable .row-detail {
-  background: var(--paper-stripe);
+  background: var(--paper-soft);
 }
 
 .data-table.is-expandable .row-summary.is-open td {
@@ -836,7 +850,7 @@ th[aria-sort] .sort-button svg {
 }
 
 .field.is-invalid :is(input, select, textarea) {
-  border-color: var(--coral-ink);
+  border-color: var(--coral);
 }
 
 .field-error,
@@ -847,7 +861,7 @@ th[aria-sort] .sort-button svg {
 }
 
 .field-error {
-  color: var(--coral-ink);
+  color: var(--coral);
 }
 
 .field-help {
@@ -1140,4 +1154,18 @@ th[aria-sort] .sort-button svg {
   .cell-chevron svg {
     transition: none;
   }
+}
+
+/* El pie de una sección: atajos discretos, abajo a la derecha. */
+.panel-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 1rem;
+  margin-top: 1.5rem;
+}
+
+.panel-foot .field-error {
+  margin: 0;
 }

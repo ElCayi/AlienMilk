@@ -1,10 +1,50 @@
 /* Editor del expediente: las pestañas de la ficha pública arriba y, en cada una, sus apartados. Lo
    heredado, en una franja del papel y atenuado; lo propio, en campos blancos como el resto del panel. */
 .dossier-intro {
+  display: grid;
+  gap: 0.6rem;
   margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
   color: var(--paper-muted);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  background: var(--paper-soft);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.dossier-intro p {
+  margin: 0;
+}
+
+.dossier-intro strong {
+  color: var(--paper-ink);
+}
+
+/* Partir del contenido de otra sesión: rótulo y desplegable en una línea. */
+.dossier-copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  color: var(--paper-ink);
+  font-weight: 700;
+}
+
+.dossier-copy select {
+  min-height: 2.4rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: var(--field);
+  font:
+    600 0.9rem 'Nunito',
+    sans-serif;
+}
+
+.dossier-copied {
+  color: var(--paper-ink);
+  font-weight: 700;
 }
 
 /* Las siete pestañas en dos filas iguales (cuatro y tres), y en móvil de dos en dos: nunca con barra
@@ -20,7 +60,7 @@
 }
 
 .dossier-tabs button.has-error {
-  color: var(--coral-ink);
+  color: var(--coral);
 }
 
 .dossier-tab {
@@ -50,34 +90,6 @@
     sans-serif;
 }
 
-.dossier-own {
-  min-height: 0;
-  font-size: 0.88rem;
-}
-
-.dossier-inherited {
-  display: grid;
-  gap: 0.3rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 0.5rem;
-  color: var(--paper-faint);
-  background: var(--paper-soft);
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-.dossier-inherited p {
-  margin: 0;
-}
-
-.dossier-inherited b {
-  color: var(--paper-muted);
-}
-
-.dossier-inherited-note {
-  font-size: 0.8rem;
-}
-
 .dossier-field :is(input, textarea) {
   width: 100%;
   min-width: 0;
@@ -103,7 +115,7 @@
 }
 
 .dossier-field.is-invalid :is(input, textarea) {
-  border-color: var(--coral-ink);
+  border-color: var(--coral);
 }
 
 /* Filas: sus campos en rejilla y, a la derecha, subir, bajar y quitar. */
@@ -135,14 +147,6 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.dossier-row .is-full {
-  grid-column: 1 / -2;
-}
-
-.dossier-row[data-kind='faq'] .is-full {
-  grid-column: 1;
-}
-
 .dossier-row-tools {
   display: flex;
   gap: 0.15rem;
@@ -169,7 +173,7 @@
 }
 
 .dossier-icon.is-danger:hover {
-  color: var(--coral-ink);
+  color: var(--coral);
 }
 
 .dossier-icon:disabled {
@@ -207,10 +211,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .dossier-row .is-full,
-  .dossier-row[data-kind='faq'] .is-full {
-    grid-column: 1;
-  }
 
   .dossier-row-tools {
     grid-column: 1;

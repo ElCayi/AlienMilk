@@ -50,7 +50,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap" appKeepHeight>
+  <div class="table-wrap" [appKeepHeight]="filter() + query()">
     <table class="data-table">
       <caption>Cuentas</caption>
       <thead>

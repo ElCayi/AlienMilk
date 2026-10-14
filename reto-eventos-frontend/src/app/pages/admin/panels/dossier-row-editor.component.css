@@ -1,0 +1,34 @@
+/* Los campos de una fila: se reparten en la rejilla de la fila que los contiene. */
+:host {
+  display: contents;
+}
+
+input,
+textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #c9cdca;
+  border-radius: 0.5rem;
+  color: #28333a;
+  background: #fff;
+  font:
+    0.95rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+}
+
+textarea {
+  resize: vertical;
+}
+
+:is(input, textarea):focus {
+  border-color: #ff7f7f;
+  outline: none;
+  box-shadow: 0 0 0 2px #ffb8b8;
+}
+
+/* Lo largo (detalle, pregunta, respuesta) ocupa toda la fila, debajo de lo corto. */
+.is-full {
+  grid-column: 1 / -1;
+}

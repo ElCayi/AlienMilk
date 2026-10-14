@@ -47,7 +47,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <ul class="inbox" appKeepHeight>
+  <ul class="inbox" [appKeepHeight]="filter() + query()">
     @for (solicitud of visible(); track solicitud.idSolicitud) {
       <li class="inbox-item" [class.is-new]="solicitud.estado === 'NUEVA'">
         <div class="inbox-head">

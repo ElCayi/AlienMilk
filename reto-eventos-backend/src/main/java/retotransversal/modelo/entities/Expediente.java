@@ -9,10 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Una capa del expediente de las sesiones, el contenido editorial de la ficha pública (texto, notas
- * de cata, programa, acceso, equipo, preguntas...). Hay tres ámbitos, que se superponen en este orden:
- * la capa general ({@code GENERAL}), la de cada tipo ({@code TIPO:<idTipo>}) y la de cada sesión
- * ({@code SESION:<idEvento>}). El contenido es el JSON de {@code ExpedienteCapaDto}.
+ * El expediente de una sesión, el contenido editorial de su ficha pública (texto, notas de cata,
+ * programa, acceso, equipo, preguntas...), con clave {@code SESION:<idEvento>}. El contenido es el
+ * JSON de {@code ExpedienteCapaDto}.
+ *
+ * Hasta el 2026-10-15 había además dos capas que se heredaban, {@code GENERAL} y {@code TIPO:<idTipo>};
+ * al arrancar se reparten en cada sesión y se borran (ExpedienteService.aplanarCapasAntiguas).
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +24,8 @@ import lombok.NoArgsConstructor;
 public class Expediente {
 
 	public static final String GENERAL = "GENERAL";
+	public static final String PREFIJO_TIPO = "TIPO:";
+	public static final String PREFIJO_SESION = "SESION:";
 
 	@Id
 	@Column(length = 20)
@@ -30,11 +34,7 @@ public class Expediente {
 	@Column(nullable = false, columnDefinition = "LONGTEXT")
 	private String contenido;
 
-	public static String deTipo(Integer idTipo) {
-		return "TIPO:" + idTipo;
-	}
-
 	public static String deSesion(Integer idEvento) {
-		return "SESION:" + idEvento;
+		return PREFIJO_SESION + idEvento;
 	}
 }

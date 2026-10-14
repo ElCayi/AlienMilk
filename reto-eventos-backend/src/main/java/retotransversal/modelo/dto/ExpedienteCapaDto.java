@@ -5,9 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Una capa del expediente de las sesiones (ver Expediente). Lo que una capa deja sin declarar (null)
- * lo hereda de la anterior; lo que declara lo sustituye, salvo {@code acceso} y {@code preguntas},
- * que se suman a los de las capas anteriores. Una lista vacía sí cuenta: deja el apartado sin nada.
+ * El expediente de una sesión (ver Expediente): lo que enseña su ficha pública además de los datos de
+ * la sesión. Un apartado sin declarar (null) no sale; la ficha pone en su lugar lo que tenga la sesión
+ * (su descripción) o nada.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ExpedienteCapaDto(

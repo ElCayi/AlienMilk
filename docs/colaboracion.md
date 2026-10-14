@@ -12,7 +12,8 @@ La voz y el criterio de la marca están en [identidad-alienmilk.md](identidad-al
    un worktree se queda fuera sin avisar. Revisar `git status` en cada worktree antes de empezar,
    y que nadie siga commiteando mientras dura la integración.
 2. **Cada rama deja su nota** en `docs/merge-notes/<rama>.md`: qué trae, qué choca y cómo
-   resolverlo, qué hay que comprobar después. Tras integrar, la entrega común va en
+   resolverlo, qué hay que comprobar después. La rama `claude` usa `rama-claude.md`, para no
+   confundirla con un `CLAUDE.md` de instrucciones de agentes. Tras integrar, la entrega común va en
    `docs/merge-notes/integracion-<fecha>.md` y las notas de rama pasan a ser historia.
 3. **Medir los conflictos en lugar de suponerlos**, sin tocar ninguna rama:
    `git merge-tree --write-tree --name-only <rama-a> <rama-b>`. Un conflicto entre dos ramas

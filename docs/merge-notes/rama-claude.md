@@ -179,3 +179,16 @@ primera cata» (Distribution).
 - **En todos los anchos con hamburguesa (≤1200):** las flechas del menú desplegable, más grandes.
 - **Comprobar tras el merge:** portada a 912×1368 (héroe, intro, sesiones y estaciones) y a 390×844
   (abrir «Características» y el «+» de una estación).
+
+## Fondo líquido a tiempo, y tercera tanda de tableta
+
+- **En todos los anchos:** la tinta de las piezas `data-backdrop-ink` (desde AlienMilk Distribution)
+  la pintaba el fondo WebGL, fijo y un fotograma tarde al hacer scroll: las secciones parecían
+  despegarse. Ahora la pinta su CSS en táctil y, con ratón, mientras se desplaza la página; el fondo
+  la retoma al parar (`liquid-backdrop.component.ts`).
+- **Solo en 901–1000:** tarjetas de «Cómo colaborar» más altas (muestra y número más grandes, título
+  de corrido, texto mayor) y en Distinciones más aire entre bloques, síntesis a todo el ancho y con
+  aire bajo su botón.
+- **En todos los anchos:** fuera «Todas vigentes» junto al rótulo de Distinciones.
+- **Comprobar tras el merge:** scroll por la portada desde Distribution, con ratón y en táctil (sin
+  desfase); «Cómo colaborar» y Distinciones a 912×1368.

@@ -188,13 +188,6 @@
   mask: url('/alienmilk-ufo.svg') center / 100% 100% no-repeat;
 }
 
-.trust-awards-aside {
-  color: rgba(251, 246, 245, 0.6);
-  font: 800 0.66rem / normal 'Nunito', sans-serif;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
 /* La destacada y el palmarés, centrados en la franja: el ancho lo da la destacada (la medalla y, a
    su lado, el texto) y el palmarés lo toma sin contar en él. */
 .trust-awards-body {
@@ -1323,10 +1316,6 @@
     font-size: 0.9rem;
   }
 
-  .trust-awards-aside {
-    font-size: 0.78rem;
-  }
-
   .trust-medal {
     margin-bottom: 2rem;
   }
@@ -1438,5 +1427,22 @@
     letter-spacing: 0.14em;
     text-align: center;
     text-transform: uppercase;
+  }
+}
+
+/* Tableta (901–1000 px): más aire entre el rótulo, la destacada y el palmarés, y la síntesis
+   desplegada a todo el ancho, también bajo la medalla. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .trust-awards-body {
+    --body-gap: 3.25rem;
+  }
+
+  .trust-award-detail {
+    grid-column: 1 / -1;
+  }
+
+  /* Aire entre el botón de la síntesis y su texto. Cerrada no cuenta: va dentro del panel plegado. */
+  .trust-award-detail p {
+    margin-top: 1.75rem;
   }
 }

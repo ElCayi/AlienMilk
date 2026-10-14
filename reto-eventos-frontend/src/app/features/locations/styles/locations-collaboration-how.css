@@ -707,3 +707,40 @@
     font-size: 1.35rem;
   }
 }
+
+/* Tableta (901–1000 px): la tarjeta de cada paso, más alta para que la muestra se vea, con más aire a
+   los lados; el paso, de corrido (en móvil va en dos líneas; aquí en una si cabe, y si no, en dos
+   equilibradas) y el texto, más grande. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .locations-collaboration-how {
+    --how-orb: 12.5rem;
+  }
+
+  .locations-collaboration-how-steps li {
+    padding: 2.5rem 2.75rem 2.25rem;
+  }
+
+  .locations-collaboration-how-visual {
+    margin-bottom: 1.5rem;
+  }
+
+  /* El número, a la escala de la muestra. */
+  .locations-collaboration-how-number {
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .locations-collaboration-how-steps li > strong {
+    font-size: 1.85rem !important;
+    text-wrap: balance;
+  }
+
+  .locations-collaboration-how-steps li > strong span {
+    display: inline;
+  }
+
+  .locations-collaboration-how-steps li > p {
+    font-size: 1.2rem;
+  }
+}

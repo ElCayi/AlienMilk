@@ -707,19 +707,21 @@
   border-top: 0;
 }
 
-/* Anulaciones y devoluciones: un bloque informativo, no un escaparate. Tarjeta de solo trazo; a la
-   izquierda, el rótulo, un título pequeño y la frase de la cadena de frío como cita; a la derecha,
-   los cuatro casos en tarjetas oscuras compactas, de dos en dos, con su número discreto. */
+/* Anulaciones y devoluciones: un bloque informativo, no un escaparate. Tarjeta oscura, como los
+   bloques de la página, para que se lea bien sobre la textura; a la izquierda, el rótulo, un título pequeño y la frase de la cadena de frío como cita; a la derecha,
+   los cuatro casos en tarjetas compactas un tono más claras, de dos en dos, con su número discreto. */
 .returns {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
   gap: 1.5rem clamp(2rem, 4vw, 4rem);
   align-items: start;
-  margin-top: clamp(3.5rem, 6vw, 6rem);
+  /* Pegado al pedido como el pedido al catálogo: el margen de .ink-card. */
+  margin-top: 1.25rem;
   padding: clamp(1.5rem, 2.5vw, 2.5rem);
   border: 1px solid rgba(247, 248, 249, 0.24);
   /* La hoja de la casa, como las fichas de producto. */
   border-radius: clamp(1.25rem, 2vw, 2rem) 0.35rem;
+  background: var(--canvas);
 }
 
 .returns-heading .section-kicker {
@@ -727,8 +729,8 @@
 }
 
 .returns-heading h2 {
-  margin: 1rem 0;
-  font-size: clamp(1.9rem, 2.2vw, 2.4rem);
+  margin: 1rem 0 1.75rem;
+  font-size: clamp(2.4rem, 3vw, 3.2rem);
 }
 
 /* La frase de la cadena de frío, como una cita: con la barra coral a la izquierda. */
@@ -754,7 +756,7 @@
   overflow: hidden;
   padding: 1.1rem 1.25rem 1.2rem;
   border-radius: 1rem 0.3rem;
-  background: var(--canvas);
+  background: rgba(247, 248, 249, 0.05);
 }
 
 /* El número, apenas más claro que la tarjeta, en la esquina. */

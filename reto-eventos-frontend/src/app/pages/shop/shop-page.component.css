@@ -707,10 +707,16 @@
   border-top: 0;
 }
 
-/* Anulaciones y devoluciones: el título y su frase en una fila, y los cuatro casos debajo, en
-   columnas numeradas con su filete, como los bloques de columnas de las páginas secundarias. */
+/* Anulaciones y devoluciones: una tarjeta de solo trazo, sin fondo, sobre la textura. Dentro, el
+   título y su frase en una fila, y los cuatro casos debajo, cada uno en su tarjeta oscura (de dos en
+   dos: en cuatro columnas el texto justificado abría huecos) con el número grande al fondo, casi
+   invisible. */
 .returns {
   margin-top: clamp(3.5rem, 6vw, 6rem);
+  padding: clamp(1.75rem, 4vw, 4.5rem);
+  border: 1px solid rgba(247, 248, 249, 0.24);
+  /* La hoja de la casa, como las fichas de producto. */
+  border-radius: clamp(2rem, 4vw, 4rem) 0.5rem;
 }
 
 .returns-heading {
@@ -729,30 +735,48 @@
   margin-bottom: 0;
 }
 
+/* La frase de la cadena de frío, como una cita: con la barra coral a la izquierda. */
 .returns-heading .section-copy {
   max-width: none;
+  padding-left: clamp(1rem, 1.5vw, 1.5rem);
+  border-left: 3px solid var(--coral);
 }
 
 .returns-list {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 2.5rem clamp(2rem, 3.5vw, 4rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 1.6vw, 1.5rem);
   margin: clamp(2.5rem, 4vw, 3.5rem) 0 0;
   padding: 0;
   list-style: none;
 }
 
 .returns-list li {
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.5rem, 2vw, 2rem);
+  border-radius: clamp(1.25rem, 2vw, 2rem) 0.35rem;
+  background: var(--canvas);
+}
+
+/* El número, grande y apenas más claro que la tarjeta: una marca de agua en la esquina. */
+.returns-list .column-number {
+  position: absolute;
+  top: 0.1em;
+  right: 0.2em;
+  color: rgba(247, 248, 249, 0.06);
+  font: 500 clamp(4.5rem, 6vw, 6.5rem) / 1 var(--condensed);
+  pointer-events: none;
 }
 
 .returns-list h3 {
-  margin: 0.85rem 0;
+  position: relative;
+  margin: 0 0 0.85rem;
   font: 400 clamp(1.5rem, 1.8vw, 1.8rem) / 1.1 var(--condensed);
 }
 
 .returns-list p {
+  position: relative;
   margin: 0;
   color: var(--muted);
   font-size: clamp(1.05rem, 1vw, 1.1rem);
@@ -989,14 +1013,8 @@
   }
 }
 
-/* Devoluciones e historial: los cuatro casos en dos filas y el título encima de su frase cuando las
-   columnas se estrechan; en el móvil, todo en una columna. */
-@media (max-width: 1200px) {
-  .returns-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
+/* Devoluciones e historial: el título encima de su frase cuando las columnas se estrechan; en el
+   móvil, todo en una columna. */
 @media (max-width: 1000px) {
   .returns-heading {
     grid-template-columns: minmax(0, 1fr);
@@ -1011,6 +1029,18 @@
   .returns-list,
   .order-history .history-list {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .returns {
+    padding: 1.75rem 1rem 1rem;
+  }
+
+  .returns-heading {
+    padding-inline: 0.5rem;
+  }
+
+  .returns-list li {
+    padding: 1.35rem 1.25rem;
   }
 
   .order-history .history-list li:nth-child(2) {

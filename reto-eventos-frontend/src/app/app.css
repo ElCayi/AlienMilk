@@ -172,9 +172,10 @@
 }
 
 /* Entre el menú desplegable y las pantallas anchas no cabe el nombre junto a los dos botones de la
-   cuenta, que ya dicen que hay una sesión abierta. 1520px es lo que necesita el más largo de las
-   cuentas de demostración («Administrador · Admin») con el pedido de la tienda en el menú. */
-@media (min-width: 1200.02px) and (max-width: 1520px) {
+   cuenta, que ya dicen que hay una sesión abierta. 1660px es lo que necesita el más largo de las
+   cuentas de demostración («Administrador · Admin») con las flechas de los desplegables y un pedido
+   de dos cifras en el menú. */
+@media (min-width: 1200.02px) and (max-width: 1660px) {
   .user-pill {
     display: none;
   }

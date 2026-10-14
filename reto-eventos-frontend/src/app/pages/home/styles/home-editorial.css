@@ -361,3 +361,13 @@
     font-size: 5rem;
   }
 }
+
+/* Tableta (901–1000 px): la intro mide lo que se ve bajo el header, no la pantalla entera, para que
+   al llegar a ella se vea completa de una vez. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .home-intro {
+    min-height: calc(100vh - var(--topbar-height, 4rem));
+    min-height: calc(100svh - var(--topbar-height, 4rem));
+    padding-top: 3rem;
+  }
+}

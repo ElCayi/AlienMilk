@@ -732,3 +732,28 @@
     scroll-snap-align: start;
   }
 }
+
+/* Tableta (901–1000 px): la tarjeta de sesión entera cabe en la pantalla bajo el header. La foto
+   cede lo que falte; el resto de la tarjeta mide unos 25,5rem, más 2rem de aire. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .session-featured .session-visual {
+    width: min(calc(100% - 1.6rem), 20rem, calc(100svh - var(--topbar-height, 0px) - 27.5rem));
+    justify-self: center;
+  }
+}
+
+/* Tableta: la pista ocupa todo el ancho de la pantalla, así la ficha que se desliza se va por el
+   borde de la pantalla en vez de cortarse en el de su columna. El hueco entre fichas es el mismo
+   margen de los lados, para que en reposo no asome la vecina. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .sessions-track {
+    /* 23rem: el ancho de la ficha (.sessions-carousel). */
+    --track-inset: calc((100vw - 23rem) / 2);
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: var(--track-inset);
+    scroll-padding-inline: var(--track-inset);
+    grid-auto-columns: 23rem;
+    column-gap: var(--track-inset);
+  }
+}

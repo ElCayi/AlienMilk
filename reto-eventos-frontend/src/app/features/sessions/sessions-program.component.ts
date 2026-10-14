@@ -87,6 +87,35 @@ export class SessionsProgramComponent {
     });
   }
 
+  /**
+   * Abre o cierra las características. Al abrirlas, la página baja lo justo para que se vea la ficha
+   * entera hasta el precio, sin que el botón se esconda bajo la barra de arriba.
+   */
+  toggleSpecs(event: MouseEvent): void {
+    const opening = !this.specsOpen();
+    this.specsOpen.set(opening);
+    const toggle = event.currentTarget as HTMLElement;
+    const card = toggle.closest<HTMLElement>('.session-featured');
+    if (!opening || !card) {
+      return;
+    }
+
+    this.changeDetector.detectChanges();
+    requestAnimationFrame(() => {
+      const air = 16;
+      const topbar = document.querySelector<HTMLElement>('.topbar')?.offsetHeight ?? 0;
+      const overflow = card.getBoundingClientRect().bottom + air - window.innerHeight;
+      const room = toggle.getBoundingClientRect().top - topbar - air;
+      const distance = Math.min(overflow, room);
+      if (distance > 0) {
+        window.scrollBy({
+          top: distance,
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        });
+      }
+    });
+  }
+
   goToSession(session: EventoListado): void {
     const sessionIndex = this.sessions.findIndex((item) => item.idEvento === session.idEvento);
     if (sessionIndex < 0 || sessionIndex === this.featuredSessionIndex()) {

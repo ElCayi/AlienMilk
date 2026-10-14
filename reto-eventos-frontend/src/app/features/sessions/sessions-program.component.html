@@ -232,7 +232,7 @@
               type="button"
               [attr.aria-controls]="'session-specs-' + session.idEvento"
               [attr.aria-expanded]="specsOpen()"
-              (click)="specsOpen.set(!specsOpen())"
+              (click)="toggleSpecs($event)"
             >
               <span>Características</span>
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

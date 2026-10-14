@@ -15,7 +15,7 @@ body {
    el resto de anchos, como siempre. */
 @media (min-width: 901px) and (max-width: 1000px) {
   html {
-    font-size: 150%;
+    font-size: 180%;
   }
 }
 

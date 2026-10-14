@@ -610,6 +610,35 @@
   margin-bottom: 1.75rem;
 }
 
+/* Anulaciones y devoluciones: cada caso, una fila del recuadro con leyenda, con su rótulo encima
+   y la regla en una frase corta. */
+.legend-box .returns-list div {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.legend-box .returns-list dd {
+  color: var(--ink);
+  font:
+    400 clamp(1rem, 0.95vw, 1.05rem) / 1.55 Arial,
+    sans-serif;
+  letter-spacing: 0;
+  text-align: justify;
+  hyphens: auto;
+  text-transform: none;
+  white-space: normal;
+}
+
+.returns-list a {
+  color: inherit;
+  text-decoration-color: var(--coral);
+  text-underline-offset: 0.2em;
+}
+
+.returns-list a:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
 /* 03 · Historial: cada pedido, una fila del recuadro con leyenda. */
 .history-list {
   margin: 0;

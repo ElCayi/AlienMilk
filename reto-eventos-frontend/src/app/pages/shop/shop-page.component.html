@@ -518,6 +518,53 @@
     </section>
   }
 
+  <!-- Las reglas, al final: lo primero de la tienda son los productos. -->
+  <section class="secondary-closing returns" id="devoluciones" aria-labelledby="returns-title">
+    <div>
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        {{ orders().length ? '04' : '03' }} / Devoluciones
+      </p>
+      <h2 id="returns-title">Anulaciones y devoluciones.</h2>
+      <p class="section-copy">
+        Lo que sale del centro de distribución viaja en cadena de frío y no vuelve a entrar en ella.
+        Por eso la regla depende de si el pedido ha salido y de lo que lleva.
+      </p>
+    </div>
+    <fieldset class="legend-box returns-box">
+      <legend>Política</legend>
+      <dl class="returns-list">
+        <div>
+          <dt>Antes del envío</dt>
+          <dd>
+            Se anula desde el enlace privado del pedido o desde Mi panel. Le devolvemos el importe
+            completo y las unidades vuelven al almacén.
+          </dd>
+        </div>
+        <div>
+          <dt>Leches y derivados</dt>
+          <dd>
+            Son perecederos: una vez entregados no se devuelven. Si llegan dañados o con la cadena
+            de frío rota, avísenos en 48 horas y los reponemos o le devolvemos el importe.
+          </dd>
+        </div>
+        <div>
+          <dt>Mesa</dt>
+          <dd>
+            La copa, el estuche y el catálogo se pueden devolver durante 14 días desde la entrega,
+            sin dar motivo, tal como llegaron.
+          </dd>
+        </div>
+        <div>
+          <dt>Cómo avisar</dt>
+          <dd>
+            Desde <a routerLink="/contacto">Contacto</a>, con su número de pedido.
+          </dd>
+        </div>
+      </dl>
+    </fieldset>
+  </section>
+
   <footer class="secondary-footnote">
     <p>AlienMilk / Distribución / Tienda</p>
     <p>Precios con impuestos incluidos · <span class="nowrap">Ciclo 2026</span></p>

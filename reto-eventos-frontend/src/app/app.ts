@@ -56,6 +56,7 @@ const NAV_GROUPS: readonly NavGroup[] = [
       { label: 'Tienda' },
       { label: 'Catálogo', fragment: 'catalogo' },
       { label: 'Su pedido', fragment: 'su-pedido' },
+      { label: 'Devoluciones', fragment: 'devoluciones' },
     ],
   },
   {

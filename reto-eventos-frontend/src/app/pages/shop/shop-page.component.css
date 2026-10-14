@@ -236,6 +236,7 @@
      grandes arriba a la izquierda y abajo a la derecha. */
   border-radius: clamp(1.5rem, 2.6vw, 2.5rem) 0.35rem;
   background: #efece6;
+  container-type: inline-size;
 }
 
 .product-link {
@@ -252,6 +253,8 @@
 }
 
 .product-kicker {
+  width: 100%;
+  min-width: 0;
   margin-top: 1.5rem;
   color: var(--paper-muted);
   font:
@@ -312,6 +315,28 @@
   display: grid;
   gap: 0.35rem;
   min-width: 0;
+}
+
+/* Ficha estrecha (tres columnas en un portátil, dos en el móvil): el precio arriba y, debajo, el
+   botón o las unidades a todo el ancho. Lo decide el ancho de la ficha, así todas las de la rejilla
+   quedan iguales aunque una lleve «Últimas 5 unidades», que no cabe junto al botón. */
+@container (width < 17rem) {
+  .product-foot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .add-action {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .stepper {
+    justify-content: space-between;
+  }
 }
 
 /* Agotado: la tarjeta pierde el fondo y queda como un hueco vacío en el estante, solo con su
@@ -585,7 +610,191 @@
   margin-bottom: 1.75rem;
 }
 
-/* 03 · Historial: cada pedido, una fila del recuadro con leyenda. */
+/* Sus pedidos: el historial de la cuenta, al pie del bloque del pedido y plegado, en un recuadro
+   con la hoja de la casa. Se abre desde su rótulo; dentro, los pedidos en dos columnas. */
+.order-history {
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+  padding-inline: clamp(1.15rem, 1.8vw, 2rem);
+  border: 1px solid rgba(247, 248, 249, 0.24);
+  border-radius: clamp(1.25rem, 2vw, 2rem) 0.35rem;
+}
+
+.order-history summary {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  padding-block: 1.15rem;
+  list-style: none;
+  cursor: pointer;
+}
+
+.order-history summary::-webkit-details-marker {
+  display: none;
+}
+
+.order-history-title {
+  font: 400 clamp(1.35rem, 1.5vw, 1.6rem) / 1.1 var(--condensed);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+}
+
+.order-history-count {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.order-history-chevron {
+  align-self: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-left: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition:
+    transform 200ms ease,
+    color 160ms ease;
+}
+
+.order-history summary:is(:hover, :focus-visible) :is(.order-history-title, .order-history-chevron),
+.order-history[open] .order-history-chevron {
+  color: var(--coral);
+}
+
+.order-history[open] .order-history-chevron {
+  transform: rotate(180deg);
+}
+
+.order-history-note {
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Al abrirse, el contenido entra con el fundido y la subida leve de los cambios de la web. */
+.order-history[open] > :not(summary) {
+  animation: history-in 240ms ease both;
+}
+
+@keyframes history-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+}
+
+.order-history .history-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(2rem, 4vw, 4rem);
+  padding-bottom: 1.25rem;
+}
+
+/* La primera fila ya tiene encima el filete de la nota. */
+.order-history .history-list li:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+/* Anulaciones y devoluciones: un bloque informativo, no un escaparate. Tarjeta de solo trazo; a la
+   izquierda, el rótulo, un título pequeño y la frase de la cadena de frío como cita; a la derecha,
+   los cuatro casos en tarjetas oscuras compactas, de dos en dos, con su número discreto. */
+.returns {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+  gap: 1.5rem clamp(2rem, 4vw, 4rem);
+  align-items: start;
+  margin-top: clamp(3.5rem, 6vw, 6rem);
+  padding: clamp(1.5rem, 2.5vw, 2.5rem);
+  border: 1px solid rgba(247, 248, 249, 0.24);
+  /* La hoja de la casa, como las fichas de producto. */
+  border-radius: clamp(1.25rem, 2vw, 2rem) 0.35rem;
+}
+
+.returns-heading .section-kicker {
+  margin: 0;
+}
+
+.returns-heading h2 {
+  margin: 1rem 0;
+  font-size: clamp(1.9rem, 2.2vw, 2.4rem);
+}
+
+/* La frase de la cadena de frío, como una cita: con la barra coral a la izquierda. */
+.returns-heading .section-copy {
+  max-width: none;
+  padding-left: 1rem;
+  border-left: 3px solid var(--coral);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.returns-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.returns-list li {
+  position: relative;
+  overflow: hidden;
+  padding: 1.1rem 1.25rem 1.2rem;
+  border-radius: 1rem 0.3rem;
+  background: var(--canvas);
+}
+
+/* El número, apenas más claro que la tarjeta, en la esquina. */
+.returns-list .column-number {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.75rem;
+  color: rgba(247, 248, 249, 0.08);
+  font: 500 2.6rem / 1 var(--condensed);
+  pointer-events: none;
+}
+
+.returns-list h3 {
+  position: relative;
+  margin: 0 0 0.45rem;
+  font: 400 1.3rem / 1.15 var(--condensed);
+}
+
+.returns-list p {
+  position: relative;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.returns-list a {
+  color: inherit;
+  text-decoration-color: var(--coral);
+  text-underline-offset: 0.2em;
+}
+
+.returns-list a:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+/* Cada pedido del historial: referencia e importe, el detalle y el estado con sus acciones. */
 .history-list {
   margin: 0;
   padding: 0;
@@ -595,15 +804,6 @@
 .history-list li {
   padding-block: 1.25rem;
   border-top: 1px solid var(--line);
-}
-
-.history-list li:first-child {
-  padding-top: 0.5rem;
-  border-top: 0;
-}
-
-.history-list li:last-child {
-  padding-bottom: 0;
 }
 
 .history-row {
@@ -680,6 +880,15 @@
   .catalog-heading {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    container-type: inline-size;
+  }
+
+  /* Con el título en su propia fila, en una sola línea que llena el ancho: la letra sale del ancho
+     del bloque (el texto mide unas 7,1 veces su tamaño de letra). */
+  .catalog-heading h2.catalog-title {
+    display: block;
+    font-size: calc(100cqi / 7.2);
+    white-space: nowrap;
   }
 
   .product-grid {
@@ -687,7 +896,162 @@
   }
 }
 
-/* Móvil: una columna; cada producto, la muestra a la izquierda de su nombre. */
+/* Móvil y tableta: como en las tiendas de móvil, dos columnas de fichas compactas y exactamente
+   cuatro en pantalla, sea cual sea su alto: cada ficha mide media pantalla bajo la barra
+   (--card-height). Cada ficha se queda con la muestra, el nombre, el precio y el botón (el resumen
+   y la procedencia siguen en la página del producto). La muestra se centra en lo que sobra, y el
+   nombre y el precio quedan abajo.
+   Las letras y los espacios van en --k, un rem que crece con la ficha (hasta 1,3 veces) para que
+   en las pantallas altas el texto no se quede pequeño y apretado. Todo lo que no es la muestra
+   cabe en --card-fixed (con el nombre en dos líneas, el peor caso), así que la muestra crece hasta
+   ese resto sin pasar del ancho. */
+@media (max-width: 1000px) {
+  .product-grid {
+    --card-gap: 0.75rem;
+    --card-height: calc((100svh - var(--topbar-height, 4.5rem) - 3 * var(--card-gap)) / 2);
+    --k: clamp(1rem, var(--card-height) * 0.06, 1.3rem);
+    --card-fixed: calc(11 * var(--k));
+    gap: var(--card-gap);
+  }
+
+  .product {
+    /* Sin la rejilla compartida de las fichas grandes: una columna en la que la muestra y el nombre
+       se llevan lo que crece la ficha, y el pie queda abajo, a la misma altura en toda la fila. */
+    display: flex;
+    flex-direction: column;
+    grid-row: auto;
+    min-height: var(--card-height);
+    padding: calc(0.65 * var(--k)) calc(0.75 * var(--k)) calc(0.7 * var(--k));
+    border-radius: 1.35rem 0.3rem;
+  }
+
+  .product-link {
+    flex: 1;
+    grid-template-rows: 1fr auto auto;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .product-sample {
+    align-self: center;
+    width: clamp(3rem, var(--card-height) - var(--card-fixed), min(88%, 14rem));
+  }
+
+  .product-kicker {
+    margin-top: calc(0.4 * var(--k));
+    font-size: calc(0.58 * var(--k));
+    line-height: 1.4;
+    letter-spacing: 0.06em;
+  }
+
+  .product-name {
+    margin-top: calc(0.1 * var(--k));
+    font-size: calc(1.1 * var(--k));
+    line-height: 1.1;
+    /* Siempre el sitio de dos líneas: así las muestras de una fila quedan a la misma altura. */
+    min-height: 2.2em;
+    text-wrap: balance;
+  }
+
+  .product-summary,
+  .product-origin {
+    display: none;
+  }
+
+  .product-foot {
+    gap: calc(0.4 * var(--k));
+    margin-top: calc(0.55 * var(--k));
+    padding-top: calc(0.5 * var(--k));
+  }
+
+  .product-price {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: calc(0.2 * var(--k));
+  }
+
+  .product .price {
+    font-size: calc(1.3 * var(--k));
+  }
+
+  .product .stock {
+    width: 100%;
+    font-size: calc(0.54 * var(--k));
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+
+  .product .add-action {
+    gap: 0.5rem;
+    font-size: calc(1.05 * var(--k));
+  }
+
+  .product .stepper button {
+    width: calc(1.9 * var(--k));
+  }
+
+  .product .stepper output {
+    font-size: calc(1.3 * var(--k));
+  }
+}
+
+/* Móviles muy estrechos: el nombre, un punto más pequeño, para que no pase de dos líneas. */
+@media (max-width: 359px) {
+  .product-name {
+    font-size: 1rem;
+  }
+}
+
+/* Tumbado (un móvil apaisado, una tableta horizontal): las cuatro en una sola fila, con la muestra
+   a la altura de la pantalla entera. */
+@media (max-width: 1000px) and (orientation: landscape) {
+  .product-grid {
+    --card-height: calc(100svh - var(--topbar-height, 4.5rem) - 2 * var(--card-gap));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Devoluciones e historial: el título encima de su frase cuando las columnas se estrechan; en el
+   móvil, todo en una columna. */
+@media (max-width: 1000px) {
+  .returns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .returns-list,
+  .order-history .history-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .returns {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .returns-heading {
+    padding-inline: 0.25rem;
+  }
+
+  .order-history .history-list li:nth-child(2) {
+    border-top: 1px solid var(--line);
+  }
+
+  /* El rótulo y, debajo, la cuenta de pedidos; la flecha, a la derecha de los dos. */
+  .order-history summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.3rem 1rem;
+    align-items: center;
+  }
+
+  .order-history-chevron {
+    grid-row: 1 / 3;
+    grid-column: 2;
+  }
+}
+
+/* Móvil: las condiciones en una columna y, en el pedido, la muestra a la izquierda de cada línea. */
 @media (max-width: 700px) {
   .terms-box dl {
     grid-template-columns: minmax(0, 1fr);
@@ -699,27 +1063,8 @@
     padding: 0.5rem 1rem;
   }
 
-  .product-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .catalog-filter {
     column-gap: 1.25rem;
-  }
-
-  .product-link {
-    grid-template-columns: auto minmax(0, 1fr);
-    column-gap: 1.25rem;
-    align-items: end;
-  }
-
-  .product-sample {
-    grid-row: span 2;
-    width: 5.5rem;
-  }
-
-  .product-kicker {
-    margin-top: 0;
   }
 
   .order-line {
@@ -745,7 +1090,13 @@
   .catalog-filter button,
   .order-line-name,
   .history-cancel,
+  .order-history-chevron,
+  .order-history-title,
   .guest-link-copy {
     transition: none;
+  }
+
+  .order-history[open] > :not(summary) {
+    animation: none;
   }
 }

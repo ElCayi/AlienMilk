@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,8 @@ import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ProductoRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
 import retotransversal.modelo.service.LimitadorSolicitudes;
+import retotransversal.modelo.service.PedidoAvisoEvent;
+import retotransversal.modelo.service.PedidoAvisoEvent.Motivo;
 import retotransversal.modelo.service.TiendaService;
 
 @Service
@@ -82,13 +86,18 @@ public class TiendaServiceImpl implements TiendaService {
 	private final PasarelaPago pasarela;
 	private final EntityManager entityManager;
 	private final Clock reloj;
+	/** Avisa de cada cambio que el comprador debe saber (correo, ver AvisoPedidos). */
+	private final ApplicationEventPublisher eventos;
+	/** La web de la tienda, para los enlaces de los correos. */
+	private final String urlTienda;
 
 	@Autowired
 	public TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
 			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador, ObjectProvider<PasarelaPago> pasarela,
-			EntityManager entityManager) {
+			EntityManager entityManager, ApplicationEventPublisher eventos,
+			@Value("${tienda.url:http://127.0.0.1:4300}") String urlTienda) {
 		this(productoRepository, pedidoRepository, usuarioRepository, limitador, pasarela.getIfAvailable(),
-				entityManager, Clock.systemDefaultZone());
+				entityManager, Clock.systemDefaultZone(), eventos, urlTienda);
 		log.info(this.pasarela == null
 				? "Tienda: pago apagado (sin STRIPE_SECRET_KEY); los pedidos se confirman sin cobrar"
 				: "Tienda: pago con Stripe Checkout activo");
@@ -97,6 +106,14 @@ public class TiendaServiceImpl implements TiendaService {
 	TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
 			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador, PasarelaPago pasarela,
 			EntityManager entityManager, Clock reloj) {
+		this(productoRepository, pedidoRepository, usuarioRepository, limitador, pasarela, entityManager, reloj,
+				evento -> {
+				}, "http://127.0.0.1:4300");
+	}
+
+	TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
+			UsuarioRepository usuarioRepository, LimitadorSolicitudes limitador, PasarelaPago pasarela,
+			EntityManager entityManager, Clock reloj, ApplicationEventPublisher eventos, String urlTienda) {
 		this.productoRepository = productoRepository;
 		this.pedidoRepository = pedidoRepository;
 		this.usuarioRepository = usuarioRepository;
@@ -104,6 +121,8 @@ public class TiendaServiceImpl implements TiendaService {
 		this.pasarela = pasarela;
 		this.entityManager = entityManager;
 		this.reloj = reloj;
+		this.eventos = eventos;
+		this.urlTienda = urlTienda.replaceAll("/+$", "");
 	}
 
 	@Override
@@ -127,8 +146,9 @@ public class TiendaServiceImpl implements TiendaService {
 		Map<String, Integer> cantidades = validar(datos, false);
 		Usuario usuario = usuarioRepository.findById(username)
 				.orElseThrow(() -> new RecursoNoEncontradoException("Usuario no encontrado"));
-		Pedido pedido = guardar(datos, cantidades, nuevo -> nuevo.setUsuario(usuario));
-		return aDto(abrirPago(pedido, usuario.getEmail()), null);
+		Pedido pedido = abrirPago(guardar(datos, cantidades, nuevo -> nuevo.setUsuario(usuario)), usuario.getEmail());
+		avisar(Motivo.RECIBIDO, pedido, null);
+		return aDto(pedido, null);
 	}
 
 	@Override
@@ -143,7 +163,9 @@ public class TiendaServiceImpl implements TiendaService {
 			nuevo.setCorreo(datos.correo().strip());
 			nuevo.setClaveHash(huella(clave));
 		});
-		return aDto(abrirPago(pedido, pedido.getCorreo()), clave);
+		abrirPago(pedido, pedido.getCorreo());
+		avisar(Motivo.RECIBIDO, pedido, clave);
+		return aDto(pedido, clave);
 	}
 
 	/** Los pedidos pendientes de pago se ponen al día antes de enseñarlos (ver {@link #alDia}). */
@@ -230,6 +252,7 @@ public class TiendaServiceImpl implements TiendaService {
 		}
 		pedido.setEstado(estado);
 		log.info("Pedido {} {}", pedido.getReferencia(), estado);
+		avisar(estado == EstadoPedido.ENVIADO ? Motivo.ENVIADO : Motivo.ENTREGADO, pedido, null);
 		return aAdminDto(pedido);
 	}
 
@@ -301,10 +324,12 @@ public class TiendaServiceImpl implements TiendaService {
 				pedido.setPagadoEn(LocalDateTime.now(reloj));
 				pedido.setPagoUrl(null);
 				log.info("Pedido {} pagado", pedido.getReferencia());
+				avisar(Motivo.PAGADO, pedido, null);
 			}
 			case CADUCADA -> {
 				devolverUnidades(pedido);
 				log.info("Pedido {} anulado: nadie lo pagó a tiempo", pedido.getReferencia());
+				avisar(Motivo.CADUCADO, pedido, null);
 			}
 			case ABIERTA -> {
 				// Aún se puede pagar.
@@ -396,6 +421,7 @@ public class TiendaServiceImpl implements TiendaService {
 			throw new ConflictoNegocioException("Este pedido ya no se puede anular");
 		}
 		devolverUnidades(pedido);
+		avisar(Motivo.ANULADO, pedido, null);
 		return pedido;
 	}
 
@@ -405,6 +431,20 @@ public class TiendaServiceImpl implements TiendaService {
 		pedido.setEstado(EstadoPedido.ANULADO);
 		pedido.setAnuladoEn(LocalDateTime.now(reloj));
 		pedido.setPagoUrl(null);
+	}
+
+	/**
+	 * Publica el cambio para el correo al comprador, que sale al confirmar la transacción. El enlace
+	 * privado de un invitado solo se puede dar al crear el pedido (`clave`), porque luego solo queda
+	 * su huella; con cuenta, el enlace es Mi panel.
+	 */
+	private void avisar(Motivo motivo, Pedido pedido, String clave) {
+		Usuario usuario = pedido.getUsuario();
+		String enlace = usuario != null ? urlTienda + "/cuenta/pedidos"
+				: clave != null ? urlTienda + "/tienda/pedido/" + pedido.getReferencia() + "#" + clave : null;
+		eventos.publishEvent(new PedidoAvisoEvent(motivo, aDto(pedido, null),
+				usuario != null ? usuario.getEmail() : pedido.getCorreo(),
+				usuario != null ? usuario.getNombre() : pedido.getNombre(), enlace, pedido.getReembolsoId() != null));
 	}
 
 	/** Vuelve a leer el pedido con su fila bloqueada hasta el final de la transacción (SELECT … FOR UPDATE). */

@@ -119,8 +119,32 @@ pedido pide además nombre y correo y se guarda como **pedido de invitado** (sin
 - **Freno.** Los pedidos de invitado pasan por `LimitadorSolicitudes`, el mismo de los formularios
   públicos, para que nadie pueda vaciar el almacén con un script. Solo cuentan los pedidos bien
   formados.
-- **Pendiente:** el correo de confirmación con el enlace, cuando esté configurado el aviso por correo
-  (ver [formularios](formularios.md#aviso-por-correo)).
+- **El enlace también llega por correo**, en el primero que recibe el comprador (ver abajo). Es el
+  único momento en que el servidor conoce la clave.
+
+## Correos al comprador
+
+`AvisoPedidos` escribe al comprador (al correo de la cuenta o al que dio el invitado) cada vez que
+su pedido cambia: **recibido** (confirmado o, con Stripe, reservado con el botón para pagar),
+**pagado**, **en camino**, **entregado** o **recogido**, **anulado** (con el reembolso, si lo hubo) y
+**anulado por no pagarse a tiempo**. `TiendaServiceImpl` publica un `PedidoAvisoEvent` en cada
+cambio; el correo sale en segundo plano y solo si la transacción se confirma, así que un pedido
+nunca espera al correo ni falla por él. Las frases son las del resguardo de la tienda
+(`CorreoPedido`).
+
+- **Enlaces.** Al invitado, el enlace privado en el primer correo; en los siguientes, que lo busque
+  en ese (la clave ya no está). Con cuenta, Mi panel. Todos llevan la política de devoluciones
+  (`/tienda#devoluciones`). La web se toma de `TIENDA_URL`.
+- **Sin servidor de correo** (sin `SPRING_MAIL_HOST`), no se envía nada: cada correo queda en el
+  registro con su referencia y su asunto, sin la dirección del comprador. Es como funciona ahora,
+  hasta tener el dominio y el buzón de IONOS.
+- **Con servidor**, usa la misma cuenta que el aviso de solicitudes (ver
+  [formularios](formularios.md#aviso-por-correo)): remitente «AlienMilk Distribución» y las
+  respuestas del comprador a `AVISOS_CORREO_DESTINO`. Dos reintentos si el servidor falla.
+- **Probarlo en local** sin mandar nada fuera: `nix shell nixpkgs#mailpit -c mailpit`, y el backend
+  con `SPRING_MAIL_HOST=127.0.0.1`, `SPRING_MAIL_PORT=1025` y la autenticación y STARTTLS apagados
+  (`SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=false`, `…_STARTTLS_ENABLE=false`,
+  `…_STARTTLS_REQUIRED=false`). Los correos se ven en `http://127.0.0.1:8025`.
 
 ## Productos
 

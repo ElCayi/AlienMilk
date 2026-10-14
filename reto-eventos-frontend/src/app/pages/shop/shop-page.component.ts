@@ -146,6 +146,11 @@ export class ShopPageComponent {
   readonly emailError = signal<string | null>(null);
   readonly receipt = signal<Pedido | null>(null);
   readonly orders = signal<Pedido[]>([]);
+  /** Los que aún no han terminado: el resumen del historial los cuenta aparte. */
+  readonly ordersInProgress = computed(
+    () =>
+      this.orders().filter((order) => ['PENDIENTE_PAGO', 'CONFIRMADO', 'ENVIADO'].includes(order.estado)).length,
+  );
   readonly cancelling = signal<number | null>(null);
   readonly linkCopied = signal(false);
   /** Aviso informativo sobre el pedido en curso (al volver de Stripe sin pagar). */

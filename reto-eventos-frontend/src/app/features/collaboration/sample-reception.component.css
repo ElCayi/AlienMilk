@@ -938,10 +938,10 @@
 }
 
 /* Los dos párrafos van encima de la puerta (en la portada): dentro quedan el título, las minimilks y
-   el lema, más grandes. */
+   el lema, más grandes. Quien la usa puede agrandar el título (--door-title-scale). */
 @media (min-width: 1001px) {
   .sample-reception.is-panel-only h2 {
-    font-size: 4.1rem;
+    font-size: calc(4.1rem * var(--door-title-scale, 1));
   }
 
   .sample-reception.is-panel-only .sample-reception-marks {

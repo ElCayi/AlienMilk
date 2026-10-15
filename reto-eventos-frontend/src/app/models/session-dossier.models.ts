@@ -33,7 +33,6 @@ export interface SessionDossier {
   entradilla: string;
   texto: string[];
   procedencia: string;
-  horario: string;
   notasCata: SessionField[];
   programa: SessionProgramStep[];
   equipo: SessionField[];

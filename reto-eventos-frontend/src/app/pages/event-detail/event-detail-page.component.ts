@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { EventService } from '../../core/services/event.service';
 import { ReservationService } from '../../core/services/reservation.service';
+import { sessionSchedule } from '../../features/sessions/session.presenter';
 import { EventoDetalle } from '../../models/api.models';
 
 @Component({
@@ -17,6 +18,7 @@ import { EventoDetalle } from '../../models/api.models';
 })
 export class EventDetailPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  readonly schedule = sessionSchedule;
   private readonly router = inject(Router);
   private readonly eventService = inject(EventService);
   private readonly reservationService = inject(ReservationService);

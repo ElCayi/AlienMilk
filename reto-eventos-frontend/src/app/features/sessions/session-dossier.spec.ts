@@ -18,18 +18,17 @@ const session: EventoDetalle = {
   minimoAsistencia: 5,
   estado: 'ACTIVO',
   idTipo: 1,
+  horaInicio: '19:15',
   tipoEvento: 'CATA_COSMICA',
 };
 
 describe('session dossier', () => {
   it('completes what the session has stored', () => {
     const dossier = buildSessionDossier(session, {
-      horario: 'De noche',
       acceso: [{ etiqueta: 'Edad', valor: '18' }],
       procedencia: 'Órbita de Orión',
     });
 
-    expect(dossier.horario).toBe('De noche');
     expect(dossier.procedencia).toBe('Órbita de Orión');
     expect(dossier.acceso.map((item) => item.etiqueta)).toEqual(['Edad']);
     expect(dossier.preguntas).toEqual([]);
@@ -41,7 +40,6 @@ describe('session dossier', () => {
     expect(dossier.entradilla).toBe('Descripción registrada en la API');
     expect(dossier.texto).toEqual(['Descripción registrada en la API']);
     expect(dossier.procedencia).toBe('No declarada');
-    expect(dossier.horario).toBe('');
   });
 
   it('formats dates and durations for the public file', () => {

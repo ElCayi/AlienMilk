@@ -78,7 +78,7 @@ class ExpedientesTest {
 		when(eventos.existsById(any())).thenReturn(true);
 
 		mvc.perform(put("/api/admin/expedientes/lote").contentType(MediaType.APPLICATION_JSON).content("""
-				{"3": {"horario": "De 19:00 a 21:00"},
+				{"3": {"procedencia": "Órbita baja"},
 				 "5": {"preguntas": [{"pregunta": "¿Y si llueve?"}]},
 				 "7": {"programa": [{"hora": "20:00"}]}}
 				"""))
@@ -88,10 +88,10 @@ class ExpedientesTest {
 		verify(expedientes, never()).save(any());
 
 		mvc.perform(put("/api/admin/expedientes/lote").contentType(MediaType.APPLICATION_JSON).content("""
-				{"3": {"horario": "De 19:00 a 21:00"}, "5": {"horario": "De 19:00 a 21:00"}}
+				{"3": {"procedencia": "Órbita baja"}, "5": {"procedencia": "Órbita baja"}}
 				"""))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$['5'].horario").value("De 19:00 a 21:00"));
+				.andExpect(jsonPath("$['5'].procedencia").value("Órbita baja"));
 		verify(expedientes, times(2)).save(any());
 	}
 
@@ -103,8 +103,8 @@ class ExpedientesTest {
 				Evento.builder().idEvento(5).tipoEvento(cata).build(),
 				Evento.builder().idEvento(6).tipoEvento(orbita).build()));
 		when(expedientes.findAll()).thenReturn(List.of(
-				new Expediente("GENERAL", "{\"horario\":\"Hora de la estación\",\"preguntas\":[{\"pregunta\":\"¿Común?\",\"respuesta\":\"Sí\"}]}"),
-				new Expediente("TIPO:1", "{\"horario\":\"Noche\",\"notasCata\":[{\"etiqueta\":\"Nariz\",\"valor\":\"Lunar\"}]}"),
+				new Expediente("GENERAL", "{\"procedencia\":\"La estación\",\"preguntas\":[{\"pregunta\":\"¿Común?\",\"respuesta\":\"Sí\"}]}"),
+				new Expediente("TIPO:1", "{\"procedencia\":\"Orión\",\"notasCata\":[{\"etiqueta\":\"Nariz\",\"valor\":\"Lunar\"}]}"),
 				new Expediente("SESION:5", "{\"entradilla\":\"Eclipse\",\"preguntas\":[{\"pregunta\":\"¿Gafas?\",\"respuesta\":\"No\"}]}")));
 
 		assertThat(servicio.aplanarCapasAntiguas()).isEqualTo(2);
@@ -114,8 +114,8 @@ class ExpedientesTest {
 		Map<String, String> porClave = guardados.getAllValues().stream()
 				.collect(Collectors.toMap(Expediente::getClave, Expediente::getContenido));
 		assertThat(porClave.get("SESION:5"))
-				.contains("\"entradilla\":\"Eclipse\"", "\"horario\":\"Noche\"", "Nariz", "¿Común?", "¿Gafas?");
-		assertThat(porClave.get("SESION:6")).contains("\"horario\":\"Hora de la estación\"", "¿Común?")
+				.contains("\"entradilla\":\"Eclipse\"", "\"procedencia\":\"Orión\"", "Nariz", "¿Común?", "¿Gafas?");
+		assertThat(porClave.get("SESION:6")).contains("\"procedencia\":\"La estación\"", "¿Común?")
 				.doesNotContain("Nariz");
 		verify(expedientes).deleteAllById(List.of("GENERAL", "TIPO:1"));
 	}

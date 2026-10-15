@@ -5,7 +5,6 @@ const EMPTY_DOSSIER: SessionDossier = {
   entradilla: '',
   texto: [],
   procedencia: 'No declarada',
-  horario: '',
   notasCata: [],
   programa: [],
   equipo: [],

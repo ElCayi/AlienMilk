@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
-import { archiveCode, sessionImage } from '../../../features/sessions/session.presenter';
+import { archiveCode, sessionImage, sessionSchedule } from '../../../features/sessions/session.presenter';
 import { EstadoEvento, EventoAdmin, EventoPayload, TipoEvento } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
@@ -39,7 +39,7 @@ const STATE_ORDER: Record<EstadoEvento, number> = { ACTIVO: 0, CANCELADO: 1, TER
 const COMPARE: Record<SortKey, (a: EventoAdmin, b: EventoAdmin) => number> = {
   numero: (a, b) => a.idEvento - b.idEvento,
   nombre: (a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }),
-  fecha: (a, b) => a.fechaInicio.localeCompare(b.fechaInicio),
+  fecha: (a, b) => (a.fechaInicio + a.horaInicio).localeCompare(b.fechaInicio + b.horaInicio),
   aforo: (a, b) => a.plazasReservadas - b.plazasReservadas || a.aforoMaximo - b.aforoMaximo,
   estado: (a, b) => STATE_ORDER[a.estado] - STATE_ORDER[b.estado],
 };
@@ -230,6 +230,9 @@ export class AdminSessionsPanelComponent implements OnInit {
   /** La referencia del archivo (AM-S/025): sale del id, así que no cambia aunque cambie el nombre. */
   readonly code = archiveCode;
 
+  /** El horario (19:15 – 21:45): la hora de inicio más la duración. */
+  readonly schedule = sessionSchedule;
+
   /** Hoy, en el formato del campo de fecha (aaaa-mm-dd), en la hora de quien usa el panel. */
   readonly today = isoToday();
 
@@ -290,6 +293,7 @@ export class AdminSessionsPanelComponent implements OnInit {
       nombre: session.nombre,
       descripcion: session.descripcion ?? '',
       fechaInicio: session.fechaInicio,
+      horaInicio: session.horaInicio ?? '',
       duracion: session.duracion,
       direccion: session.direccion ?? '',
       aforoMaximo: session.aforoMaximo,
@@ -503,6 +507,30 @@ export class AdminSessionsPanelComponent implements OnInit {
     });
   }
 
+  /** Lo que ha pasado al añadir sesiones de ejemplo: sale junto a los botones del pie. */
+  readonly demoNotice = signal<{ text: string; error: boolean } | null>(null);
+  readonly addingDemo = signal(false);
+
+  addDemoSessions(): void {
+    this.addingDemo.set(true);
+    this.demoNotice.set(null);
+    this.admin.anadirSesionesDemo().subscribe({
+      next: ({ creadas }) => {
+        this.addingDemo.set(false);
+        this.demoNotice.set({
+          text: `${plural(creadas.length, 'sesión añadida', 'sesiones añadidas')} al final del programa.`,
+          error: false,
+        });
+        this.summary.refresh();
+        this.load();
+      },
+      error: (error) => {
+        this.addingDemo.set(false);
+        this.demoNotice.set({ text: errorMessage(error, 'No se han podido añadir las sesiones demo.'), error: true });
+      },
+    });
+  }
+
   private fail(error: unknown, fallback: string): void {
     this.busy.set(null);
     this.notice.set({ text: errorMessage(error, fallback), error: true });
@@ -589,6 +617,7 @@ function emptyForm(idTipo: number | null = null): EventoPayload {
     nombre: '',
     descripcion: '',
     fechaInicio: '',
+    horaInicio: '',
     duracion: 90,
     direccion: '',
     aforoMaximo: 50,
@@ -599,7 +628,7 @@ function emptyForm(idTipo: number | null = null): EventoPayload {
 }
 
 function byDate(a: EventoAdmin, b: EventoAdmin): number {
-  return a.fechaInicio.localeCompare(b.fechaInicio) || a.idEvento - b.idEvento;
+  return (a.fechaInicio + a.horaInicio).localeCompare(b.fechaInicio + b.horaInicio) || a.idEvento - b.idEvento;
 }
 
 function isoToday(): string {
@@ -607,3 +636,4 @@ function isoToday(): string {
   const pad = (value: number) => String(value).padStart(2, '0');
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
+

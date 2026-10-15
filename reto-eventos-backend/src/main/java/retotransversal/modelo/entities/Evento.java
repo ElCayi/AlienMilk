@@ -2,6 +2,7 @@ package retotransversal.modelo.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +41,10 @@ public class Evento {
 
 	@Column(name = "fecha_inicio", nullable = false)
 	private LocalDate fechaInicio;
+
+	/** La hora a la que empieza, en la hora de Madrid. Con la duración, da el horario (19:15 – 21:45). */
+	@Column(name = "hora_inicio", nullable = false)
+	private LocalTime horaInicio;
 
 	private Integer duracion;
 

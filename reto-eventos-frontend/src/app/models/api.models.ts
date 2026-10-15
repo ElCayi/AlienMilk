@@ -2,6 +2,8 @@ export interface EventoListado {
   idEvento: number;
   nombre: string;
   fechaInicio: string;
+  /** La hora de inicio (HH:mm). Con la duración, da el horario: ver sessionSchedule. */
+  horaInicio: string;
   precio: number;
   aforoMaximo: number;
   estado: string;
@@ -43,6 +45,8 @@ export interface Reserva {
   precioVenta: number;
   observaciones: string;
   fechaInicioEvento: string;
+  horaInicioEvento: string;
+  duracionEvento: number | null;
   estadoEvento: string;
 }
 
@@ -120,6 +124,7 @@ export interface EventoPayload {
   nombre: string;
   descripcion: string;
   fechaInicio: string;
+  horaInicio: string;
   duracion: number | null;
   direccion: string;
   aforoMaximo: number | null;

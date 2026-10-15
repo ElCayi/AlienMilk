@@ -11,6 +11,7 @@ import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.compone
 import {
   errorMessage,
   formatDay,
+  reservationWhen,
   formatMoney,
   matches,
   plural,
@@ -84,6 +85,7 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   readonly state = reservationState;
   readonly day = formatDay;
+  readonly when = reservationWhen;
   readonly money = formatMoney;
   readonly plural = plural;
   readonly profile = profileLabel;

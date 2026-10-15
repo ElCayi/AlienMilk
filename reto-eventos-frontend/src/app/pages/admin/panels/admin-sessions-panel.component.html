@@ -174,16 +174,20 @@
                       <dd>{{ code(session) }}</dd>
                     </div>
                     <div>
+                      <dt>Cuándo</dt>
+                      <dd>{{ day(session.fechaInicio) }} · {{ schedule(session) || 'sin hora' }}</dd>
+                    </div>
+                    <div>
+                      <dt>Duración</dt>
+                      <dd>{{ session.duracion }} min</dd>
+                    </div>
+                    <div>
                       <dt>Tipo</dt>
                       <dd>{{ typeLabel(session.tipoEvento) }}</dd>
                     </div>
                     <div>
                       <dt>Lugar</dt>
                       <dd>{{ session.direccion }}</dd>
-                    </div>
-                    <div>
-                      <dt>Duración</dt>
-                      <dd>{{ session.duracion }} min</dd>
                     </div>
                     <div>
                       <dt>Precio</dt>
@@ -278,6 +282,8 @@
   <footer class="panel-foot">
     @if (demo.failure(); as message) {
       <p class="field-error" role="alert">{{ message }}</p>
+    } @else if (demoNotice(); as aviso) {
+      <p [class]="aviso.error ? 'field-error' : 'field-help'" role="status">{{ aviso.text }}</p>
     }
     <button
       type="button"
@@ -287,6 +293,15 @@
       (click)="demo.restore()"
     >
       {{ demo.restoring() ? "Restaurando…" : "Restaurar demo" }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-small"
+      [disabled]="addingDemo() || demo.restoring()"
+      [attr.aria-busy]="addingDemo()"
+      (click)="addDemoSessions()"
+    >
+      {{ addingDemo() ? "Añadiendo…" : "Añadir sesiones demo" }}
     </button>
   </footer>
 }
@@ -345,13 +360,13 @@
         }
       </div>
 
-      <div class="field is-wide" [class.is-invalid]="error('direccion')">
-        <label class="field-label" for="session-place">
-          Lugar <span class="field-note">{{ form.direccion.length || 0 }}/100</span>
-        </label>
-        <input id="session-place" name="direccion" maxlength="100" [(ngModel)]="form.direccion" />
-        @if (error('direccion'); as message) {
+      <div class="field" [class.is-invalid]="error('horaInicio')">
+        <label class="field-label" for="session-time">Hora de inicio</label>
+        <input id="session-time" name="horaInicio" type="time" step="300" required [(ngModel)]="form.horaInicio" />
+        @if (error('horaInicio'); as message) {
           <p class="field-error">{{ message }}</p>
+        } @else if (form.horaInicio && form.duracion) {
+          <p class="field-help">Horario: {{ schedule(form) }}</p>
         }
       </div>
 
@@ -359,6 +374,16 @@
         <label class="field-label" for="session-length">Duración <span class="field-note">minutos</span></label>
         <input id="session-length" name="duracion" type="number" min="1" step="5" [(ngModel)]="form.duracion" />
         @if (error('duracion'); as message) {
+          <p class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field is-wide" [class.is-invalid]="error('direccion')">
+        <label class="field-label" for="session-place">
+          Lugar <span class="field-note">{{ form.direccion.length || 0 }}/100</span>
+        </label>
+        <input id="session-place" name="direccion" maxlength="100" [(ngModel)]="form.direccion" />
+        @if (error('direccion'); as message) {
           <p class="field-error">{{ message }}</p>
         }
       </div>

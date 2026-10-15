@@ -7,14 +7,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * El expediente de una sesión (ver Expediente): lo que enseña su ficha pública además de los datos de
  * la sesión. Un apartado sin declarar (null) no sale; la ficha pone en su lugar lo que tenga la sesión
- * (su descripción) o nada.
+ * (su descripción) o nada. El horario no está aquí: sale de la hora y la duración de la sesión.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ExpedienteCapaDto(
 		String entradilla,
 		List<String> texto,
 		String procedencia,
-		String horario,
 		List<Campo> notasCata,
 		List<Paso> programa,
 		List<Campo> equipo,
@@ -25,7 +24,7 @@ public record ExpedienteCapaDto(
 		String creditos) {
 
 	public static final ExpedienteCapaDto VACIA = new ExpedienteCapaDto(null, null, null, null, null, null, null,
-			null, null, null, null, null);
+			null, null, null, null);
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record Campo(String etiqueta, String valor) {

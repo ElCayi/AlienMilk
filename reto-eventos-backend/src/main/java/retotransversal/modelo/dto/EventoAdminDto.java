@@ -2,6 +2,9 @@ package retotransversal.modelo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import retotransversal.modelo.entities.Evento;
 
@@ -15,6 +18,7 @@ public record EventoAdminDto(
 		String nombre,
 		String descripcion,
 		LocalDate fechaInicio,
+		@JsonFormat(pattern = "HH:mm") LocalTime horaInicio,
 		Integer duracion,
 		String direccion,
 		String estado,
@@ -34,6 +38,7 @@ public record EventoAdminDto(
 				evento.getNombre(),
 				evento.getDescripcion(),
 				evento.getFechaInicio(),
+				evento.getHoraInicio(),
 				evento.getDuracion(),
 				evento.getDireccion(),
 				evento.getEstado().name(),

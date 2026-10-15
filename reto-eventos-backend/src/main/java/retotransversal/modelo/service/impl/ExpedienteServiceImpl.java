@@ -166,7 +166,6 @@ public class ExpedienteServiceImpl implements ExpedienteService {
 				elegir(encima.entradilla(), base.entradilla()),
 				elegir(encima.texto(), base.texto()),
 				elegir(encima.procedencia(), base.procedencia()),
-				elegir(encima.horario(), base.horario()),
 				elegir(encima.notasCata(), base.notasCata()),
 				elegir(encima.programa(), base.programa()),
 				elegir(encima.equipo(), base.equipo()),
@@ -200,7 +199,6 @@ public class ExpedienteServiceImpl implements ExpedienteService {
 		ErroresCampos errores = new ErroresCampos()
 				.maximo("entradilla", capa.entradilla(), 600)
 				.maximo("procedencia", capa.procedencia(), 200)
-				.maximo("horario", capa.horario(), 200)
 				.maximo("creditos", capa.creditos(), 600);
 
 		ExpedienteCapaDto limpia = new ExpedienteCapaDto(
@@ -208,7 +206,6 @@ public class ExpedienteServiceImpl implements ExpedienteService {
 				filas(errores, "texto", capa.texto(), ErroresCampos::limpio, ok -> ok.length() <= 2000,
 						"Cada párrafo, como máximo 2000 caracteres"),
 				ErroresCampos.limpio(capa.procedencia()),
-				ErroresCampos.limpio(capa.horario()),
 				campos(errores, "notasCata", capa.notasCata()),
 				filas(errores, "programa", capa.programa(),
 						paso -> vacioANull(new Paso(ErroresCampos.limpio(paso.hora()), ErroresCampos.limpio(paso.titulo()),

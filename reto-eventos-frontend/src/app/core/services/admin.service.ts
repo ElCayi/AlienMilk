@@ -103,6 +103,11 @@ export class AdminService {
     return this.http.post<void>(`${this.adminUrl}/fabrica`, {});
   }
 
+  /** Suma al programa unas cuantas sesiones de ejemplo, con su expediente; devuelve sus nombres. */
+  anadirSesionesDemo(): Observable<{ creadas: string[] }> {
+    return this.http.post<{ creadas: string[] }>(`${this.adminUrl}/fabrica/sesiones`, {});
+  }
+
   getUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.adminUrl}/usuarios`);
   }

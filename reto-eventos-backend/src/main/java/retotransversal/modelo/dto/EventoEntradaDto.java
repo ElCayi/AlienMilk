@@ -2,6 +2,7 @@ package retotransversal.modelo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class EventoEntradaDto {
 	private String nombre;
 	private String descripcion;
 	private LocalDate fechaInicio;
+	private LocalTime horaInicio;
 	private Integer duracion;
 	private String direccion;
 	private Integer aforoMaximo;

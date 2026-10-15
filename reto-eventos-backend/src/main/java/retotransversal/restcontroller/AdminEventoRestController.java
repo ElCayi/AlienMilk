@@ -114,6 +114,7 @@ public class AdminEventoRestController {
 				.nombre(dto.getNombre())
 				.descripcion(dto.getDescripcion())
 				.fechaInicio(dto.getFechaInicio())
+				.horaInicio(dto.getHoraInicio())
 				.duracion(dto.getDuracion())
 				.direccion(dto.getDireccion())
 				.aforoMaximo(dto.getAforoMaximo())

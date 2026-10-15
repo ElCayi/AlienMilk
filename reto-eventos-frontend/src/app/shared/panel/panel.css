@@ -1166,6 +1166,6 @@ th[aria-sort] .sort-button svg {
   margin-top: 1.5rem;
 }
 
-.panel-foot .field-error {
+.panel-foot :is(.field-error, .field-help) {
   margin: 0;
 }

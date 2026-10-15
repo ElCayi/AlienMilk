@@ -7,6 +7,7 @@ import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import {
   errorMessage,
   formatDay,
+  reservationWhen,
   formatMoney,
   plural,
   reservationState,
@@ -46,6 +47,7 @@ export class AccountReservationsPanelComponent {
 
   readonly state = reservationState;
   readonly day = formatDay;
+  readonly when = reservationWhen;
   readonly money = formatMoney;
   readonly plural = plural;
 

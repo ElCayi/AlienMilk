@@ -29,6 +29,7 @@
         <div class="detail-grid">
           <div><span>Fecha</span><strong>{{ data.fechaInicio | date: 'dd/MM/yyyy' }}</strong></div>
           <div><span>Precio por plaza</span><strong>{{ data.precio | currency: 'EUR' }}</strong></div>
+          <div><span>Horario</span><strong>{{ schedule(data) }}</strong></div>
           <div><span>Duración</span><strong>{{ data.duracion }} minutos</strong></div>
           <div><span>Aforo</span><strong>{{ data.aforoMaximo }}</strong></div>
           <div><span>Estado</span><strong>{{ data.estado }}</strong></div>

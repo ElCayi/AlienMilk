@@ -219,6 +219,7 @@ public class EventoServiceImpl implements EventoService {
 				.si(fecha == null, "fechaInicio", "Indica la fecha")
 				.si(fecha != null && fecha.isBefore(hoy()) && !Objects.equals(fecha, fechaActual), "fechaInicio",
 						"Esa fecha ya ha pasado")
+				.si(evento.getHoraInicio() == null, "horaInicio", "Indica la hora de inicio")
 				.obligatorio("direccion", evento.getDireccion(), 100, "Indica dónde se celebra")
 				.si(evento.getTipoEvento() == null, "idTipo", "Elige un tipo de sesión");
 

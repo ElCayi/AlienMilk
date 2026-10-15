@@ -51,7 +51,7 @@
                 <a class="cell-main text-link" routerLink="/sesiones" [queryParams]="{ sesion: reserva.idEvento }">{{
                   reserva.nombreEvento
                 }}</a>
-                <span class="cell-sub">{{ day(reserva.fechaInicioEvento) }}</span>
+                <span class="cell-sub">{{ when(reserva) }}</span>
               </td>
               <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
               <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
@@ -106,7 +106,7 @@
             <tr>
               <td class="cell-title">
                 <span class="cell-main">{{ reserva.nombreEvento }}</span>
-                <span class="cell-sub">{{ day(reserva.fechaInicioEvento) }}</span>
+                <span class="cell-sub">{{ when(reserva) }}</span>
               </td>
               <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
               <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>

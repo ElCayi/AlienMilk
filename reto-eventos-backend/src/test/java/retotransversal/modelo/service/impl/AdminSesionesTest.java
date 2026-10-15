@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,7 @@ class AdminSesionesTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.errores.nombre").exists())
 				.andExpect(jsonPath("$.errores.fechaInicio").exists())
+				.andExpect(jsonPath("$.errores.horaInicio").value("Indica la hora de inicio"))
 				.andExpect(jsonPath("$.errores.direccion").exists())
 				.andExpect(jsonPath("$.errores.idTipo").exists())
 				.andExpect(jsonPath("$.errores.duracion").exists())
@@ -183,6 +185,7 @@ class AdminSesionesTest {
 
 	private Evento sesion(int id, EstadoEvento estado) {
 		return Evento.builder().idEvento(id).nombre("Sesión " + id).fechaInicio(LocalDate.of(2026, 11, id))
+				.horaInicio(LocalTime.of(19, 15))
 				.duracion(90).direccion("Hangar 7").estado(estado).aforoMaximo(60).minimoAsistencia(10)
 				.precio(new BigDecimal("35.00")).tipoEvento(cata).build();
 	}
@@ -246,7 +249,7 @@ class AdminSesionesTest {
 
 	private static String formulario(int aforo, String fecha) {
 		return """
-				{"nombre": "  Cata de Leche Abducida ", "descripcion": "", "fechaInicio": "%s",
+				{"nombre": "  Cata de Leche Abducida ", "descripcion": "", "fechaInicio": "%s", "horaInicio": "19:15",
 				 "duracion": 120, "direccion": "Hangar 7", "aforoMaximo": %d, "minimoAsistencia": 10,
 				 "precio": 35.5, "idTipo": 1}
 				""".formatted(fecha, aforo);

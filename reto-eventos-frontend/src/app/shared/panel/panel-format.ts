@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { ApiError, EstadoEvento } from '../../models/api.models';
+import { sessionSchedule } from '../../features/sessions/session.presenter';
+import { ApiError, EstadoEvento, Reserva } from '../../models/api.models';
 
 /** El tono de una pastilla de estado: en marcha, pide atención o cerrado. */
 /** live: lo que está en marcha (verde); ok: lo normal; alert: lo que pide atención; off: lo cerrado. */
@@ -62,6 +63,13 @@ const PRICE = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR
 /** Una fecha sin hora («2026-05-20»), tal cual, sin que la zona horaria la mueva de día. */
 export function formatDay(isoDate: string | null | undefined): string {
   return isoDate ? DAY.format(new Date(`${isoDate.slice(0, 10)}T00:00:00Z`)) : '—';
+}
+
+/** Cuándo es la sesión de una reserva: el día y su horario (20 nov 2026 · 19:15 – 21:45). */
+export function reservationWhen(reserva: Reserva): string {
+  const schedule = sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
+  const day = formatDay(reserva.fechaInicioEvento);
+  return schedule ? `${day} · ${schedule}` : day;
 }
 
 export function formatDayTime(isoDateTime: string | null | undefined): string {

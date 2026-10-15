@@ -2,6 +2,9 @@ package retotransversal.modelo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +28,9 @@ public class ReservaDto {
 	private BigDecimal precioVenta;
 	private String observaciones;
 	private LocalDate fechaInicioEvento;
+	@JsonFormat(pattern = "HH:mm")
+	private LocalTime horaInicioEvento;
+	private Integer duracionEvento;
 	private String estadoEvento;
 
 	public static ReservaDto fromEntity(Reserva reserva) {
@@ -38,6 +44,8 @@ public class ReservaDto {
 				.precioVenta(reserva.getPrecioVenta())
 				.observaciones(reserva.getObservaciones())
 				.fechaInicioEvento(reserva.getEvento().getFechaInicio())
+				.horaInicioEvento(reserva.getEvento().getHoraInicio())
+				.duracionEvento(reserva.getEvento().getDuracion())
 				.estadoEvento(reserva.getEvento().getEstado().name())
 				.build();
 	}

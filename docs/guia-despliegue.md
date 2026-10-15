@@ -52,6 +52,10 @@ sesiones de ejemplo al futuro (el backend da por terminadas cada noche las que y
 ella la web se quedaría sin programa) y `expedientes-fotos` crea la tabla del expediente de las
 sesiones y la columna de su foto. `sesiones-archivo` añade el archivo de sesiones del panel.
 
+La del 2026-10-15, `sesiones-hora`, también va **antes** del backend de esa fecha, y después de las
+del 14: añade la hora de inicio obligatoria de cada sesión (sin la columna, el backend no arranca) y
+quita del expediente el antiguo «horario» en texto libre, que ahora sale de la hora y la duración.
+
 Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
 el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.
 

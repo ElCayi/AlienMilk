@@ -31,7 +31,6 @@ export const DOSSIER_TABS: DossierTab[] = [
     fields: [
       { key: 'entradilla', label: 'Entradilla', kind: 'textarea', help: 'El primer párrafo, destacado.' },
       { key: 'texto', label: 'Texto', kind: 'paragraphs' },
-      { key: 'horario', label: 'Horario', kind: 'text', help: 'Sale junto a la fecha, en la cabecera.' },
       { key: 'creditos', label: 'Créditos', kind: 'textarea', help: 'La nota final, en pequeño.' },
     ],
   },

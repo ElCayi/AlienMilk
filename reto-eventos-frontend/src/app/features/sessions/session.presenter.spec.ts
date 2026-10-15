@@ -1,11 +1,12 @@
 import { EventoListado } from '../../models/api.models';
-import { anomaly, archiveCode, compatibility, sampleCode, sessionImage } from './session.presenter';
+import { anomaly, archiveCode, compatibility, sampleCode, sessionImage, sessionSchedule } from './session.presenter';
 
 function session(idEvento: number): EventoListado {
   return {
     idEvento,
     nombre: 'Cata orbital',
     fechaInicio: '2026-05-20',
+    horaInicio: '19:15',
     precio: 35,
     aforoMaximo: 20,
     estado: 'ACTIVO',
@@ -30,5 +31,12 @@ describe('session presenter', () => {
       '/api/eventos/2/imagen?v=sesion-2-ab12.jpg',
     );
     expect(sampleCode(session(-1))).toBe('CL-93');
+  });
+
+  it('works out the schedule from the start time and the length, past midnight too', () => {
+    expect(sessionSchedule({ horaInicio: '19:15', duracion: 150 })).toBe('19:15 – 21:45');
+    expect(sessionSchedule({ horaInicio: '22:30:00', duracion: 105 })).toBe('22:30 – 00:15');
+    expect(sessionSchedule({ horaInicio: '19:15', duracion: null })).toBe('19:15');
+    expect(sessionSchedule({ horaInicio: null, duracion: 90 })).toBe('');
   });
 });

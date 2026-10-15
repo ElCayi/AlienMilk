@@ -72,7 +72,7 @@
             </td>
             <td data-label="Sesión">
               {{ reserva.nombreEvento }}
-              <span class="cell-sub">{{ day(reserva.fechaInicioEvento) }}</span>
+              <span class="cell-sub">{{ when(reserva) }}</span>
             </td>
             <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
             <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>

@@ -206,9 +206,7 @@
                   {{ data.direccion }} ·
                   <span class="date-long">{{ longDate(data.fechaInicio) }}</span
                   ><span class="date-short">{{ ticketDate(data.fechaInicio) }}</span
-                  ><ng-container *ngIf="current.dossier.horario">
-                    · {{ current.dossier.horario }}</ng-container
-                  >
+                  ><ng-container *ngIf="schedule(data) as horario"> · {{ horario }}</ng-container>
                 </span>
               </div>
             </header>

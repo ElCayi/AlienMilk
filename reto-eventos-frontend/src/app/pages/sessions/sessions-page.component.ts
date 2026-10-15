@@ -29,7 +29,7 @@ import {
   ticketSessionDate,
   shortSessionDate,
 } from '../../features/sessions/session-dossier';
-import { archiveCode, sampleCode, sessionImage } from '../../features/sessions/session.presenter';
+import { archiveCode, sampleCode, sessionImage, sessionSchedule } from '../../features/sessions/session.presenter';
 import {
   CategoryOption,
   CategorySelectComponent,
@@ -154,6 +154,7 @@ export class SessionsPageComponent implements OnInit {
 
   readonly sessionImage = sessionImage;
   readonly archiveCode = archiveCode;
+  readonly schedule = sessionSchedule;
   readonly sampleCode = sampleCode;
   readonly longDate = longSessionDate;
   readonly shortDate = shortSessionDate;

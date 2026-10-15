@@ -46,3 +46,21 @@ export function compatibility(session: EventoListado): string {
 export function anomaly(session: EventoListado): string {
   return SESSION_ANOMALIES[positiveIndex(session.idEvento, SESSION_ANOMALIES.length)];
 }
+
+/**
+ * El horario de una sesión: su hora de inicio y, con la duración, la de fin (19:15 – 21:45). Pasada la
+ * medianoche, la de fin sigue en reloj de 24 horas (22:30 – 00:15).
+ */
+export function sessionSchedule(session: { horaInicio?: string | null; duracion?: number | null }): string {
+  const start = session.horaInicio?.slice(0, 5);
+  if (!start) {
+    return '';
+  }
+  if (!session.duracion) {
+    return start;
+  }
+  const [hours, minutes] = start.split(':').map(Number);
+  const end = (hours * 60 + minutes + session.duracion) % (24 * 60);
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${start} – ${pad(Math.floor(end / 60))}:${pad(end % 60)}`;
+}

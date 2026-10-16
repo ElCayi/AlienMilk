@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
+import { credentialLabel } from '../../../features/attendance/attendance';
 import { sessionSchedule } from '../../../features/sessions/session.presenter';
 import { EstadoEvento, EventoAdmin, Reserva, Usuario } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
@@ -12,6 +13,7 @@ import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.compone
 import {
   errorMessage,
   formatDay,
+  formatDayTime,
   reservationWhen,
   formatMoney,
   matches,
@@ -27,8 +29,8 @@ import { DemoFootComponent } from '../demo-foot.component';
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
 
-/** Por el estado de su sesión: confirmadas (activa), de sesión cancelada o celebradas. */
-type Filter = 'TODAS' | EstadoEvento;
+/** Por el estado de su sesión (confirmadas, de sesión cancelada o celebradas), o las que requieren revisión. */
+type Filter = 'TODAS' | EstadoEvento | 'REVISION';
 
 /** Columnas por las que se ordena la tabla. */
 type SortKey = 'numero' | 'cliente' | 'sesion' | 'fecha' | 'plazas' | 'estado';
@@ -112,6 +114,11 @@ export class AdminReservationsPanelComponent implements OnInit {
       { value: 'ACTIVO' as Filter, label: 'Confirmadas', count: count('ACTIVO') },
       { value: 'CANCELADO' as Filter, label: 'Sesión cancelada', count: count('CANCELADO') },
       { value: 'TERMINADO' as Filter, label: 'Celebradas', count: count('TERMINADO') },
+      {
+        value: 'REVISION' as Filter,
+        label: 'Requieren revisión',
+        count: list.filter((reserva) => reserva.requiereRevision).length,
+      },
     ];
   });
 
@@ -135,7 +142,9 @@ export class AdminReservationsPanelComponent implements OnInit {
     const { key, dir } = this.sort.state();
     const compare = COMPARE[key];
     return this.searched()
-      .filter((reserva) => filter === 'TODAS' || reserva.estadoEvento === filter)
+      .filter((reserva) =>
+        filter === 'TODAS' ? true : filter === 'REVISION' ? reserva.requiereRevision : reserva.estadoEvento === filter,
+      )
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idReserva - b.idReserva);
   });
 
@@ -159,6 +168,8 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly state = reservationState;
   readonly day = formatDay;
   readonly when = reservationWhen;
+  readonly dayTime = formatDayTime;
+  readonly credential = credentialLabel;
   readonly schedule = (reserva: Reserva) =>
     sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
 

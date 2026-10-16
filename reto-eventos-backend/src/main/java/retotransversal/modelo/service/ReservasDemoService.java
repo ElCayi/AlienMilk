@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import retotransversal.modelo.dto.AsistenteDto;
+import retotransversal.modelo.dto.ReservaCrearDto;
+import retotransversal.modelo.entities.Credencial;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Reserva;
@@ -24,7 +27,8 @@ import retotransversal.modelo.repository.UsuarioRepository;
  * se ve cómo sería un panel con muchas, así que, si faltan, da de alta antes algunas cuentas de cliente
  * de demostración (contraseña 1234). «Restaurar demo» se lo lleva todo.
  *
- * Cada reserva pasa por ReservaService#reservarEvento, con sus reglas de siempre; aquí solo se eligen
+ * Cada reserva pasa por ReservaService#reservarConRegistro, con sus reglas de siempre y su registro de
+ * asistencia; aquí solo se eligen
  * combinaciones que las cumplen (plazas libres, diez por persona y sesión, cierre antes de empezar).
  */
 @Service
@@ -57,6 +61,15 @@ public class ReservasDemoService {
 			"Preferimos asientos cerca de la salida",
 			"Primera sesión: no sabemos qué esperar",
 			"Una de las plazas es para un organismo acompañante");
+
+	/** Acompañantes de ejemplo: nombre, credencial, procedencia e incompatibilidades. */
+	private static final List<String[]> ACOMPANANTES = List.of(
+			new String[] { "Ingrid Solveig", "PASAPORTE", "Tromsø, SOL-III", null },
+			new String[] { "Kael-9 Varo", "CREDENCIAL_TRANSITO", "Galileo Regio, Ganímedes", "No tolera la luz ultravioleta" },
+			new String[] { "Mara Ishikawa", "DNI_NIE", "Madrid, SOL-III", "Lactosa terrestre" },
+			new String[] { "Oru Tessaly", "ACREDITACION_COLONIA", "Colonia Kepler-4, Marte", null },
+			new String[] { "Dov Achterberg", "PASAPORTE", "Róterdam, SOL-III", "Frutos secos" },
+			new String[] { "Lhenna Quo", "CREDENCIAL_TRANSITO", "Orilla de Kraken Mare, Titán", "Muestras con actividad residual" });
 
 	private final EventoRepository eventoRepository;
 	private final ReservaRepository reservaRepository;
@@ -105,7 +118,8 @@ public class ReservasDemoService {
 				continue;
 			}
 			String observaciones = (vuelta + i) % 2 == 0 ? OBSERVACIONES.get((vuelta + i) / 2 % OBSERVACIONES.size()) : null;
-			creadas.add(reservaService.reservarEvento(sesion.getIdEvento(), cliente.getUsername(), plazas, observaciones));
+			creadas.add(reservaService.reservarConRegistro(sesion.getIdEvento(), cliente.getUsername(),
+					registro(cliente, plazas, observaciones, vuelta + i)));
 			ocupadas.merge(sesion.getIdEvento(), plazas, Integer::sum);
 			dePersona.put(clave, plazas);
 		}
@@ -136,6 +150,34 @@ public class ReservasDemoService {
 		}
 		clientes.sort(Comparator.comparing(Usuario::getUsername));
 		return clientes;
+	}
+
+	/**
+	 * El registro de asistencia de una reserva demo: quien reserva y sus acompañantes, con procedencias
+	 * y credenciales variadas; de vez en cuando, una adaptación o material externo (requiere revisión).
+	 */
+	private static ReservaCrearDto registro(Usuario cliente, int plazas, String observaciones, int semilla) {
+		List<AsistenteDto> asistentes = new ArrayList<>();
+		for (int n = 0; n < plazas; n++) {
+			String[] acompanante = ACOMPANANTES.get((semilla + n) % ACOMPANANTES.size());
+			asistentes.add(n == 0
+					? new AsistenteDto(cliente.getNombre() + (cliente.getApellidos() == null ? "" : " " + cliente.getApellidos()),
+							Credencial.DNI_NIE.name(), "Madrid, SOL-III", null)
+					: new AsistenteDto(acompanante[0], acompanante[1], acompanante[2], acompanante[3]));
+		}
+		boolean adaptacion = semilla % 5 == 2;
+		boolean material = semilla % 7 == 3;
+		return ReservaCrearDto.builder()
+				.cantidad(plazas)
+				.observaciones(observaciones)
+				.asistentes(asistentes)
+				.telefono("+34 6%02d %03d %03d".formatted(semilla % 100, (semilla * 37) % 1000, (semilla * 91) % 1000))
+				.adaptaciones(adaptacion ? "Uno de los participantes respira en atmósfera de metano: traerá su propia mezcla." : null)
+				.materialExterno(material)
+				.materialDescripcion(material ? "Bastón de orientación por ecolocalización, homologado en Titán." : null)
+				.aceptaEdad(true)
+				.aceptaCondiciones(true)
+				.build();
 	}
 
 	private static String clave(String username, Integer idEvento) {

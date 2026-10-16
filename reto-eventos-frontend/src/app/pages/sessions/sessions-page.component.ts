@@ -443,25 +443,14 @@ export class SessionsPageComponent implements OnInit {
     setTimeout(() => this.shareFeedback.set(''), 2400);
   }
 
+  /** Reservar lleva al Registro de asistencia, con las plazas elegidas en el resguardo. */
   reservar(): void {
     const detail = this.opened()?.detail;
     if (!detail || !this.authService.isAuthenticated()) {
       return;
     }
-
-    this.loadingReservation.set(true);
-    this.reservationFeedback.set('');
-    this.reservationService.reservar(detail.idEvento, this.cantidad, this.observaciones).subscribe({
-      next: () => {
-        this.loadingReservation.set(false);
-        this.router.navigateByUrl('/cuenta/reservas');
-      },
-      error: (error) => {
-        this.loadingReservation.set(false);
-        this.reservationFeedback.set(
-          error?.error?.message ?? 'No se ha podido completar la reserva de plaza.',
-        );
-      },
+    void this.router.navigate(['/sesiones', detail.idEvento, 'registro'], {
+      queryParams: { plazas: Math.min(10, Math.max(1, Number(this.cantidad) || 1)) },
     });
   }
 

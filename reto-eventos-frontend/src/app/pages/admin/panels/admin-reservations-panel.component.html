@@ -133,7 +133,12 @@
             <td data-label="Fecha" class="nowrap center">{{ day(reserva.fechaInicioEvento) }}</td>
             <td data-label="Plazas" class="num center">{{ reserva.cantidad }}</td>
             <td data-label="Estado" class="center">
-              <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+              <span class="badge-stack">
+                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                @if (reserva.requiereRevision) {
+                  <span class="badge" data-tone="alert">Requiere revisión</span>
+                }
+              </span>
             </td>
             <td class="cell-chevron" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
@@ -173,10 +178,56 @@
                       <dd><span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span></dd>
                     </div>
                     <div>
-                      <dt>Observaciones</dt>
-                      <dd>{{ reserva.observaciones || '—' }}</dd>
+                      <dt>Teléfono</dt>
+                      <dd>{{ reserva.telefono || '—' }}</dd>
                     </div>
+                    <div>
+                      <dt>Conformidad</dt>
+                      <dd>{{ reserva.conformidadEn ? 'Registrada el ' + dayTime(reserva.conformidadEn) : 'Sin registrar' }}</dd>
+                    </div>
+                    @if (reserva.observaciones) {
+                      <div>
+                        <dt>Observaciones</dt>
+                        <dd>{{ reserva.observaciones }}</dd>
+                      </div>
+                    }
                   </dl>
+
+                  <!-- Quién viene, con la credencial que presentará: lo que se coteja en el control de ingreso. -->
+                  <section class="detail-people" aria-label="Participantes">
+                    <p class="detail-people-title">Participantes</p>
+                    @if (reserva.asistentes.length) {
+                      <ol>
+                        @for (persona of reserva.asistentes; track $index) {
+                          <li>
+                            <span class="detail-people-name">{{ persona.nombre }}</span>
+                            <span class="detail-people-meta">
+                              {{ credential(persona.credencial) }}@if (persona.procedencia) { · {{ persona.procedencia }}}
+                            </span>
+                            @if (persona.incompatibilidades) {
+                              <span class="detail-people-compat">{{ persona.incompatibilidades }}</span>
+                            }
+                          </li>
+                        }
+                      </ol>
+                    } @else {
+                      <p class="detail-people-empty">
+                        Sin registrar: la reserva se tomó antes del registro de asistencia o desde el panel.
+                      </p>
+                    }
+                  </section>
+
+                  @if (reserva.requiereRevision) {
+                    <section class="detail-review" aria-label="Requiere revisión">
+                      <p class="detail-people-title">Requiere revisión</p>
+                      @if (reserva.adaptaciones) {
+                        <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
+                      }
+                      @if (reserva.materialExterno) {
+                        <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
+                      }
+                    </section>
+                  }
                 </div>
 
                 <div class="row-actions detail-actions">

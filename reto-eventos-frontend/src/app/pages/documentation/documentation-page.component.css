@@ -159,3 +159,25 @@
     grid-row: auto;
   }
 }
+
+/* La política de adaptaciones, bajo el catálogo: texto corrido, con el filete coral de las notas. */
+.catalog-policy {
+  max-width: 52rem;
+  margin-top: clamp(2rem, 3.5vw, 3rem);
+  padding-left: 1.15rem;
+  border-left: 2px solid var(--coral);
+}
+
+.catalog-policy p {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-size: clamp(1rem, 0.95vw, 1.08rem);
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.catalog-policy p:last-child {
+  margin-bottom: 0;
+}

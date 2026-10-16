@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import retotransversal.modelo.dto.ReservaCrearDto;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Perfil;
@@ -55,11 +56,11 @@ class ReservasDemoServiceTest {
 		when(eventos.findByEstado(EstadoEvento.ACTIVO)).thenReturn(List.of(casiLlena, amplia));
 		when(eventoService.admiteReservas(any())).thenReturn(true);
 		when(reservas.findAll()).thenReturn(List.of());
-		when(reservaService.reservarEvento(anyInt(), anyString(), anyInt(), any())).thenAnswer(llamada -> Reserva
+		when(reservaService.reservarConRegistro(anyInt(), anyString(), any())).thenAnswer(llamada -> Reserva
 				.builder()
 				.evento(llamada.<Integer>getArgument(0) == 1 ? casiLlena : amplia)
 				.usuario(Usuario.builder().username(llamada.getArgument(1)).build())
-				.cantidad(llamada.getArgument(2))
+				.cantidad(llamada.<ReservaCrearDto>getArgument(2).getCantidad())
 				.build());
 
 		List<Reserva> creadas = servicio.anadir();

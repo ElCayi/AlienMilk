@@ -41,7 +41,7 @@ public class FabricaService {
 
 	/** Hijas antes que madres, aunque con las claves ajenas en pausa el orden no es imprescindible. */
 	private static final List<String> TABLAS = List.of("lineas_pedido", "pedidos", "productos", "solicitudes",
-			"reservas", "expedientes", "eventos", "usuarios", "tipos_evento", "perfiles", "contacto", "premio",
+			"asistentes", "reservas", "expedientes", "eventos", "usuarios", "tipos_evento", "perfiles", "contacto", "premio",
 			"cifra_confianza", "socio");
 
 	private final DataSource dataSource;

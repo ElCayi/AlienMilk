@@ -1180,3 +1180,85 @@ th[aria-sort] .sort-button svg {
 .panel-foot :is(.field-error, .field-help) {
   margin: 0;
 }
+
+/* Varias pastillas en una celda: una debajo de otra, centradas. */
+.badge-stack {
+  display: inline-grid;
+  justify-items: center;
+  gap: 0.35rem;
+}
+
+/* La ficha de una reserva: los participantes y lo que hay que revisar, a todo el ancho, bajo los datos. */
+.detail-people,
+.detail-review {
+  grid-column: 1 / -1;
+  padding-top: 1rem;
+  border-top: 1px solid var(--paper-line);
+}
+
+.detail-people-title {
+  margin: 0 0 0.6rem;
+  color: var(--paper-faint);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.detail-people ol {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: persona;
+}
+
+.detail-people li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  column-gap: 0.5rem;
+  counter-increment: persona;
+}
+
+.detail-people li::before {
+  content: counter(persona, decimal-leading-zero);
+  grid-row: span 3;
+  color: var(--paper-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-people-name {
+  color: var(--paper-ink);
+  font-weight: 700;
+}
+
+.detail-people-meta,
+.detail-people-empty {
+  color: var(--paper-muted);
+  font-size: 0.9rem;
+}
+
+.detail-people-compat {
+  color: var(--coral);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.detail-people-empty {
+  margin: 0;
+}
+
+.detail-review {
+  padding-left: 0.85rem;
+  border-top: 0;
+  border-left: 2px solid var(--coral);
+}
+
+.detail-review p:not(.detail-people-title) {
+  margin: 0 0 0.4rem;
+  color: var(--paper-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}

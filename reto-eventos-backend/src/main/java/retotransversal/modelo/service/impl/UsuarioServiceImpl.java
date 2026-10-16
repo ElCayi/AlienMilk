@@ -70,6 +70,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		validarDuplicadosEdicion(entidad);
 		// La fecha de alta es la del registro: no se edita.
 		entidad.setFechaRegistro(usuarioExistente.getFechaRegistro());
+		// Las comunicaciones solo las cambia la propia persona.
+		entidad.setAceptaComunicaciones(usuarioExistente.isAceptaComunicaciones());
 		if (entidad.getPassword() == null || entidad.getPassword().isBlank()) {
 			entidad.setPassword(usuarioExistente.getPassword());
 		} else {

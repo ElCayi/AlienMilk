@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { Reserva } from '../../models/api.models';
+import { RegistroAsistencia, Reserva } from '../../models/api.models';
 
 @Injectable({ providedIn: 'root' })
 export class ReservationService {
@@ -14,11 +14,9 @@ export class ReservationService {
     return this.http.get<Reserva[]>(`${this.apiUrl}/mias`);
   }
 
-  reservar(idEvento: number, cantidad: number, observaciones: string): Observable<Reserva> {
-    return this.http.post<Reserva>(`${this.apiUrl}/evento/${idEvento}`, {
-      cantidad,
-      observaciones,
-    });
+  /** Reserva con su registro de asistencia (ver la página Registro de asistencia). */
+  registrar(idEvento: number, registro: RegistroAsistencia): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.apiUrl}/evento/${idEvento}`, registro);
   }
 
   cancelar(idReserva: number): Observable<void> {

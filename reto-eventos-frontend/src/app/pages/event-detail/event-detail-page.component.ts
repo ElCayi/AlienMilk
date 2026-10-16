@@ -59,25 +59,14 @@ export class EventDetailPageComponent implements OnInit {
     });
   }
 
+  /** Reservar lleva al Registro de asistencia, con las plazas elegidas aquí. */
   reservar(): void {
     const evento = this.evento();
-    if (!evento) {
-      return;
+    if (evento) {
+      void this.router.navigate(['/sesiones', evento.idEvento, 'registro'], {
+        queryParams: { plazas: Math.min(10, Math.max(1, Number(this.cantidad) || 1)) },
+      });
     }
-
-    this.loading.set(true);
-    this.errorMessage.set('');
-
-    this.reservationService.reservar(evento.idEvento, this.cantidad, this.observaciones).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.router.navigateByUrl('/cuenta/reservas');
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.errorMessage.set(err?.error?.message ?? 'No se ha podido completar la reserva de plaza.');
-      },
-    });
   }
 
   totalReserva(): number {

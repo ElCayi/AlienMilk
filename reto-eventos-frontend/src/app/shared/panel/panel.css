@@ -616,6 +616,11 @@ th[aria-sort] .sort-button svg {
   list-style: none;
 }
 
+/* Sin barra de ocupación (la ficha de una reserva), el mismo aire que dejaría la barra. */
+.occupancy-figure + .occupancy-notes {
+  margin-top: 1rem;
+}
+
 .occupancy-notes .is-short {
   color: var(--coral);
   font-weight: 700;

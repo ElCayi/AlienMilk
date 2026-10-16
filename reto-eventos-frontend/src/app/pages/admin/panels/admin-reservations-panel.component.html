@@ -2,8 +2,8 @@
   <div>
     <h2>Reservas</h2>
     <p>
-      Las plazas reservadas por cada cuenta. Desde aquí se apunta a alguien a mano o se cancela su
-      reserva; el aforo y el máximo de diez plazas por persona y sesión los comprueba el servidor.
+      Todas las reservas. Pulsa una fila para ver su ficha o cancelarla. Las reservas cierran 10
+      minutos antes de cada sesión, y nadie pasa de diez plazas por sesión.
     </p>
   </div>
   <div class="section-head-actions">
@@ -20,7 +20,7 @@
     <span class="visually-hidden">Buscar reservas</span>
     <input
       type="search"
-      placeholder="Cliente, cuenta o sesión"
+      placeholder="Nº, cliente, cuenta o sesión"
       [ngModel]="query()"
       (ngModelChange)="query.set($event)"
     />
@@ -31,6 +31,26 @@
       <option [ngValue]="0">Todas las sesiones</option>
       @for (session of sessions(); track session.idEvento) {
         <option [ngValue]="session.idEvento">{{ session.nombre }} · {{ day(session.fechaInicio) }}</option>
+      }
+    </select>
+  </label>
+  <div class="segmented" role="group" aria-label="Filtrar por estado">
+    @for (option of filters(); track option.value) {
+      <button
+        type="button"
+        [attr.aria-pressed]="filter() === option.value"
+        (click)="filter.set(option.value)"
+      >
+        {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
+      </button>
+    }
+  </div>
+  <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->
+  <label class="sort-select">
+    <span>Ordenar por</span>
+    <select [ngModel]="sort.value()" (ngModelChange)="sort.set($event)">
+      @for (option of sortOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
       }
     </select>
   </label>
@@ -48,57 +68,130 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap" [appKeepHeight]="query()">
-    <table class="data-table">
-      <caption>Reservas</caption>
+  <div class="table-wrap" [appKeepHeight]="filter() + query() + sessionFilter()">
+    <table class="data-table is-expandable">
+      <caption>Reservas. Pulsa una para ver su ficha y sus acciones.</caption>
       <thead>
         <tr>
-          <th scope="col">Cliente</th>
-          <th scope="col">Sesión</th>
-          <th scope="col" class="num">Plazas</th>
-          <th scope="col" class="num">Importe</th>
-          <th scope="col" class="center">Estado</th>
-          <th scope="col">Observaciones</th>
-          <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
+          <th scope="col" class="cell-num center" [attr.aria-sort]="sort.aria('numero')">
+            <button type="button" class="sort-button" (click)="sort.by('numero')">
+              Nº
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('numero')" /></svg>
+            </button>
+          </th>
+          <th scope="col" [attr.aria-sort]="sort.aria('cliente')">
+            <button type="button" class="sort-button" (click)="sort.by('cliente')">
+              Cliente
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('cliente')" /></svg>
+            </button>
+          </th>
+          <th scope="col" [attr.aria-sort]="sort.aria('sesion')">
+            <button type="button" class="sort-button" (click)="sort.by('sesion')">
+              Sesión
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('sesion')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="center" [attr.aria-sort]="sort.aria('fecha')">
+            <button type="button" class="sort-button" (click)="sort.by('fecha')">
+              Fecha
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('fecha')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="center" [attr.aria-sort]="sort.aria('plazas')">
+            <button type="button" class="sort-button" (click)="sort.by('plazas')">
+              Plazas
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('plazas')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="center" [attr.aria-sort]="sort.aria('estado')">
+            <button type="button" class="sort-button" (click)="sort.by('estado')">
+              Estado
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('estado')" /></svg>
+            </button>
+          </th>
+          <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
         </tr>
       </thead>
       <tbody>
         @for (reserva of visible(); track reserva.idReserva) {
           @let estado = state(reserva.estadoEvento);
-          <tr>
+          @let open = expanded() === reserva.idReserva;
+          <tr class="row-summary" [class.is-open]="open" (click)="toggle(reserva)">
+            <td class="cell-num center">{{ number(reserva) }}</td>
             <td class="cell-title">
-              <span class="cell-main">{{ reserva.nombreCliente }}</span>
-              <span class="cell-sub">{{ reserva.username }}</span>
+              <button
+                type="button"
+                class="row-disclosure"
+                [attr.aria-expanded]="open"
+                [attr.aria-controls]="'reservation-detail-' + reserva.idReserva"
+              >
+                <span class="cell-num-inline" aria-hidden="true">{{ number(reserva) }}</span>
+                {{ reserva.nombreCliente }}
+              </button>
             </td>
-            <td data-label="Sesión">
-              {{ reserva.nombreEvento }}
-              <span class="cell-sub">{{ when(reserva) }}</span>
-            </td>
-            <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
-            <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
+            <td data-label="Sesión">{{ reserva.nombreEvento }}</td>
+            <td data-label="Fecha" class="nowrap center">{{ day(reserva.fechaInicioEvento) }}</td>
+            <td data-label="Plazas" class="num center">{{ reserva.cantidad }}</td>
             <td data-label="Estado" class="center">
               <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
             </td>
-            <td data-label="Observaciones">
-              @if (reserva.observaciones) {
-                <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
-              } @else {
-                <span class="cell-sub">—</span>
-              }
-            </td>
-            <td class="row-actions-cell">
-              <div class="row-actions">
-                <button
-                  type="button"
-                  class="btn btn-small btn-danger"
-                  [disabled]="busy() === reserva.idReserva"
-                  (click)="cancel(reserva)"
-                >
-                  Cancelar<span class="visually-hidden"> la reserva de {{ reserva.nombreCliente }}</span>
-                </button>
-              </div>
+            <td class="cell-chevron" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
             </td>
           </tr>
+          @if (open) {
+            <tr class="row-detail" [id]="'reservation-detail-' + reserva.idReserva">
+              <td colspan="7">
+                <div class="session-detail">
+                  <!-- Lo primero que se mira: cuántas plazas y cuánto se ha pagado. -->
+                  <section class="occupancy" aria-label="Plazas e importe">
+                    <p class="occupancy-figure">
+                      <strong>{{ reserva.cantidad }}</strong>
+                      <span>{{ reserva.cantidad === 1 ? 'plaza' : 'plazas' }}</span>
+                    </p>
+                    <ul class="occupancy-notes">
+                      <li>{{ money(reserva.precioVenta) }} en total</li>
+                      <li>{{ money(seatPrice(reserva)) }} por plaza</li>
+                    </ul>
+                  </section>
+
+                  <dl class="detail-facts">
+                    <div>
+                      <dt>Cliente</dt>
+                      <dd>{{ reserva.nombreCliente }} · {{ reserva.username }}</dd>
+                    </div>
+                    <div>
+                      <dt>Sesión</dt>
+                      <dd>
+                        <a class="text-link" [routerLink]="[]" [queryParams]="{ sesion: reserva.idEvento }" (click)="$event.stopPropagation()">{{
+                          reserva.nombreEvento
+                        }}</a>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Cuándo</dt>
+                      <dd><span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span></dd>
+                    </div>
+                    <div>
+                      <dt>Observaciones</dt>
+                      <dd>{{ reserva.observaciones || '—' }}</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div class="row-actions detail-actions">
+                  <button
+                    type="button"
+                    class="btn btn-small btn-danger"
+                    [disabled]="busy() === reserva.idReserva"
+                    (click)="cancel(reserva)"
+                  >
+                    Cancelar reserva
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
             <td colspan="7" class="cell-title">
@@ -112,17 +205,19 @@
       @if (visible().length > 1) {
         <tfoot>
           <tr>
-            <td class="cell-title" colspan="2">
-              <span class="cell-sub">{{ plural(visible().length, 'reserva', 'reservas') }}</span>
+            <td class="cell-title" colspan="7">
+              <span class="cell-sub">
+                {{ plural(visible().length, 'reserva', 'reservas') }} · {{ plural(totals().plazas, 'plaza', 'plazas') }} ·
+                {{ money(totals().importe) }}
+              </span>
             </td>
-            <td data-label="Plazas" class="num">{{ totals().plazas }}</td>
-            <td data-label="Importe" class="num">{{ money(totals().importe) }}</td>
-            <td colspan="3"></td>
           </tr>
         </tfoot>
       }
     </table>
   </div>
+
+  <app-demo-foot kind="reservas" (added)="afterDemo()" />
 }
 
 <app-panel-dialog heading="Nueva reserva">

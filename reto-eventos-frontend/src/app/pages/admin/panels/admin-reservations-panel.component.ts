@@ -1,11 +1,12 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
-import { EventoAdmin, Reserva, Usuario } from '../../../models/api.models';
+import { sessionSchedule } from '../../../features/sessions/session.presenter';
+import { EstadoEvento, EventoAdmin, Reserva, Usuario } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
 import {
@@ -18,21 +19,45 @@ import {
   profileLabel,
   reservationState,
 } from '../../../shared/panel/panel-format';
+import { TableSort } from '../../../shared/panel/table-sort';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
+import { DemoFootComponent } from '../demo-foot.component';
 
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
 
+/** Por el estado de su sesión: confirmadas (activa), de sesión cancelada o celebradas. */
+type Filter = 'TODAS' | EstadoEvento;
+
+/** Columnas por las que se ordena la tabla. */
+type SortKey = 'numero' | 'cliente' | 'sesion' | 'fecha' | 'plazas' | 'estado';
+
+/** Al ordenar por estado: las confirmadas, las de sesión cancelada, las celebradas. */
+const STATE_ORDER: Record<EstadoEvento, number> = { ACTIVO: 0, CANCELADO: 1, TERMINADO: 2 };
+
+const byText = (a: string, b: string) => a.localeCompare(b, 'es', { sensitivity: 'base' });
+
+const COMPARE: Record<SortKey, (a: Reserva, b: Reserva) => number> = {
+  numero: (a, b) => a.idReserva - b.idReserva,
+  cliente: (a, b) => byText(a.nombreCliente, b.nombreCliente),
+  sesion: (a, b) => byText(a.nombreEvento, b.nombreEvento),
+  fecha: (a, b) =>
+    (a.fechaInicioEvento + a.horaInicioEvento).localeCompare(b.fechaInicioEvento + b.horaInicioEvento),
+  plazas: (a, b) => a.cantidad - b.cantidad,
+  estado: (a, b) => STATE_ORDER[a.estadoEvento as EstadoEvento] - STATE_ORDER[b.estadoEvento as EstadoEvento],
+};
+
 /**
- * Reservas de todas las cuentas: buscar por cliente o por sesión, dar de alta una a mano (por
- * teléfono, por ejemplo) y cancelarla. Las reglas de aforo y de diez plazas son las del servidor.
+ * Reservas de todas las cuentas, en una tabla que se ordena y se filtra por estado; cada fila se
+ * despliega con su ficha. Buscar por cliente o por sesión, dar de alta una a mano (por teléfono, por
+ * ejemplo) y cancelarla. Las reglas de aforo y de diez plazas son las del servidor.
  * Se puede llegar filtrada desde Sesiones (?sesion=) o desde Usuarios (?cuenta=).
  */
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent, KeepHeightDirective],
+  imports: [FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective, DemoFootComponent],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -43,6 +68,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
 
   readonly reservations = signal<Reserva[]>([]);
   readonly sessions = signal<EventoAdmin[]>([]);
@@ -56,14 +82,61 @@ export class AdminReservationsPanelComponent implements OnInit {
   /** 0: todas las sesiones. */
   readonly sessionFilter = signal(0);
 
-  readonly visible = computed(() => {
+  readonly filter = signal<Filter>('TODAS');
+  /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
+  readonly expanded = signal<number | null>(null);
+
+  /** Las de la sesión elegida (o todas) que coinciden con la búsqueda, antes de filtrar por estado. */
+  private readonly searched = computed(() => {
     const idEvento = this.sessionFilter();
     const query = this.query();
     return this.reservations().filter(
       (reserva) =>
         (!idEvento || reserva.idEvento === idEvento) &&
-        matches(query, reserva.nombreCliente, reserva.username, reserva.nombreEvento, reserva.observaciones),
+        matches(
+          query,
+          this.number(reserva),
+          reserva.nombreCliente,
+          reserva.username,
+          reserva.nombreEvento,
+          reserva.observaciones,
+        ),
     );
+  });
+
+  readonly filters = computed(() => {
+    const list = this.searched();
+    const count = (estado: EstadoEvento) => list.filter((reserva) => reserva.estadoEvento === estado).length;
+    return [
+      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
+      { value: 'ACTIVO' as Filter, label: 'Confirmadas', count: count('ACTIVO') },
+      { value: 'CANCELADO' as Filter, label: 'Sesión cancelada', count: count('CANCELADO') },
+      { value: 'TERMINADO' as Filter, label: 'Celebradas', count: count('TERMINADO') },
+    ];
+  });
+
+  /** El orden de la tabla: por la fecha de la sesión, de la más próxima a la más lejana. */
+  readonly sort = new TableSort<SortKey>('fecha');
+
+  /** Las mismas ordenaciones, para el selector de móvil. */
+  readonly sortOptions: { value: string; label: string }[] = [
+    { value: 'fecha:1', label: 'Fecha, la más próxima primero' },
+    { value: 'fecha:-1', label: 'Fecha, la más lejana primero' },
+    { value: 'numero:-1', label: 'Nº, las más recientes primero' },
+    { value: 'numero:1', label: 'Nº, las más antiguas primero' },
+    { value: 'cliente:1', label: 'Cliente, de la A a la Z' },
+    { value: 'sesion:1', label: 'Sesión, de la A a la Z' },
+    { value: 'plazas:-1', label: 'Más plazas primero' },
+    { value: 'estado:1', label: 'Estado: confirmadas primero' },
+  ];
+
+  readonly visible = computed(() => {
+    const filter = this.filter();
+    const { key, dir } = this.sort.state();
+    const compare = COMPARE[key];
+    return this.searched()
+      .filter((reserva) => filter === 'TODAS' || reserva.estadoEvento === filter)
+      .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idReserva - b.idReserva);
   });
 
   readonly totals = computed(() => {
@@ -86,6 +159,39 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly state = reservationState;
   readonly day = formatDay;
   readonly when = reservationWhen;
+  readonly schedule = (reserva: Reserva) =>
+    sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
+
+  /** El número de la reserva, con dos cifras como mínimo (07, 12...). */
+  number(reserva: Reserva): string {
+    return String(reserva.idReserva).padStart(2, '0');
+  }
+
+  seatPrice(reserva: Reserva): number {
+    return reserva.cantidad ? Number(reserva.precioVenta) / reserva.cantidad : 0;
+  }
+
+  /** Despliega la ficha de la reserva, o la recoge; al desplegar, la vista baja lo justo para verla entera. */
+  toggle(reserva: Reserva): void {
+    const id = this.expanded() === reserva.idReserva ? null : reserva.idReserva;
+    this.expanded.set(id);
+    if (id !== null) {
+      afterNextRender(
+        () => {
+          const detail = document.getElementById(`reservation-detail-${id}`);
+          const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          detail?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+        },
+        { injector: this.injector },
+      );
+    }
+  }
+
+  /** Tras añadir reservas demo desde el pie: la lista y las cifras de la cabecera. */
+  afterDemo(): void {
+    this.summary.refresh();
+    this.load();
+  }
   readonly money = formatMoney;
   readonly plural = plural;
   readonly profile = profileLabel;

@@ -103,6 +103,11 @@ export class AdminService {
     return this.http.post<void>(`${this.adminUrl}/fabrica`, {});
   }
 
+  /** Reparte unas cuantas reservas de ejemplo (y cuentas de cliente de demostración si faltan). */
+  anadirReservasDemo(): Observable<{ creadas: number }> {
+    return this.http.post<{ creadas: number }>(`${this.adminUrl}/fabrica/reservas`, {});
+  }
+
   /** Suma al programa unas cuantas sesiones de ejemplo, con su expediente; devuelve sus nombres. */
   anadirSesionesDemo(): Observable<{ creadas: string[] }> {
     return this.http.post<{ creadas: string[] }>(`${this.adminUrl}/fabrica/sesiones`, {});

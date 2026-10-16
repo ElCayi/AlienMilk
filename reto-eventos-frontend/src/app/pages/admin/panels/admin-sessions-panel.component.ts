@@ -18,9 +18,10 @@ import {
   plural,
   sessionState,
 } from '../../../shared/panel/panel-format';
+import { TableSort } from '../../../shared/panel/table-sort';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
-import { DemoRestoreService } from '../demo-restore.service';
+import { DemoFootComponent } from '../demo-foot.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
@@ -61,6 +62,7 @@ type EditPage = 'datos' | 'expediente';
     PanelDialogComponent,
     AdminDossierFormComponent,
     KeepHeightDirective,
+    DemoFootComponent,
   ],
   templateUrl: './admin-sessions-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
@@ -69,8 +71,6 @@ export class AdminSessionsPanelComponent implements OnInit {
   private readonly admin = inject(AdminService);
   private readonly confirm = inject(PanelConfirmService);
   private readonly summary = inject(AdminSummaryService);
-  /** El atajo al pie para restaurar la demo, el mismo que en la pestaña Demo. */
-  readonly demo = inject(DemoRestoreService);
   private readonly injector = inject(Injector);
 
   readonly sessions = signal<EventoAdmin[]>([]);
@@ -103,18 +103,7 @@ export class AdminSessionsPanelComponent implements OnInit {
   });
 
   /** El orden de la tabla: por fecha, de la más próxima a la más lejana, hasta que se pulse otra columna. */
-  readonly sort = signal<{ key: SortKey; dir: 1 | -1 }>({ key: 'fecha', dir: 1 });
-
-  /** Pulsar una columna ordena por ella de menor a mayor; volver a pulsarla, al revés. */
-  sortBy(key: SortKey): void {
-    this.sort.update((sort) => ({ key, dir: sort.key === key ? (sort.dir === 1 ? -1 : 1) : 1 }));
-  }
-
-  /** Para `aria-sort` en la cabecera: así un lector de pantalla sabe cómo está ordenada. */
-  ariaSort(key: SortKey): 'ascending' | 'descending' | null {
-    const sort = this.sort();
-    return sort.key === key ? (sort.dir === 1 ? 'ascending' : 'descending') : null;
-  }
+  readonly sort = new TableSort<SortKey>('fecha');
 
   /** Las mismas ordenaciones, para el selector de móvil. */
   readonly sortOptions: { value: string; label: string }[] = [
@@ -130,29 +119,10 @@ export class AdminSessionsPanelComponent implements OnInit {
     { value: 'estado:-1', label: 'Estado: terminadas primero' },
   ];
 
-  sortValue(): string {
-    const sort = this.sort();
-    return `${sort.key}:${sort.dir}`;
-  }
-
-  setSort(value: string): void {
-    const [key, dir] = value.split(':');
-    this.sort.set({ key: key as SortKey, dir: dir === '-1' ? -1 : 1 });
-  }
-
-  /** La flecha de cada columna: hacia arriba o abajo en la que ordena; doble y tenue en las demás. */
-  sortIcon(key: SortKey): string {
-    const sort = this.sort();
-    if (sort.key !== key) {
-      return 'M8 10l4-4 4 4M8 14l4 4 4-4';
-    }
-    return sort.dir === 1 ? 'M7 14l5-5 5 5' : 'M7 10l5 5 5-5';
-  }
-
   readonly visible = computed(() => {
     const filter = this.filter();
     const query = this.query();
-    const { key, dir } = this.sort();
+    const { key, dir } = this.sort.state();
     const compare = COMPARE[key];
     return this.sessions()
       .filter(
@@ -507,28 +477,10 @@ export class AdminSessionsPanelComponent implements OnInit {
     });
   }
 
-  /** Lo que ha pasado al añadir sesiones de ejemplo: sale junto a los botones del pie. */
-  readonly demoNotice = signal<{ text: string; error: boolean } | null>(null);
-  readonly addingDemo = signal(false);
-
-  addDemoSessions(): void {
-    this.addingDemo.set(true);
-    this.demoNotice.set(null);
-    this.admin.anadirSesionesDemo().subscribe({
-      next: ({ creadas }) => {
-        this.addingDemo.set(false);
-        this.demoNotice.set({
-          text: `${plural(creadas.length, 'sesión añadida', 'sesiones añadidas')} al final del programa.`,
-          error: false,
-        });
-        this.summary.refresh();
-        this.load();
-      },
-      error: (error) => {
-        this.addingDemo.set(false);
-        this.demoNotice.set({ text: errorMessage(error, 'No se han podido añadir las sesiones demo.'), error: true });
-      },
-    });
+  /** Tras añadir sesiones demo desde el pie: la lista y las cifras de la cabecera. */
+  afterDemo(): void {
+    this.summary.refresh();
+    this.load();
   }
 
   private fail(error: unknown, fallback: string): void {

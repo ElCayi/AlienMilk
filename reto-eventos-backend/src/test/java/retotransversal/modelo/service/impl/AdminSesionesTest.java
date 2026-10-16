@@ -237,8 +237,8 @@ class AdminSesionesTest {
 	}
 
 	@Test
-	void aSessionThatAlreadyStartedTakesNoMoreBookings() {
-		Evento enCurso = sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(11, 0), 120);
+	void bookingsCloseTenMinutesBeforeTheStart() {
+		Evento enCurso = sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(12, 5), 120);
 		enCurso.setIdEvento(3);
 		enCurso.setAforoMaximo(40);
 		when(eventos.findById(3)).thenReturn(Optional.of(enCurso));
@@ -247,8 +247,19 @@ class AdminSesionesTest {
 
 		assertThatThrownBy(() -> servicio.reservarEvento(3, "ana", 1, null))
 				.isInstanceOf(ConflictoNegocioException.class)
-				.hasMessage("Esta sesión ya ha empezado: no admite más reservas");
+				.hasMessage("Las reservas de esta sesión ya están cerradas: cierran 10 minutos antes de empezar");
 		verify(reservas, never()).save(any());
+	}
+
+	@Test
+	void bookingsCloseWithTheEntranceAndCancellationsTheDayBefore() {
+		EventoServiceImpl servicio = new EventoServiceImpl(eventos, reservas, HOY);
+		LocalDate hoy = LocalDate.of(2026, 10, 14);
+
+		assertThat(servicio.admiteReservas(sesionALas(hoy, LocalTime.of(12, 10), 60))).isFalse();
+		assertThat(servicio.admiteReservas(sesionALas(hoy, LocalTime.of(12, 11), 60))).isTrue();
+		assertThat(servicio.admiteCancelaciones(sesionALas(hoy, LocalTime.of(23, 0), 60))).isFalse();
+		assertThat(servicio.admiteCancelaciones(sesionALas(hoy.plusDays(1), LocalTime.of(0, 30), 60))).isTrue();
 	}
 
 	private Evento sesionALas(LocalDate fecha, LocalTime hora, int minutos) {

@@ -280,12 +280,14 @@
                         type="button"
                         class="booking-button"
                         (click)="reservar()"
-                        [disabled]="loadingReservation()"
+                        [disabled]="loadingReservation() || !bookingsOpen(data)"
                       >
                         {{
-                          loadingReservation()
-                            ? 'Procesando acceso...'
-                            : 'Reservar plaza · ' + price(totalReserva())
+                          !bookingsOpen(data)
+                            ? 'Reservas cerradas'
+                            : loadingReservation()
+                              ? 'Procesando acceso...'
+                              : 'Reservar plaza · ' + price(totalReserva())
                         }}
                       </button>
                     </ng-container>

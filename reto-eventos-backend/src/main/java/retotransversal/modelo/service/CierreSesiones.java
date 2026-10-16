@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Da por terminadas las sesiones activas que ya acabaron (su inicio más su duración, en la hora de
  * Madrid): cada diez minutos, y también al arrancar, por si el servidor estuvo parado. Una sesión
- * terminada deja de salir en la web pública; las canceladas siguen canceladas. Las reservas se cierran
- * antes, en cuanto la sesión empieza (ver ReservaServiceImpl).
+ * terminada deja de salir en la web pública; las canceladas siguen canceladas. Las reservas cierran
+ * antes, 10 minutos antes de empezar (ver EventoService#admiteReservas).
  */
 @Component
 @RequiredArgsConstructor

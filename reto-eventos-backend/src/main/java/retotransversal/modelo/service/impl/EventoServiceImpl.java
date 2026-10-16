@@ -37,6 +37,9 @@ public class EventoServiceImpl implements EventoService {
 	/** Las sesiones son en hora peninsular: el día cambia a medianoche de Madrid. */
 	public static final ZoneId ZONA = ZoneId.of("Europe/Madrid");
 
+	/** Las reservas cierran con el control de ingreso, estos minutos antes de empezar. */
+	public static final int MINUTOS_CIERRE_RESERVAS = 10;
+
 	private final EventoRepository eventoRepository;
 	private final ReservaRepository reservaRepository;
 	private final Clock reloj;
@@ -187,6 +190,16 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public boolean haEmpezado(Evento evento) {
 		return !evento.inicio().isAfter(ahora());
+	}
+
+	@Override
+	public boolean admiteReservas(Evento evento) {
+		return ahora().isBefore(evento.inicio().minusMinutes(MINUTOS_CIERRE_RESERVAS));
+	}
+
+	@Override
+	public boolean admiteCancelaciones(Evento evento) {
+		return hoy().isBefore(evento.getFechaInicio());
 	}
 
 	@Override

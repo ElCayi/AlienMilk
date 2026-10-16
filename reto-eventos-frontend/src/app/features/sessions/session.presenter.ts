@@ -64,3 +64,21 @@ export function sessionSchedule(session: { horaInicio?: string | null; duracion?
   const pad = (value: number) => String(value).padStart(2, '0');
   return `${start} – ${pad(Math.floor(end / 60))}:${pad(end % 60)}`;
 }
+
+/** Minutos antes del inicio en que cierran las reservas: cuando cierra el control de ingreso. */
+export const BOOKING_CLOSES_MINUTES = 10;
+
+/**
+ * Si una sesión aún admite reservas: hasta {@link BOOKING_CLOSES_MINUTES} minutos antes de empezar,
+ * en la hora de quien mira. El servidor tiene la última palabra (en la hora de Madrid).
+ */
+export function bookingsOpen(session: { fechaInicio: string; horaInicio?: string | null }, now = new Date()): boolean {
+  const start = new Date(`${session.fechaInicio}T${session.horaInicio?.slice(0, 5) || '00:00'}:00`);
+  return now.getTime() < start.getTime() - BOOKING_CLOSES_MINUTES * 60_000;
+}
+
+/** Si una reserva aún se puede cancelar: hasta el día anterior a la sesión. */
+export function cancellable(fechaInicio: string, now = new Date()): boolean {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` < fechaInicio.slice(0, 10);
+}

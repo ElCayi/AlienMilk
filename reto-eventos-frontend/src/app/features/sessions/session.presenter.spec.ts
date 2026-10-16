@@ -1,5 +1,14 @@
 import { EventoListado } from '../../models/api.models';
-import { anomaly, archiveCode, compatibility, sampleCode, sessionImage, sessionSchedule } from './session.presenter';
+import {
+  anomaly,
+  archiveCode,
+  bookingsOpen,
+  cancellable,
+  compatibility,
+  sampleCode,
+  sessionImage,
+  sessionSchedule,
+} from './session.presenter';
 
 function session(idEvento: number): EventoListado {
   return {
@@ -38,5 +47,13 @@ describe('session presenter', () => {
     expect(sessionSchedule({ horaInicio: '22:30:00', duracion: 105 })).toBe('22:30 – 00:15');
     expect(sessionSchedule({ horaInicio: '19:15', duracion: null })).toBe('19:15');
     expect(sessionSchedule({ horaInicio: null, duracion: 90 })).toBe('');
+  });
+
+  it('closes bookings ten minutes before the start and cancellations the day before', () => {
+    const session = { fechaInicio: '2026-11-20', horaInicio: '19:15' };
+    expect(bookingsOpen(session, new Date(2026, 10, 20, 19, 4))).toBe(true);
+    expect(bookingsOpen(session, new Date(2026, 10, 20, 19, 5))).toBe(false);
+    expect(cancellable('2026-11-20', new Date(2026, 10, 19, 23, 59))).toBe(true);
+    expect(cancellable('2026-11-20', new Date(2026, 10, 20, 0, 1))).toBe(false);
   });
 });

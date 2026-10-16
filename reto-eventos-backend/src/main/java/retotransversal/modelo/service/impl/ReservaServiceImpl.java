@@ -96,8 +96,8 @@ public class ReservaServiceImpl implements ReservaService {
 		if (reserva.getEvento().getEstado() != EstadoEvento.ACTIVO) {
 			throw new ConflictoNegocioException("La sesión ya no está activa: la reserva se queda en tu historial");
 		}
-		if (eventoService.haEmpezado(reserva.getEvento())) {
-			throw new ConflictoNegocioException("La sesión ya ha empezado: la reserva se queda en tu historial");
+		if (!eventoService.admiteCancelaciones(reserva.getEvento())) {
+			throw new ConflictoNegocioException("Las reservas se pueden cancelar hasta el día anterior a la sesión");
 		}
 		reservaRepository.deleteById(idReserva);
 		return 1;
@@ -120,9 +120,9 @@ public class ReservaServiceImpl implements ReservaService {
 		if (evento.getEstado() != EstadoEvento.ACTIVO) {
 			throw new ConflictoNegocioException("Esta sesión ya no admite reservas");
 		}
-		// Hasta que acaba sigue activa, pero desde que empieza ya no se entra.
-		if (eventoService.haEmpezado(evento)) {
-			throw new ConflictoNegocioException("Esta sesión ya ha empezado: no admite más reservas");
+		// Sigue activa hasta que acaba, pero las reservas cierran con el control de ingreso.
+		if (!eventoService.admiteReservas(evento)) {
+			throw new ConflictoNegocioException("Las reservas de esta sesión ya están cerradas: cierran 10 minutos antes de empezar");
 		}
 
 		int aforoReservado = reservaRepository.findByEventoIdEvento(evento.getIdEvento())

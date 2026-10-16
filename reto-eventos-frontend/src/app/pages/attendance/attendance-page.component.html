@@ -1,0 +1,297 @@
+<article class="secondary-page" aria-labelledby="attendance-title">
+  <div class="secondary-stage">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a routerLink="/">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a routerLink="/sesiones" [queryParams]="session() ? { sesion: session()!.idEvento } : {}">Sesiones</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Registro de asistencia</span>
+    </nav>
+
+    <header class="secondary-header">
+      <div class="secondary-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-icon" aria-hidden="true"></span>
+          <span>AM / Registro de asistencia</span>
+        </p>
+        <h1 id="attendance-title" appFitLine>{{ session()?.nombre ?? 'Registro de asistencia' }}</h1>
+        @if (session(); as data) {
+          <p class="secondary-subtitle attendance-when" appFitLine>
+            <span class="date-long">{{ longDate(data.fechaInicio) }}</span
+            ><span class="date-short">{{ shortDate(data.fechaInicio) }}</span> · {{ schedule(data) }} ·
+            {{ data.direccion }}
+          </p>
+        }
+        <p class="secondary-intro">
+          Identifique a cada participante tal como figura en el documento que presentará en el control
+          de ingreso. AlienMilk no conserva copias de su documento: se comprueba en la taquilla de
+          acreditación, 45 minutos antes del inicio.
+        </p>
+      </div>
+
+      @if (session(); as data) {
+        <fieldset class="legend-box summary-box">
+          <legend>Su reserva</legend>
+          <dl>
+            <div>
+              <dt>Plazas</dt>
+              <dd>
+                <input
+                  id="attendance-seats"
+                  aria-label="Plazas"
+                  class="seats-input"
+                  type="number"
+                  min="1"
+                  [max]="maxSeats"
+                  [disabled]="sent()"
+                  [ngModel]="participants().length"
+                  (ngModelChange)="setSeats($event)"
+                />
+              </dd>
+            </div>
+            <div>
+              <dt>Por plaza</dt>
+              <dd>{{ price(data.precio) }}</dd>
+            </div>
+            <div>
+              <dt>Total</dt>
+              <dd>{{ price(total()) }}</dd>
+            </div>
+          </dl>
+        </fieldset>
+      }
+    </header>
+  </div>
+
+  @if (loadError()) {
+    <section class="paper-card attendance-state" role="alert">
+      <p>No se ha podido consultar esta sesión.</p>
+      <button type="button" class="line-action" (click)="load()">
+        <span class="line-action-label">Reintentar</span>
+      </button>
+    </section>
+  } @else if (sent()) {
+    <section class="paper-card attendance-state" role="status">
+      <p class="section-label section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>
+        Asistencia registrada
+      </p>
+      <h2>Sus plazas quedan registradas a nombre de los participantes indicados.</h2>
+      <p class="section-copy">
+        Preséntense en la taquilla de acreditación 45 minutos antes del inicio, cada uno con su
+        credencial. Si comunicó adaptaciones o material externo, AlienMilk se pondrá en contacto con
+        usted antes de la sesión.
+      </p>
+      <a class="line-action" routerLink="/cuenta/reservas">
+        <span class="line-action-label">Ver mis reservas</span>
+      </a>
+    </section>
+  } @else if (session(); as data) {
+    @if (!open()) {
+      <section class="paper-card attendance-state" role="status">
+        <p class="section-copy">
+          Esta sesión ya no admite reservas: cierran 10 minutos antes del inicio, con el control de
+          ingreso.
+        </p>
+      </section>
+    } @else {
+      <form class="paper-card attendance-form" novalidate (ngSubmit)="submit()">
+        <!-- 01. Quién viene: un bloque por plaza. -->
+        <section class="attendance-section" aria-labelledby="attendance-people">
+          <p class="section-label section-kicker">
+            <span class="eyebrow-icon" aria-hidden="true"></span>
+            01 / Identificación de participantes
+          </p>
+          <h2 id="attendance-people">Quién asistirá.</h2>
+          @if (error('asistentes'); as message) {
+            <p class="field-error">{{ message }}</p>
+          }
+          <ol class="participants">
+            @for (person of participants(); track $index; let i = $index) {
+              <li class="participant">
+                <p class="participant-number" aria-hidden="true">{{ (i + 1).toString().padStart(2, '0') }}</p>
+                <div class="field-grid">
+                  <div class="field is-wide" [class.is-invalid]="error('asistentes.' + i + '.nombre')">
+                    <label [for]="'person-name-' + i">Nombre de identificación</label>
+                    <input
+                      [id]="'person-name-' + i"
+                      maxlength="80"
+                      autocomplete="off"
+                      [ngModel]="person.nombre"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="update(i, 'nombre', $event)"
+                    />
+                    @if (error('asistentes.' + i + '.nombre'); as message) {
+                      <p class="field-error">{{ message }}</p>
+                    }
+                  </div>
+                  <div class="field" [class.is-invalid]="error('asistentes.' + i + '.credencial')">
+                    <label [for]="'person-credential-' + i">Credencial</label>
+                    <select
+                      [id]="'person-credential-' + i"
+                      [ngModel]="person.credencial"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="update(i, 'credencial', $event)"
+                    >
+                      <option value="" disabled>La que presentará</option>
+                      @for (credential of credentials; track credential.value) {
+                        <option [value]="credential.value">{{ credential.label }}</option>
+                      }
+                    </select>
+                    @if (error('asistentes.' + i + '.credencial'); as message) {
+                      <p class="field-error">{{ message }}</p>
+                    }
+                  </div>
+                  <div class="field">
+                    <label [for]="'person-origin-' + i">Procedencia <span class="field-optional">opcional</span></label>
+                    <input
+                      [id]="'person-origin-' + i"
+                      maxlength="80"
+                      placeholder="Madrid, SOL-III"
+                      [ngModel]="person.procedencia"
+                      [ngModelOptions]="{ standalone: true }"
+                      (ngModelChange)="update(i, 'procedencia', $event)"
+                    />
+                  </div>
+                </div>
+              </li>
+            }
+          </ol>
+        </section>
+
+        <!-- 02. Lo que cada organismo no tolera: lo evalúa AlienMilk, no una lista cerrada. -->
+        <section class="attendance-section" aria-labelledby="attendance-compat">
+          <p class="section-label section-kicker">
+            <span class="eyebrow-icon" aria-hidden="true"></span>
+            02 / Compatibilidad biológica
+          </p>
+          <h2 id="attendance-compat">Incompatibilidades y restricciones.</h2>
+          <p class="section-copy">
+            Indique cualquier incompatibilidad biológica, restricción alimentaria o condición particular
+            que deba considerarse durante su participación.
+          </p>
+          <p class="section-copy">
+            AlienMilk evaluará las adaptaciones necesarias conforme al protocolo de la sesión.
+          </p>
+          <div class="field-stack">
+            @for (person of participants(); track $index; let i = $index) {
+              <div class="field">
+                <label [for]="'person-compat-' + i">{{ participantLabel(i) }} <span class="field-optional">opcional</span></label>
+                <textarea
+                  [id]="'person-compat-' + i"
+                  rows="2"
+                  maxlength="300"
+                  [ngModel]="person.incompatibilidades"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="update(i, 'incompatibilidades', $event)"
+                ></textarea>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- 03. Adaptaciones y material externo: si hay algo, la reserva queda para revisión. -->
+        <section class="attendance-section" aria-labelledby="attendance-adapt">
+          <p class="section-label section-kicker">
+            <span class="eyebrow-icon" aria-hidden="true"></span>
+            03 / Adaptaciones y equipamiento
+          </p>
+          <h2 id="attendance-adapt">Adaptaciones de participación.</h2>
+          <p class="section-copy">
+            AlienMilk contempla la participación de organismos con distintas necesidades biológicas,
+            ambientales y funcionales.
+          </p>
+          <div class="field">
+            <label for="attendance-adaptations">
+              Indique si necesita alguna adaptación particular para participar en la sesión.
+              <span class="field-optional">opcional</span>
+            </label>
+            <textarea id="attendance-adaptations" name="adaptaciones" rows="3" maxlength="500" [(ngModel)]="adaptaciones"></textarea>
+          </div>
+
+          <h3 class="subsection-title">Introducción de material externo</h3>
+          <p class="section-copy">
+            Todo material, dispositivo o equipamiento externo que vaya a utilizarse durante la sesión
+            deberá estar homologado o contar con la autorización correspondiente.
+          </p>
+          <p class="section-copy">
+            Las adaptaciones no contempladas en los protocolos establecidos deberán comunicarse a
+            AlienMilk con suficiente antelación para su evaluación y autorización.
+          </p>
+          <label class="check">
+            <input type="checkbox" name="materialExterno" [(ngModel)]="materialExterno" />
+            <span>Tengo previsto introducir material o equipamiento externo</span>
+          </label>
+          @if (materialExterno) {
+            <div class="field" [class.is-invalid]="error('materialDescripcion')">
+              <label for="attendance-material">Describa el material o equipamiento</label>
+              <textarea id="attendance-material" name="materialDescripcion" rows="3" maxlength="500" [(ngModel)]="materialDescripcion"></textarea>
+              @if (error('materialDescripcion'); as message) {
+                <p class="field-error">{{ message }}</p>
+              }
+            </div>
+          }
+          <p class="attendance-note">
+            Comunicar una adaptación no implica su aprobación automática. Cualquier condición que deba
+            autorizarse tendrá que estar resuelta antes de participar.
+          </p>
+        </section>
+
+        <!-- 04. Contacto y conformidad. -->
+        <section class="attendance-section" aria-labelledby="attendance-consent">
+          <p class="section-label section-kicker">
+            <span class="eyebrow-icon" aria-hidden="true"></span>
+            04 / Contacto y conformidad
+          </p>
+          <h2 id="attendance-consent">Para avisarle, y su conformidad.</h2>
+          <div class="field is-short" [class.is-invalid]="error('telefono')">
+            <label for="attendance-phone">Teléfono de contacto</label>
+            <input id="attendance-phone" name="telefono" type="tel" maxlength="20" autocomplete="tel" placeholder="+34 600 000 000" [(ngModel)]="telefono" />
+            @if (error('telefono'); as message) {
+              <p class="field-error">{{ message }}</p>
+            } @else {
+              <p class="field-help">Para comunicarle el mismo día suspensiones por condiciones de la estación.</p>
+            }
+          </div>
+
+          <div class="checks">
+            <label class="check" [class.is-invalid]="error('aceptaEdad')">
+              <input type="checkbox" name="aceptaEdad" [(ngModel)]="aceptaEdad" />
+              <span>Todos los participantes cumplen la edad mínima de la sesión, en años terrestres.</span>
+            </label>
+            @if (error('aceptaEdad'); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+            <label class="check" [class.is-invalid]="error('aceptaCondiciones')">
+              <input type="checkbox" name="aceptaCondiciones" [(ngModel)]="aceptaCondiciones" />
+              <span>
+                He leído las <a routerLink="/documentacion/asistentes" target="_blank">condiciones de acceso</a> y
+                acepto el protocolo de sala.
+              </span>
+            </label>
+            @if (error('aceptaCondiciones'); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+            <label class="check is-optional">
+              <input type="checkbox" name="aceptaComunicaciones" [(ngModel)]="aceptaComunicaciones" />
+              <span>Deseo recibir el programa de AlienMilk Sessions.</span>
+            </label>
+          </div>
+        </section>
+
+        @if (formError(); as message) {
+          <p class="form-error" role="alert">{{ message }}</p>
+        }
+        <div class="attendance-submit">
+          <button type="submit" class="submit-button" [disabled]="sending()" [attr.aria-busy]="sending()">
+            {{ sending() ? 'Registrando…' : 'Registrar asistencia · ' + price(total()) }}
+          </button>
+        </div>
+      </form>
+    }
+  } @else {
+    <section class="paper-card attendance-state" role="status">
+      <p class="section-copy">Consultando la sesión…</p>
+    </section>
+  }
+</article>

@@ -1,249 +1,487 @@
-[
-  {
-    "nombre": "Degustación de Calostro de Ganímedes",
-    "descripcion": "Cata comentada del primer calostro recibido de Ganímedes este ciclo, servido en tres temperaturas",
-    "tipo": "CATA_COSMICA",
-    "horaInicio": "19:00",
-    "duracion": 120,
-    "direccion": "Sala de Catas, Hangar 7",
-    "aforoMaximo": 80,
-    "minimoAsistencia": 20,
-    "precio": 42.00,
-    "expediente": {
-      "entradilla": "El calostro de Ganímedes llega una vez por ciclo y en cantidades modestas. Esta sesión reparte el primer envío entre ochenta personas.",
-      "texto": [
-        "La muestra procede de una única colonia de las llanuras de Galileo Regio, con la que AlienMilk mantiene un acuerdo de intercambio desde hace once ciclos. La colonia lo describe como «lo que se da al principio».",
-        "Se sirve en tres temperaturas para apreciar cómo cambia su densidad. Entre servicios se ofrece agua templada y una galleta de avena sin sal."
-      ],
-      "procedencia": "Galileo Regio, Ganímedes",
-      "notasCata": [
-        { "etiqueta": "Color", "valor": "Amarillo pálido, casi mantequilla" },
-        { "etiqueta": "Cuerpo", "valor": "Denso" },
-        { "etiqueta": "Servicio", "valor": "4 °C · 12 °C · 30 °C" }
-      ],
-      "programa": [
-        { "hora": "19:00", "titulo": "Acreditación" },
-        { "hora": "19:20", "titulo": "Primer servicio, en frío" },
-        { "hora": "19:55", "titulo": "Segundo servicio, a temperatura de sala" },
-        { "hora": "20:30", "titulo": "Tercer servicio, templado" },
-        { "hora": "21:00", "titulo": "Cierre" }
-      ],
-      "acceso": [
-        { "etiqueta": "Edad mínima", "valor": "18 años." }
-      ]
-    }
+{
+  "comun": {
+    "equipo": [
+      {
+        "etiqueta": "Coordinación",
+        "valor": "Oficina de Programación de Sessions"
+      },
+      {
+        "etiqueta": "Acompañamiento",
+        "valor": "Personal acreditado AlienMilk"
+      }
+    ],
+    "acceso": [
+      {
+        "etiqueta": "Acreditación",
+        "valor": "Taquilla de acreditación, 45 minutos antes del inicio. El control de ingreso cierra 10 minutos antes."
+      },
+      {
+        "etiqueta": "Documentación",
+        "valor": "Código de acceso y documento identificativo vigente."
+      },
+      {
+        "etiqueta": "Edad mínima",
+        "valor": "18 años, salvo indicación expresa en la sesión."
+      }
+    ],
+    "recomendaciones": [
+      "No acuda en ayunas ni inmediatamente después de una comida copiosa.",
+      "Indique cualquier intolerancia en el campo de observaciones al reservar.",
+      "Los objetos personales se depositan en consigna durante toda la sesión."
+    ],
+    "preguntas": [
+      {
+        "pregunta": "¿Puedo asistir si tengo alguna intolerancia alimentaria?",
+        "respuesta": "Sí. Indíquela en el campo de observaciones al reservar. El equipo de sala preparará una alternativa o le asignará un puesto de observación sin degustación."
+      },
+      {
+        "pregunta": "¿Puedo cancelar mi reserva?",
+        "respuesta": "Sí, desde su panel de participante hasta el día anterior a la sesión. El importe se reintegra en un plazo de cinco días hábiles."
+      },
+      {
+        "pregunta": "¿Qué ocurre si la sesión se suspende?",
+        "respuesta": "Las suspensiones por condiciones de la estación se comunican con al menos 48 horas de antelación, salvo causa sobrevenida. Se reintegra el importe íntegro o se ofrece plaza en la siguiente convocatoria."
+      },
+      {
+        "pregunta": "¿Se puede fotografiar la sala?",
+        "respuesta": "Solo en las zonas señalizadas. Las muestras no se fotografían."
+      },
+      {
+        "pregunta": "¿De dónde proceden las muestras?",
+        "respuesta": "AlienMilk trabaja con una red estable de proveedores y colaboradores. Por respeto a los acuerdos que hacen posible cada extracción, no revelamos el origen biológico ni el método de obtención."
+      }
+    ],
+    "colaboradores": [
+      {
+        "rol": "Programa",
+        "nombre": "AlienMilk Sessions · Ciclo 2026",
+        "detalle": "Programación pública del archivo"
+      },
+      {
+        "rol": "Tránsito",
+        "nombre": "AM Transit",
+        "detalle": "Traslados desde los intercambiadores"
+      },
+      {
+        "rol": "Custodia",
+        "nombre": "Helix Transfer",
+        "detalle": "Custodia durante la sesión"
+      }
+    ],
+    "creditos": "Programa AlienMilk Sessions · Ciclo 2026."
   },
-  {
-    "nombre": "Banco Lácteo: visita a las cámaras",
-    "descripcion": "Recorrido guiado por las cámaras de conservación del Banco Lácteo, abiertas al público dos mañanas al año",
-    "tipo": "ORBITA_GUIADA",
-    "horaInicio": "11:00",
-    "duracion": 90,
-    "direccion": "Banco Lácteo de Getafe, nave 2",
-    "aforoMaximo": 30,
-    "minimoAsistencia": 8,
-    "precio": 15.00,
-    "expediente": {
-      "entradilla": "Catorce mil envases a dieciocho grados bajo cero, ordenados por procedencia. Dos mañanas al año, el Banco Lácteo abre sus cámaras al público.",
-      "texto": [
-        "La visita recorre la nave de recepción, el pasillo de cuarentena y las tres cámaras principales. El personal de conservación explica cómo se etiqueta, se registra y se rota cada envase.",
-        "Se entrega ropa térmica a la entrada. La temperatura de las cámaras no se ajusta para las visitas."
-      ],
-      "procedencia": "Fondos del Banco Lácteo",
-      "programa": [
-        { "hora": "11:00", "titulo": "Recepción y entrega de ropa térmica" },
-        { "hora": "11:15", "titulo": "Nave de recepción y cuarentena" },
-        { "hora": "11:45", "titulo": "Cámaras principales" },
-        { "hora": "12:30", "titulo": "Salida por el muelle de carga" }
-      ],
-      "acceso": [
-        { "etiqueta": "Indumentaria", "valor": "Calzado cerrado. La ropa térmica se proporciona en sala." },
-        { "etiqueta": "Recorrido", "valor": "A pie, unos 800 metros." }
-      ]
+  "plantillas": [
+    {
+      "nombre": "Degustación de Calostro de Ganímedes",
+      "descripcion": "Cata comentada del primer calostro recibido de Ganímedes este ciclo, servido en tres temperaturas",
+      "tipo": "CATA_COSMICA",
+      "horaInicio": "19:00",
+      "duracion": 120,
+      "direccion": "Sala de Catas, Hangar 7",
+      "aforoMaximo": 80,
+      "minimoAsistencia": 20,
+      "precio": 42,
+      "expediente": {
+        "entradilla": "El calostro de Ganímedes llega una vez por ciclo y en cantidades modestas. Esta sesión reparte el primer envío entre ochenta personas.",
+        "texto": [
+          "La muestra procede de una única colonia de las llanuras de Galileo Regio, con la que AlienMilk mantiene un acuerdo de intercambio desde hace once ciclos. La colonia lo describe como «lo que se da al principio».",
+          "Se sirve en tres temperaturas para apreciar cómo cambia su densidad. Entre servicios se ofrece agua templada y una galleta de avena sin sal."
+        ],
+        "procedencia": "Galileo Regio, Ganímedes",
+        "notasCata": [
+          {
+            "etiqueta": "Color",
+            "valor": "Amarillo pálido, casi mantequilla"
+          },
+          {
+            "etiqueta": "Cuerpo",
+            "valor": "Denso"
+          },
+          {
+            "etiqueta": "Servicio",
+            "valor": "4 °C · 12 °C · 30 °C"
+          }
+        ],
+        "programa": [
+          {
+            "hora": "19:00",
+            "titulo": "Acreditación"
+          },
+          {
+            "hora": "19:20",
+            "titulo": "Primer servicio, en frío"
+          },
+          {
+            "hora": "19:55",
+            "titulo": "Segundo servicio, a temperatura de sala"
+          },
+          {
+            "hora": "20:30",
+            "titulo": "Tercer servicio, templado"
+          },
+          {
+            "hora": "21:00",
+            "titulo": "Cierre"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Edad mínima",
+            "valor": "18 años."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Banco Lácteo: visita a las cámaras",
+      "descripcion": "Recorrido guiado por las cámaras de conservación del Banco Lácteo, abiertas al público dos mañanas al año",
+      "tipo": "ORBITA_GUIADA",
+      "horaInicio": "11:00",
+      "duracion": 90,
+      "direccion": "Banco Lácteo de Getafe, nave 2",
+      "aforoMaximo": 30,
+      "minimoAsistencia": 8,
+      "precio": 15,
+      "expediente": {
+        "entradilla": "Catorce mil envases a dieciocho grados bajo cero, ordenados por procedencia. Dos mañanas al año, el Banco Lácteo abre sus cámaras al público.",
+        "texto": [
+          "La visita recorre la nave de recepción, el pasillo de cuarentena y las tres cámaras principales. El personal de conservación explica cómo se etiqueta, se registra y se rota cada envase.",
+          "Se entrega ropa térmica a la entrada. La temperatura de las cámaras no se ajusta para las visitas."
+        ],
+        "procedencia": "Fondos del Banco Lácteo",
+        "programa": [
+          {
+            "hora": "11:00",
+            "titulo": "Recepción y entrega de ropa térmica"
+          },
+          {
+            "hora": "11:15",
+            "titulo": "Nave de recepción y cuarentena"
+          },
+          {
+            "hora": "11:45",
+            "titulo": "Cámaras principales"
+          },
+          {
+            "hora": "12:30",
+            "titulo": "Salida por el muelle de carga"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Indumentaria",
+            "valor": "Calzado cerrado. La ropa térmica se proporciona en sala."
+          },
+          {
+            "etiqueta": "Recorrido",
+            "valor": "A pie, unos 800 metros."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Taller de Cuajada Ingrávida",
+      "descripcion": "Taller práctico para cuajar leches que no responden a la gravedad local. Cada participante se lleva su cuajada",
+      "tipo": "LABORATORIO_SENSORIAL",
+      "horaInicio": "17:00",
+      "duracion": 150,
+      "direccion": "Módulo Lácteo 3",
+      "aforoMaximo": 24,
+      "minimoAsistencia": 8,
+      "precio": 60,
+      "expediente": {
+        "entradilla": "Algunas leches no caen al verterlas. Este taller enseña a cuajarlas igualmente.",
+        "texto": [
+          "Las bases de este taller proceden de organismos que viven en órbitas bajas y no han desarrollado preferencia por el suelo. Se trabajan en moldes cerrados, con cuajo vegetal y mucha paciencia.",
+          "Cada participante dispone de su propio puesto. Las cuajadas que se estabilizan antes del cierre se entregan en envase sellado."
+        ],
+        "procedencia": "Órbita baja, varios organismos",
+        "notasCata": [
+          {
+            "etiqueta": "Textura",
+            "valor": "Firme, con tendencia a elevarse"
+          },
+          {
+            "etiqueta": "Servicio",
+            "valor": "En molde cerrado"
+          }
+        ],
+        "programa": [
+          {
+            "hora": "17:00",
+            "titulo": "Asignación de puesto"
+          },
+          {
+            "hora": "17:20",
+            "titulo": "Presentación de las bases"
+          },
+          {
+            "hora": "17:45",
+            "titulo": "Cuajado"
+          },
+          {
+            "hora": "18:50",
+            "titulo": "Desmoldado y estabilización"
+          },
+          {
+            "hora": "19:30",
+            "titulo": "Entrega de envases"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Grupos",
+            "valor": "Un participante por puesto."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Primer Contacto en Familia",
+      "descripcion": "Versión diurna y reducida del protocolo de bienvenida, pensada para asistir con menores acompañados",
+      "tipo": "ABDUCCION_SUAVE",
+      "horaInicio": "12:00",
+      "duracion": 90,
+      "direccion": "Cúpula Beta",
+      "aforoMaximo": 60,
+      "minimoAsistencia": 15,
+      "precio": 18,
+      "expediente": {
+        "entradilla": "El protocolo de bienvenida de siempre, a media luz y con horario de comida. Para quien prefiere conocer a los visitantes en familia.",
+        "texto": [
+          "La sesión reproduce las fases habituales de un primer contacto a una intensidad muy baja: ascenso breve, estancia y descenso. El personal explica cada fase antes de empezar.",
+          "Al terminar se sirve una degustación suave, apta para todas las edades. Los visitantes agradecen que no se les señale con el dedo."
+        ],
+        "procedencia": "No declarada",
+        "programa": [
+          {
+            "hora": "12:00",
+            "titulo": "Recepción en el vestíbulo"
+          },
+          {
+            "hora": "12:15",
+            "titulo": "Ascenso"
+          },
+          {
+            "hora": "12:45",
+            "titulo": "Estancia"
+          },
+          {
+            "hora": "13:10",
+            "titulo": "Descenso y degustación"
+          },
+          {
+            "hora": "13:30",
+            "titulo": "Salida"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Edad mínima",
+            "valor": "6 años, acompañados de una persona adulta."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Maridaje de Leches de Marea",
+      "descripcion": "Cena de maridaje con leches recogidas durante las mareas de Titán, servida en el mercado de abastos de Kraken Mare",
+      "tipo": "CATA_COSMICA",
+      "horaInicio": "20:30",
+      "duracion": 120,
+      "direccion": "Mercado de Abastos de Kraken Mare, puesto 14",
+      "aforoMaximo": 40,
+      "minimoAsistencia": 12,
+      "precio": 58,
+      "expediente": {
+        "entradilla": "Cinco platos y cinco leches de marea, recogidas en la orilla de Kraken Mare. Se cena en el mismo puesto donde se venden por la mañana.",
+        "texto": [
+          "Las leches de marea se recogen cuando el metano se retira y dejan en la orilla una película fina que la cofradía local raspa a mano. Cada marea da un sabor distinto.",
+          "El puesto 14 cierra al público a las siete y vuelve a abrir para esta cena. La hora es la del mercado, que sigue el día de Titán y no el de aquí."
+        ],
+        "procedencia": "Orilla de Kraken Mare, Titán",
+        "notasCata": [
+          {
+            "etiqueta": "Color",
+            "valor": "Ámbar con reflejos verdosos"
+          },
+          {
+            "etiqueta": "Cuerpo",
+            "valor": "Ligero"
+          },
+          {
+            "etiqueta": "Persistencia",
+            "valor": "Salina y larga"
+          }
+        ],
+        "programa": [
+          {
+            "hora": "20:30",
+            "titulo": "Bienvenida en el puesto"
+          },
+          {
+            "hora": "20:45",
+            "titulo": "Primeros pases"
+          },
+          {
+            "hora": "21:40",
+            "titulo": "Plato principal"
+          },
+          {
+            "hora": "22:15",
+            "titulo": "Postre y última marea"
+          },
+          {
+            "hora": "22:30",
+            "titulo": "Cierre del puesto"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Tránsito",
+            "valor": "Traslado desde el intercambiador incluido en el precio."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Recogida Nocturna Asistida",
+      "descripcion": "Experiencia de recogida al aire libre, con acompañamiento continuo y regreso garantizado antes del amanecer",
+      "tipo": "ABDUCCION_SUAVE",
+      "horaInicio": "23:00",
+      "duracion": 75,
+      "direccion": "Explanada del Acceso Norte",
+      "aforoMaximo": 50,
+      "minimoAsistencia": 10,
+      "precio": 25,
+      "expediente": {
+        "entradilla": "Una recogida como las de antes: de noche, en campo abierto y sin aviso previo del momento exacto. Con la diferencia de que esta vez se vuelve.",
+        "texto": [
+          "Los asistentes esperan en la explanada con una manta y una bebida caliente. La recogida ocurre en algún momento de la sesión; el personal no sabe cuándo y no conviene preguntarlo.",
+          "El regreso está garantizado por contrato. Algunas personas vuelven con más tiempo en el reloj del que se fueron; se considera normal."
+        ],
+        "procedencia": "No declarada",
+        "programa": [
+          {
+            "hora": "23:00",
+            "titulo": "Llegada a la explanada"
+          },
+          {
+            "hora": "23:15",
+            "titulo": "Espera"
+          },
+          {
+            "hora": "00:15",
+            "titulo": "Regreso y recuento"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Edad mínima",
+            "valor": "18 años."
+          },
+          {
+            "etiqueta": "Salud",
+            "valor": "No recomendada para personas con vértigo."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Ruta de los Primeros Envases",
+      "descripcion": "Visita guiada al Archivo Central para conocer los envases con los que empezó AlienMilk hace más de dos siglos",
+      "tipo": "ORBITA_GUIADA",
+      "horaInicio": "18:00",
+      "duracion": 100,
+      "direccion": "Archivo Central, planta −2",
+      "aforoMaximo": 25,
+      "minimoAsistencia": 6,
+      "precio": 14,
+      "expediente": {
+        "entradilla": "Doscientos diecisiete años de envases, del frasco de farmacia al contenedor presurizado. La planta −2 del Archivo Central los guarda todos.",
+        "texto": [
+          "La ruta sigue la historia de la casa a través de sus recipientes: los primeros frascos de vidrio soplado, las lecheras de zinc de la expansión y los envases actuales, homologados en cuatro sistemas.",
+          "Al final se abre una vitrina que permanece cerrada el resto del año. Lo que contiene no se fotografía."
+        ],
+        "procedencia": "Archivo Central",
+        "programa": [
+          {
+            "hora": "18:00",
+            "titulo": "Acreditación en el vestíbulo del Archivo"
+          },
+          {
+            "hora": "18:15",
+            "titulo": "Sala de los frascos"
+          },
+          {
+            "hora": "18:50",
+            "titulo": "Galería de la expansión"
+          },
+          {
+            "hora": "19:25",
+            "titulo": "Apertura de la vitrina"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Fotografía",
+            "valor": "Permitida, salvo en la última sala."
+          }
+        ]
+      }
+    },
+    {
+      "nombre": "Laboratorio de Texturas Volátiles",
+      "descripcion": "Sesión de laboratorio para preparar espumas y nieblas de leche que se degustan antes de que se evaporen",
+      "tipo": "LABORATORIO_SENSORIAL",
+      "horaInicio": "18:30",
+      "duracion": 120,
+      "direccion": "Laboratorios Compartidos de Vallecas",
+      "aforoMaximo": 30,
+      "minimoAsistencia": 10,
+      "precio": 48,
+      "expediente": {
+        "entradilla": "Algunas leches duran segundos en el aire. Aquí se aprende a prepararlas y, sobre todo, a probarlas a tiempo.",
+        "texto": [
+          "El laboratorio trabaja con bases de alta volatilidad: se calientan, se airean o se nebulizan y se degustan en el momento. Cada técnica tiene su ventana, que el equipo anuncia en voz alta.",
+          "No se puede guardar nada para después. Lo que no se prueba, se va."
+        ],
+        "procedencia": "Base AlienMilk de archivo",
+        "notasCata": [
+          {
+            "etiqueta": "Textura",
+            "valor": "Niebla, espuma y vapor"
+          },
+          {
+            "etiqueta": "Persistencia",
+            "valor": "Muy breve"
+          }
+        ],
+        "programa": [
+          {
+            "hora": "18:30",
+            "titulo": "Asignación de puesto"
+          },
+          {
+            "hora": "18:45",
+            "titulo": "Espumas"
+          },
+          {
+            "hora": "19:30",
+            "titulo": "Nieblas"
+          },
+          {
+            "hora": "20:10",
+            "titulo": "Vapores y cierre"
+          }
+        ],
+        "acceso": [
+          {
+            "etiqueta": "Indumentaria",
+            "valor": "Bata y gafas, que se proporcionan en sala."
+          }
+        ]
+      }
     }
-  },
-  {
-    "nombre": "Taller de Cuajada Ingrávida",
-    "descripcion": "Taller práctico para cuajar leches que no responden a la gravedad local. Cada participante se lleva su cuajada",
-    "tipo": "LABORATORIO_SENSORIAL",
-    "horaInicio": "17:00",
-    "duracion": 150,
-    "direccion": "Módulo Lácteo 3",
-    "aforoMaximo": 24,
-    "minimoAsistencia": 8,
-    "precio": 60.00,
-    "expediente": {
-      "entradilla": "Algunas leches no caen al verterlas. Este taller enseña a cuajarlas igualmente.",
-      "texto": [
-        "Las bases de este taller proceden de organismos que viven en órbitas bajas y no han desarrollado preferencia por el suelo. Se trabajan en moldes cerrados, con cuajo vegetal y mucha paciencia.",
-        "Cada participante dispone de su propio puesto. Las cuajadas que se estabilizan antes del cierre se entregan en envase sellado."
-      ],
-      "procedencia": "Órbita baja, varios organismos",
-      "notasCata": [
-        { "etiqueta": "Textura", "valor": "Firme, con tendencia a elevarse" },
-        { "etiqueta": "Servicio", "valor": "En molde cerrado" }
-      ],
-      "programa": [
-        { "hora": "17:00", "titulo": "Asignación de puesto" },
-        { "hora": "17:20", "titulo": "Presentación de las bases" },
-        { "hora": "17:45", "titulo": "Cuajado" },
-        { "hora": "18:50", "titulo": "Desmoldado y estabilización" },
-        { "hora": "19:30", "titulo": "Entrega de envases" }
-      ],
-      "acceso": [
-        { "etiqueta": "Grupos", "valor": "Un participante por puesto." }
-      ]
-    }
-  },
-  {
-    "nombre": "Primer Contacto en Familia",
-    "descripcion": "Versión diurna y reducida del protocolo de bienvenida, pensada para asistir con menores acompañados",
-    "tipo": "ABDUCCION_SUAVE",
-    "horaInicio": "12:00",
-    "duracion": 90,
-    "direccion": "Cúpula Beta",
-    "aforoMaximo": 60,
-    "minimoAsistencia": 15,
-    "precio": 18.00,
-    "expediente": {
-      "entradilla": "El protocolo de bienvenida de siempre, a media luz y con horario de comida. Para quien prefiere conocer a los visitantes en familia.",
-      "texto": [
-        "La sesión reproduce las fases habituales de un primer contacto a una intensidad muy baja: ascenso breve, estancia y descenso. El personal explica cada fase antes de empezar.",
-        "Al terminar se sirve una degustación suave, apta para todas las edades. Los visitantes agradecen que no se les señale con el dedo."
-      ],
-      "procedencia": "No declarada",
-      "programa": [
-        { "hora": "12:00", "titulo": "Recepción en el vestíbulo" },
-        { "hora": "12:15", "titulo": "Ascenso" },
-        { "hora": "12:45", "titulo": "Estancia" },
-        { "hora": "13:10", "titulo": "Descenso y degustación" },
-        { "hora": "13:30", "titulo": "Salida" }
-      ],
-      "acceso": [
-        { "etiqueta": "Edad mínima", "valor": "6 años, acompañados de una persona adulta." }
-      ]
-    }
-  },
-  {
-    "nombre": "Maridaje de Leches de Marea",
-    "descripcion": "Cena de maridaje con leches recogidas durante las mareas de Titán, servida en el mercado de abastos de Kraken Mare",
-    "tipo": "CATA_COSMICA",
-    "horaInicio": "20:30",
-    "duracion": 120,
-    "direccion": "Mercado de Abastos de Kraken Mare, puesto 14",
-    "aforoMaximo": 40,
-    "minimoAsistencia": 12,
-    "precio": 58.00,
-    "expediente": {
-      "entradilla": "Cinco platos y cinco leches de marea, recogidas en la orilla de Kraken Mare. Se cena en el mismo puesto donde se venden por la mañana.",
-      "texto": [
-        "Las leches de marea se recogen cuando el metano se retira y dejan en la orilla una película fina que la cofradía local raspa a mano. Cada marea da un sabor distinto.",
-        "El puesto 14 cierra al público a las siete y vuelve a abrir para esta cena. La hora es la del mercado, que sigue el día de Titán y no el de aquí."
-      ],
-      "procedencia": "Orilla de Kraken Mare, Titán",
-      "notasCata": [
-        { "etiqueta": "Color", "valor": "Ámbar con reflejos verdosos" },
-        { "etiqueta": "Cuerpo", "valor": "Ligero" },
-        { "etiqueta": "Persistencia", "valor": "Salina y larga" }
-      ],
-      "programa": [
-        { "hora": "20:30", "titulo": "Bienvenida en el puesto" },
-        { "hora": "20:45", "titulo": "Primeros pases" },
-        { "hora": "21:40", "titulo": "Plato principal" },
-        { "hora": "22:15", "titulo": "Postre y última marea" },
-        { "hora": "22:30", "titulo": "Cierre del puesto" }
-      ],
-      "acceso": [
-        { "etiqueta": "Tránsito", "valor": "Traslado desde el intercambiador incluido en el precio." }
-      ]
-    }
-  },
-  {
-    "nombre": "Recogida Nocturna Asistida",
-    "descripcion": "Experiencia de recogida al aire libre, con acompañamiento continuo y regreso garantizado antes del amanecer",
-    "tipo": "ABDUCCION_SUAVE",
-    "horaInicio": "23:00",
-    "duracion": 75,
-    "direccion": "Explanada del Acceso Norte",
-    "aforoMaximo": 50,
-    "minimoAsistencia": 10,
-    "precio": 25.00,
-    "expediente": {
-      "entradilla": "Una recogida como las de antes: de noche, en campo abierto y sin aviso previo del momento exacto. Con la diferencia de que esta vez se vuelve.",
-      "texto": [
-        "Los asistentes esperan en la explanada con una manta y una bebida caliente. La recogida ocurre en algún momento de la sesión; el personal no sabe cuándo y no conviene preguntarlo.",
-        "El regreso está garantizado por contrato. Algunas personas vuelven con más tiempo en el reloj del que se fueron; se considera normal."
-      ],
-      "procedencia": "No declarada",
-      "programa": [
-        { "hora": "23:00", "titulo": "Llegada a la explanada" },
-        { "hora": "23:15", "titulo": "Espera" },
-        { "hora": "00:15", "titulo": "Regreso y recuento" }
-      ],
-      "acceso": [
-        { "etiqueta": "Edad mínima", "valor": "18 años." },
-        { "etiqueta": "Salud", "valor": "No recomendada para personas con vértigo." }
-      ]
-    }
-  },
-  {
-    "nombre": "Ruta de los Primeros Envases",
-    "descripcion": "Visita guiada al Archivo Central para conocer los envases con los que empezó AlienMilk hace más de dos siglos",
-    "tipo": "ORBITA_GUIADA",
-    "horaInicio": "18:00",
-    "duracion": 100,
-    "direccion": "Archivo Central, planta −2",
-    "aforoMaximo": 25,
-    "minimoAsistencia": 6,
-    "precio": 14.00,
-    "expediente": {
-      "entradilla": "Doscientos diecisiete años de envases, del frasco de farmacia al contenedor presurizado. La planta −2 del Archivo Central los guarda todos.",
-      "texto": [
-        "La ruta sigue la historia de la casa a través de sus recipientes: los primeros frascos de vidrio soplado, las lecheras de zinc de la expansión y los envases actuales, homologados en cuatro sistemas.",
-        "Al final se abre una vitrina que permanece cerrada el resto del año. Lo que contiene no se fotografía."
-      ],
-      "procedencia": "Archivo Central",
-      "programa": [
-        { "hora": "18:00", "titulo": "Acreditación en el vestíbulo del Archivo" },
-        { "hora": "18:15", "titulo": "Sala de los frascos" },
-        { "hora": "18:50", "titulo": "Galería de la expansión" },
-        { "hora": "19:25", "titulo": "Apertura de la vitrina" }
-      ],
-      "acceso": [
-        { "etiqueta": "Fotografía", "valor": "Permitida, salvo en la última sala." }
-      ]
-    }
-  },
-  {
-    "nombre": "Laboratorio de Texturas Volátiles",
-    "descripcion": "Sesión de laboratorio para preparar espumas y nieblas de leche que se degustan antes de que se evaporen",
-    "tipo": "LABORATORIO_SENSORIAL",
-    "horaInicio": "18:30",
-    "duracion": 120,
-    "direccion": "Laboratorios Compartidos de Vallecas",
-    "aforoMaximo": 30,
-    "minimoAsistencia": 10,
-    "precio": 48.00,
-    "expediente": {
-      "entradilla": "Algunas leches duran segundos en el aire. Aquí se aprende a prepararlas y, sobre todo, a probarlas a tiempo.",
-      "texto": [
-        "El laboratorio trabaja con bases de alta volatilidad: se calientan, se airean o se nebulizan y se degustan en el momento. Cada técnica tiene su ventana, que el equipo anuncia en voz alta.",
-        "No se puede guardar nada para después. Lo que no se prueba, se va."
-      ],
-      "procedencia": "Base AlienMilk de archivo",
-      "notasCata": [
-        { "etiqueta": "Textura", "valor": "Niebla, espuma y vapor" },
-        { "etiqueta": "Persistencia", "valor": "Muy breve" }
-      ],
-      "programa": [
-        { "hora": "18:30", "titulo": "Asignación de puesto" },
-        { "hora": "18:45", "titulo": "Espumas" },
-        { "hora": "19:30", "titulo": "Nieblas" },
-        { "hora": "20:10", "titulo": "Vapores y cierre" }
-      ],
-      "acceso": [
-        { "etiqueta": "Indumentaria", "valor": "Bata y gafas, que se proporcionan en sala." }
-      ]
-    }
-  }
-]
+  ]
+}

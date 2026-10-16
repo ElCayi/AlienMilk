@@ -124,9 +124,12 @@ class AdminCatalogosTest {
 		Evento activa = Evento.builder().idEvento(5).estado(EstadoEvento.ACTIVO).build();
 		when(reservas.findById(10)).thenReturn(Optional.of(Reserva.builder().idReserva(10).usuario(ana).evento(cancelada).build()));
 		when(reservas.findById(11)).thenReturn(Optional.of(Reserva.builder().idReserva(11).usuario(ana).evento(activa).build()));
+		// Las dos son de días que aún no han llegado: lo que decide es el estado de la sesión.
+		EventoService sesiones = mock(EventoService.class);
+		when(sesiones.admiteCancelaciones(any())).thenReturn(true);
 		MockMvc mvc = MockMvcBuilders
 				.standaloneSetup(new ReservaRestController(
-						new ReservaServiceImpl(reservas, mock(EventoService.class), mock(UsuarioService.class))))
+						new ReservaServiceImpl(reservas, sesiones, mock(UsuarioService.class))))
 				.setControllerAdvice(new GlobalExceptionHandler()).build();
 
 		mvc.perform(delete("/api/reservas/10").principal(ana()))

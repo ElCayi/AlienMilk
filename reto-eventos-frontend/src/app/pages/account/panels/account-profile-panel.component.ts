@@ -33,6 +33,27 @@ export class AccountProfilePanelComponent {
   readonly blocked = computed(() => this.isAdmin() || this.ordersInProgress() > 0);
 
   readonly dialog = viewChild.required(PanelDialogComponent);
+  readonly savingProgramme = signal(false);
+  readonly programmeNotice = signal<{ text: string; error: boolean } | null>(null);
+
+  setProgramme(acepta: boolean): void {
+    this.savingProgramme.set(true);
+    this.programmeNotice.set(null);
+    this.auth.setProgramme(acepta).subscribe({
+      next: () => {
+        this.savingProgramme.set(false);
+        this.programmeNotice.set({
+          text: acepta ? 'Recibirá el programa de cada ciclo.' : 'Ya no recibirá el programa.',
+          error: false,
+        });
+      },
+      error: () => {
+        this.savingProgramme.set(false);
+        this.programmeNotice.set({ text: 'No se ha podido guardar. Inténtelo de nuevo.', error: true });
+      },
+    });
+  }
+
   readonly deleting = signal(false);
   readonly passwordError = signal<string | null>(null);
   readonly formError = signal<string | null>(null);

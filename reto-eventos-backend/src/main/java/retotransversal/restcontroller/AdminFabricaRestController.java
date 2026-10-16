@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.service.FabricaService;
+import retotransversal.modelo.service.ReservasDemoService;
 import retotransversal.modelo.service.SesionesDemoService;
 
 /**
  * Los botones de la demo en el panel: «Restaurar», que la devuelve a su estado de fábrica (ver
- * FabricaService), y «Añadir sesiones demo», que suma sesiones de ejemplo (ver SesionesDemoService).
+ * FabricaService), «Añadir sesiones demo» y «Añadir reservas demo», que suman sesiones y reservas de
+ * ejemplo (ver SesionesDemoService y ReservasDemoService).
  */
 @RestController
 @RequestMapping("/api/admin/fabrica")
@@ -24,6 +26,7 @@ public class AdminFabricaRestController {
 
 	private final FabricaService fabricaService;
 	private final SesionesDemoService sesionesDemoService;
+	private final ReservasDemoService reservasDemoService;
 
 	@PostMapping
 	public ResponseEntity<Void> restaurar() {
@@ -35,5 +38,11 @@ public class AdminFabricaRestController {
 	@PostMapping("/sesiones")
 	public Map<String, List<String>> anadirSesiones() {
 		return Map.of("creadas", sesionesDemoService.anadir().stream().map(Evento::getNombre).toList());
+	}
+
+	/** Devuelve cuántas reservas se han añadido (0 si no queda ninguna sesión que las admita). */
+	@PostMapping("/reservas")
+	public Map<String, Integer> anadirReservas() {
+		return Map.of("creadas", reservasDemoService.anadir().size());
 	}
 }

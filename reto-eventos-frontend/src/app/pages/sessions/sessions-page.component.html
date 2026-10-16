@@ -248,8 +248,9 @@
                   <div class="booking-price" *ngIf="priceParts(data.precio) as amount">
                     <p class="booking-head">
                       <span class="booking-label">Acceso individual</span>
-                      <time class="booking-date" [attr.datetime]="data.fechaInicio">{{
+                      <time class="booking-date" [attr.datetime]="data.fechaInicio + 'T' + data.horaInicio">{{
                         ticketDate(data.fechaInicio)
+                      }} · {{ data.horaInicio
                       }}</time>
                     </p>
                     <strong class="booking-amount" [attr.aria-label]="price(data.precio)"
@@ -267,24 +268,19 @@
                           <span>Plazas</span>
                           <input type="number" [(ngModel)]="cantidad" min="1" max="10" />
                         </label>
-                        <label>
-                          <span>Observaciones</span>
-                          <input
-                            [(ngModel)]="observaciones"
-                            placeholder="Intolerancias, accesibilidad..."
-                          />
-                        </label>
                       </div>
                       <button
                         type="button"
                         class="booking-button"
                         (click)="reservar()"
-                        [disabled]="loadingReservation()"
+                        [disabled]="loadingReservation() || !bookingsOpen(data)"
                       >
                         {{
-                          loadingReservation()
-                            ? 'Procesando acceso...'
-                            : 'Reservar plaza · ' + price(totalReserva())
+                          !bookingsOpen(data)
+                            ? 'Reservas cerradas'
+                            : loadingReservation()
+                              ? 'Procesando acceso...'
+                              : 'Reservar plaza · ' + price(totalReserva())
                         }}
                       </button>
                     </ng-container>

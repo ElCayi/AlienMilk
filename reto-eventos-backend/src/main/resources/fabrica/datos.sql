@@ -1,5 +1,12 @@
 -- Estado de fábrica de la demo: los datos que deja script_bbdd.sql, sin esquema. Lo carga FabricaService
 -- al pulsar «Restaurar» en /admin. Si cambian los datos de script_bbdd.sql, regenerar con scripts/fabrica.sh.
+INSERT INTO `asistentes` (`id_asistente`, `id_reserva`, `orden`, `nombre`, `credencial`, `procedencia`, `incompatibilidades`) VALUES (1,1,1,'Ana Lopez','DNI_NIE','Madrid, SOL-III',NULL),
+(2,1,2,'Mara Ishikawa','DNI_NIE','Madrid, SOL-III','Lactosa terrestre'),
+(3,2,1,'Luis Garcia','DNI_NIE','Madrid, SOL-III',NULL),
+(4,2,2,'Kael-9 Varo','CREDENCIAL_TRANSITO','Galileo Regio, Ganímedes','No tolera la luz ultravioleta'),
+(5,2,3,'Ingrid Solveig','PASAPORTE','Tromsø, SOL-III',NULL),
+(6,4,1,'Luis Garcia','DNI_NIE','Madrid, SOL-III',NULL),
+(7,4,2,'Lhenna Quo','CREDENCIAL_TRANSITO','Orilla de Kraken Mare, Titán','Muestras con actividad residual');
 INSERT INTO `cifra_confianza` (`id_cifra`, `clave`, `rotulo`, `valor`, `unidad`, `nota`, `calculo`, `orden`) VALUES (1,'continuidad','Continuidad','1809','años','Sin interrupción operativa','ANIOS_DESDE',1),
 (2,'cobertura','Cobertura','83','sistemas','3 regiones galácticas',NULL,2),
 (3,'linajes','Linajes custodiados','18.642',NULL,'Y creciendo',NULL,3),
@@ -35,10 +42,10 @@ INSERT INTO `productos` (`id_producto`, `slug`, `nombre`, `categoria`, `resumen`
 (7,'copa-de-degustacion','Copa de degustación','MESA','La copa de las sesiones: boca estrecha para el aroma, base ancha para las leches densas.','Es la copa que se usa en todas las sesiones de AlienMilk. La boca estrecha concentra el aroma y la base ancha deja que las leches más densas se asienten sin formar capas. Se sopla a mano en un taller de A Coruña, así que no hay dos exactamente iguales.','Tierra · Taller de vidrio de A Coruña','180 ml','AM-M-0023','Apta para lavavajillas. Secar boca abajo.','Todos los territorios.','Vidrio soplado: las pequeñas burbujas del cristal son propias del proceso.',18.00,90,'cristal',7,1),
 (8,'estuche-isotermico','Estuche isotérmico','MESA','Mantiene dos botellas entre 2 y 5 °C durante 48 horas, en cualquier gravedad.','Diseñado junto a Frío Gliese, el operador que transporta las leches de AlienMilk entre sistemas. Mantiene dos botellas de hasta 750 ml entre 2 y 5 °C durante 48 horas, sin hielo ni corriente. El cierre está pensado para manos de cualquier forma.','Gliese 667 Cc · Frío Gliese','Dos botellas','AM-M-0007','Limpiar con un paño húmedo. No sumergir.','Todos los territorios.','Conserva el frío, no lo genera: introduzca las botellas ya refrigeradas.',32.00,25,'grafito',8,1),
 (9,'catalogo-de-procedencias','Catálogo de procedencias 2026','MESA','Las procedencias del archivo, con su organismo de origen y sus notas de cata.','Reúne las procedencias del archivo de AlienMilk tal como se catalogan en la sede central: organismo de origen, método de extracción, notas de cata y ficha de conservación de cada muestra. Edición en tapa dura, revisada para el ciclo 2026, con un índice por sistemas.','Archivo AlienMilk · Estación Meridiana','312 páginas','AM-M-0031','Lejos de la humedad y de las leches abiertas.','Todos los territorios.','Algunas fichas incluyen ilustraciones a tamaño real.',24.00,120,'papel',9,1);
-INSERT INTO `reservas` (`id_reserva`, `id_evento`, `username`, `precio_venta`, `observaciones`, `cantidad`) VALUES (1,1,'ana',70.00,'Queremos mesa cerca del lacteobar',2),
-(2,1,'luis',105.00,'Preferimos la zona de vision panoramica',3),
-(3,2,'ana',22.50,'Si puede ser, sin destellos muy fuertes',1),
-(4,4,'luis',24.00,'Reserva historica de ejemplo AlienMilk',2);
+INSERT INTO `reservas` (`id_reserva`, `id_evento`, `username`, `precio_venta`, `observaciones`, `cantidad`, `telefono`, `adaptaciones`, `material_externo`, `material_descripcion`, `conformidad_en`) VALUES (1,1,'ana',70.00,'Queremos mesa cerca del lacteobar',2,'+34 600 123 456',NULL,0,NULL,'2026-10-01 18:20:00'),
+(2,1,'luis',105.00,'Preferimos la zona de vision panoramica',3,'+34 611 987 654','Uno de los participantes necesita penumbra durante toda la sesión.',0,NULL,'2026-10-02 10:05:00'),
+(3,2,'ana',22.50,'Si puede ser, sin destellos muy fuertes',1,NULL,NULL,0,NULL,NULL),
+(4,4,'luis',24.00,'Reserva historica de ejemplo AlienMilk',2,'+34 611 987 654',NULL,1,'Respirador de metano portátil, homologado en Titán.','2026-10-03 21:40:00');
 INSERT INTO `socio` (`id_socio`, `nombre`, `estilo`, `emblema`, `orden`, `activo`) VALUES (1,'Cooperativa Láctea de Ceto IV','serif','gota',1,1),
 (2,'Hostelería Orbital','condensed','campana',2,1),
 (3,'Grupo Meridiana','wide','globo',3,1),
@@ -53,6 +60,6 @@ INSERT INTO `tipos_evento` (`id_tipo`, `nombre`, `descripcion`) VALUES (1,'CATA_
 (2,'ABDUCCION_SUAVE','Experiencias inmersivas de contacto alienigena aptas para humanos'),
 (3,'LABORATORIO_SENSORIAL','Talleres secretos de espuma, neon y protocolo AlienMilk'),
 (4,'ORBITA_GUIADA','Recorridos narrados por hangares, cupulas y zonas de avistamiento');
-INSERT INTO `usuarios` (`username`, `password`, `email`, `nombre`, `apellidos`, `direccion`, `enabled`, `fecha_registro`, `id_perfil`) VALUES ('admin','{noop}1234','admin@reto.com','Administrador','Principal','Avenida Central 1',1,'2026-03-31',1),
-('ana','{noop}1234','ana@reto.com','Ana','Lopez','Calle Mayor 12',1,'2026-03-31',2),
-('luis','{noop}1234','luis@reto.com','Luis','Garcia','Calle Sol 8',1,'2026-03-31',2);
+INSERT INTO `usuarios` (`username`, `password`, `email`, `nombre`, `apellidos`, `direccion`, `enabled`, `acepta_comunicaciones`, `fecha_registro`, `id_perfil`) VALUES ('admin','{noop}1234','admin@reto.com','Administrador','Principal','Avenida Central 1',1,0,'2026-03-31',1),
+('ana','{noop}1234','ana@reto.com','Ana','Lopez','Calle Mayor 12',1,0,'2026-03-31',2),
+('luis','{noop}1234','luis@reto.com','Luis','Garcia','Calle Sol 8',1,0,'2026-03-31',2);

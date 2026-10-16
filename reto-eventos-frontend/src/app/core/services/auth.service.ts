@@ -54,6 +54,20 @@ export class AuthService {
     return this.http.post<Usuario>(`${this.apiUrl}/auth/register`, payload);
   }
 
+  /** Quien ha entrado cambia el nombre con el que se le saluda; el saludo se actualiza al momento. */
+  renameMe(nombre: string): Observable<AuthUser> {
+    return this.http
+      .patch<AuthUser>(`${this.apiUrl}/auth/me`, { nombre })
+      .pipe(tap((user) => this.currentUser.set(user)));
+  }
+
+  /** Apuntarse al programa de AlienMilk Sessions o darse de baja. */
+  setProgramme(acepta: boolean): Observable<AuthUser> {
+    return this.http
+      .patch<AuthUser>(`${this.apiUrl}/auth/me`, { aceptaComunicaciones: acepta })
+      .pipe(tap((user) => this.currentUser.set(user)));
+  }
+
   /** Un cliente borra su cuenta, con su contraseña como confirmación; después hay que cerrar la sesión. */
   deleteAccount(password: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/auth/me`, { body: { password } });

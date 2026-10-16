@@ -2,7 +2,9 @@ package retotransversal.modelo.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -33,6 +35,16 @@ public class ReservaDto {
 	private Integer duracionEvento;
 	private String estadoEvento;
 
+	/** El registro de asistencia (vacío en las reservas anteriores a él o tomadas desde el panel). */
+	private List<AsistenteDto> asistentes;
+	private String telefono;
+	private String adaptaciones;
+	private boolean materialExterno;
+	private String materialDescripcion;
+	private LocalDateTime conformidadEn;
+	/** Con adaptaciones o material externo: AlienMilk tiene que evaluarla antes de la sesión. */
+	private boolean requiereRevision;
+
 	public static ReservaDto fromEntity(Reserva reserva) {
 		return ReservaDto.builder()
 				.idReserva(reserva.getIdReserva())
@@ -47,6 +59,13 @@ public class ReservaDto {
 				.horaInicioEvento(reserva.getEvento().getHoraInicio())
 				.duracionEvento(reserva.getEvento().getDuracion())
 				.estadoEvento(reserva.getEvento().getEstado().name())
+				.asistentes(reserva.getAsistentes().stream().map(AsistenteDto::de).toList())
+				.telefono(reserva.getTelefono())
+				.adaptaciones(reserva.getAdaptaciones())
+				.materialExterno(reserva.isMaterialExterno())
+				.materialDescripcion(reserva.getMaterialDescripcion())
+				.conformidadEn(reserva.getConformidadEn())
+				.requiereRevision(reserva.requiereRevision())
 				.build();
 	}
 

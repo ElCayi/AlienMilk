@@ -44,6 +44,11 @@ public class Usuario {
 	@Builder.Default
 	private Integer enabled = 1;
 
+	/** Si quiere recibir el programa de AlienMilk Sessions: se marca aparte, nunca por defecto. */
+	@Builder.Default
+	@Column(name = "acepta_comunicaciones", nullable = false)
+	private boolean aceptaComunicaciones = false;
+
 	@Column(name = "fecha_registro")
 	private LocalDate fechaRegistro;
 

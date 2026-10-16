@@ -1,0 +1,156 @@
+/* Hoja de control de ingreso: la sesión, el parte para sala en una franja y la tabla para marcar.
+   Impresa, solo queda la hoja (ver la regla de impresión en styles.css). */
+
+.sheet-session {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  margin: 0.4rem 0 0;
+  color: var(--paper-muted);
+}
+
+.sheet-session strong {
+  color: var(--paper-ink);
+}
+
+.sheet-title {
+  margin: 2rem 0 0.75rem;
+  font:
+    600 1.5rem / 1.1 var(--condensed);
+}
+
+/* El parte: una franja del papel con las cifras y dos columnas. */
+.sheet-report {
+  margin-top: 1.5rem;
+  padding: 0.25rem 1.25rem 1.25rem;
+  border-radius: 0.6rem;
+  background: var(--paper-soft);
+}
+
+.sheet-report .sheet-title {
+  margin-top: 1rem;
+}
+
+.sheet-figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, max-content));
+  gap: 0.5rem 2.5rem;
+  margin: 0 0 1.25rem;
+}
+
+.sheet-figures dt,
+.sheet-label {
+  margin: 0;
+  color: var(--paper-faint);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sheet-figures dd {
+  margin: 0.15rem 0 0;
+  font:
+    400 2rem / 1 var(--condensed);
+}
+
+.sheet-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 2.5rem;
+}
+
+.sheet-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sheet-list li {
+  display: grid;
+  gap: 0.1rem;
+  line-height: 1.45;
+}
+
+.sheet-list li:has(.sheet-count) {
+  display: block;
+}
+
+.sheet-count {
+  display: inline-block;
+  min-width: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-list span:not(.sheet-count) {
+  color: var(--paper-muted);
+  font-size: 0.9rem;
+}
+
+.sheet-none {
+  margin: 0.5rem 0 0;
+  color: var(--paper-muted);
+}
+
+/* La tabla: la casilla vacía para marcar a mano, y en coral lo que no se tolera. */
+.sheet-check-col {
+  width: 4.5rem;
+}
+
+.sheet-boxes {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-width: 4.5rem;
+}
+
+.sheet-box {
+  display: inline-block;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1.5px solid var(--paper-ink);
+  border-radius: 0.2rem;
+}
+
+.sheet-alert {
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.is-unregistered .cell-main {
+  font-style: italic;
+}
+
+@media screen and (max-width: 760px) {
+  .sheet-figures,
+  .sheet-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* En papel, apaisada: con A4 vertical la tabla no cabe y pasaría a fichas, como en el móvil. */
+@page {
+  size: A4 landscape;
+  margin: 12mm;
+}
+
+@media print {
+  .sheet-table tr,
+  .sheet-report {
+    break-inside: avoid;
+  }
+
+  .section-head-actions,
+  .back-link {
+    display: none;
+  }
+
+  .sheet-alert {
+    color: inherit;
+    text-decoration: underline;
+  }
+}

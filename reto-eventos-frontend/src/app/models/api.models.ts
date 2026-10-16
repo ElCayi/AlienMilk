@@ -34,6 +34,30 @@ export interface EventoAdmin extends Omit<EventoDetalle, 'estado'> {
   reservas: number;
 }
 
+/** El documento que un participante presentará en el control de ingreso (nunca se guarda su número). */
+export type Credencial = 'DNI_NIE' | 'PASAPORTE' | 'CREDENCIAL_TRANSITO' | 'ACREDITACION_COLONIA';
+
+/** Un participante de una reserva: una plaza, un nombre. */
+export interface Asistente {
+  nombre: string;
+  credencial: Credencial | '';
+  procedencia: string | null;
+  incompatibilidades: string | null;
+}
+
+/** Lo que se envía desde el Registro de asistencia: un participante por plaza, contacto y conformidad. */
+export interface RegistroAsistencia {
+  cantidad: number;
+  asistentes: Asistente[];
+  telefono: string;
+  adaptaciones: string;
+  materialExterno: boolean;
+  materialDescripcion: string;
+  aceptaEdad: boolean;
+  aceptaCondiciones: boolean;
+  aceptaComunicaciones: boolean;
+}
+
 export interface Reserva {
   idReserva: number;
   idEvento: number;
@@ -47,6 +71,16 @@ export interface Reserva {
   fechaInicioEvento: string;
   horaInicioEvento: string;
   duracionEvento: number | null;
+  /** El registro de asistencia; vacío en las reservas anteriores a él o tomadas desde el panel. */
+  asistentes: Asistente[];
+  telefono: string | null;
+  adaptaciones: string | null;
+  materialExterno: boolean;
+  materialDescripcion: string | null;
+  /** Cuándo se aceptaron la edad mínima y las condiciones de acceso. */
+  conformidadEn: string | null;
+  /** Con adaptaciones o material externo: AlienMilk tiene que evaluarla. */
+  requiereRevision: boolean;
   estadoEvento: string;
 }
 
@@ -84,6 +118,8 @@ export interface AuthUser {
   nombre: string;
   perfil: string;
   authorities: string[];
+  /** Si quiere recibir el programa de AlienMilk Sessions. */
+  aceptaComunicaciones?: boolean;
 }
 
 export interface RegisterPayload {

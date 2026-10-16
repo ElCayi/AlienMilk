@@ -51,14 +51,7 @@
             <strong>{{ totalReserva() | currency: 'EUR' }}</strong>
           </div>
 
-          <label>
-            Observaciones
-            <textarea [(ngModel)]="observaciones" rows="4"></textarea>
-          </label>
-
-          <button type="button" (click)="reservar()" [disabled]="loading()">
-            {{ loading() ? 'Reservando...' : 'Confirmar acceso' }}
-          </button>
+          <button type="button" (click)="reservar()">Continuar al registro de asistencia</button>
         </ng-container>
 
         <ng-template #loginPrompt>

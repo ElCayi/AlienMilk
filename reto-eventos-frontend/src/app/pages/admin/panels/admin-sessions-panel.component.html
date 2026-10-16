@@ -41,7 +41,7 @@
   <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->
   <label class="sort-select">
     <span>Ordenar por</span>
-    <select [ngModel]="sortValue()" (ngModelChange)="setSort($event)">
+    <select [ngModel]="sort.value()" (ngModelChange)="sort.set($event)">
       @for (option of sortOptions; track option.value) {
         <option [value]="option.value">{{ option.label }}</option>
       }
@@ -66,34 +66,34 @@
       <caption>Sesiones del programa. Pulsa una para ver su ficha y sus acciones.</caption>
       <thead>
         <tr>
-          <th scope="col" class="cell-num center" [attr.aria-sort]="ariaSort('numero')">
-            <button type="button" class="sort-button" (click)="sortBy('numero')">
+          <th scope="col" class="cell-num center" [attr.aria-sort]="sort.aria('numero')">
+            <button type="button" class="sort-button" (click)="sort.by('numero')">
               Nº
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('numero')" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('numero')" /></svg>
             </button>
           </th>
-          <th scope="col" [attr.aria-sort]="ariaSort('nombre')">
-            <button type="button" class="sort-button" (click)="sortBy('nombre')">
+          <th scope="col" [attr.aria-sort]="sort.aria('nombre')">
+            <button type="button" class="sort-button" (click)="sort.by('nombre')">
               Nombre
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('nombre')" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('nombre')" /></svg>
             </button>
           </th>
-          <th scope="col" class="center" [attr.aria-sort]="ariaSort('fecha')">
-            <button type="button" class="sort-button" (click)="sortBy('fecha')">
+          <th scope="col" class="center" [attr.aria-sort]="sort.aria('fecha')">
+            <button type="button" class="sort-button" (click)="sort.by('fecha')">
               Fecha
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('fecha')" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('fecha')" /></svg>
             </button>
           </th>
-          <th scope="col" class="center" [attr.aria-sort]="ariaSort('aforo')">
-            <button type="button" class="sort-button" (click)="sortBy('aforo')">
+          <th scope="col" class="center" [attr.aria-sort]="sort.aria('aforo')">
+            <button type="button" class="sort-button" (click)="sort.by('aforo')">
               Aforo
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('aforo')" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('aforo')" /></svg>
             </button>
           </th>
-          <th scope="col" class="center" [attr.aria-sort]="ariaSort('estado')">
-            <button type="button" class="sort-button" (click)="sortBy('estado')">
+          <th scope="col" class="center" [attr.aria-sort]="sort.aria('estado')">
+            <button type="button" class="sort-button" (click)="sort.by('estado')">
               Estado
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sortIcon('estado')" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('estado')" /></svg>
             </button>
           </th>
           <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
@@ -175,7 +175,7 @@
                     </div>
                     <div>
                       <dt>Cuándo</dt>
-                      <dd>{{ day(session.fechaInicio) }} · {{ schedule(session) || 'sin hora' }}</dd>
+                      <dd><span class="nowrap">{{ day(session.fechaInicio) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(session) || 'sin hora' }}</span></dd>
                     </div>
                     <div>
                       <dt>Duración</dt>
@@ -209,6 +209,9 @@
                   >
                     Modificar
                   </button>
+                  @if (session.reservas) {
+                    <a class="btn btn-small" [routerLink]="[session.idEvento, 'control']">Hoja de control</a>
+                  }
                   @if (session.archivada) {
                     <button
                       type="button"
@@ -278,32 +281,7 @@
     </table>
   </div>
 
-  <!-- Un atajo a la pestaña Demo, para deshacer pruebas sin salir de aquí. -->
-  <footer class="panel-foot">
-    @if (demo.failure(); as message) {
-      <p class="field-error" role="alert">{{ message }}</p>
-    } @else if (demoNotice(); as aviso) {
-      <p [class]="aviso.error ? 'field-error' : 'field-help'" role="status">{{ aviso.text }}</p>
-    }
-    <button
-      type="button"
-      class="btn btn-small btn-danger"
-      [disabled]="demo.restoring()"
-      [attr.aria-busy]="demo.restoring()"
-      (click)="demo.restore()"
-    >
-      {{ demo.restoring() ? "Restaurando…" : "Restaurar demo" }}
-    </button>
-    <button
-      type="button"
-      class="btn btn-small"
-      [disabled]="addingDemo() || demo.restoring()"
-      [attr.aria-busy]="addingDemo()"
-      (click)="addDemoSessions()"
-    >
-      {{ addingDemo() ? "Añadiendo…" : "Añadir sesiones demo" }}
-    </button>
-  </footer>
+  <app-demo-foot kind="sesiones" (added)="afterDemo()" />
 }
 
 <app-panel-dialog

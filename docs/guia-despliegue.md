@@ -56,6 +56,11 @@ La del 2026-10-15, `sesiones-hora`, también va **antes** del backend de esa fec
 del 14: añade la hora de inicio obligatoria de cada sesión (sin la columna, el backend no arranca) y
 quita del expediente el antiguo «horario» en texto libre, que ahora sale de la hora y la duración.
 
+La del 2026-10-16, `reservas-asistencia`, va antes del backend de esa fecha: añade el registro de
+asistencia (la tabla `asistentes`, el teléfono, las adaptaciones, el material externo y la conformidad
+de cada reserva, y si cada cuenta quiere recibir el programa). Las reservas que ya existen quedan con
+sus participantes sin registrar.
+
 Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
 el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.
 

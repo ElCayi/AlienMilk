@@ -39,6 +39,7 @@ CREATE TABLE usuarios (
 	apellidos VARCHAR(45),
 	direccion VARCHAR(100),
 	enabled INT NOT NULL DEFAULT 1,
+	acepta_comunicaciones BOOLEAN NOT NULL DEFAULT FALSE,
 	fecha_registro DATE,
 	id_perfil INT NOT NULL,
 	CONSTRAINT fk_usuarios_perfiles
@@ -73,12 +74,30 @@ CREATE TABLE reservas (
 	precio_venta DECIMAL(9,2) NOT NULL,
 	observaciones VARCHAR(200),
 	cantidad INT NOT NULL,
+	telefono VARCHAR(20),
+	adaptaciones VARCHAR(500),
+	material_externo BOOLEAN NOT NULL DEFAULT FALSE,
+	material_descripcion VARCHAR(500),
+	conformidad_en DATETIME,
 	CONSTRAINT fk_reservas_eventos
 		FOREIGN KEY (id_evento) REFERENCES eventos(id_evento),
 	CONSTRAINT fk_reservas_usuarios
 		FOREIGN KEY (username) REFERENCES usuarios(username),
 	CONSTRAINT ck_reservas_cantidad
 		CHECK (cantidad BETWEEN 1 AND 10)
+);
+
+-- Registro de asistencia: un participante por plaza (migraciones/2026-10-16-reservas-asistencia.sql).
+CREATE TABLE asistentes (
+	id_asistente INT AUTO_INCREMENT PRIMARY KEY,
+	id_reserva INT NOT NULL,
+	orden INT NOT NULL,
+	nombre VARCHAR(80) NOT NULL,
+	credencial VARCHAR(30) NOT NULL,
+	procedencia VARCHAR(80),
+	incompatibilidades VARCHAR(300),
+	CONSTRAINT fk_asistentes_reservas
+		FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva) ON DELETE CASCADE
 );
 
 INSERT INTO perfiles (nombre) VALUES
@@ -103,11 +122,21 @@ INSERT INTO eventos (nombre, descripcion, fecha_inicio, hora_inicio, duracion, d
 ('Ruta Nocturna por el Hangar', 'Recorrido guiado por las zonas donde se conserva el primer lote de leche abducida', '2026-11-18', '22:30', 105, 'Acceso Norte del Hangar', 'ACTIVO', 40, 10, 12.00, 4),
 ('Sesion Eclipse Lunar', 'Sesion especial en la cupula de ordeño lunar con ambientacion inmersiva y cata nocturna', '2027-01-01', '21:00', 170, 'Cupula Eclipse', 'ACTIVO', 500, 100, 48.00, 1);
 
-INSERT INTO reservas (id_evento, username, precio_venta, observaciones, cantidad) VALUES
-(1, 'ana', 70.00, 'Queremos mesa cerca del lacteobar', 2),
-(1, 'luis', 105.00, 'Preferimos la zona de vision panoramica', 3),
-(2, 'ana', 22.50, 'Si puede ser, sin destellos muy fuertes', 1),
-(4, 'luis', 24.00, 'Reserva historica de ejemplo AlienMilk', 2);
+INSERT INTO reservas (id_evento, username, precio_venta, observaciones, cantidad, telefono, adaptaciones, material_externo, material_descripcion, conformidad_en) VALUES
+(1, 'ana', 70.00, 'Queremos mesa cerca del lacteobar', 2, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-01 18:20:00'),
+(1, 'luis', 105.00, 'Preferimos la zona de vision panoramica', 3, '+34 611 987 654', 'Uno de los participantes necesita penumbra durante toda la sesión.', FALSE, NULL, '2026-10-02 10:05:00'),
+(2, 'ana', 22.50, 'Si puede ser, sin destellos muy fuertes', 1, NULL, NULL, FALSE, NULL, NULL),
+(4, 'luis', 24.00, 'Reserva historica de ejemplo AlienMilk', 2, '+34 611 987 654', NULL, TRUE, 'Respirador de metano portátil, homologado en Titán.', '2026-10-03 21:40:00');
+
+-- La reserva 3 se tomó antes del registro de asistencia: sus participantes quedan sin registrar.
+INSERT INTO asistentes (id_reserva, orden, nombre, credencial, procedencia, incompatibilidades) VALUES
+(1, 1, 'Ana Lopez', 'DNI_NIE', 'Madrid, SOL-III', NULL),
+(1, 2, 'Mara Ishikawa', 'DNI_NIE', 'Madrid, SOL-III', 'Lactosa terrestre'),
+(2, 1, 'Luis Garcia', 'DNI_NIE', 'Madrid, SOL-III', NULL),
+(2, 2, 'Kael-9 Varo', 'CREDENCIAL_TRANSITO', 'Galileo Regio, Ganímedes', 'No tolera la luz ultravioleta'),
+(2, 3, 'Ingrid Solveig', 'PASAPORTE', 'Tromsø, SOL-III', NULL),
+(4, 1, 'Luis Garcia', 'DNI_NIE', 'Madrid, SOL-III', NULL),
+(4, 2, 'Lhenna Quo', 'CREDENCIAL_TRANSITO', 'Orilla de Kraken Mare, Titán', 'Muestras con actividad residual');
 
 -- Ficha de contacto (misma definición que migraciones/2026-09-26-contacto.sql).
 CREATE TABLE IF NOT EXISTS contacto (

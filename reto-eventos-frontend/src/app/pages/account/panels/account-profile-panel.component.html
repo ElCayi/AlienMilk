@@ -22,6 +22,23 @@
   </dl>
 }
 
+<!-- Las comunicaciones, aparte y sin marcar de entrada: aquí uno se apunta o se da de baja cuando quiera. -->
+<section class="programme" aria-labelledby="programme-title">
+  <h3 id="programme-title" class="subsection-title">Comunicaciones</h3>
+  <label class="programme-check">
+    <input
+      type="checkbox"
+      [checked]="user()?.aceptaComunicaciones ?? false"
+      [disabled]="savingProgramme()"
+      (change)="setProgramme($any($event.target).checked)"
+    />
+    <span>Deseo recibir el programa de AlienMilk Sessions.</span>
+  </label>
+  @if (programmeNotice(); as aviso) {
+    <p [class]="aviso.error ? 'field-error' : 'field-help'" role="status">{{ aviso.text }}</p>
+  }
+</section>
+
 <section class="danger-zone" aria-labelledby="delete-title">
   <h3 id="delete-title" class="subsection-title">Eliminar la cuenta</h3>
   @if (isAdmin()) {

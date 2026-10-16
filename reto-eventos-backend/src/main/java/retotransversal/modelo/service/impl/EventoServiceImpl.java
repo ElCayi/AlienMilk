@@ -3,11 +3,12 @@ package retotransversal.modelo.service.impl;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,9 @@ public class EventoServiceImpl implements EventoService {
 
 	/** Las sesiones son en hora peninsular: el día cambia a medianoche de Madrid. */
 	public static final ZoneId ZONA = ZoneId.of("Europe/Madrid");
+
+	/** Las reservas cierran con el control de ingreso, estos minutos antes de empezar. */
+	public static final int MINUTOS_CIERRE_RESERVAS = 10;
 
 	private final EventoRepository eventoRepository;
 	private final ReservaRepository reservaRepository;
@@ -80,7 +84,7 @@ public class EventoServiceImpl implements EventoService {
 	public Evento updateOne(Evento entidad) {
 		Evento actual = findById(entidad.getIdEvento());
 		limpiar(entidad);
-		validar(entidad, plazasReservadas(actual.getIdEvento()), actual.getFechaInicio());
+		validar(entidad, plazasReservadas(actual.getIdEvento()), actual.inicio());
 		entidad.setEstado(actual.getEstado());
 		entidad.setImagen(actual.getImagen());
 		entidad.setArchivada(actual.isArchivada());
@@ -163,7 +167,7 @@ public class EventoServiceImpl implements EventoService {
 		if (evento.isArchivada()) {
 			throw new ConflictoNegocioException("Está archivada: sácala del archivo antes de reactivarla");
 		}
-		if (evento.getFechaInicio().isBefore(hoy())) {
+		if (haEmpezado(evento)) {
 			throw new ConflictoNegocioException("Su fecha ya pasó: cámbiala antes de reactivarla");
 		}
 		evento.setEstado(EstadoEvento.ACTIVO);
@@ -173,7 +177,29 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	@Transactional
 	public int terminarCelebradas() {
-		return eventoRepository.terminarAnterioresA(hoy());
+		LocalDateTime ahora = ahora();
+		List<Evento> acabadas = eventoRepository.findByEstadoAndFechaInicioLessThanEqual(EstadoEvento.ACTIVO, hoy())
+				.stream()
+				.filter(evento -> !evento.fin().isAfter(ahora))
+				.toList();
+		acabadas.forEach(evento -> evento.setEstado(EstadoEvento.TERMINADO));
+		eventoRepository.saveAll(acabadas);
+		return acabadas.size();
+	}
+
+	@Override
+	public boolean haEmpezado(Evento evento) {
+		return !evento.inicio().isAfter(ahora());
+	}
+
+	@Override
+	public boolean admiteReservas(Evento evento) {
+		return ahora().isBefore(evento.inicio().minusMinutes(MINUTOS_CIERRE_RESERVAS));
+	}
+
+	@Override
+	public boolean admiteCancelaciones(Evento evento) {
+		return hoy().isBefore(evento.getFechaInicio());
 	}
 
 	@Override
@@ -197,6 +223,10 @@ public class EventoServiceImpl implements EventoService {
 		return EventoAdminDto.de(evento, reservas.stream().mapToLong(Reserva::getCantidad).sum(), reservas.size());
 	}
 
+	private LocalDateTime ahora() {
+		return LocalDateTime.now(reloj).withSecond(0).withNano(0);
+	}
+
 	private LocalDate hoy() {
 		return LocalDate.now(reloj);
 	}
@@ -211,15 +241,22 @@ public class EventoServiceImpl implements EventoService {
 		evento.setDireccion(ErroresCampos.limpio(evento.getDireccion()));
 	}
 
-	private void validar(Evento evento, int plazasReservadas, LocalDate fechaActual) {
+	/**
+	 * Un inicio que ya pasó solo se acepta si es el que ya tenía (editar una sesión celebrada sin moverla).
+	 * Si el día ya pasó, el aviso va a la fecha; si es hoy y la hora ya pasó, a la hora.
+	 */
+	private void validar(Evento evento, int plazasReservadas, LocalDateTime inicioActual) {
 		LocalDate fecha = evento.getFechaInicio();
+		LocalTime hora = evento.getHoraInicio();
+		boolean movida = fecha != null && hora != null && !evento.inicio().equals(inicioActual);
+		boolean pasada = movida && !evento.inicio().isAfter(ahora());
 		ErroresCampos errores = new ErroresCampos()
 				.obligatorio("nombre", evento.getNombre(), 50, "Escribe el nombre de la sesión")
 				.maximo("descripcion", evento.getDescripcion(), 200)
 				.si(fecha == null, "fechaInicio", "Indica la fecha")
-				.si(fecha != null && fecha.isBefore(hoy()) && !Objects.equals(fecha, fechaActual), "fechaInicio",
-						"Esa fecha ya ha pasado")
-				.si(evento.getHoraInicio() == null, "horaInicio", "Indica la hora de inicio")
+				.si(pasada && fecha.isBefore(hoy()), "fechaInicio", "Esa fecha ya ha pasado")
+				.si(hora == null, "horaInicio", "Indica la hora de inicio")
+				.si(pasada && fecha.equals(hoy()), "horaInicio", "Esa hora de hoy ya ha pasado")
 				.obligatorio("direccion", evento.getDireccion(), 100, "Indica dónde se celebra")
 				.si(evento.getTipoEvento() == null, "idTipo", "Elige un tipo de sesión");
 

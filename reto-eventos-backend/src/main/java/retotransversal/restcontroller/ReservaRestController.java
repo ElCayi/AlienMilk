@@ -33,8 +33,7 @@ public class ReservaRestController {
 	public ResponseEntity<ReservaDto> reservar(@PathVariable Integer idEvento, Authentication authentication,
 			@RequestBody ReservaCrearDto dto) {
 		return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
-				.body(ReservaDto.fromEntity(reservaService.reservarEvento(idEvento, authentication.getName(), dto.getCantidad(),
-						dto.getObservaciones())));
+				.body(ReservaDto.fromEntity(reservaService.reservarConRegistro(idEvento, authentication.getName(), dto)));
 	}
 
 	@DeleteMapping("/{idReserva}")

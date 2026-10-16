@@ -2,6 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ReservationService } from '../../../core/services/reservation.service';
+import { credentialLabel } from '../../../features/attendance/attendance';
+import { cancellable } from '../../../features/sessions/session.presenter';
 import { Reserva } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import {
@@ -48,6 +50,12 @@ export class AccountReservationsPanelComponent {
   readonly state = reservationState;
   readonly day = formatDay;
   readonly when = reservationWhen;
+  readonly credential = credentialLabel;
+
+  /** Hasta el día anterior a la sesión, como dicen sus preguntas frecuentes. */
+  canCancel(reserva: Reserva): boolean {
+    return cancellable(reserva.fechaInicioEvento);
+  }
   readonly money = formatMoney;
   readonly plural = plural;
 

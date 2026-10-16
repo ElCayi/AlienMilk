@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
 import retotransversal.modelo.dto.ExpedienteCapaDto;
+import retotransversal.modelo.dto.ExpedienteCapaDto.Campo;
+import retotransversal.modelo.dto.ExpedienteCapaDto.Pregunta;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Expediente;
@@ -74,6 +76,23 @@ class SesionesDemoServiceTest {
 		assertThat(nombres).hasSize(9).contains("Degustación de Calostro de Ganímedes",
 				"Laboratorio de Texturas Volátiles", "Degustación de Calostro de Ganímedes · II");
 		verify(expedientes, times(9)).save(any(Expediente.class));
+	}
+
+	@Test
+	void eachTemplateIsCompletedWithTheCommonBlockAndKeepsItsOwnAccessRules() {
+		ExpedienteCapaDto comun = new ExpedienteCapaDto(null, null, null, null, null, null,
+				List.of(new Campo("Acreditación", "45 minutos antes"), new Campo("Edad mínima", "18 años")), null,
+				List.of(new Pregunta("¿Puedo cancelar?", "Sí")), null, "Ciclo 2026");
+		ExpedienteCapaDto propio = new ExpedienteCapaDto("Entradilla", null, null, null, null, null,
+				List.of(new Campo("Edad mínima", "6 años")), null, null, null, null);
+
+		ExpedienteCapaDto completo = SesionesDemoService.completar(propio, comun);
+
+		assertThat(completo.entradilla()).isEqualTo("Entradilla");
+		assertThat(completo.creditos()).isEqualTo("Ciclo 2026");
+		assertThat(completo.preguntas()).hasSize(1);
+		assertThat(completo.acceso()).containsExactly(new Campo("Acreditación", "45 minutos antes"),
+				new Campo("Edad mínima", "6 años"));
 	}
 
 	@Test

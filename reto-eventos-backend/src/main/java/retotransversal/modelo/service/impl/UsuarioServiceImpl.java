@@ -24,6 +24,7 @@ import retotransversal.modelo.entities.Usuario;
 import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
+import retotransversal.modelo.service.ErroresCampos;
 import retotransversal.modelo.service.UsuarioService;
 
 @Service
@@ -69,6 +70,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		validarDuplicadosEdicion(entidad);
 		// La fecha de alta es la del registro: no se edita.
 		entidad.setFechaRegistro(usuarioExistente.getFechaRegistro());
+		// Las comunicaciones solo las cambia la propia persona.
+		entidad.setAceptaComunicaciones(usuarioExistente.isAceptaComunicaciones());
 		if (entidad.getPassword() == null || entidad.getPassword().isBlank()) {
 			entidad.setPassword(usuarioExistente.getPassword());
 		} else {
@@ -117,6 +120,24 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new DatosNoValidosException(Map.of("password", "La contraseña no es correcta"));
 		}
 		deleteOne(username);
+	}
+
+	@Override
+	@Transactional
+	public Usuario cambiarNombrePropio(String username, String nombre) {
+		String limpio = ErroresCampos.limpio(nombre);
+		new ErroresCampos().obligatorio("nombre", limpio, 30, "Escribe tu nombre").lanzarSiHay();
+		Usuario usuario = findById(username);
+		usuario.setNombre(limpio);
+		return usuarioRepository.save(usuario);
+	}
+
+	@Override
+	@Transactional
+	public Usuario cambiarComunicacionesPropias(String username, boolean acepta) {
+		Usuario usuario = findById(username);
+		usuario.setAceptaComunicaciones(acepta);
+		return usuarioRepository.save(usuario);
 	}
 
 	@Override

@@ -1,0 +1,339 @@
+/* Registro de asistencia: la cabecera de las páginas secundarias con el resumen de la reserva a la
+   derecha, y el formulario en un bloque claro, por apartados numerados. Campos como los de Registro,
+   pero sobre papel: blancos, con filete, y el coral solo para el foco y los errores. */
+
+.secondary-header {
+  align-items: start;
+}
+
+.attendance-when {
+  white-space: nowrap;
+}
+
+/* En móvil, la fecha corta (sáb 5 dic), como en la ficha de la sesión. */
+.date-short {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .date-long {
+    display: none;
+  }
+
+  .date-short {
+    display: inline;
+  }
+}
+
+/* El resumen: plazas (se cambian aquí), precio por plaza y total. */
+.summary-box dl {
+  display: grid;
+  margin: 0;
+}
+
+.summary-box dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid rgba(247, 248, 249, 0.16);
+}
+
+.summary-box dl div:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.summary-box dt {
+  color: var(--muted);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.summary-box dd {
+  margin: 0;
+  font:
+    400 1.5rem / 1 var(--condensed);
+}
+
+.seats-input {
+  width: 4.5rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(247, 248, 249, 0.42);
+  border-radius: 0.4rem;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  text-align: center;
+  color-scheme: dark;
+}
+
+.seats-input:focus-visible {
+  border-color: var(--coral);
+  outline: none;
+}
+
+/* El formulario: un apartado tras otro, separados por filetes. */
+.attendance-form {
+  display: grid;
+  gap: 0;
+}
+
+.attendance-section {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(2rem, 3.5vw, 3rem) 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.attendance-section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.attendance-section h2 {
+  margin: 0 0 0.4rem;
+}
+
+.attendance-section .section-copy {
+  max-width: 46rem;
+  margin: 0;
+}
+
+.subsection-title {
+  margin: 1.5rem 0 0;
+  color: var(--paper-ink);
+  font:
+    600 1.45rem / 1.1 var(--condensed);
+}
+
+/* Participantes: el número grande a la izquierda y sus datos a la derecha. */
+.participants {
+  display: grid;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.participant {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.participant-number {
+  margin: 0.15rem 0 0;
+  color: var(--paper-muted);
+  font:
+    400 2.6rem / 1 var(--condensed);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.field-stack {
+  display: grid;
+  gap: 1rem;
+  max-width: 46rem;
+}
+
+.field {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.field.is-wide {
+  grid-column: 1 / -1;
+}
+
+.field.is-short {
+  max-width: 22rem;
+}
+
+.field label {
+  color: var(--paper-ink);
+  font:
+    700 0.95rem / 1.4 'Nunito',
+    sans-serif;
+}
+
+.field-optional {
+  margin-left: 0.4rem;
+  color: var(--paper-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.field :is(input, select, textarea) {
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.5rem;
+  color: var(--paper-ink);
+  background: #fff;
+  font:
+    1rem / 1.4 'Nunito',
+    Arial,
+    sans-serif;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field :is(input, select, textarea):focus {
+  border-color: var(--coral);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 127, 127, 0.35);
+}
+
+.field.is-invalid :is(input, select, textarea) {
+  border-color: var(--coral);
+}
+
+.field-help,
+.field-error,
+.form-error {
+  margin: 0;
+  font:
+    0.85rem / 1.45 'Nunito',
+    sans-serif;
+}
+
+.field-help {
+  color: var(--paper-muted);
+}
+
+.field-error,
+.form-error {
+  color: var(--coral);
+  font-weight: 700;
+}
+
+/* Casillas: la casilla a la izquierda y el texto alineado con su primera línea. */
+.checks {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  max-width: 46rem;
+  color: var(--paper-ink);
+  font:
+    1rem / 1.5 'Nunito',
+    sans-serif;
+  cursor: pointer;
+}
+
+.check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--paper-ink);
+}
+
+.check a {
+  color: inherit;
+  text-decoration-color: var(--coral);
+  text-underline-offset: 0.2em;
+}
+
+.check.is-invalid span {
+  text-decoration: underline wavy var(--coral);
+  text-underline-offset: 0.3em;
+}
+
+.attendance-note {
+  max-width: 46rem;
+  margin: 0.5rem 0 0;
+  padding: 0.85rem 1rem;
+  border-left: 2px solid var(--coral);
+  color: var(--paper-muted);
+  background: rgba(40, 51, 58, 0.05);
+  font:
+    0.95rem / 1.55 Arial,
+    sans-serif;
+}
+
+.attendance-submit {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--paper-line);
+}
+
+.form-error {
+  margin-bottom: 1rem;
+}
+
+/* El botón de enviar: el mismo coral relleno que «Reservar plaza» en el resguardo. */
+.submit-button {
+  min-height: 3.25rem;
+  padding: 0 1.75rem;
+  border: 0;
+  border-radius: 999px;
+  color: #0d151e;
+  background: var(--coral);
+  font:
+    800 0.85rem / 1 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.attendance-state {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.attendance-state h2 {
+  max-width: 40rem;
+  margin: 0;
+}
+
+.attendance-state p {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .participant {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .field-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .attendance-submit {
+    justify-content: stretch;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}

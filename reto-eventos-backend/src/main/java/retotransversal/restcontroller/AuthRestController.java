@@ -1,6 +1,7 @@
 package retotransversal.restcontroller;
 
 import java.util.List;
+import java.util.Map;
 import retotransversal.modelo.service.DemoAccountService;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.util.StringUtils;
@@ -74,13 +76,35 @@ public class AuthRestController {
 
 	@GetMapping("/me")
 	public ResponseEntity<AuthUsuarioDto> me(Authentication authentication) {
-		Usuario usuario = usuarioService.findById(authentication.getName());
+		return ResponseEntity.ok(aDto(usuarioService.findById(authentication.getName()), authentication));
+	}
 
-		return ResponseEntity.ok(AuthUsuarioDto.builder()
+	/**
+	 * Lo que cada cuenta cambia de sí misma: el nombre (el lápiz junto al saludo del panel) y si quiere
+	 * recibir el programa (Mi panel › Cuenta). Solo se toca lo que llega.
+	 */
+	@PatchMapping("/me")
+	public ResponseEntity<AuthUsuarioDto> cambiarPropio(@RequestBody Map<String, Object> cuerpo,
+			Authentication authentication) {
+		String username = authentication.getName();
+		Usuario usuario = usuarioService.findById(username);
+		if (cuerpo.containsKey("nombre")) {
+			Object nombre = cuerpo.get("nombre");
+			usuario = usuarioService.cambiarNombrePropio(username, nombre == null ? null : nombre.toString());
+		}
+		if (cuerpo.get("aceptaComunicaciones") instanceof Boolean acepta) {
+			usuario = usuarioService.cambiarComunicacionesPropias(username, acepta);
+		}
+		return ResponseEntity.ok(aDto(usuario, authentication));
+	}
+
+	private static AuthUsuarioDto aDto(Usuario usuario, Authentication authentication) {
+		return AuthUsuarioDto.builder()
 				.username(usuario.getUsername())
 				.nombre(usuario.getNombre())
 				.perfil(usuario.getPerfil().getNombre())
+				.aceptaComunicaciones(usuario.isAceptaComunicaciones())
 				.authorities(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-				.build());
+				.build();
 	}
 }

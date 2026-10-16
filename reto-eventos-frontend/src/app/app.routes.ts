@@ -13,6 +13,15 @@ export const routes: Routes = [
         ({ SessionsPageComponent }) => SessionsPageComponent,
       ),
   },
+  // Reservar plaza: el registro de asistencia de una sesión (?plazas=).
+  {
+    path: 'sesiones/:id/registro',
+    loadComponent: () =>
+      import('./pages/attendance/attendance-page.component').then(
+        ({ AttendancePageComponent }) => AttendancePageComponent,
+      ),
+    canActivate: [authGuard],
+  },
   {
     path: 'nosotros',
     loadComponent: () =>

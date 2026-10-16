@@ -2,6 +2,7 @@ package retotransversal.modelo.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import jakarta.persistence.Column;
@@ -75,6 +76,16 @@ public class Evento {
 	/** La foto propia, si se subió desde el panel: el nombre del archivo (ver ImagenSesionService). */
 	@Column(length = 80)
 	private String imagen;
+
+	/** Cuándo empieza: su fecha y su hora. Desde ese momento ya no admite reservas. */
+	public LocalDateTime inicio() {
+		return fechaInicio.atTime(horaInicio == null ? java.time.LocalTime.MIDNIGHT : horaInicio);
+	}
+
+	/** Cuándo acaba: el inicio más la duración. Desde ese momento pasa a terminada. */
+	public LocalDateTime fin() {
+		return inicio().plusMinutes(duracion == null ? 0 : duracion);
+	}
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_tipo", nullable = false)

@@ -2,8 +2,8 @@
   <div>
     <h2>Mis reservas</h2>
     <p>
-      Las sesiones a las que te has apuntado. Mientras una sesión esté activa puedes cancelar tu
-      reserva; si se cancela o ya se ha celebrado, la reserva se queda en el historial.
+      Las sesiones a las que te has apuntado. Puedes cancelar tu reserva hasta el día anterior a la
+      sesión; si la sesión se cancela o ya se ha celebrado, la reserva se queda en el historial.
     </p>
   </div>
   <div class="section-head-actions">
@@ -39,7 +39,7 @@
             <th scope="col" class="num">Plazas</th>
             <th scope="col" class="num">Importe</th>
             <th scope="col" class="center">Estado</th>
-            <th scope="col">Observaciones</th>
+            <th scope="col">Participantes</th>
             <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
           </tr>
         </thead>
@@ -56,25 +56,41 @@
               <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
               <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
               <td data-label="Estado" class="center">
-                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                <span class="badge-stack">
+                  <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                  @if (reserva.requiereRevision) {
+                    <span class="badge" data-tone="alert" title="AlienMilk evaluará sus adaptaciones o su material externo">En revisión</span>
+                  }
+                </span>
               </td>
-              <td data-label="Observaciones">
-                @if (reserva.observaciones) {
-                  <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
+              <td data-label="Participantes">
+                @if (reserva.asistentes.length) {
+                  <ul class="people-list">
+                    @for (persona of reserva.asistentes; track $index) {
+                      <li>
+                        {{ persona.nombre }}
+                        <span class="cell-sub">{{ credential(persona.credencial) }}</span>
+                      </li>
+                    }
+                  </ul>
                 } @else {
-                  <span class="cell-sub">—</span>
+                  <span class="cell-sub">Sin registrar</span>
                 }
               </td>
               <td class="row-actions-cell">
                 <div class="row-actions">
-                  <button
-                    type="button"
-                    class="btn btn-small btn-danger"
-                    [disabled]="busy() === reserva.idReserva"
-                    (click)="cancel(reserva)"
-                  >
-                    Cancelar<span class="visually-hidden"> la reserva de {{ reserva.nombreEvento }}</span>
-                  </button>
+                  @if (canCancel(reserva)) {
+                    <button
+                      type="button"
+                      class="btn btn-small btn-danger"
+                      [disabled]="busy() === reserva.idReserva"
+                      (click)="cancel(reserva)"
+                    >
+                      Cancelar<span class="visually-hidden"> la reserva de {{ reserva.nombreEvento }}</span>
+                    </button>
+                  } @else {
+                    <span class="cell-sub">Ya no se puede cancelar</span>
+                  }
                 </div>
               </td>
             </tr>

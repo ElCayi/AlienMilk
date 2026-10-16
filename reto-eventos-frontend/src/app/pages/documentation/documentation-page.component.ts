@@ -51,8 +51,8 @@ export class DocumentationPageComponent {
     {
       code: '04',
       title: 'Acompañantes',
-      text: 'Cada acompañante necesita su propia reserva y su propio documento, también si comparte organismo con el titular.',
-      detail: 'Reserva individual',
+      text: 'Cada acompañante figura en la reserva con su propio nombre de identificación y presenta su propio documento, también si comparte organismo con el titular.',
+      detail: 'Un nombre por plaza',
     },
   ];
 
@@ -74,7 +74,7 @@ export class DocumentationPageComponent {
         'Tanques de inmersión de hasta 200 litros',
         'Acompañamiento sanitario de su procedencia',
       ],
-      note: 'Solicítela al reservar, en el campo de observaciones.',
+      note: 'Solicítela al reservar, en «Adaptaciones y equipamiento» del registro de asistencia.',
     },
     {
       title: 'No admitidos',

@@ -1,6 +1,7 @@
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 
 import { AuthService } from '../../core/services/auth.service';
+import { FitLineDirective } from '../fit-line/fit-line.directive';
 import { errorMessage, fieldErrors } from './panel-format';
 
 /**
@@ -10,6 +11,7 @@ import { errorMessage, fieldErrors } from './panel-format';
 @Component({
   selector: 'app-panel-greeting',
   standalone: true,
+  imports: [FitLineDirective],
   template: `
     @if (editing()) {
       <form class="greeting-form" (submit)="$event.preventDefault(); save()">
@@ -43,12 +45,17 @@ import { errorMessage, fieldErrors } from './panel-format';
         <p class="greeting-error" role="alert">{{ message }}</p>
       }
     } @else {
-      <div class="greeting">
-        <h1>Hola, {{ name() }}</h1>
-        <button type="button" class="greeting-icon greeting-edit" aria-label="Cambiar tu nombre" (click)="edit()">
+      <!-- El nombre siempre entero: si no cabe con el lápiz, la letra se encoge (appFitLine). -->
+      <h1 class="greeting" appFitLine>
+        Hola, {{ name() }}<button
+          type="button"
+          class="greeting-icon greeting-edit"
+          aria-label="Cambiar tu nombre"
+          (click)="edit()"
+        >
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4" /></svg>
         </button>
-      </div>
+      </h1>
     }
   `,
   styleUrl: './panel-greeting.component.css',

@@ -6,19 +6,21 @@
 /* El título, igual que el de .page-head; el lápiz, pegado a su línea base y discreto hasta pasar por encima. */
 h1 {
   margin: 0.35rem 0 0;
-  overflow: hidden;
   color: var(--paper-ink);
   font: 700 clamp(2.4rem, 3.4vw, 3.4rem) / 0.95 var(--condensed);
   letter-spacing: 0.01em;
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
-.greeting,
+/* El lápiz va dentro del título, detrás del nombre: cuenta para appFitLine y nunca lo tapa. */
+.greeting .greeting-edit {
+  display: inline-grid;
+  margin: 0 0 0 0.6rem;
+  vertical-align: 0.15em;
+}
+
 .greeting-form {
   display: flex;
-  align-items: flex-end;
-  gap: 0.6rem;
   min-width: 0;
 }
 

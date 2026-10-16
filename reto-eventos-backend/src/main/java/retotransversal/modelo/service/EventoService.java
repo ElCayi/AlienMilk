@@ -32,6 +32,9 @@ public interface EventoService extends CrudGenerico<Evento, Integer> {
 	/** Da por terminadas las sesiones activas cuya fecha ya pasó; devuelve cuántas. */
 	int terminarCelebradas();
 
+	/** Si la sesión ya ha empezado (su fecha y hora, en Madrid): entonces ya no admite reservas. */
+	boolean haEmpezado(Evento evento);
+
 	/** Todas las sesiones con su ocupación, para el panel de administración. */
 	List<EventoAdminDto> listadoAdmin();
 

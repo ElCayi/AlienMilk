@@ -1,6 +1,7 @@
 package retotransversal.modelo.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.GlobalExceptionHandler;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
@@ -40,6 +42,7 @@ import retotransversal.modelo.repository.ReservaRepository.OcupacionEvento;
 import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.service.ExpedienteService;
 import retotransversal.modelo.service.ImagenSesionService;
+import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.AdminEventoRestController;
 
 /** Sesiones desde el panel: el estado no cambia al editar, la ocupación manda y con reservas se cancela. */
@@ -195,11 +198,62 @@ class AdminSesionesTest {
 	}
 
 	@Test
-	void theNightlyCloseEndsTheSessionsBeforeTodayInMadrid() {
-		when(eventos.terminarAnterioresA(any())).thenReturn(3);
+	void theCloseEndsTheSessionsThatAlreadyFinishedInMadrid() {
+		Evento ayer = sesionALas(LocalDate.of(2026, 10, 13), LocalTime.of(19, 15), 90);
+		Evento estaManana = sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(10, 0), 90);
+		Evento enCurso = sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(11, 0), 120);
+		when(eventos.findByEstadoAndFechaInicioLessThanEqual(EstadoEvento.ACTIVO, LocalDate.of(2026, 10, 14)))
+				.thenReturn(List.of(ayer, estaManana, enCurso));
 
-		assertThat(new EventoServiceImpl(eventos, reservas, HOY).terminarCelebradas()).isEqualTo(3);
-		verify(eventos).terminarAnterioresA(LocalDate.of(2026, 10, 14));
+		assertThat(new EventoServiceImpl(eventos, reservas, HOY).terminarCelebradas()).isEqualTo(2);
+		assertThat(List.of(ayer, estaManana, enCurso)).extracting(Evento::getEstado)
+				.containsExactly(EstadoEvento.TERMINADO, EstadoEvento.TERMINADO, EstadoEvento.ACTIVO);
+	}
+
+	@Test
+	void aSessionStartsAtItsTimeAndNotAtMidnight() {
+		EventoServiceImpl servicio = new EventoServiceImpl(eventos, reservas, HOY);
+
+		assertThat(servicio.haEmpezado(sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(11, 59), 60))).isTrue();
+		assertThat(servicio.haEmpezado(sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(19, 15), 60))).isFalse();
+	}
+
+	@Test
+	void aNewSessionCannotStartEarlierToday() throws Exception {
+		when(tipos.findById(1)).thenReturn(Optional.of(cata));
+		when(eventos.save(any())).thenAnswer(llamada -> {
+			Evento evento = llamada.getArgument(0);
+			evento.setIdEvento(9);
+			return evento;
+		});
+
+		mvc.perform(post("/api/admin/eventos").contentType(MediaType.APPLICATION_JSON)
+				.content(formulario(40, "2026-10-14").replace("19:15", "11:00")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.errores.horaInicio").value("Esa hora de hoy ya ha pasado"));
+		mvc.perform(post("/api/admin/eventos").contentType(MediaType.APPLICATION_JSON)
+				.content(formulario(40, "2026-10-14")))
+				.andExpect(status().isCreated());
+	}
+
+	@Test
+	void aSessionThatAlreadyStartedTakesNoMoreBookings() {
+		Evento enCurso = sesionALas(LocalDate.of(2026, 10, 14), LocalTime.of(11, 0), 120);
+		enCurso.setIdEvento(3);
+		enCurso.setAforoMaximo(40);
+		when(eventos.findById(3)).thenReturn(Optional.of(enCurso));
+		ReservaServiceImpl servicio = new ReservaServiceImpl(reservas, new EventoServiceImpl(eventos, reservas, HOY),
+				mock(UsuarioService.class));
+
+		assertThatThrownBy(() -> servicio.reservarEvento(3, "ana", 1, null))
+				.isInstanceOf(ConflictoNegocioException.class)
+				.hasMessage("Esta sesión ya ha empezado: no admite más reservas");
+		verify(reservas, never()).save(any());
+	}
+
+	private Evento sesionALas(LocalDate fecha, LocalTime hora, int minutos) {
+		return Evento.builder().fechaInicio(fecha).horaInicio(hora).duracion(minutos).estado(EstadoEvento.ACTIVO)
+				.build();
 	}
 
 	@Test

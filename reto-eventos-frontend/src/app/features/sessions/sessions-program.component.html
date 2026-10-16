@@ -103,7 +103,7 @@
               </div>
               <div>
                 <dt>Fecha</dt>
-                <dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }}</dd>
+                <dd>{{ featured.fechaInicio | date: 'dd.MM.yy' }} · {{ featured.horaInicio }}</dd>
               </div>
               <div>
                 <dt>Compatibilidad</dt>
@@ -163,7 +163,7 @@
               <span class="session-anomaly">{{ anomaly(session) }}</span>
               <footer>
                 <span
-                  >{{ session.fechaInicio | date: 'dd.MM.yy' }} ·
+                  >{{ session.fechaInicio | date: 'dd.MM.yy' }} · {{ session.horaInicio }} ·
                   {{ session.precio | currency: 'EUR' }}</span
                 >
                 <a
@@ -254,7 +254,7 @@
               </div>
               <div>
                 <dt>Fecha</dt>
-                <dd>{{ session.fechaInicio | date: 'dd.MM.yy' }}</dd>
+                <dd>{{ session.fechaInicio | date: 'dd.MM.yy' }} · {{ session.horaInicio }}</dd>
               </div>
               <div>
                 <dt>Compatibilidad</dt>

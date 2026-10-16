@@ -10,9 +10,10 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Da por terminadas las sesiones activas cuya fecha ya pasó: cada noche, recién cambiado el día en
- * Madrid, y también al arrancar, por si el servidor estuvo parado a medianoche. Una sesión terminada
- * deja de admitir reservas y de salir en la web pública; las canceladas siguen canceladas.
+ * Da por terminadas las sesiones activas que ya acabaron (su inicio más su duración, en la hora de
+ * Madrid): cada diez minutos, y también al arrancar, por si el servidor estuvo parado. Una sesión
+ * terminada deja de salir en la web pública; las canceladas siguen canceladas. Las reservas se cierran
+ * antes, en cuanto la sesión empieza (ver ReservaServiceImpl).
  */
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class CierreSesiones {
 	private final EventoService eventoService;
 
 	@EventListener(ApplicationReadyEvent.class)
-	@Scheduled(cron = "0 5 0 * * *", zone = "Europe/Madrid")
+	@Scheduled(cron = "0 */10 * * * *", zone = "Europe/Madrid")
 	public void cerrar() {
 		try {
 			int terminadas = eventoService.terminarCelebradas();

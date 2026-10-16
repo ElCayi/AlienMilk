@@ -248,8 +248,9 @@
                   <div class="booking-price" *ngIf="priceParts(data.precio) as amount">
                     <p class="booking-head">
                       <span class="booking-label">Acceso individual</span>
-                      <time class="booking-date" [attr.datetime]="data.fechaInicio">{{
+                      <time class="booking-date" [attr.datetime]="data.fechaInicio + 'T' + data.horaInicio">{{
                         ticketDate(data.fechaInicio)
+                      }} · {{ data.horaInicio
                       }}</time>
                     </p>
                     <strong class="booking-amount" [attr.aria-label]="price(data.precio)"

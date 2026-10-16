@@ -10,18 +10,21 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import retotransversal.modelo.dto.ExpedienteCapaDto;
+import retotransversal.modelo.dto.ExpedienteCapaDto.Campo;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.repository.EventoRepository;
@@ -32,7 +35,8 @@ import retotransversal.modelo.service.impl.EventoServiceImpl;
  * El botón «Añadir sesiones demo» del panel: suma al programa unas cuantas sesiones de ejemplo, con su
  * expediente, sin tocar lo que ya hay. Salen de {@code fabrica/sesiones-demo.json}; primero las que aún
  * no están en el programa y, cuando ya están todas, otra convocatoria de cada una («· II», «· III»...).
- * Van una por semana a partir de la última sesión activa.
+ * Van una por semana a partir de la última sesión activa. Lo que una plantilla no declara en su
+ * expediente (equipo, preguntas, colaboradores...) lo toma del bloque «comun» del catálogo.
  */
 @Service
 public class SesionesDemoService {
@@ -125,16 +129,55 @@ public class SesionesDemoService {
 
 	private static List<Plantilla> leerPlantillas() {
 		try (InputStream entrada = new ClassPathResource("fabrica/sesiones-demo.json").getInputStream()) {
-			return JSON.readValue(entrada, new TypeReference<List<Plantilla>>() {
-			});
+			Catalogo catalogo = JSON.readValue(entrada, Catalogo.class);
+			return catalogo.plantillas().stream()
+					.map(plantilla -> plantilla.conExpediente(completar(plantilla.expediente(), catalogo.comun())))
+					.toList();
 		} catch (IOException e) {
 			throw new UncheckedIOException("No se ha podido leer fabrica/sesiones-demo.json", e);
 		}
+	}
+
+	/**
+	 * El expediente propio, con lo que le falte tomado del común. Las condiciones de acceso se suman: primero
+	 * las comunes (salvo las que la plantilla ya declara con la misma etiqueta), luego las suyas.
+	 */
+	static ExpedienteCapaDto completar(ExpedienteCapaDto propio, ExpedienteCapaDto comun) {
+		Set<String> propias = propio.acceso() == null ? Set.of()
+				: propio.acceso().stream().map(Campo::etiqueta).collect(Collectors.toSet());
+		List<Campo> acceso = Stream.concat(
+				comun.acceso() == null ? Stream.empty() : comun.acceso().stream().filter(c -> !propias.contains(c.etiqueta())),
+				propio.acceso() == null ? Stream.empty() : propio.acceso().stream()).toList();
+		return new ExpedienteCapaDto(
+				o(propio.entradilla(), comun.entradilla()),
+				o(propio.texto(), comun.texto()),
+				o(propio.procedencia(), comun.procedencia()),
+				o(propio.notasCata(), comun.notasCata()),
+				o(propio.programa(), comun.programa()),
+				o(propio.equipo(), comun.equipo()),
+				acceso.isEmpty() ? null : acceso,
+				o(propio.recomendaciones(), comun.recomendaciones()),
+				o(propio.preguntas(), comun.preguntas()),
+				o(propio.colaboradores(), comun.colaboradores()),
+				o(propio.creditos(), comun.creditos()));
+	}
+
+	private static <T> T o(T propio, T comun) {
+		return propio != null ? propio : comun;
+	}
+
+	/** El archivo entero: lo común a todas y las plantillas. */
+	record Catalogo(ExpedienteCapaDto comun, List<Plantilla> plantillas) {
 	}
 
 	/** Una sesión de ejemplo del catálogo: sus datos, salvo la fecha, y su expediente. */
 	record Plantilla(String nombre, String descripcion, String tipo, LocalTime horaInicio, Integer duracion,
 			String direccion, Integer aforoMaximo, Integer minimoAsistencia, BigDecimal precio,
 			ExpedienteCapaDto expediente) {
+
+		Plantilla conExpediente(ExpedienteCapaDto completo) {
+			return new Plantilla(nombre, descripcion, tipo, horaInicio, duracion, direccion, aforoMaximo,
+					minimoAsistencia, precio, completo);
+		}
 	}
 }

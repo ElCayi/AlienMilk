@@ -175,7 +175,7 @@
                     </div>
                     <div>
                       <dt>Cuándo</dt>
-                      <dd>{{ day(session.fechaInicio) }} · {{ schedule(session) || 'sin hora' }}</dd>
+                      <dd><span class="nowrap">{{ day(session.fechaInicio) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(session) || 'sin hora' }}</span></dd>
                     </div>
                     <div>
                       <dt>Duración</dt>

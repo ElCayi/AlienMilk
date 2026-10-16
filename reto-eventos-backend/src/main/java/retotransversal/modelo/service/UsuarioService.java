@@ -10,4 +10,7 @@ public interface UsuarioService extends CrudGenerico<Usuario, String> {
 
 	/** La persona borra su propia cuenta desde Mi panel, confirmando con su contraseña. */
 	void eliminarCuentaPropia(String username, String password);
+
+	/** Quien ha entrado cambia el nombre con el que se le saluda (como mucho 30 caracteres). */
+	Usuario cambiarNombrePropio(String username, String nombre);
 }

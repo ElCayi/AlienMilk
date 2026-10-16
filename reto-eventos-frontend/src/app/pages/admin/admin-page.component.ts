@@ -3,9 +3,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 
-import { AuthService } from '../../core/services/auth.service';
 import { PanelConfirmComponent } from '../../shared/panel/panel-confirm';
 import { PanelFrameComponent, PanelNavItem } from '../../shared/panel/panel-frame.component';
+import { PanelGreetingComponent } from '../../shared/panel/panel-greeting.component';
 import { AdminSummaryService } from './admin-summary.service';
 
 const SECTIONS: PanelNavItem[] = [
@@ -27,17 +27,15 @@ const SECTIONS: PanelNavItem[] = [
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, PanelConfirmComponent, PanelFrameComponent],
+  imports: [RouterLink, RouterOutlet, PanelConfirmComponent, PanelFrameComponent, PanelGreetingComponent],
   templateUrl: './admin-page.component.html',
   styleUrl: '../../shared/panel/panel-shell.css',
 })
 export class AdminPageComponent {
   private readonly router = inject(Router);
   private readonly summaryService = inject(AdminSummaryService);
-  private readonly auth = inject(AuthService);
 
   readonly summary = this.summaryService.summary;
-  readonly name = computed(() => this.auth.currentUser()?.nombre ?? '');
 
   /** Las secciones, con lo pendiente de pedidos y solicitudes como aviso. */
   readonly navItems = computed<PanelNavItem[]>(() => {

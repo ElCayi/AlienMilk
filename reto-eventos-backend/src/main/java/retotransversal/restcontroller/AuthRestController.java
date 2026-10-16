@@ -1,6 +1,7 @@
 package retotransversal.restcontroller;
 
 import java.util.List;
+import java.util.Map;
 import retotransversal.modelo.service.DemoAccountService;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.util.StringUtils;
@@ -74,13 +76,23 @@ public class AuthRestController {
 
 	@GetMapping("/me")
 	public ResponseEntity<AuthUsuarioDto> me(Authentication authentication) {
-		Usuario usuario = usuarioService.findById(authentication.getName());
+		return ResponseEntity.ok(aDto(usuarioService.findById(authentication.getName()), authentication));
+	}
 
-		return ResponseEntity.ok(AuthUsuarioDto.builder()
+	/** El lápiz junto al saludo del panel: cambia solo el nombre de quien ha entrado. */
+	@PatchMapping("/me")
+	public ResponseEntity<AuthUsuarioDto> cambiarNombre(@RequestBody Map<String, String> cuerpo,
+			Authentication authentication) {
+		Usuario usuario = usuarioService.cambiarNombrePropio(authentication.getName(), cuerpo.get("nombre"));
+		return ResponseEntity.ok(aDto(usuario, authentication));
+	}
+
+	private static AuthUsuarioDto aDto(Usuario usuario, Authentication authentication) {
+		return AuthUsuarioDto.builder()
 				.username(usuario.getUsername())
 				.nombre(usuario.getNombre())
 				.perfil(usuario.getPerfil().getNombre())
 				.authorities(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-				.build());
+				.build();
 	}
 }

@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+/* El título, igual que el de .page-head; el lápiz, pegado a su línea base y discreto hasta pasar por encima. */
+h1 {
+  margin: 0.35rem 0 0;
+  overflow: hidden;
+  color: var(--paper-ink);
+  font: 700 clamp(2.4rem, 3.4vw, 3.4rem) / 0.95 var(--condensed);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.greeting,
+.greeting-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.greeting-icon {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: none;
+  place-items: center;
+  margin-bottom: 0.1rem;
+  padding: 0;
+  border: 1px solid var(--paper-rule);
+  border-radius: 50%;
+  color: var(--paper-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.greeting-icon:hover:not(:disabled),
+.greeting-icon:focus-visible {
+  border-color: var(--coral);
+  color: var(--paper-ink);
+  outline: none;
+}
+
+.greeting-icon:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.greeting-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Al editar, el nombre se escribe en el propio título, con la misma letra y un filete debajo; el
+   campo mide lo que el nombre. */
+.greeting-form h1 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25em;
+  min-width: 0;
+  overflow: visible;
+}
+
+.greeting-input {
+  min-width: 3ch;
+  max-width: 100%;
+  field-sizing: content;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid var(--coral);
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.greeting-input:focus {
+  outline: none;
+}
+
+.greeting-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+/* Al editar, guardar y volver van debajo del nombre, que se queda con todo el ancho del título. */
+.greeting-form {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.greeting-form h1 {
+  max-width: 100%;
+}
+
+.greeting-actions .greeting-icon {
+  width: 1.9rem;
+  height: 1.9rem;
+  margin: 0;
+}
+
+.greeting-hint {
+  align-self: center;
+  margin-left: 0.35rem;
+  color: var(--paper-faint);
+  font-size: 0.8rem;
+}
+
+.greeting-error {
+  margin: 0.4rem 0 0;
+  color: var(--coral);
+  font-size: 0.9rem;
+  font-weight: 700;
+}

@@ -24,6 +24,7 @@ import retotransversal.modelo.entities.Usuario;
 import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
+import retotransversal.modelo.service.ErroresCampos;
 import retotransversal.modelo.service.UsuarioService;
 
 @Service
@@ -117,6 +118,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 			throw new DatosNoValidosException(Map.of("password", "La contraseña no es correcta"));
 		}
 		deleteOne(username);
+	}
+
+	@Override
+	@Transactional
+	public Usuario cambiarNombrePropio(String username, String nombre) {
+		String limpio = ErroresCampos.limpio(nombre);
+		new ErroresCampos().obligatorio("nombre", limpio, 30, "Escribe tu nombre").lanzarSiHay();
+		Usuario usuario = findById(username);
+		usuario.setNombre(limpio);
+		return usuarioRepository.save(usuario);
 	}
 
 	@Override

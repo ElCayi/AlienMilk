@@ -112,12 +112,6 @@ h1 {
   margin: 0;
 }
 
-.greeting-hint {
-  align-self: center;
-  margin-left: 0.35rem;
-  color: var(--paper-faint);
-  font-size: 0.8rem;
-}
 
 .greeting-error {
   margin: 0.4rem 0 0;

@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, signal, viewChild } from '@angular/core'
 
 import { AuthService } from '../../core/services/auth.service';
 import { FitLineDirective } from '../fit-line/fit-line.directive';
-import { errorMessage, fieldErrors } from './panel-format';
+import { fieldErrors } from './panel-format';
 
 /**
  * El saludo del panel («Hola, Administrador») con un lápiz para cambiar el nombre ahí mismo: Intro
@@ -38,7 +38,6 @@ import { errorMessage, fieldErrors } from './panel-format';
           <button type="button" class="greeting-icon" [disabled]="saving()" aria-label="Dejarlo como estaba" (click)="cancel()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
           </button>
-          <span class="greeting-hint" aria-hidden="true">Intro para guardar · Esc para dejarlo</span>
         </div>
       </form>
       @if (error(); as message) {
@@ -96,7 +95,8 @@ export class PanelGreetingComponent {
       },
       error: (error) => {
         this.saving.set(false);
-        this.error.set(fieldErrors(error)['nombre'] ?? errorMessage(error, 'No se ha podido cambiar el nombre.'));
+        // Lo que dice el servidor solo si es sobre el nombre; cualquier otro fallo, en palabras de la casa.
+        this.error.set(fieldErrors(error)['nombre'] ?? 'No se ha podido cambiar el nombre.');
         queueMicrotask(() => this.field()?.nativeElement.focus());
       },
     });

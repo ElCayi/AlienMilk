@@ -1,0 +1,146 @@
+<div class="control-sheet">
+  <header class="section-head">
+    <div>
+      <a class="back-link" routerLink="/admin/sesiones">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+        Sesiones
+      </a>
+      <h2>Hoja de control de ingreso</h2>
+      @if (session(); as data) {
+        <p class="sheet-session">
+          <strong>{{ data.nombre }}</strong>
+          <span class="nowrap">{{ day(data.fechaInicio) }} · {{ schedule(data) }}</span>
+          <span>{{ data.direccion }}</span>
+        </p>
+      }
+    </div>
+    <div class="section-head-actions">
+      <button type="button" class="btn btn-primary" [disabled]="loading() || !session()" (click)="print()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z" /></svg>
+        Imprimir
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="empty">Preparando la hoja…</p>
+  } @else if (loadError()) {
+    <div class="empty">
+      <p>No se ha podido preparar la hoja.</p>
+      <button type="button" class="btn" (click)="load()">Reintentar</button>
+    </div>
+  } @else if (!session()) {
+    <p class="empty">Esa sesión no existe.</p>
+  } @else {
+    <!-- El parte para sala: lo que cocina y sala tienen que saber antes de abrir. -->
+    <section class="sheet-report" aria-labelledby="report-title">
+      <h3 id="report-title" class="sheet-title">Parte para sala</h3>
+      <dl class="sheet-figures">
+        <div>
+          <dt>Plazas reservadas</dt>
+          <dd>{{ seats() }}</dd>
+        </div>
+        <div>
+          <dt>Participantes registrados</dt>
+          <dd>{{ registered() }}</dd>
+        </div>
+        <div>
+          <dt>Sin registrar</dt>
+          <dd>{{ seats() - registered() }}</dd>
+        </div>
+      </dl>
+
+      <div class="sheet-columns">
+        <div>
+          <p class="sheet-label">Incompatibilidades declaradas</p>
+          @if (compatibilities().length) {
+            <ul class="sheet-list">
+              @for (item of compatibilities(); track item.text) {
+                <li><span class="sheet-count">{{ item.count }}</span> {{ item.text }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="sheet-none">Ninguna.</p>
+          }
+        </div>
+        <div>
+          <p class="sheet-label">Requieren revisión</p>
+          @if (toReview().length) {
+            <ul class="sheet-list">
+              @for (reserva of toReview(); track reserva.idReserva) {
+                <li>
+                  <strong>{{ number(reserva) }} · {{ reserva.nombreCliente }}</strong>
+                  @if (reserva.adaptaciones) {
+                    <span>Adaptaciones: {{ reserva.adaptaciones }}</span>
+                  }
+                  @if (reserva.materialExterno) {
+                    <span>Material externo: {{ reserva.materialDescripcion }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="sheet-none">Nada pendiente.</p>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- La hoja: un participante por fila, en orden de reserva, con la casilla para marcar a mano. -->
+    <section aria-labelledby="sheet-title">
+      <h3 id="sheet-title" class="sheet-title">Control de ingreso</h3>
+      @if (rows().length) {
+        <div class="table-wrap">
+          <table class="data-table sheet-table">
+            <caption>Participantes de la sesión, en orden de reserva</caption>
+            <thead>
+              <tr>
+                <th scope="col" class="sheet-check-col"><span class="visually-hidden">Ha entrado</span></th>
+                <th scope="col">Participante</th>
+                <th scope="col">Credencial</th>
+                <th scope="col">Procedencia</th>
+                <th scope="col">Incompatibilidades</th>
+                <th scope="col">Reserva</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track $index) {
+                <tr [class.is-unregistered]="!row.nombre">
+                  <td class="sheet-check-col">
+                    <!-- Una casilla por persona: sin registrar, tantas como plazas. -->
+                    <span class="sheet-boxes" aria-hidden="true">
+                      @for (seat of row.nombre ? [1] : seatsOf(row.reserva); track $index) {
+                        <span class="sheet-box"></span>
+                      }
+                    </span>
+                  </td>
+                  @if (row.nombre) {
+                    <td class="cell-title"><span class="cell-main">{{ row.nombre }}</span></td>
+                    <td data-label="Credencial">{{ row.credencial }}</td>
+                    <td data-label="Procedencia">{{ row.procedencia || '—' }}</td>
+                    <td data-label="Incompatibilidades" [class.sheet-alert]="row.incompatibilidades">
+                      {{ row.incompatibilidades || '—' }}
+                    </td>
+                  } @else {
+                    <td class="cell-title" colspan="4">
+                      <span class="cell-main">{{ plural(row.reserva.cantidad, 'plaza', 'plazas') }} sin registrar</span>
+                      <span class="cell-sub">Identificar en la taquilla con el documento de cada participante.</span>
+                    </td>
+                  }
+                  <td data-label="Reserva">
+                    {{ row.numero }} · {{ row.reserva.nombreCliente }}
+                    @if (row.reserva.telefono) {
+                      <span class="cell-sub">{{ row.reserva.telefono }}</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty">Esta sesión todavía no tiene reservas.</p>
+      }
+    </section>
+  }
+</div>

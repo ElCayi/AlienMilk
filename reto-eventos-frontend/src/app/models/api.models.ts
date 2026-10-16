@@ -118,6 +118,8 @@ export interface AuthUser {
   nombre: string;
   perfil: string;
   authorities: string[];
+  /** Si quiere recibir el programa de AlienMilk Sessions. */
+  aceptaComunicaciones?: boolean;
 }
 
 export interface RegisterPayload {

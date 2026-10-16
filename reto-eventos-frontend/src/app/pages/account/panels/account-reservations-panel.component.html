@@ -39,7 +39,7 @@
             <th scope="col" class="num">Plazas</th>
             <th scope="col" class="num">Importe</th>
             <th scope="col" class="center">Estado</th>
-            <th scope="col">Observaciones</th>
+            <th scope="col">Participantes</th>
             <th scope="col" class="actions-col"><span class="visually-hidden">Acciones</span></th>
           </tr>
         </thead>
@@ -56,13 +56,25 @@
               <td data-label="Plazas" class="num">{{ reserva.cantidad }}</td>
               <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
               <td data-label="Estado" class="center">
-                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                <span class="badge-stack">
+                  <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                  @if (reserva.requiereRevision) {
+                    <span class="badge" data-tone="alert" title="AlienMilk evaluará sus adaptaciones o su material externo">En revisión</span>
+                  }
+                </span>
               </td>
-              <td data-label="Observaciones">
-                @if (reserva.observaciones) {
-                  <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
+              <td data-label="Participantes">
+                @if (reserva.asistentes.length) {
+                  <ul class="people-list">
+                    @for (persona of reserva.asistentes; track $index) {
+                      <li>
+                        {{ persona.nombre }}
+                        <span class="cell-sub">{{ credential(persona.credencial) }}</span>
+                      </li>
+                    }
+                  </ul>
                 } @else {
-                  <span class="cell-sub">—</span>
+                  <span class="cell-sub">Sin registrar</span>
                 }
               </td>
               <td class="row-actions-cell">

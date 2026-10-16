@@ -79,11 +79,22 @@ public class AuthRestController {
 		return ResponseEntity.ok(aDto(usuarioService.findById(authentication.getName()), authentication));
 	}
 
-	/** El lápiz junto al saludo del panel: cambia solo el nombre de quien ha entrado. */
+	/**
+	 * Lo que cada cuenta cambia de sí misma: el nombre (el lápiz junto al saludo del panel) y si quiere
+	 * recibir el programa (Mi panel › Cuenta). Solo se toca lo que llega.
+	 */
 	@PatchMapping("/me")
-	public ResponseEntity<AuthUsuarioDto> cambiarNombre(@RequestBody Map<String, String> cuerpo,
+	public ResponseEntity<AuthUsuarioDto> cambiarPropio(@RequestBody Map<String, Object> cuerpo,
 			Authentication authentication) {
-		Usuario usuario = usuarioService.cambiarNombrePropio(authentication.getName(), cuerpo.get("nombre"));
+		String username = authentication.getName();
+		Usuario usuario = usuarioService.findById(username);
+		if (cuerpo.containsKey("nombre")) {
+			Object nombre = cuerpo.get("nombre");
+			usuario = usuarioService.cambiarNombrePropio(username, nombre == null ? null : nombre.toString());
+		}
+		if (cuerpo.get("aceptaComunicaciones") instanceof Boolean acepta) {
+			usuario = usuarioService.cambiarComunicacionesPropias(username, acepta);
+		}
 		return ResponseEntity.ok(aDto(usuario, authentication));
 	}
 
@@ -92,6 +103,7 @@ public class AuthRestController {
 				.username(usuario.getUsername())
 				.nombre(usuario.getNombre())
 				.perfil(usuario.getPerfil().getNombre())
+				.aceptaComunicaciones(usuario.isAceptaComunicaciones())
 				.authorities(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
 				.build();
 	}

@@ -217,4 +217,24 @@ class AdminUsuariosTest {
 		assertThat(jefa.getNombre()).isEqualTo("Ripley");
 		assertThat(jefa.getEmail()).isEqualTo("admin@reto.com");
 	}
+
+	@Test
+	void whoeverIsSignedInCanJoinAndLeaveTheProgrammeMailing() throws Exception {
+		Usuario ana = Usuario.builder().username("ana").nombre("Ana").email("ana@reto.com").perfil(cliente).enabled(1)
+				.aceptaComunicaciones(true).build();
+		when(usuarios.findById("ana")).thenReturn(Optional.of(ana));
+		when(usuarios.save(any())).thenAnswer(llamada -> llamada.getArgument(0));
+		MockMvc auth = MockMvcBuilders
+				.standaloneSetup(new AuthRestController(
+						new UsuarioServiceImpl(usuarios, mock(ReservaRepository.class), pedidos, codificador),
+						mock(PerfilService.class), mock(DemoAccountService.class)))
+				.setControllerAdvice(new GlobalExceptionHandler()).build();
+
+		auth.perform(patch("/api/auth/me").principal(new UsernamePasswordAuthenticationToken("ana", null, List.of()))
+				.contentType(MediaType.APPLICATION_JSON).content("{\"aceptaComunicaciones\": false}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.aceptaComunicaciones").value(false))
+				.andExpect(jsonPath("$.nombre").value("Ana"));
+		assertThat(ana.isAceptaComunicaciones()).isFalse();
+	}
 }

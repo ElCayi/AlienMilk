@@ -55,7 +55,7 @@ export class AttendancePageComponent implements OnInit {
   materialDescripcion = '';
   aceptaEdad = false;
   aceptaCondiciones = false;
-  aceptaComunicaciones = false;
+  aceptaComunicaciones = this.auth.currentUser()?.aceptaComunicaciones ?? false;
 
   readonly open = computed(() => {
     const session = this.session();

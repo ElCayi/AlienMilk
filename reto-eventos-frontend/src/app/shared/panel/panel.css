@@ -991,7 +991,7 @@ th[aria-sort] .sort-button svg {
 
 /* Móvil: cada fila de tabla es una ficha; el primer dato hace de título y el resto lleva su rótulo
    delante. */
-@media (max-width: 760px) {
+@media screen and (max-width: 760px) {
   .data-table,
   .data-table tbody,
   .data-table tfoot,
@@ -1106,7 +1106,7 @@ th[aria-sort] .sort-button svg {
 }
 
 /* Móvil: en la tabla desplegable, el número va delante del nombre y la flecha arriba a la derecha. */
-@media (max-width: 760px) {
+@media screen and (max-width: 760px) {
   .data-table.is-expandable td.cell-num {
     display: none;
   }
@@ -1261,4 +1261,46 @@ th[aria-sort] .sort-button svg {
   color: var(--paper-muted);
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+/* Los participantes de una reserva en una celda: uno por línea, con su credencial debajo. */
+.people-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.people-list li {
+  display: grid;
+}
+
+/* «‹ Sesiones»: la vuelta desde una página que cuelga de una sección (Edición en lote, Hoja de control). */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--paper-faint);
+  font:
+    800 0.72rem / 1.4 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.back-link:hover {
+  color: var(--paper-ink);
+}
+
+.back-link svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

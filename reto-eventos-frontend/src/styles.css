@@ -97,3 +97,17 @@ html .backdrop-inked [data-backdrop-ink-filler]::after {
 html:has(app-panel-frame) {
   scrollbar-gutter: stable;
 }
+
+/* La hoja de control de ingreso (/admin/sesiones/:id/control) se imprime sola: sin la barra, el menú
+   lateral ni el saludo del panel. */
+@media print {
+  body:has(.control-sheet) :is(.bar, .side, .page-head, .topbar, app-site-footer) {
+    display: none !important;
+  }
+
+  body:has(.control-sheet) :is(.frame, .frame-body, .frame-main) {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

@@ -1,32 +1,4 @@
 /* Edición en lote: dos pasos (elegir sesiones, cambiar su contenido) y una barra fija con lo pendiente. */
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.5rem;
-  color: var(--paper-faint);
-  font:
-    800 0.72rem / 1.4 'Nunito',
-    sans-serif;
-  letter-spacing: 0.12em;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.back-link:hover {
-  color: var(--paper-ink);
-}
-
-.back-link svg {
-  width: 1rem;
-  height: 1rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 .bulk-step {
   margin-top: 1.75rem;
 }

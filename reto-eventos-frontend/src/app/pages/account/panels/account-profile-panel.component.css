@@ -69,3 +69,36 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Comunicaciones: una sola casilla, con su filete como el resto de apartados. */
+.programme {
+  margin-top: 2.5rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--paper-rule);
+}
+
+.programme .subsection-title {
+  margin-top: 1.25rem;
+}
+
+.programme-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+  color: var(--paper-ink);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.programme-check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0.2rem 0 0;
+  accent-color: var(--paper-ink);
+}
+
+.programme .field-help,
+.programme .field-error {
+  margin: 0.5rem 0 0;
+}

@@ -133,6 +133,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
+	@Transactional
+	public Usuario cambiarComunicacionesPropias(String username, boolean acepta) {
+		Usuario usuario = findById(username);
+		usuario.setAceptaComunicaciones(acepta);
+		return usuarioRepository.save(usuario);
+	}
+
+	@Override
 	public List<Usuario> findByPerfilNombre(String nombrePerfil) {
 		return usuarioRepository.findByPerfilNombre(nombrePerfil);
 	}

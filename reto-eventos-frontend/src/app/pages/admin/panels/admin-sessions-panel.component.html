@@ -209,6 +209,9 @@
                   >
                     Modificar
                   </button>
+                  @if (session.reservas) {
+                    <a class="btn btn-small" [routerLink]="[session.idEvento, 'control']">Hoja de control</a>
+                  }
                   @if (session.archivada) {
                     <button
                       type="button"

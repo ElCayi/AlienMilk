@@ -61,6 +61,13 @@ export class AuthService {
       .pipe(tap((user) => this.currentUser.set(user)));
   }
 
+  /** Apuntarse al programa de AlienMilk Sessions o darse de baja. */
+  setProgramme(acepta: boolean): Observable<AuthUser> {
+    return this.http
+      .patch<AuthUser>(`${this.apiUrl}/auth/me`, { aceptaComunicaciones: acepta })
+      .pipe(tap((user) => this.currentUser.set(user)));
+  }
+
   /** Un cliente borra su cuenta, con su contraseña como confirmación; después hay que cerrar la sesión. */
   deleteAccount(password: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/auth/me`, { body: { password } });

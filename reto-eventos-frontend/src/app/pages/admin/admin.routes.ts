@@ -11,6 +11,12 @@ export const ADMIN_ROUTES: Routes = [
     canDeactivate: [(panel: { canLeave(): Promise<boolean> }) => panel.canLeave()],
   },
   {
+    // La hoja de control de ingreso de una sesión, con su parte para sala; también cuelga de Sesiones.
+    path: 'sesiones/:id/control',
+    loadComponent: () =>
+      import('./panels/admin-control-sheet.component').then((m) => m.AdminControlSheetComponent),
+  },
+  {
     path: 'sesiones',
     loadComponent: () =>
       import('./panels/admin-sessions-panel.component').then((m) => m.AdminSessionsPanelComponent),

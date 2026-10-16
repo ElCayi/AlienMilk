@@ -2,8 +2,8 @@
   <div>
     <h2>Reservas</h2>
     <p>
-      Todas las reservas. Pulsa una fila para ver su ficha o cancelarla. Las reservas cierran 10
-      minutos antes de cada sesión, y nadie pasa de diez plazas por sesión.
+      Todas las reservas, por reserva, por cliente o por sesión. Pulsa una fila para ver su ficha. Las
+      reservas cierran 10 minutos antes de cada sesión, y nadie pasa de diez plazas por sesión.
     </p>
   </div>
   <div class="section-head-actions">
@@ -13,6 +13,18 @@
     </button>
   </div>
 </header>
+
+<!-- Las tres preguntas del panel: qué pasa con una reserva, quién es un cliente, cómo va una sesión. -->
+<div class="view-switch">
+  <span class="view-switch-label" id="view-switch-label">Ver por</span>
+  <div class="segmented" role="group" aria-labelledby="view-switch-label">
+    @for (option of views; track option.value) {
+      <button type="button" [attr.aria-pressed]="view() === option.value" (click)="setView(option.value)">
+        {{ option.label }}
+      </button>
+    }
+  </div>
+</div>
 
 <div class="toolbar">
   <label class="search">
@@ -46,14 +58,32 @@
     }
   </div>
   <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->
-  <label class="sort-select">
-    <span>Ordenar por</span>
-    <select [ngModel]="sort.value()" (ngModelChange)="sort.set($event)">
-      @for (option of sortOptions; track option.value) {
-        <option [value]="option.value">{{ option.label }}</option>
+  <div class="sort-select">
+    <span id="reservations-sort-label">Ordenar por</span>
+    @switch (view()) {
+      @case ('clientes') {
+        <select aria-labelledby="reservations-sort-label" [ngModel]="clientSort.value()" (ngModelChange)="clientSort.set($event)">
+          @for (option of clientSortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
       }
-    </select>
-  </label>
+      @case ('sesiones') {
+        <select aria-labelledby="reservations-sort-label" [ngModel]="sessionSort.value()" (ngModelChange)="sessionSort.set($event)">
+          @for (option of sessionSortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+      @default {
+        <select aria-labelledby="reservations-sort-label" [ngModel]="sort.value()" (ngModelChange)="sort.set($event)">
+          @for (option of sortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      }
+    }
+  </div>
 </div>
 
 @if (notice(); as aviso) {
@@ -68,210 +98,494 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap" [appKeepHeight]="filter() + query() + sessionFilter()">
-    <table class="data-table is-expandable">
-      <caption>Reservas. Pulsa una para ver su ficha y sus acciones.</caption>
-      <thead>
-        <tr>
-          <th scope="col" class="cell-num center" [attr.aria-sort]="sort.aria('numero')">
-            <button type="button" class="sort-button" (click)="sort.by('numero')">
-              Nº
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('numero')" /></svg>
-            </button>
-          </th>
-          <th scope="col" [attr.aria-sort]="sort.aria('cliente')">
-            <button type="button" class="sort-button" (click)="sort.by('cliente')">
-              Cliente
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('cliente')" /></svg>
-            </button>
-          </th>
-          <th scope="col" [attr.aria-sort]="sort.aria('sesion')">
-            <button type="button" class="sort-button" (click)="sort.by('sesion')">
-              Sesión
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('sesion')" /></svg>
-            </button>
-          </th>
-          <th scope="col" class="center" [attr.aria-sort]="sort.aria('fecha')">
-            <button type="button" class="sort-button" (click)="sort.by('fecha')">
-              Fecha
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('fecha')" /></svg>
-            </button>
-          </th>
-          <th scope="col" class="center" [attr.aria-sort]="sort.aria('plazas')">
-            <button type="button" class="sort-button" (click)="sort.by('plazas')">
-              Plazas
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('plazas')" /></svg>
-            </button>
-          </th>
-          <th scope="col" class="center" [attr.aria-sort]="sort.aria('estado')">
-            <button type="button" class="sort-button" (click)="sort.by('estado')">
-              Estado
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('estado')" /></svg>
-            </button>
-          </th>
-          <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (reserva of visible(); track reserva.idReserva) {
-          @let estado = state(reserva.estadoEvento);
-          @let open = expanded() === reserva.idReserva;
-          <tr class="row-summary" [class.is-open]="open" (click)="toggle(reserva)">
-            <td class="cell-num center">{{ number(reserva) }}</td>
-            <td class="cell-title">
-              <button
-                type="button"
-                class="row-disclosure"
-                [attr.aria-expanded]="open"
-                [attr.aria-controls]="'reservation-detail-' + reserva.idReserva"
-              >
-                <span class="cell-num-inline" aria-hidden="true">{{ number(reserva) }}</span>
-                {{ reserva.nombreCliente }}
-              </button>
-            </td>
-            <td data-label="Sesión">{{ reserva.nombreEvento }}</td>
-            <td data-label="Fecha" class="nowrap center">{{ day(reserva.fechaInicioEvento) }}</td>
-            <td data-label="Plazas" class="num center">{{ reserva.cantidad }}</td>
-            <td data-label="Estado" class="center">
-              <span class="badge-stack">
-                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
-                @if (reserva.requiereRevision) {
-                  <span class="badge" data-tone="alert">Requiere revisión</span>
-                }
-              </span>
-            </td>
-            <td class="cell-chevron" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
-            </td>
-          </tr>
-          @if (open) {
-            <tr class="row-detail" [id]="'reservation-detail-' + reserva.idReserva">
-              <td colspan="7">
-                <div class="session-detail">
-                  <!-- Lo primero que se mira: cuántas plazas y cuánto se ha pagado. -->
-                  <section class="occupancy" aria-label="Plazas e importe">
-                    <p class="occupancy-figure">
-                      <strong>{{ reserva.cantidad }}</strong>
-                      <span>{{ reserva.cantidad === 1 ? 'plaza' : 'plazas' }}</span>
-                    </p>
-                    <ul class="occupancy-notes">
-                      <li>{{ money(reserva.precioVenta) }} en total</li>
-                      <li>{{ money(seatPrice(reserva)) }} por plaza</li>
-                    </ul>
-                  </section>
-
-                  <dl class="detail-facts">
-                    <div>
-                      <dt>Cliente</dt>
-                      <dd>{{ reserva.nombreCliente }} · {{ reserva.username }}</dd>
-                    </div>
-                    <div>
-                      <dt>Sesión</dt>
-                      <dd>
-                        <button
-                          type="button"
-                          class="text-link"
-                          title="Ver solo las reservas de esta sesión"
-                          (click)="$event.stopPropagation(); filterFromCard(reserva)"
-                        >
-                          {{ reserva.nombreEvento }}
-                        </button>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Cuándo</dt>
-                      <dd><span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span></dd>
-                    </div>
-                    <div>
-                      <dt>Teléfono</dt>
-                      <dd>{{ reserva.telefono || '—' }}</dd>
-                    </div>
-                    <div>
-                      <dt>Conformidad</dt>
-                      <dd>{{ reserva.conformidadEn ? 'Registrada el ' + dayTime(reserva.conformidadEn) : 'Sin registrar' }}</dd>
-                    </div>
-                    @if (reserva.observaciones) {
-                      <div>
-                        <dt>Observaciones</dt>
-                        <dd>{{ reserva.observaciones }}</dd>
-                      </div>
-                    }
-                  </dl>
-
-                  <!-- Quién viene, con la credencial que presentará: lo que se coteja en el control de ingreso. -->
-                  <section class="detail-people" aria-label="Participantes">
-                    <p class="detail-people-title">Participantes</p>
-                    @if (reserva.asistentes.length) {
-                      <ol>
-                        @for (persona of reserva.asistentes; track $index) {
-                          <li>
-                            <span class="detail-people-name">{{ persona.nombre }}</span>
-                            <span class="detail-people-meta">
-                              {{ credential(persona.credencial) }}@if (persona.procedencia) { · {{ persona.procedencia }}}
-                            </span>
-                            @if (persona.incompatibilidades) {
-                              <span class="detail-people-compat">{{ persona.incompatibilidades }}</span>
-                            }
-                          </li>
-                        }
-                      </ol>
-                    } @else {
-                      <p class="detail-people-empty">
-                        Sin registrar: la reserva se tomó antes del registro de asistencia o desde el panel.
-                      </p>
-                    }
-                  </section>
-
-                  @if (reserva.requiereRevision) {
-                    <section class="detail-review" aria-label="Requiere revisión">
-                      <p class="detail-people-title">Requiere revisión</p>
-                      @if (reserva.adaptaciones) {
-                        <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
-                      }
-                      @if (reserva.materialExterno) {
-                        <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
-                      }
-                    </section>
-                  }
-                </div>
-
-                <div class="row-actions detail-actions">
+  @switch (view()) {
+    @case ('clientes') {
+      <div class="table-wrap" [appKeepHeight]="'c' + filter() + query() + sessionFilter()">
+        <table class="data-table is-expandable">
+          <caption>Clientes con reservas. Pulsa uno para ver su contacto y todas sus reservas.</caption>
+          <thead>
+            <tr>
+              <th scope="col" [attr.aria-sort]="clientSort.aria('cliente')">
+                <button type="button" class="sort-button" (click)="clientSort.by('cliente')">
+                  Cliente
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="clientSort.icon('cliente')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="clientSort.aria('reservas')">
+                <button type="button" class="sort-button" (click)="clientSort.by('reservas')">
+                  Reservas
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="clientSort.icon('reservas')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="clientSort.aria('plazas')">
+                <button type="button" class="sort-button" (click)="clientSort.by('plazas')">
+                  Plazas
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="clientSort.icon('plazas')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="num" [attr.aria-sort]="clientSort.aria('importe')">
+                <button type="button" class="sort-button" (click)="clientSort.by('importe')">
+                  Importe
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="clientSort.icon('importe')" /></svg>
+                </button>
+              </th>
+              <th scope="col" [attr.aria-sort]="clientSort.aria('proxima')">
+                <button type="button" class="sort-button" (click)="clientSort.by('proxima')">
+                  Próxima sesión
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="clientSort.icon('proxima')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (client of clients(); track client.username) {
+              @let open = expandedClient() === client.username;
+              <tr class="row-summary" [class.is-open]="open" (click)="toggleClient(client.username)">
+                <td class="cell-title">
                   <button
                     type="button"
-                    class="btn btn-small btn-danger"
-                    [disabled]="busy() === reserva.idReserva"
-                    (click)="cancel(reserva)"
+                    class="row-disclosure"
+                    [attr.aria-expanded]="open"
+                    [attr.aria-controls]="'client-detail-' + client.username"
                   >
-                    Cancelar reserva
+                    {{ client.nombre }}
                   </button>
-                </div>
-              </td>
+                  <span class="cell-sub">{{ client.username }}</span>
+                </td>
+                <td data-label="Reservas" class="num center">{{ client.reservas.length }}</td>
+                <td data-label="Plazas" class="num center">{{ client.plazas }}</td>
+                <td data-label="Importe" class="num">{{ money(client.importe) }}</td>
+                <td data-label="Próxima sesión">
+                  @if (client.proxima; as next) {
+                    {{ next.nombreEvento }}
+                    <span class="cell-sub">{{ day(next.fechaInicioEvento) }}</span>
+                  } @else {
+                    <span class="cell-sub">Ninguna por delante</span>
+                  }
+                  @if (client.revision) {
+                    <span class="badge cell-badge" data-tone="alert">{{ client.revision }} en revisión</span>
+                  }
+                </td>
+                <td class="cell-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                </td>
+              </tr>
+              @if (open) {
+                <tr class="row-detail" [id]="'client-detail-' + client.username">
+                  <td colspan="6">
+                    <div class="session-detail">
+                      <section class="occupancy" aria-label="Lo que suma">
+                        <p class="occupancy-figure">
+                          <strong>{{ client.reservas.length }}</strong>
+                          <span>{{ client.reservas.length === 1 ? 'reserva' : 'reservas' }}</span>
+                        </p>
+                        <ul class="occupancy-notes">
+                          <li>{{ plural(client.plazas, 'plaza', 'plazas') }}</li>
+                          <li>{{ money(client.importe) }} en total</li>
+                        </ul>
+                      </section>
+                      <dl class="detail-facts">
+                        <div>
+                          <dt>Cuenta</dt>
+                          <dd>{{ client.username }}</dd>
+                        </div>
+                        <div>
+                          <dt>Correo</dt>
+                          <dd>{{ client.email || '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt>Teléfono</dt>
+                          <dd>{{ client.telefono || 'Sin registrar' }}</dd>
+                        </div>
+                        <div>
+                          <dt>Programa</dt>
+                          <dd>{{ client.programa === null ? '—' : client.programa ? 'Lo recibe' : 'No lo recibe' }}</dd>
+                        </div>
+                      </dl>
+                      <section class="detail-people" aria-label="Sus reservas">
+                        <p class="detail-people-title">Sus reservas</p>
+                        <ul class="group-list">
+                          @for (reserva of client.reservas; track reserva.idReserva) {
+                            @let estado = state(reserva.estadoEvento);
+                            <li>
+                              <button type="button" class="text-link group-link" (click)="openReservation(reserva)">
+                                {{ number(reserva) }} · {{ reserva.nombreEvento }}
+                              </button>
+                              <span class="group-meta">{{ when(reserva) }} · {{ plural(reserva.cantidad, 'plaza', 'plazas') }}</span>
+                              <span class="badge-stack group-badges">
+                                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                                @if (reserva.requiereRevision) {
+                                  <span class="badge" data-tone="alert">Requiere revisión</span>
+                                }
+                              </span>
+                            </li>
+                          }
+                        </ul>
+                      </section>
+                    </div>
+                    <div class="row-actions detail-actions">
+                      <a class="btn btn-small" routerLink="/admin/usuarios" [queryParams]="{ cuenta: client.username }">Ver su cuenta</a>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="6" class="cell-title"><p class="empty">Ningún cliente coincide con la búsqueda.</p></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @case ('sesiones') {
+      <div class="table-wrap" [appKeepHeight]="'s' + filter() + query() + sessionFilter()">
+        <table class="data-table is-expandable">
+          <caption>Sesiones con reservas. Pulsa una para ver sus reservas y su hoja de control.</caption>
+          <thead>
+            <tr>
+              <th scope="col" [attr.aria-sort]="sessionSort.aria('sesion')">
+                <button type="button" class="sort-button" (click)="sessionSort.by('sesion')">
+                  Sesión
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sessionSort.icon('sesion')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sessionSort.aria('fecha')">
+                <button type="button" class="sort-button" (click)="sessionSort.by('fecha')">
+                  Fecha
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sessionSort.icon('fecha')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sessionSort.aria('plazas')">
+                <button type="button" class="sort-button" (click)="sessionSort.by('plazas')">
+                  Plazas
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sessionSort.icon('plazas')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sessionSort.aria('reservas')">
+                <button type="button" class="sort-button" (click)="sessionSort.by('reservas')">
+                  Reservas
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sessionSort.icon('reservas')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sessionSort.aria('registro')">
+                <button type="button" class="sort-button" (click)="sessionSort.by('registro')">
+                  Registro
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sessionSort.icon('registro')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
             </tr>
+          </thead>
+          <tbody>
+            @for (group of sessionGroups(); track group.idEvento) {
+              @let open = expandedSession() === group.idEvento;
+              <tr class="row-summary" [class.is-open]="open" (click)="toggleSession(group.idEvento)">
+                <td class="cell-title">
+                  <button
+                    type="button"
+                    class="row-disclosure"
+                    [attr.aria-expanded]="open"
+                    [attr.aria-controls]="'session-group-' + group.idEvento"
+                  >
+                    {{ group.nombre }}
+                  </button>
+                  @if (group.revision) {
+                    <span class="badge cell-badge" data-tone="alert">{{ group.revision }} en revisión</span>
+                  }
+                </td>
+                <td data-label="Fecha" class="nowrap center">{{ day(group.primera.fechaInicioEvento) }}</td>
+                <td data-label="Plazas" class="num center">{{ group.plazas }}{{ group.aforo ? ' / ' + group.aforo : '' }}</td>
+                <td data-label="Reservas" class="num center">{{ group.reservas.length }}</td>
+                <td data-label="Registro" class="num center">
+                  @if (group.registrados >= group.plazas) {
+                    Completo
+                  } @else {
+                    {{ group.registrados }} de {{ group.plazas }}
+                  }
+                </td>
+                <td class="cell-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                </td>
+              </tr>
+              @if (open) {
+                <tr class="row-detail" [id]="'session-group-' + group.idEvento">
+                  <td colspan="6">
+                    <div class="session-detail">
+                      <section class="occupancy" aria-label="Ocupación">
+                        <p class="occupancy-figure">
+                          <strong>{{ group.plazas }}</strong>
+                          <span>{{ group.aforo ? '/ ' + group.aforo + ' plazas' : 'plazas' }}</span>
+                        </p>
+                        <ul class="occupancy-notes">
+                          <li>{{ when(group.primera) }}</li>
+                          <li>{{ plural(group.registrados, 'participante registrado', 'participantes registrados') }}</li>
+                          @if (group.plazas > group.registrados) {
+                            <li class="is-short">{{ group.plazas - group.registrados }} sin registrar</li>
+                          }
+                        </ul>
+                      </section>
+                      <section class="detail-people group-reservations" aria-label="Sus reservas">
+                        <p class="detail-people-title">Sus reservas</p>
+                        <ul class="group-list">
+                          @for (reserva of group.reservas; track reserva.idReserva) {
+                            @let estado = state(reserva.estadoEvento);
+                            <li>
+                              <button type="button" class="text-link group-link" (click)="openReservation(reserva)">
+                                {{ number(reserva) }} · {{ reserva.nombreCliente }}
+                              </button>
+                              <span class="group-meta">
+                                {{ plural(reserva.cantidad, 'plaza', 'plazas') }} ·
+                                {{ reserva.asistentes.length ? 'registrada' : 'sin registrar' }}
+                              </span>
+                              <span class="badge-stack group-badges">
+                                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                                @if (reserva.requiereRevision) {
+                                  <span class="badge" data-tone="alert">Requiere revisión</span>
+                                }
+                              </span>
+                            </li>
+                          }
+                        </ul>
+                      </section>
+                    </div>
+                    <div class="row-actions detail-actions">
+                      <a class="btn btn-small" [routerLink]="['/admin/sesiones', group.idEvento, 'control']">Hoja de control</a>
+                      <button type="button" class="btn btn-small" (click)="openSessionReservations(group.idEvento)">
+                        Ver sus reservas una a una
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="6" class="cell-title"><p class="empty">Ninguna sesión coincide con la búsqueda.</p></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @default {
+      <div class="table-wrap" [appKeepHeight]="filter() + query() + sessionFilter()">
+        <table class="data-table is-expandable">
+          <caption>Reservas. Pulsa una para ver su ficha y sus acciones.</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="cell-num center" [attr.aria-sort]="sort.aria('numero')">
+                <button type="button" class="sort-button" (click)="sort.by('numero')">
+                  Nº
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('numero')" /></svg>
+                </button>
+              </th>
+              <th scope="col" [attr.aria-sort]="sort.aria('cliente')">
+                <button type="button" class="sort-button" (click)="sort.by('cliente')">
+                  Cliente
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('cliente')" /></svg>
+                </button>
+              </th>
+              <th scope="col" [attr.aria-sort]="sort.aria('sesion')">
+                <button type="button" class="sort-button" (click)="sort.by('sesion')">
+                  Sesión
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('sesion')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sort.aria('fecha')">
+                <button type="button" class="sort-button" (click)="sort.by('fecha')">
+                  Fecha
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('fecha')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sort.aria('plazas')">
+                <button type="button" class="sort-button" (click)="sort.by('plazas')">
+                  Plazas
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('plazas')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="center" [attr.aria-sort]="sort.aria('estado')">
+                <button type="button" class="sort-button" (click)="sort.by('estado')">
+                  Estado
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('estado')" /></svg>
+                </button>
+              </th>
+              <th scope="col" class="cell-chevron"><span class="visually-hidden">Desplegar</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (reserva of visible(); track reserva.idReserva) {
+              @let estado = state(reserva.estadoEvento);
+              @let open = expanded() === reserva.idReserva;
+              <tr class="row-summary" [class.is-open]="open" (click)="toggle(reserva)">
+                <td class="cell-num center">{{ number(reserva) }}</td>
+                <td class="cell-title">
+                  <button
+                    type="button"
+                    class="row-disclosure"
+                    [attr.aria-expanded]="open"
+                    [attr.aria-controls]="'reservation-detail-' + reserva.idReserva"
+                  >
+                    <span class="cell-num-inline" aria-hidden="true">{{ number(reserva) }}</span>
+                    {{ reserva.nombreCliente }}
+                  </button>
+                </td>
+                <td data-label="Sesión">{{ reserva.nombreEvento }}</td>
+                <td data-label="Fecha" class="nowrap center">{{ day(reserva.fechaInicioEvento) }}</td>
+                <td data-label="Plazas" class="num center">{{ reserva.cantidad }}</td>
+                <td data-label="Estado" class="center">
+                  <span class="badge-stack">
+                    <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                    @if (reserva.requiereRevision) {
+                      <span class="badge" data-tone="alert">Requiere revisión</span>
+                    }
+                  </span>
+                </td>
+                <td class="cell-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+                </td>
+              </tr>
+              @if (open) {
+                <tr class="row-detail" [id]="'reservation-detail-' + reserva.idReserva">
+                  <td colspan="7">
+                    <div class="session-detail">
+                      <!-- Lo primero que se mira: cuántas plazas y cuánto se ha pagado. -->
+                      <section class="occupancy" aria-label="Plazas e importe">
+                        <p class="occupancy-figure">
+                          <strong>{{ reserva.cantidad }}</strong>
+                          <span>{{ reserva.cantidad === 1 ? 'plaza' : 'plazas' }}</span>
+                        </p>
+                        <ul class="occupancy-notes">
+                          <li>{{ money(reserva.precioVenta) }} en total</li>
+                          <li>{{ money(seatPrice(reserva)) }} por plaza</li>
+                        </ul>
+                      </section>
+
+                      <dl class="detail-facts">
+                        <div>
+                          <dt>Cliente</dt>
+                          <dd>
+                            {{ reserva.nombreCliente }} · {{ reserva.username }}
+                            @if (otherReservations(reserva); as others) {
+                              <button
+                                type="button"
+                                class="text-link other-reservations"
+                                (click)="$event.stopPropagation(); openClient(reserva.username)"
+                              >
+                                {{ others === 1 ? 'Otra reserva más' : others + ' reservas más' }}
+                              </button>
+                            }
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Sesión</dt>
+                          <dd>
+                            <button
+                              type="button"
+                              class="text-link"
+                              title="Ver solo las reservas de esta sesión"
+                              (click)="$event.stopPropagation(); filterFromCard(reserva)"
+                            >
+                              {{ reserva.nombreEvento }}
+                            </button>
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>Cuándo</dt>
+                          <dd><span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span></dd>
+                        </div>
+                        <div>
+                          <dt>Teléfono</dt>
+                          <dd>{{ reserva.telefono || '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt>Conformidad</dt>
+                          <dd>{{ reserva.conformidadEn ? 'Registrada el ' + dayTime(reserva.conformidadEn) : 'Sin registrar' }}</dd>
+                        </div>
+                        @if (reserva.observaciones) {
+                          <div>
+                            <dt>Observaciones</dt>
+                            <dd>{{ reserva.observaciones }}</dd>
+                          </div>
+                        }
+                      </dl>
+
+                      <!-- Quién viene, con la credencial que presentará: lo que se coteja en el control de ingreso. -->
+                      <section class="detail-people" aria-label="Participantes">
+                        <p class="detail-people-title">Participantes</p>
+                        @if (reserva.asistentes.length) {
+                          <ol>
+                            @for (persona of reserva.asistentes; track $index) {
+                              <li>
+                                <span class="detail-people-name">{{ persona.nombre }}</span>
+                                <span class="detail-people-meta">
+                                  {{ credential(persona.credencial) }}@if (persona.procedencia) { · {{ persona.procedencia }}}
+                                </span>
+                                @if (persona.incompatibilidades) {
+                                  <span class="detail-people-compat">{{ persona.incompatibilidades }}</span>
+                                }
+                              </li>
+                            }
+                          </ol>
+                        } @else {
+                          <p class="detail-people-empty">
+                            Sin registrar: la reserva se tomó antes del registro de asistencia o desde el panel.
+                          </p>
+                        }
+                      </section>
+
+                      @if (reserva.requiereRevision) {
+                        <section class="detail-review" aria-label="Requiere revisión">
+                          <p class="detail-people-title">Requiere revisión</p>
+                          @if (reserva.adaptaciones) {
+                            <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
+                          }
+                          @if (reserva.materialExterno) {
+                            <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
+                          }
+                        </section>
+                      }
+                    </div>
+
+                    <div class="row-actions detail-actions">
+                      <button
+                        type="button"
+                        class="btn btn-small btn-danger"
+                        [disabled]="busy() === reserva.idReserva"
+                        (click)="cancel(reserva)"
+                      >
+                        Cancelar reserva
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="7" class="cell-title">
+                  <p class="empty">
+                    {{ reservations().length ? 'Ninguna reserva coincide con la búsqueda.' : 'Todavía no hay reservas.' }}
+                  </p>
+                </td>
+              </tr>
+            }
+          </tbody>
+          @if (visible().length > 1) {
+            <tfoot>
+              <tr>
+                <td class="cell-title" colspan="7">
+                  <span class="cell-sub">
+                    {{ plural(visible().length, 'reserva', 'reservas') }} · {{ plural(totals().plazas, 'plaza', 'plazas') }} ·
+                    {{ money(totals().importe) }}
+                  </span>
+                </td>
+              </tr>
+            </tfoot>
           }
-        } @empty {
-          <tr>
-            <td colspan="7" class="cell-title">
-              <p class="empty">
-                {{ reservations().length ? 'Ninguna reserva coincide con la búsqueda.' : 'Todavía no hay reservas.' }}
-              </p>
-            </td>
-          </tr>
-        }
-      </tbody>
-      @if (visible().length > 1) {
-        <tfoot>
-          <tr>
-            <td class="cell-title" colspan="7">
-              <span class="cell-sub">
-                {{ plural(visible().length, 'reserva', 'reservas') }} · {{ plural(totals().plazas, 'plaza', 'plazas') }} ·
-                {{ money(totals().importe) }}
-              </span>
-            </td>
-          </tr>
-        </tfoot>
-      }
-    </table>
-  </div>
+        </table>
+      </div>
+    }
+  }
 
   <app-demo-foot kind="reservas" (added)="afterDemo()" />
 }

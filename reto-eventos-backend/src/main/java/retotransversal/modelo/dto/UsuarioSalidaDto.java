@@ -20,6 +20,8 @@ public class UsuarioSalidaDto {
 	private String apellidos;
 	private String direccion;
 	private Integer enabled;
+	/** Si quiere recibir el programa de AlienMilk Sessions (solo lo cambia la propia persona). */
+	private boolean aceptaComunicaciones;
 	private LocalDate fechaRegistro;
 	private Integer idPerfil;
 	private String perfil;
@@ -32,6 +34,7 @@ public class UsuarioSalidaDto {
 				.apellidos(usuario.getApellidos())
 				.direccion(usuario.getDireccion())
 				.enabled(usuario.getEnabled())
+				.aceptaComunicaciones(usuario.isAceptaComunicaciones())
 				.fechaRegistro(usuario.getFechaRegistro())
 				.idPerfil(usuario.getPerfil().getIdPerfil())
 				.perfil(usuario.getPerfil().getNombre())

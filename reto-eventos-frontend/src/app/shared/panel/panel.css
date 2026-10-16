@@ -1304,3 +1304,92 @@ th[aria-sort] .sort-button svg {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* «Ver por»: el selector de vista sobre los filtros, con su rótulo pequeño delante. */
+.view-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  margin: 1.25rem 0 0;
+}
+
+.view-switch-label {
+  color: var(--paper-faint);
+  font:
+    800 0.62rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Las reservas de un cliente o de una sesión dentro de su ficha: enlace, datos y estado en una línea. */
+.group-reservations {
+  grid-column: 2;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.group-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Dentro de una ficha hereda la lista numerada de participantes: aquí no lleva número. */
+.detail-people .group-list li,
+.group-list li {
+  counter-increment: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 1rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.detail-people .group-list li::before {
+  content: none;
+}
+
+.group-list li:first-child {
+  border-top: 0;
+}
+
+.group-link {
+  justify-self: start;
+  font-weight: 700;
+  text-align: left;
+}
+
+.group-meta {
+  grid-column: 1;
+  color: var(--paper-muted);
+  font-size: 0.9rem;
+}
+
+.group-badges {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-items: end;
+}
+
+.other-reservations {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.9rem;
+}
+
+@media screen and (max-width: 760px) {
+  .group-reservations {
+    grid-column: auto;
+  }
+}
+
+/* Una pastilla bajo el título de una fila (2 en revisión): en su línea, no pegada al nombre. */
+.cell-badge {
+  display: block;
+  width: fit-content;
+  margin-top: 0.35rem;
+}

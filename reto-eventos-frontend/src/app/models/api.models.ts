@@ -108,6 +108,8 @@ export interface Usuario {
   apellidos: string;
   direccion: string;
   enabled: number;
+  /** Si quiere recibir el programa (solo lo cambia la propia persona). */
+  aceptaComunicaciones?: boolean;
   fechaRegistro: string;
   idPerfil: number;
   perfil: string;

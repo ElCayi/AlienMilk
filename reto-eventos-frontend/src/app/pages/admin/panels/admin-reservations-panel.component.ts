@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
@@ -61,16 +61,76 @@ const COMPARE: Record<SortKey, (a: Reserva, b: Reserva) => number> = {
   estado: (a, b) => STATE_ORDER[a.estadoEvento as EstadoEvento] - STATE_ORDER[b.estadoEvento as EstadoEvento],
 };
 
+/** Las tres preguntas del panel: qué pasa con una reserva, quién es un cliente, cómo va una sesión. */
+type View = 'reservas' | 'clientes' | 'sesiones';
+
+const VIEWS: { value: View; label: string }[] = [
+  { value: 'reservas', label: 'Reserva' },
+  { value: 'clientes', label: 'Cliente' },
+  { value: 'sesiones', label: 'Sesión' },
+];
+
+/** Un cliente, con sus reservas (las que pasan los filtros) y lo que suman. */
+interface ClientGroup {
+  username: string;
+  nombre: string;
+  email: string | null;
+  telefono: string | null;
+  programa: boolean | null;
+  reservas: Reserva[];
+  plazas: number;
+  importe: number;
+  /** Su próxima reserva confirmada, o null si no tiene ninguna por delante. */
+  proxima: Reserva | null;
+  revision: number;
+}
+
+/** Una sesión, con sus reservas (las que pasan los filtros) y su registro de asistencia. */
+interface SessionGroup {
+  idEvento: number;
+  nombre: string;
+  primera: Reserva;
+  aforo: number | null;
+  reservas: Reserva[];
+  plazas: number;
+  registrados: number;
+  revision: number;
+}
+
+type ClientSortKey = 'cliente' | 'reservas' | 'plazas' | 'importe' | 'proxima';
+type SessionSortKey = 'sesion' | 'fecha' | 'plazas' | 'reservas' | 'registro' | 'revision';
+
+const whenOf = (reserva: Reserva | null) =>
+  reserva ? reserva.fechaInicioEvento + reserva.horaInicioEvento : '9999';
+
+const CLIENT_COMPARE: Record<ClientSortKey, (a: ClientGroup, b: ClientGroup) => number> = {
+  cliente: (a, b) => byText(a.nombre, b.nombre),
+  reservas: (a, b) => a.reservas.length - b.reservas.length,
+  plazas: (a, b) => a.plazas - b.plazas,
+  importe: (a, b) => a.importe - b.importe,
+  proxima: (a, b) => whenOf(a.proxima).localeCompare(whenOf(b.proxima)),
+};
+
+const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup) => number> = {
+  sesion: (a, b) => byText(a.nombre, b.nombre),
+  fecha: (a, b) => whenOf(a.primera).localeCompare(whenOf(b.primera)),
+  plazas: (a, b) => a.plazas - b.plazas,
+  reservas: (a, b) => a.reservas.length - b.reservas.length,
+  registro: (a, b) => a.registrados / (a.plazas || 1) - b.registrados / (b.plazas || 1),
+  revision: (a, b) => a.revision - b.revision,
+};
+
 /**
  * Reservas de todas las cuentas, en una tabla que se ordena y se filtra por estado; cada fila se
  * despliega con su ficha. Buscar por cliente o por sesión, dar de alta una a mano (por teléfono, por
  * ejemplo) y cancelarla. Las reglas de aforo y de diez plazas son las del servidor.
- * Se puede llegar filtrada desde Sesiones (?sesion=) o desde Usuarios (?cuenta=).
+ * Se puede llegar filtrada desde Sesiones (?sesion=) o desde Usuarios (?cuenta=). Las mismas reservas
+ * se miran por reserva, por cliente o por sesión (?ver=): cada vista responde a una pregunta distinta.
  */
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent, KeepHeightDirective, DemoFootComponent],
+  imports: [FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective, DemoFootComponent],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -168,6 +228,167 @@ export class AdminReservationsPanelComponent implements OnInit {
     };
   });
 
+  // Ver por: reserva, cliente o sesión. Los filtros y la búsqueda valen para las tres.
+  readonly views = VIEWS;
+  readonly view = signal<View>('reservas');
+  readonly expandedClient = signal<string | null>(null);
+  readonly expandedSession = signal<number | null>(null);
+  readonly clientSort = new TableSort<ClientSortKey>('proxima');
+  readonly sessionSort = new TableSort<SessionSortKey>('fecha');
+
+  readonly clientSortOptions = [
+    { value: 'proxima:1', label: 'Próxima sesión, la más cercana primero' },
+    { value: 'cliente:1', label: 'Cliente, de la A a la Z' },
+    { value: 'reservas:-1', label: 'Más reservas primero' },
+    { value: 'plazas:-1', label: 'Más plazas primero' },
+    { value: 'importe:-1', label: 'Mayor importe primero' },
+  ];
+
+  readonly sessionSortOptions = [
+    { value: 'fecha:1', label: 'Fecha, la más próxima primero' },
+    { value: 'sesion:1', label: 'Sesión, de la A a la Z' },
+    { value: 'plazas:-1', label: 'Más plazas reservadas primero' },
+    { value: 'registro:1', label: 'Menos registradas primero' },
+    { value: 'revision:-1', label: 'Más pendientes de revisión primero' },
+  ];
+
+  readonly clients = computed<ClientGroup[]>(() => {
+    const users = new Map(this.users().map((user) => [user.username, user]));
+    const groups = new Map<string, Reserva[]>();
+    for (const reserva of this.visible()) {
+      groups.set(reserva.username, [...(groups.get(reserva.username) ?? []), reserva]);
+    }
+    const { key, dir } = this.clientSort.state();
+    return [...groups.entries()]
+      .map(([username, reservas]) => {
+        const user = users.get(username);
+        const ordered = [...reservas].sort(COMPARE.fecha);
+        const telefono = [...reservas].sort((a, b) => b.idReserva - a.idReserva).find((r) => r.telefono)?.telefono;
+        return {
+          username,
+          nombre: reservas[0].nombreCliente,
+          email: user?.email ?? null,
+          telefono: telefono ?? null,
+          programa: user ? !!user.aceptaComunicaciones : null,
+          reservas: ordered,
+          plazas: reservas.reduce((sum, r) => sum + r.cantidad, 0),
+          importe: reservas.reduce((sum, r) => sum + Number(r.precioVenta), 0),
+          proxima: ordered.find((r) => r.estadoEvento === 'ACTIVO') ?? null,
+          revision: reservas.filter((r) => r.requiereRevision).length,
+        };
+      })
+      .sort((a, b) => dir * CLIENT_COMPARE[key](a, b) || byText(a.nombre, b.nombre));
+  });
+
+  readonly sessionGroups = computed<SessionGroup[]>(() => {
+    const sessions = new Map(this.sessions().map((session) => [session.idEvento, session]));
+    const groups = new Map<number, Reserva[]>();
+    for (const reserva of this.visible()) {
+      groups.set(reserva.idEvento, [...(groups.get(reserva.idEvento) ?? []), reserva]);
+    }
+    const { key, dir } = this.sessionSort.state();
+    return [...groups.entries()]
+      .map(([idEvento, reservas]) => {
+        const ordered = [...reservas].sort((a, b) => a.idReserva - b.idReserva);
+        return {
+          idEvento,
+          nombre: ordered[0].nombreEvento,
+          primera: ordered[0],
+          aforo: sessions.get(idEvento)?.aforoMaximo ?? null,
+          reservas: ordered,
+          plazas: reservas.reduce((sum, r) => sum + r.cantidad, 0),
+          registrados: reservas.reduce((sum, r) => sum + r.asistentes.length, 0),
+          revision: reservas.filter((r) => r.requiereRevision).length,
+        };
+      })
+      .sort((a, b) => dir * SESSION_COMPARE[key](a, b) || SESSION_COMPARE.fecha(a, b));
+  });
+
+  /** Cambiar de vista no es cambiar de página: va en la dirección (?ver=) y la vista no se mueve. */
+  setView(view: View): void {
+    this.view.set(view);
+    this.go({ ver: view === 'reservas' ? null : view });
+  }
+
+  /** Una sola navegación para cambiar la vista y el filtro de sesión a la vez, sin mover la vista. */
+  private go(queryParams: Record<string, string | number | null>): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+      scroll: 'manual',
+    });
+  }
+
+  /** Las demás reservas de su cliente, entre todas (no solo las que pasan los filtros). */
+  otherReservations(reserva: Reserva): number {
+    return this.reservations().filter((r) => r.username === reserva.username && r.idReserva !== reserva.idReserva)
+      .length;
+  }
+
+  /** De una reserva a su cliente: la vista por cliente, sin filtros que le escondan reservas, con su ficha abierta. */
+  openClient(username: string): void {
+    this.clearFilters();
+    this.expandedClient.set(username);
+    this.view.set('clientes');
+    this.go({ ver: 'clientes', sesion: null });
+    this.reveal(`client-detail-${username}`);
+  }
+
+  /** De un cliente o una sesión a una reserva concreta: la vista por reserva, con su ficha abierta. */
+  openReservation(reserva: Reserva): void {
+    this.clearFilters();
+    this.expanded.set(reserva.idReserva);
+    this.view.set('reservas');
+    this.go({ ver: null, sesion: null });
+    this.reveal(`reservation-detail-${reserva.idReserva}`);
+  }
+
+  /** De una sesión a sus reservas, una por una: la vista por reserva filtrada por esa sesión. */
+  openSessionReservations(idEvento: number): void {
+    this.filter.set('TODAS');
+    this.query.set('');
+    this.expanded.set(null);
+    this.view.set('reservas');
+    this.sessionFilter.set(idEvento);
+    this.go({ ver: null, sesion: idEvento });
+  }
+
+  toggleClient(username: string): void {
+    const value = this.expandedClient() === username ? null : username;
+    this.expandedClient.set(value);
+    if (value) {
+      this.reveal(`client-detail-${value}`, 'nearest');
+    }
+  }
+
+  toggleSession(idEvento: number): void {
+    const value = this.expandedSession() === idEvento ? null : idEvento;
+    this.expandedSession.set(value);
+    if (value !== null) {
+      this.reveal(`session-group-${value}`, 'nearest');
+    }
+  }
+
+  /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
+  private clearFilters(): void {
+    this.filter.set('TODAS');
+    this.query.set('');
+    this.sessionFilter.set(0);
+  }
+
+  /** Tras pintarse, lleva la vista hasta una ficha: entera si cabe (nearest), o al centro si viene de otra vista. */
+  private reveal(id: string, block: ScrollLogicalPosition = 'center'): void {
+    afterNextRender(
+      () => {
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.getElementById(id)?.scrollIntoView({ block, behavior: reduce ? 'auto' : 'smooth' });
+      },
+      { injector: this.injector },
+    );
+  }
+
   /** Solo se reserva en sesiones activas. */
   readonly openSessions = computed(() => this.sessions().filter((session) => session.estado === 'ACTIVO'));
 
@@ -225,6 +446,8 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.query.set(this.route.snapshot.queryParamMap.get('cuenta') ?? '');
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.sessionFilter.set(Number(params.get('sesion')) || 0);
+      const view = params.get('ver');
+      this.view.set(view === 'clientes' || view === 'sesiones' ? view : 'reservas');
     });
     this.load();
   }

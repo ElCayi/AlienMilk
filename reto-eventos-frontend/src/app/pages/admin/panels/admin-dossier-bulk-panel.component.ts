@@ -167,7 +167,7 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   }
 
   number(session: EventoAdmin): string {
-    return String(session.idEvento).padStart(2, '0');
+    return String(session.idEvento).padStart(3, '0');
   }
 
   // Selección.

@@ -162,9 +162,9 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly schedule = (reserva: Reserva) =>
     sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
 
-  /** El número de la reserva, con dos cifras como mínimo (07, 12...). */
+  /** El número de la reserva, con tres cifras como mínimo (007, 012...). */
   number(reserva: Reserva): string {
-    return String(reserva.idReserva).padStart(2, '0');
+    return String(reserva.idReserva).padStart(3, '0');
   }
 
   seatPrice(reserva: Reserva): number {

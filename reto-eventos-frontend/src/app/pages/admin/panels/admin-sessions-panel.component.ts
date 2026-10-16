@@ -173,9 +173,9 @@ export class AdminSessionsPanelComponent implements OnInit {
   readonly typeLabel = humanizeCode;
   readonly plural = plural;
   readonly image = sessionImage;
-  /** El número interno, a dos cifras (01, 02…): el id de la sesión, que no cambia. */
+  /** El número interno, a tres cifras (001, 002…): el id de la sesión, que no cambia. */
   number(session: EventoAdmin): string {
-    return String(session.idEvento).padStart(2, '0');
+    return String(session.idEvento).padStart(3, '0');
   }
 
   /**

@@ -168,9 +168,14 @@
                     <div>
                       <dt>Sesión</dt>
                       <dd>
-                        <a class="text-link" [routerLink]="[]" [queryParams]="{ sesion: reserva.idEvento }" (click)="$event.stopPropagation()">{{
-                          reserva.nombreEvento
-                        }}</a>
+                        <button
+                          type="button"
+                          class="text-link"
+                          title="Ver solo las reservas de esta sesión"
+                          (click)="$event.stopPropagation(); filterFromCard(reserva)"
+                        >
+                          {{ reserva.nombreEvento }}
+                        </button>
                       </dd>
                     </div>
                     <div>

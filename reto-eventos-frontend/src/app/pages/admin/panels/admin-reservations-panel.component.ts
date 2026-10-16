@@ -1,7 +1,18 @@
-import { afterNextRender, Component, computed, DestroyRef, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Injector,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
@@ -59,7 +70,7 @@ const COMPARE: Record<SortKey, (a: Reserva, b: Reserva) => number> = {
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective, DemoFootComponent],
+  imports: [FormsModule, PanelDialogComponent, KeepHeightDirective, DemoFootComponent],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -71,6 +82,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly reservations = signal<Reserva[]>([]);
   readonly sessions = signal<EventoAdmin[]>([]);
@@ -226,10 +238,15 @@ export class AdminReservationsPanelComponent implements OnInit {
       users: this.admin.getUsuarios(),
     }).subscribe({
       next: ({ reservations, sessions, users }) => {
+        const first = !this.reservations().length;
         this.reservations.set(reservations);
         this.sessions.set(sessions);
         this.users.set([...users].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')));
         this.loading.set(false);
+        // Llegar ya filtrado (desde «N reservas» en Sesiones o desde Usuarios) es venir a ver esa tabla.
+        if (first && (this.sessionFilter() || this.query())) {
+          afterNextRender(() => this.showTable(), { injector: this.injector });
+        }
       },
       error: () => {
         this.loading.set(false);
@@ -238,14 +255,47 @@ export class AdminReservationsPanelComponent implements OnInit {
     });
   }
 
-  /** El filtro de sesión va en la dirección, para poder enlazarlo y volver a él. */
+  /**
+   * El filtro de sesión va en la dirección, para poder enlazarlo y volver a él. Cambiarlo no es cambiar
+   * de página: la vista se queda donde está (scroll: 'manual', como en /sesiones).
+   */
   filterBySession(idEvento: number): void {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { sesion: idEvento || null },
       queryParamsHandling: 'merge',
       replaceUrl: true,
+      scroll: 'manual',
     });
+  }
+
+  /**
+   * Desde la ficha abierta, ver solo las reservas de su sesión: las filas de otras sesiones se van,
+   * así que la vista se corrige para que la fila abierta se quede donde estaba, bajo el cursor.
+   */
+  filterFromCard(reserva: Reserva): void {
+    const row = () => this.host.nativeElement.querySelector<HTMLElement>(`#reservation-detail-${reserva.idReserva}`);
+    const before = row()?.getBoundingClientRect().top;
+    this.filterBySession(reserva.idEvento);
+    afterNextRender(
+      () => {
+        const after = row()?.getBoundingClientRect().top;
+        if (before !== undefined && after !== undefined) {
+          window.scrollBy({ top: after - before, behavior: 'auto' });
+        }
+      },
+      { injector: this.injector },
+    );
+  }
+
+  /** Lleva la vista a los filtros y la tabla, por debajo de la barra fija del panel. */
+  private showTable(): void {
+    const toolbar = this.host.nativeElement.querySelector('.toolbar');
+    if (toolbar) {
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const top = window.scrollY + toolbar.getBoundingClientRect().top - 88;
+      window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+    }
   }
 
   /** Plazas que quedan en una sesión. */

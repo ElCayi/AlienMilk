@@ -33,6 +33,7 @@ import {
   reservationState,
   cancellationLine,
 } from '../../../shared/panel/panel-format';
+import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
@@ -449,13 +450,13 @@ export class AdminReservationsPanelComponent implements OnInit {
     }
   }
 
-  /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
   /** Cambiar de filtro suelta la reserva recién cancelada: ya está en «Canceladas». */
   setFilter(filter: Filter): void {
     this.stay.set(null);
     this.filter.set(filter);
   }
 
+  /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
   private clearFilters(): void {
     this.stay.set(null);
     this.filter.set('TODAS');
@@ -463,12 +464,19 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.sessionFilter.set(0);
   }
 
-  /** Tras pintarse, lleva la vista hasta una ficha: entera si cabe (nearest), o al centro si viene de otra vista. */
-  private reveal(id: string, block: ScrollLogicalPosition = 'center'): void {
+  /**
+   * Tras pintarse, lleva la vista hasta una ficha: al desplegarla, lo justo para verla entera sin perder su
+   * fila; al llegar desde otra vista, con su fila arriba (ver reveal-row).
+   */
+  private reveal(id: string, mode: 'nearest' | 'top' = 'top'): void {
     afterNextRender(
       () => {
-        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        document.getElementById(id)?.scrollIntoView({ block, behavior: reduce ? 'auto' : 'smooth' });
+        const detail = document.getElementById(id);
+        if (mode === 'top') {
+          revealAtTop(detail);
+        } else {
+          revealExpanded(detail);
+        }
       },
       { injector: this.injector },
     );
@@ -507,14 +515,7 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.expanded.set(id);
     this.rowNotice.set(null);
     if (id !== null) {
-      afterNextRender(
-        () => {
-          const detail = document.getElementById(`reservation-detail-${id}`);
-          const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-          detail?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
-        },
-        { injector: this.injector },
-      );
+      this.reveal(`reservation-detail-${id}`, 'nearest');
     }
   }
 

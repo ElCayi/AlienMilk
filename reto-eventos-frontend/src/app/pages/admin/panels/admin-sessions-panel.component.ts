@@ -20,6 +20,7 @@ import {
 } from '../../../shared/panel/panel-format';
 import { TableSort } from '../../../shared/panel/table-sort';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
+import { revealExpanded } from '../../../shared/panel/reveal-row';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
@@ -180,20 +181,16 @@ export class AdminSessionsPanelComponent implements OnInit {
 
   /**
    * Despliega la ficha de la sesión, o la recoge si ya estaba abierta. Al desplegar, la vista baja lo
-   * justo para enseñarla entera; al recoger no se mueve (ver KeepHeightDirective).
+   * justo para enseñarla entera sin perder su fila (ver reveal-row); al recoger no se mueve (ver
+   * KeepHeightDirective).
    */
   toggle(session: EventoAdmin): void {
     const id = this.expanded() === session.idEvento ? null : session.idEvento;
     this.expanded.set(id);
     if (id !== null) {
-      afterNextRender(
-        () => {
-          const detail = document.getElementById(`session-detail-${id}`);
-          const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-          detail?.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
-        },
-        { injector: this.injector },
-      );
+      afterNextRender(() => revealExpanded(document.getElementById(`session-detail-${id}`)), {
+        injector: this.injector,
+      });
     }
   }
 

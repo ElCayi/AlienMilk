@@ -22,6 +22,24 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	 */
 	Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro);
 
+	/** Lo mismo para las reservas demo del panel: se dan por pagadas, sin pasar por la pasarela. */
+	Reserva reservarDemo(Integer idEvento, String username, ReservaCrearDto registro);
+
+	/** En el control de ingreso: un participante registrado entra (o se deshace un error al marcarlo). */
+	Reserva marcarEntrada(Integer idReserva, Integer orden, boolean presente);
+
+	/** En el control de ingreso: cuántas plazas de una reserva sin registrar han entrado ya. */
+	Reserva contarEntradas(Integer idReserva, int plazas);
+
+	/** La revisión de las adaptaciones y el material: aceptadas o no, con una nota para el cliente. */
+	Reserva revisar(Integer idReserva, boolean aceptada, String nota);
+
+	/** Deshace una cancelación si quedan plazas y no se movió dinero al cancelarla. */
+	Reserva reactivar(Integer idReserva);
+
+	/** Una reserva para pagar en taquilla, ya cobrada. */
+	Reserva marcarCobrada(Integer idReserva);
+
 	/** Corrige el teléfono, las observaciones y los participantes; no toca sesión, plazas, precio ni conformidad. */
 	Reserva editarReservaAdmin(Integer idReserva, ReservaEditarDto datos);
 
@@ -31,5 +49,5 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	int cancelarReserva(Integer idReserva, String username);
 
 	/** Cancela sin borrar: la reserva libera sus plazas y guarda quién, cuándo y por qué. */
-	Reserva cancelarReservaAdmin(Integer idReserva, String motivo);
+	Reserva cancelarReservaAdmin(Integer idReserva, String motivo, boolean devolver);
 }

@@ -1,0 +1,96 @@
+/* Cambios, cancelaciones y devoluciones: al final del programa, con el vocabulario del recuadro de
+   colaboraciones (borde claro sobre la textura, rótulo coral). A la izquierda, el título y la regla
+   general; a la derecha, los seis casos de dos en dos; debajo, la disposición general. */
+.refunds {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+  gap: clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 4vw, 4rem);
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1.5rem, 2.4vw, 2.25rem);
+  border: 2px solid var(--light);
+  border-radius: var(--corner) 1rem 1rem 1rem;
+  color: #faf9f7;
+}
+
+.refunds h2 {
+  margin: 0.8rem 0 0;
+  text-wrap: balance;
+  font: 400 clamp(1.8rem, 2.6vw, 2.6rem) / 1 var(--condensed);
+}
+
+.refunds p:not(.station-code) {
+  margin: 0;
+  color: rgba(250, 249, 247, 0.88);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+
+.refunds-heading > p:last-child {
+  margin-top: 1rem;
+}
+
+.refunds-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem clamp(1.5rem, 3vw, 2.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.refunds-list li {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(250, 249, 247, 0.18);
+}
+
+.refunds-number {
+  color: var(--coral);
+  font: 500 1rem / 1 var(--condensed);
+  letter-spacing: 0.08em;
+}
+
+.refunds-list h3 {
+  margin: 0;
+  font: 400 1.35rem / 1.15 var(--condensed);
+}
+
+.refunds a {
+  color: inherit;
+  text-decoration-color: var(--coral);
+  text-underline-offset: 0.2em;
+}
+
+.refunds a:is(:hover, :focus-visible) {
+  color: var(--coral);
+}
+
+.refunds-general {
+  display: grid;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(250, 249, 247, 0.18);
+}
+
+.refunds-general p:not(.station-code) {
+  color: rgba(250, 249, 247, 0.72);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 1000px) {
+  .refunds {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .refunds-list {
+    grid-template-columns: 1fr;
+  }
+}

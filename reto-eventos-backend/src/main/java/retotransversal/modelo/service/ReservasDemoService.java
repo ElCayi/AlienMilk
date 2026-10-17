@@ -121,7 +121,7 @@ public class ReservasDemoService {
 				continue;
 			}
 			String observaciones = (vuelta + i) % 2 == 0 ? OBSERVACIONES.get((vuelta + i) / 2 % OBSERVACIONES.size()) : null;
-			creadas.add(reservaService.reservarConRegistro(sesion.getIdEvento(), cliente.getUsername(),
+			creadas.add(reservaService.reservarDemo(sesion.getIdEvento(), cliente.getUsername(),
 					registro(cliente, plazas, observaciones, vuelta + i)));
 			ocupadas.merge(sesion.getIdEvento(), plazas, Integer::sum);
 			dePersona.put(clave, plazas);

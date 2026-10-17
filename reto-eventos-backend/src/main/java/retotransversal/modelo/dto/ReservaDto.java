@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Reserva;
 
 @AllArgsConstructor
@@ -46,11 +47,24 @@ public class ReservaDto {
 	private LocalDateTime conformidadEn;
 	/** Con adaptaciones o material externo: AlienMilk tiene que evaluarla antes de la sesión. */
 	private boolean requiereRevision;
+	/** La revisión: PENDIENTE, ACEPTADA o NO_ACEPTADA; null si no pide adaptaciones ni material. */
+	private String revision;
+	private String revisionNota;
+	private LocalDateTime revisadaEn;
 
 	/** La cancelación, si la hubo: la reserva no se borra (ver Reserva#canceladaEn). */
 	private LocalDateTime canceladaEn;
 	private String canceladaPor;
 	private String motivoCancelacion;
+
+	/** El cobro (ver EstadoPago). La página de pago solo mientras está pendiente. */
+	private String estadoPago;
+	private String pagoUrl;
+	private LocalDateTime pagoCaducaEn;
+	private LocalDateTime pagadaEn;
+	private BigDecimal importeDevuelto;
+	/** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
+	private int entradasSinRegistrar;
 
 	public static ReservaDto fromEntity(Reserva reserva) {
 		return ReservaDto.builder()
@@ -74,9 +88,20 @@ public class ReservaDto {
 				.materialDescripcion(reserva.getMaterialDescripcion())
 				.conformidadEn(reserva.getConformidadEn())
 				.requiereRevision(reserva.requiereRevision())
+				.revision(!reserva.pideAdaptaciones() ? null
+						: reserva.getRevisionAceptada() == null ? "PENDIENTE"
+								: reserva.getRevisionAceptada() ? "ACEPTADA" : "NO_ACEPTADA")
+				.revisionNota(reserva.getRevisionNota())
+				.revisadaEn(reserva.getRevisadaEn())
 				.canceladaEn(reserva.getCanceladaEn())
 				.canceladaPor(reserva.getCanceladaPor() == null ? null : reserva.getCanceladaPor().name())
 				.motivoCancelacion(reserva.getMotivoCancelacion())
+				.estadoPago(reserva.getEstadoPago().name())
+				.pagoUrl(reserva.getEstadoPago() == EstadoPago.PENDIENTE && !reserva.cancelada() ? reserva.getPagoUrl() : null)
+				.pagoCaducaEn(reserva.getPagoCaducaEn())
+				.pagadaEn(reserva.getPagadaEn())
+				.importeDevuelto(reserva.getImporteDevuelto())
+				.entradasSinRegistrar(reserva.getEntradasSinRegistrar())
 				.build();
 	}
 

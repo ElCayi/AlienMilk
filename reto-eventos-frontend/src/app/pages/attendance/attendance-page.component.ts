@@ -44,6 +44,8 @@ export class AttendancePageComponent implements OnInit {
   readonly session = signal<EventoDetalle | null>(null);
   readonly loadError = signal(false);
   readonly sending = signal(false);
+  /** Camino de la página de pago: el botón sigue ocupado hasta que el navegador se va. */
+  readonly redirecting = signal(false);
   readonly sent = signal(false);
   readonly errors = signal<Record<string, string>>({});
   readonly formError = signal<string | null>(null);
@@ -121,7 +123,13 @@ export class AttendancePageComponent implements OnInit {
         aceptaComunicaciones: this.aceptaComunicaciones,
       })
       .subscribe({
-        next: () => {
+        next: (reserva) => {
+          // Con el pago activado, la reserva espera en Stripe: allí se paga y se vuelve a Mis reservas.
+          if (reserva.pagoUrl) {
+            this.redirecting.set(true);
+            window.location.assign(reserva.pagoUrl);
+            return;
+          }
           this.sending.set(false);
           this.sent.set(true);
           window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -58,6 +58,7 @@ import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ProductoRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
 import retotransversal.modelo.service.LimitadorSolicitudes;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.PedidoAvisoEvent;
 import retotransversal.modelo.service.PedidoAvisoEvent.Motivo;
 import retotransversal.modelo.service.TiendaService;
@@ -90,6 +91,8 @@ public class TiendaServiceImpl implements TiendaService {
 	private final ApplicationEventPublisher eventos;
 	/** La web de la tienda, para los enlaces de los correos. */
 	private final String urlTienda;
+	/** Las reservas de sesiones se cobran con la misma pasarela y avisan al mismo sitio. */
+	private PagosReservasService pagosReservas;
 
 	@Autowired
 	public TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
@@ -101,6 +104,11 @@ public class TiendaServiceImpl implements TiendaService {
 		log.info(this.pasarela == null
 				? "Tienda: pago apagado (sin STRIPE_SECRET_KEY); los pedidos se confirman sin cobrar"
 				: "Tienda: pago con Stripe Checkout activo");
+	}
+
+	@Autowired(required = false)
+	void setPagosReservas(PagosReservasService pagosReservas) {
+		this.pagosReservas = pagosReservas;
 	}
 
 	TiendaServiceImpl(ProductoRepository productoRepository, PedidoRepository pedidoRepository,
@@ -208,7 +216,11 @@ public class TiendaServiceImpl implements TiendaService {
 		log.info("Aviso de pago {} de la sesión {}", aviso.tipo(), aviso.sesion());
 		if (aviso.sesion() != null) {
 			// Aquí sí se deja salir el error de la pasarela: el aviso falla y Stripe lo vuelve a enviar.
-			pedidoRepository.findByPagoSesion(aviso.sesion()).ifPresent(this::sincronizar);
+			pedidoRepository.findByPagoSesion(aviso.sesion()).ifPresentOrElse(this::sincronizar, () -> {
+				if (pagosReservas != null) {
+					pagosReservas.recibirAviso(aviso.sesion());
+				}
+			});
 		}
 	}
 

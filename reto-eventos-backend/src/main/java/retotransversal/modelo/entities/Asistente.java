@@ -1,5 +1,7 @@
 package retotransversal.modelo.entities;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,4 +58,8 @@ public class Asistente {
 
 	@Column(length = 300)
 	private String incompatibilidades;
+
+	/** Cuándo pasó el control de ingreso; null si aún no ha entrado. Ausente es quien no entró y la sesión acabó. */
+	@Column(name = "entrada_en")
+	private LocalDateTime entradaEn;
 }

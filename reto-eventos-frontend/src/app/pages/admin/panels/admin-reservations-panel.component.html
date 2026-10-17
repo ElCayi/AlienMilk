@@ -440,6 +440,9 @@
                 <td data-label="Estado" class="center">
                   <span class="badge-stack">
                     <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                    @if (payment(reserva); as pago) {
+                      <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
+                    }
                     @if (reserva.requiereRevision) {
                       <span class="badge" data-tone="alert">Requiere revisión</span>
                     }
@@ -503,6 +506,10 @@
                           <dd>{{ place(reserva) }}</dd>
                         </div>
                         <div>
+                          <dt>Pago</dt>
+                          <dd>{{ paymentText(reserva) }}</dd>
+                        </div>
+                        <div>
                           <dt>Teléfono</dt>
                           <dd>{{ reserva.telefono || '—' }}</dd>
                         </div>
@@ -551,22 +558,72 @@
                         }
                       </section>
 
-                      @if (reserva.requiereRevision) {
-                        <section class="detail-review" aria-label="Requiere revisión">
-                          <p class="detail-people-title">Requiere revisión</p>
+                      <!-- Lo que pide y lo que AlienMilk decidió: en coral mientras está pendiente. -->
+                      @if (reserva.revision; as revision) {
+                        <section
+                          class="detail-review"
+                          [class.is-settled]="revision !== 'PENDIENTE'"
+                          aria-label="Adaptaciones y material"
+                        >
+                          <p class="detail-people-title">
+                            {{ revision === 'PENDIENTE' ? 'Requiere revisión' : 'Adaptaciones y material · ' + review(reserva) }}
+                          </p>
                           @if (reserva.adaptaciones) {
                             <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
                           }
                           @if (reserva.materialExterno) {
                             <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
                           }
+                          @if (revision !== 'PENDIENTE') {
+                            <p class="detail-review-decision">
+                              {{ review(reserva) }} el {{ dayTime(reserva.revisadaEn) }}@if (reserva.revisionNota) {: {{ reserva.revisionNota }}}
+                            </p>
+                          }
+                          @if (!reserva.canceladaEn) {
+                            <div class="row-actions">
+                              @if (revision === 'PENDIENTE') {
+                                <button type="button" class="btn btn-small btn-primary" (click)="openReview(reserva, true)">Aceptar</button>
+                                <button type="button" class="btn btn-small" (click)="openReview(reserva, false)">No aceptar</button>
+                              } @else {
+                                <button type="button" class="btn btn-small" (click)="openReview(reserva, revision === 'ACEPTADA')">
+                                  Cambiar la decisión
+                                </button>
+                              }
+                            </div>
+                          }
                         </section>
                       }
                     </div>
 
                     <div class="row-actions detail-actions">
-                      <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. -->
+                      <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. Si fue un error y no se movió
+                           dinero, se puede reactivar. -->
+                      @if (reactivable(reserva)) {
+                        <button
+                          type="button"
+                          class="btn btn-small"
+                          [disabled]="busy() === reserva.idReserva"
+                          (click)="reactivate(reserva)"
+                        >
+                          Reactivar
+                        </button>
+                      } @else if (reserva.canceladaEn && reserva.estadoEvento === 'ACTIVO') {
+                        <span class="detail-saved">
+                          {{ reserva.estadoPago === 'PENDIENTE' ? 'No se llegó a pagar' : 'Se devolvió su importe' }}: para
+                          recuperarla, crea una reserva nueva.
+                        </span>
+                      }
                       @if (!reserva.canceladaEn) {
+                        @if (reserva.estadoPago === 'EN_TAQUILLA') {
+                          <button
+                            type="button"
+                            class="btn btn-small btn-primary"
+                            [disabled]="busy() === reserva.idReserva"
+                            (click)="collect(reserva)"
+                          >
+                            Marcar cobrada · {{ money(reserva.precioVenta) }}
+                          </button>
+                        }
                         <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
                         @if (reserva.estadoEvento === 'ACTIVO') {
                           <button
@@ -651,7 +708,7 @@
       </div>
 
       <div class="field">
-        <span class="field-label">Importe</span>
+        <span class="field-label">Importe <span class="field-note">se paga en taquilla</span></span>
         <p class="field-help">
           @if (selectedSession(); as session) {
             {{ money(session.precio * (form.cantidad || 0)) }} ({{ money(session.precio) }} por plaza)
@@ -686,7 +743,7 @@
   @if (cancelTarget(); as reserva) {
     <form novalidate (ngSubmit)="confirmCancel()">
       <p class="dialog-copy">
-        Se liberan {{ plural(reserva.cantidad, 'plaza', 'plazas') }} de «{{ reserva.nombreEvento }}». La reserva no se
+        {{ reserva.cantidad === 1 ? 'Se libera' : 'Se liberan' }} {{ plural(reserva.cantidad, 'plaza', 'plazas') }} de «{{ reserva.nombreEvento }}». La reserva no se
         borra: pasa a «Canceladas» con el motivo, y {{ reserva.nombreCliente }} la verá en su historial.
       </p>
       <div class="field" [class.is-invalid]="cancelError() && !cancelReason.trim()">
@@ -695,6 +752,15 @@
         </label>
         <textarea id="cancel-reason" name="motivo" rows="3" maxlength="200" [(ngModel)]="cancelReason"></textarea>
       </div>
+      @if (refundable(reserva); as importe) {
+        <label class="check">
+          <input type="checkbox" name="devolver" [(ngModel)]="cancelRefund" />
+          <span>
+            Devolver {{ money(importe) }}
+            {{ reserva.estadoPago === 'PAGADA' ? 'a su tarjeta' : 'en taquilla' }}
+          </span>
+        </label>
+      }
       @if (cancelError(); as message) {
         <p class="notice is-error form-error" role="alert">{{ message }}</p>
       }
@@ -703,6 +769,45 @@
         <button type="submit" class="btn btn-danger" [disabled]="busy() !== null" [attr.aria-busy]="busy() !== null">
           {{ busy() !== null ? 'Cancelando…' : 'Cancelar reserva' }}
         </button>
+      </div>
+    </form>
+  }
+</app-panel-dialog>
+
+<app-panel-dialog #reviewDialog heading="Revisar adaptaciones y material">
+  @if (reviewTarget(); as reserva) {
+    <form novalidate (ngSubmit)="saveReview()">
+      <p class="dialog-copy">
+        {{ number(reserva) }} · {{ reserva.nombreCliente }} · {{ reserva.nombreEvento }}. La nota la verá también el
+        cliente en Mi panel.
+      </p>
+      <div class="segmented review-choice" role="group" aria-label="Decisión">
+        <button type="button" [attr.aria-pressed]="reviewAccept" (click)="reviewAccept = true">
+          Aceptar
+        </button>
+        <button type="button" [attr.aria-pressed]="!reviewAccept" (click)="reviewAccept = false">
+          No aceptar
+        </button>
+      </div>
+      <div class="field" [class.is-invalid]="reviewError() && !reviewAccept && !reviewNote.trim()">
+        <label class="field-label" for="review-note">
+          Nota {{ reviewAccept ? '(opcional)' : '' }} <span class="field-note">{{ reviewNote.length }}/300</span>
+        </label>
+        <textarea
+          id="review-note"
+          name="nota"
+          rows="3"
+          maxlength="300"
+          [placeholder]="reviewAccept ? 'Le reservamos una butaca en la fila de penumbra.' : 'Por qué no se aceptan y qué alternativas tiene.'"
+          [(ngModel)]="reviewNote"
+        ></textarea>
+      </div>
+      @if (reviewError(); as message) {
+        <p class="notice is-error form-error" role="alert">{{ message }}</p>
+      }
+      <div class="form-actions">
+        <button type="button" class="btn" (click)="reviewDialog.close()">Volver</button>
+        <button type="submit" class="btn btn-primary" [disabled]="busy() !== null">Guardar la decisión</button>
       </div>
     </form>
   }

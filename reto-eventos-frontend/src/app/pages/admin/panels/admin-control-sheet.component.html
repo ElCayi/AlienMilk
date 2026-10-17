@@ -15,6 +15,10 @@
       }
     </div>
     <div class="section-head-actions">
+      <button type="button" class="btn" [disabled]="loading() || !rows().length" (click)="exportCsv()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>
+        Exportar CSV
+      </button>
       <button type="button" class="btn btn-primary" [disabled]="loading() || !session()" (click)="print()">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z" /></svg>
         Imprimir
@@ -64,32 +68,66 @@
           }
         </div>
         <div>
-          <p class="sheet-label">Requieren revisión</p>
-          @if (toReview().length) {
+          <p class="sheet-label">Adaptaciones y material</p>
+          @if (adaptations().length) {
             <ul class="sheet-list">
-              @for (reserva of toReview(); track reserva.idReserva) {
+              @for (reserva of adaptations(); track reserva.idReserva) {
                 <li>
-                  <strong>{{ number(reserva) }} · {{ reserva.nombreCliente }}</strong>
+                  <strong>
+                    {{ number(reserva) }} · {{ reserva.nombreCliente }}
+                    <span class="sheet-review" [class.sheet-alert]="reserva.revision !== 'ACEPTADA'">· {{ review(reserva) }}</span>
+                  </strong>
                   @if (reserva.adaptaciones) {
                     <span>Adaptaciones: {{ reserva.adaptaciones }}</span>
                   }
                   @if (reserva.materialExterno) {
                     <span>Material externo: {{ reserva.materialDescripcion }}</span>
                   }
+                  @if (reserva.revisionNota) {
+                    <span>Decisión: {{ reserva.revisionNota }}</span>
+                  }
                 </li>
               }
             </ul>
           } @else {
-            <p class="sheet-none">Nada pendiente.</p>
+            <p class="sheet-none">Ninguna.</p>
           }
         </div>
       </div>
     </section>
 
-    <!-- La hoja: un participante por fila, en orden de reserva, con la casilla para marcar a mano. -->
+    <!-- La hoja: un participante por fila, en orden de reserva. En pantalla, las casillas se marcan al
+         entrar; impresa, sale con lo marcado hasta ese momento. -->
     <section aria-labelledby="sheet-title">
-      <h3 id="sheet-title" class="sheet-title">Control de ingreso</h3>
+      <div class="sheet-head">
+        <h3 id="sheet-title" class="sheet-title">Control de ingreso</h3>
+        <p class="sheet-inside" aria-live="polite">
+          Han entrado <strong>{{ inside() }}</strong> de {{ seats() }}
+        </p>
+      </div>
       @if (rows().length) {
+        <div class="toolbar sheet-toolbar">
+          <label class="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+            <span class="visually-hidden">Buscar participantes</span>
+            <input
+              type="search"
+              placeholder="Nombre, localizador, cliente o teléfono"
+              [ngModel]="query()"
+              (ngModelChange)="query.set($event)"
+            />
+          </label>
+          <div class="segmented" role="group" aria-label="Quién se ve">
+            @for (option of doorFilters(); track option.value) {
+              <button type="button" [attr.aria-pressed]="doorFilter() === option.value" (click)="doorFilter.set(option.value)">
+                {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
+              </button>
+            }
+          </div>
+        </div>
+        @if (doorError(); as message) {
+          <p class="notice is-error" role="alert">{{ message }}</p>
+        }
         <div class="table-wrap">
           <table class="data-table sheet-table">
             <caption>Participantes de la sesión, en orden de reserva</caption>
@@ -104,15 +142,40 @@
               </tr>
             </thead>
             <tbody>
-              @for (row of rows(); track $index) {
-                <tr [class.is-unregistered]="!row.nombre">
+              @for (row of visibleRows(); track key(row)) {
+                <tr [class.is-unregistered]="!row.nombre" [class.is-inside]="row.dentro === row.personas">
                   <td class="sheet-check-col">
-                    <!-- Una casilla por persona: sin registrar, tantas como plazas. -->
-                    <span class="sheet-boxes" aria-hidden="true">
-                      @for (seat of row.nombre ? [1] : seatsOf(row.reserva); track $index) {
-                        <span class="sheet-box"></span>
-                      }
-                    </span>
+                    @if (row.orden !== null) {
+                      <button
+                        type="button"
+                        class="sheet-check"
+                        [attr.aria-pressed]="!!row.entrada"
+                        [attr.aria-label]="(row.entrada ? 'Deshacer la entrada de ' : 'Marcar la entrada de ') + row.nombre"
+                        [disabled]="saving() === key(row)"
+                        (click)="toggleEntry(row)"
+                      >
+                        <span class="sheet-box" aria-hidden="true"></span>
+                        @if (row.entrada) {
+                          <span class="sheet-time">{{ time(row.entrada) }}</span>
+                        }
+                      </button>
+                    } @else {
+                      <!-- Una casilla por plaza: pulsar la tercera dice que han entrado tres. -->
+                      <span class="sheet-boxes">
+                        @for (seat of seatsOf(row.reserva); track seat) {
+                          <button
+                            type="button"
+                            class="sheet-check"
+                            [attr.aria-pressed]="seat < row.dentro"
+                            [attr.aria-label]="'Plaza ' + (seat + 1) + ' de ' + row.reserva.nombreCliente"
+                            [disabled]="saving() === key(row)"
+                            (click)="setSeatsInside(row, seat)"
+                          >
+                            <span class="sheet-box" aria-hidden="true"></span>
+                          </button>
+                        }
+                      </span>
+                    }
                   </td>
                   @if (row.nombre) {
                     <td class="cell-title"><span class="cell-main">{{ row.nombre }}</span></td>
@@ -132,7 +195,27 @@
                     @if (row.reserva.telefono) {
                       <span class="cell-sub">{{ row.reserva.telefono }}</span>
                     }
+                    <!-- Lo que se cobra en la puerta: solo en la primera fila de cada reserva. -->
+                    @if (row.first && row.reserva.estadoPago === 'EN_TAQUILLA') {
+                      <button
+                        type="button"
+                        class="btn btn-small btn-primary sheet-collect"
+                        [disabled]="saving() === key(row)"
+                        (click)="collect(row)"
+                      >
+                        Cobrar {{ money(row.reserva.precioVenta) }}
+                      </button>
+                      <span class="sheet-print-only sheet-alert">Cobrar en taquilla: {{ money(row.reserva.precioVenta) }}</span>
+                    } @else if (row.first && row.reserva.estadoPago === 'PENDIENTE') {
+                      <span class="cell-sub sheet-alert">Pendiente de pago con tarjeta</span>
+                    } @else if (row.first && row.reserva.estadoPago === 'COBRADA_TAQUILLA') {
+                      <span class="cell-sub">Cobrada en taquilla</span>
+                    }
                   </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="cell-title"><p class="empty">Nadie coincide con la búsqueda.</p></td>
                 </tr>
               }
             </tbody>

@@ -35,7 +35,10 @@ const NAV_GROUPS: readonly NavGroup[] = [
   {
     label: 'Sesiones',
     path: '/sesiones',
-    sections: [{ label: 'Programación de experiencias' }],
+    sections: [
+      { label: 'Programación de experiencias' },
+      { label: 'Devoluciones', fragment: 'devoluciones' },
+    ],
   },
   {
     label: 'Nosotros',

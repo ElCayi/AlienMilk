@@ -24,6 +24,7 @@ import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.service.EventoService;
 import retotransversal.modelo.service.ExpedienteService;
 import retotransversal.modelo.service.ImagenSesionService;
+import retotransversal.modelo.service.PagosReservasService;
 
 /**
  * Sesiones desde el panel de administración. El estado no se edita con el formulario: una sesión
@@ -38,6 +39,8 @@ public class AdminEventoRestController {
 	private final TipoEventoRepository tipoEventoRepository;
 	private final ExpedienteService expedienteService;
 	private final ImagenSesionService imagenSesionService;
+	/** Cancelar o reactivar una sesión mueve también el dinero de sus reservas. */
+	private final PagosReservasService pagosReservas;
 
 	@GetMapping
 	public ResponseEntity<List<EventoAdminDto>> findAll() {
@@ -58,7 +61,7 @@ public class AdminEventoRestController {
 
 	@PatchMapping("/{idEvento}/cancelar")
 	public ResponseEntity<EventoAdminDto> cancelar(@PathVariable Integer idEvento) {
-		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.cancelarEvento(idEvento)));
+		return ResponseEntity.ok(eventoService.aAdminDto(pagosReservas.cancelarSesion(idEvento)));
 	}
 
 	@PatchMapping("/{idEvento}/archivar")
@@ -73,7 +76,7 @@ public class AdminEventoRestController {
 
 	@PatchMapping("/{idEvento}/reactivar")
 	public ResponseEntity<EventoAdminDto> reactivar(@PathVariable Integer idEvento) {
-		return ResponseEntity.ok(eventoService.aAdminDto(eventoService.reactivarEvento(idEvento)));
+		return ResponseEntity.ok(eventoService.aAdminDto(pagosReservas.reactivarSesion(idEvento)));
 	}
 
 	/** Sube la foto propia de la sesión (JPG, PNG o WebP, hasta 5 MB) y sustituye la anterior. */

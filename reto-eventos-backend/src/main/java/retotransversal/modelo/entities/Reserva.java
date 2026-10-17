@@ -83,6 +83,14 @@ public class Reserva {
 	@Column(name = "material_descripcion", length = 500)
 	private String materialDescripcion;
 
+	/**
+	 * En las reservas sin participantes registrados, cuántas de sus plazas han pasado ya el control de
+	 * ingreso (en las registradas, cada participante guarda su propia entrada).
+	 */
+	@Builder.Default
+	@Column(name = "entradas_sin_registrar", nullable = false)
+	private int entradasSinRegistrar = 0;
+
 	/** Cuándo se confirmaron la edad mínima y las condiciones de acceso. */
 	@Column(name = "conformidad_en")
 	private LocalDateTime conformidadEn;
@@ -101,12 +109,80 @@ public class Reserva {
 	@Column(name = "motivo_cancelacion", length = 200)
 	private String motivoCancelacion;
 
+	/** El cobro: ver EstadoPago. Las reservas anteriores al pago con tarjeta quedan como pagadas. */
+	@Builder.Default
+	@Enumerated(EnumType.STRING)
+	@Column(name = "estado_pago", nullable = false, length = 20)
+	private EstadoPago estadoPago = EstadoPago.PAGADA;
+
+	/** La sesión de pago de Stripe, su página y hasta cuándo se puede pagar (solo mientras está pendiente). */
+	@Column(name = "pago_sesion", length = 100)
+	private String pagoSesion;
+
+	@Column(name = "pago_url", length = 500)
+	private String pagoUrl;
+
+	@Column(name = "pago_caduca_en")
+	private LocalDateTime pagoCaducaEn;
+
+	/** El cobro hecho en Stripe, para poder devolverlo; null si se cobró en taquilla o sin pasarela. */
+	@Column(name = "pago_id", length = 100)
+	private String pagoId;
+
+	@Column(name = "pagada_en")
+	private LocalDateTime pagadaEn;
+
+	/** Lo devuelto hasta ahora: la diferencia cada vez que bajó el importe y, al cancelar, lo que quedaba. */
+	@Builder.Default
+	@Column(name = "importe_devuelto", nullable = false, precision = 9, scale = 2)
+	private BigDecimal importeDevuelto = BigDecimal.ZERO;
+
+	/**
+	 * La revisión de las adaptaciones y el material: aceptadas o no (null, sin revisar), con la nota que
+	 * verá el cliente y cuándo se decidió.
+	 */
+	@Column(name = "revision_aceptada")
+	private Boolean revisionAceptada;
+
+	@Column(name = "revision_nota", length = 300)
+	private String revisionNota;
+
+	@Column(name = "revisada_en")
+	private LocalDateTime revisadaEn;
+
 	public boolean cancelada() {
 		return canceladaEn != null;
 	}
 
+	/** Deshace la cancelación (ver ReservaService#reactivar). */
+	public void reactivar() {
+		canceladaEn = null;
+		canceladaPor = null;
+		motivoCancelacion = null;
+	}
+
+	/** Cancelar no borra: deja la reserva con quién, cuándo y por qué, y deja de ocupar plazas. */
+	public void cancelar(CanceladaPor quien, String motivo, LocalDateTime cuando) {
+		canceladaEn = cuando;
+		canceladaPor = quien;
+		motivoCancelacion = motivo;
+		pagoUrl = null;
+	}
+
 	/** Con adaptaciones o material externo, alguien de AlienMilk tiene que evaluarla antes de la sesión. */
+	public boolean pideAdaptaciones() {
+		return (adaptaciones != null && !adaptaciones.isBlank()) || materialExterno;
+	}
+
+	/** Pide adaptaciones o material y nadie las ha evaluado todavía. */
 	public boolean requiereRevision() {
-		return !cancelada() && ((adaptaciones != null && !adaptaciones.isBlank()) || materialExterno);
+		return !cancelada() && pideAdaptaciones() && revisionAceptada == null;
+	}
+
+	/** Lo que se aceptó era otra cosa: si cambian las adaptaciones o el material, se vuelve a revisar. */
+	public void reabrirRevision() {
+		revisionAceptada = null;
+		revisionNota = null;
+		revisadaEn = null;
 	}
 }

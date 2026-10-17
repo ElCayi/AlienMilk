@@ -43,6 +43,8 @@ export interface Asistente {
   credencial: Credencial | '';
   procedencia: string | null;
   incompatibilidades: string | null;
+  /** Cuándo pasó el control de ingreso; null si aún no ha entrado. Solo se lee: se marca en la hoja de control. */
+  entradaEn?: string | null;
 }
 
 /** Lo que se envía desde el Registro de asistencia: un participante por plaza, contacto y conformidad. */
@@ -70,6 +72,9 @@ export interface ReservaEditar {
   materialDescripcion?: string;
 }
 
+/** Pendiente: en la web, esperando a Stripe. Pagada: con tarjeta. En taquilla: del panel, se cobra al llegar. */
+export type EstadoPago = 'PENDIENTE' | 'PAGADA' | 'EN_TAQUILLA' | 'COBRADA_TAQUILLA';
+
 export interface Reserva {
   idReserva: number;
   idEvento: number;
@@ -93,13 +98,28 @@ export interface Reserva {
   conformidadEn: string | null;
   /** Con adaptaciones o material externo: AlienMilk tiene que evaluarla. */
   requiereRevision: boolean;
+  /** La revisión de adaptaciones y material; null si no pide ninguna. */
+  revision: 'PENDIENTE' | 'ACEPTADA' | 'NO_ACEPTADA' | null;
+  /** La nota de la revisión, que ve también el cliente. */
+  revisionNota: string | null;
+  revisadaEn: string | null;
   estadoEvento: string;
   /** Si su sesión está archivada: sale de la vista diaria y se queda en el archivo con ella. */
   sesionArchivada: boolean;
   /** Cancelar no borra: la reserva se queda con cuándo, quién y por qué. Sin fecha, está viva. */
   canceladaEn: string | null;
-  canceladaPor: 'CLIENTE' | 'ALIENMILK' | null;
+  canceladaPor: 'CLIENTE' | 'ALIENMILK' | 'SISTEMA' | null;
   motivoCancelacion: string | null;
+  /** El cobro, aparte del estado de la reserva: ver EstadoPago en el backend. */
+  estadoPago: EstadoPago;
+  /** La página de Stripe, solo mientras está pendiente de pago. */
+  pagoUrl: string | null;
+  pagoCaducaEn: string | null;
+  pagadaEn: string | null;
+  /** Lo devuelto: la diferencia si bajó el importe y, al cancelar, lo que quedaba. */
+  importeDevuelto: number;
+  /** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
+  entradasSinRegistrar: number;
 }
 
 export interface Perfil {

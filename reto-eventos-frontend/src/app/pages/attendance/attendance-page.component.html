@@ -265,8 +265,9 @@
             <label class="check" [class.is-invalid]="error('aceptaCondiciones')">
               <input type="checkbox" name="aceptaCondiciones" [(ngModel)]="aceptaCondiciones" />
               <span>
-                He leído las <a routerLink="/documentacion/asistentes" target="_blank">condiciones de acceso</a> y
-                acepto el protocolo de sala.
+                He leído las <a routerLink="/documentacion/asistentes" target="_blank">condiciones de acceso</a> y la
+                <a routerLink="/sesiones" fragment="devoluciones" target="_blank">política de devoluciones</a>, y acepto el
+                protocolo de sala.
               </span>
             </label>
             @if (error('aceptaCondiciones'); as message) {
@@ -284,7 +285,7 @@
         }
         <div class="attendance-submit">
           <button type="submit" class="submit-button" [disabled]="sending()" [attr.aria-busy]="sending()">
-            {{ sending() ? 'Registrando…' : 'Registrar asistencia · ' + price(total()) }}
+            {{ redirecting() ? 'Abriendo el pago…' : sending() ? 'Registrando…' : 'Registrar asistencia · ' + price(total()) }}
           </button>
         </div>
       </form>

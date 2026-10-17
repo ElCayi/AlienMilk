@@ -26,13 +26,15 @@ import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.entities.*;
 import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.service.EventoService;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.AdminReservaRestController;
 
 class AdminReservasTest {
     private final ReservaRepository repository = mock(ReservaRepository.class);
     private final EventoService eventos = mock(EventoService.class);
-    private final ReservaServiceImpl service = new ReservaServiceImpl(repository, eventos, mock(UsuarioService.class));
+    private final ReservaServiceImpl service = new ReservaServiceImpl(repository, eventos, mock(UsuarioService.class),
+            new PagosReservasService(repository, eventos, null, java.time.Clock.systemUTC()));
     private final Reserva reserva = Reserva.builder().idReserva(7).cantidad(1)
             .precioVenta(new BigDecimal("25.00"))
             .evento(Evento.builder().idEvento(3).estado(EstadoEvento.ACTIVO).build())
@@ -152,9 +154,67 @@ class AdminReservasTest {
         assertThat(reserva.getCanceladaEn()).isNotNull();
 
         // Cancelada, es historial: ni se vuelve a cancelar ni se edita.
-        assertThatThrownBy(() -> service.cancelarReservaAdmin(7, "Otra vez"))
+        assertThatThrownBy(() -> service.cancelarReservaAdmin(7, "Otra vez", true))
                 .isInstanceOf(ConflictoNegocioException.class);
         assertThatThrownBy(() -> service.editarReservaAdmin(7, datosDeAna("600 123 456")))
                 .isInstanceOf(ConflictoNegocioException.class);
+    }
+
+    @Test
+    void theDoorMarksWhoComesInAndCanUndoAMistake() {
+        Asistente persona = Asistente.builder().orden(1).nombre("Ana").credencial(Credencial.DNI_NIE).reserva(reserva).build();
+        reserva.setAsistentes(new ArrayList<>(List.of(persona)));
+
+        service.marcarEntrada(7, 1, true);
+        assertThat(persona.getEntradaEn()).isNotNull();
+        service.marcarEntrada(7, 1, false);
+        assertThat(persona.getEntradaEn()).isNull();
+
+        assertThatThrownBy(() -> service.contarEntradas(7, 1)).isInstanceOf(ConflictoNegocioException.class);
+    }
+
+    @Test
+    void anUnregisteredBookingCountsItsSeatsAtTheDoor() {
+        service.contarEntradas(7, 1);
+        assertThat(reserva.getEntradasSinRegistrar()).isEqualTo(1);
+        assertThatThrownBy(() -> service.contarEntradas(7, 2)).hasMessage("La reserva tiene 1 plaza");
+    }
+
+    @Test
+    void aReviewIsDecidedWithANoteAndReopensWhenTheRequestChanges() {
+        assertThat(reserva.requiereRevision()).isTrue();
+        assertThatThrownBy(() -> service.revisar(7, false, " "))
+                .isInstanceOf(retotransversal.exception.DatosNoValidosException.class);
+
+        service.revisar(7, true, "Le reservamos una butaca accesible");
+        assertThat(reserva.requiereRevision()).isFalse();
+        assertThat(reserva.getRevisionNota()).isEqualTo("Le reservamos una butaca accesible");
+
+        // Otra adaptación: lo aceptado era otra cosa.
+        service.editarReservaAdmin(7, new ReservaEditarDto(null, null, null, null, null, "Acceso adaptado y penumbra",
+                false, null));
+        assertThat(reserva.requiereRevision()).isTrue();
+        assertThat(reserva.getRevisionAceptada()).isNull();
+    }
+
+    @Test
+    void aCancelledBookingComesBackOnlyIfNoMoneyMovedAndThereIsRoom() {
+        Evento sesion = reserva.getEvento();
+        sesion.setAforoMaximo(2);
+        when(eventos.bloquear(3)).thenReturn(sesion);
+        reserva.cancelar(CanceladaPor.ALIENMILK, "Error", LocalDateTime.now());
+
+        service.reactivar(7);
+        assertThat(reserva.cancelada()).isFalse();
+
+        reserva.cancelar(CanceladaPor.CLIENTE, null, LocalDateTime.now());
+        reserva.setImporteDevuelto(new BigDecimal("25.00"));
+        assertThatThrownBy(() -> service.reactivar(7)).hasMessage("Ya se devolvió su importe: crea una reserva nueva");
+
+        reserva.setImporteDevuelto(BigDecimal.ZERO);
+        Reserva otra = Reserva.builder().idReserva(8).cantidad(2).evento(sesion)
+                .usuario(Usuario.builder().username("luis").build()).build();
+        when(repository.findByEventoIdEventoAndCanceladaEnIsNull(3)).thenReturn(List.of(otra));
+        assertThatThrownBy(() -> service.reactivar(7)).hasMessage("Ya no quedan plazas suficientes en su sesión");
     }
 }

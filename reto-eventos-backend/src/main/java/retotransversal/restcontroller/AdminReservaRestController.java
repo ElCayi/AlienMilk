@@ -53,8 +53,47 @@ public class AdminReservaRestController {
 
 	/** Cancelar no borra: la reserva vuelve con su cancelación (ver ReservaService#cancelarReservaAdmin). */
 	@PostMapping("/{idReserva}/cancelar")
-	public ResponseEntity<ReservaDto> cancelar(@PathVariable Integer idReserva, @RequestBody(required = false) Map<String, String> datos) {
-		String motivo = datos == null ? null : datos.get("motivo");
-		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.cancelarReservaAdmin(idReserva, motivo)));
+	public ResponseEntity<ReservaDto> cancelar(@PathVariable Integer idReserva, @RequestBody(required = false) Map<String, Object> datos) {
+		Object motivo = datos == null ? null : datos.get("motivo");
+		// Lo cobrado se devuelve salvo que se pida lo contrario.
+		boolean devolver = datos == null || !Boolean.FALSE.equals(datos.get("devolver"));
+		return ResponseEntity.ok(ReservaDto.fromEntity(
+				reservaService.cancelarReservaAdmin(idReserva, motivo == null ? null : motivo.toString(), devolver)));
+	}
+
+	/** Control de ingreso: un participante registrado entra ({"presente": true}) o se deshace. */
+	@PutMapping("/{idReserva}/asistentes/{orden}/entrada")
+	public ResponseEntity<ReservaDto> entrada(@PathVariable Integer idReserva, @PathVariable Integer orden,
+			@RequestBody Map<String, Object> datos) {
+		boolean presente = Boolean.TRUE.equals(datos.get("presente"));
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.marcarEntrada(idReserva, orden, presente)));
+	}
+
+	/** Control de ingreso de una reserva sin registrar: cuántas de sus plazas han entrado ({"plazas": 2}). */
+	@PutMapping("/{idReserva}/entradas")
+	public ResponseEntity<ReservaDto> entradas(@PathVariable Integer idReserva, @RequestBody Map<String, Object> datos) {
+		Object plazas = datos.get("plazas");
+		int valor = plazas instanceof Number numero ? numero.intValue() : -1;
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.contarEntradas(idReserva, valor)));
+	}
+
+	/** La revisión de las adaptaciones y el material ({"aceptada": true, "nota": "…"}). */
+	@PostMapping("/{idReserva}/revision")
+	public ResponseEntity<ReservaDto> revision(@PathVariable Integer idReserva, @RequestBody Map<String, Object> datos) {
+		Object nota = datos.get("nota");
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.revisar(idReserva,
+				Boolean.TRUE.equals(datos.get("aceptada")), nota == null ? null : nota.toString())));
+	}
+
+	/** Deshace una cancelación, si quedan plazas y no se movió dinero (ver ReservaService#reactivar). */
+	@PostMapping("/{idReserva}/reactivar")
+	public ResponseEntity<ReservaDto> reactivar(@PathVariable Integer idReserva) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.reactivar(idReserva)));
+	}
+
+	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */
+	@PostMapping("/{idReserva}/cobrada")
+	public ResponseEntity<ReservaDto> cobrada(@PathVariable Integer idReserva) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.marcarCobrada(idReserva)));
 	}
 }

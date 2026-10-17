@@ -30,6 +30,7 @@ import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Usuario;
 import retotransversal.modelo.repository.EventoRepository;
 import retotransversal.modelo.repository.ReservaRepository;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.ReservaRestController;
 
@@ -42,12 +43,14 @@ class RegistroAsistenciaTest {
 
 	private final EventoRepository eventos = mock(EventoRepository.class);
 	private final ReservaRepository reservas = mock(ReservaRepository.class);
+	private final EventoServiceImpl servicioSesiones = new EventoServiceImpl(eventos, reservas, HOY);
 	private final UsuarioService usuarios = mock(UsuarioService.class);
 	private final Usuario ana = Usuario.builder().username("ana").nombre("Ana").build();
 
 	private final MockMvc mvc = MockMvcBuilders
 			.standaloneSetup(new ReservaRestController(
-					new ReservaServiceImpl(reservas, new EventoServiceImpl(eventos, reservas, HOY), usuarios)))
+					new ReservaServiceImpl(reservas, servicioSesiones, usuarios,
+							new PagosReservasService(reservas, servicioSesiones, null, HOY))))
 			.setControllerAdvice(new GlobalExceptionHandler()).build();
 
 	RegistroAsistenciaTest() {

@@ -1,16 +1,31 @@
 package retotransversal.modelo.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
+import jakarta.persistence.LockModeType;
 import retotransversal.modelo.entities.EstadoEvento;
+import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Reserva;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
 	List<Reserva> findByUsuarioUsername(String username);
+
+	/** La reserva leída bloqueada: el aviso de pago, la vuelta de quien paga y una cancelación pueden llegar a la vez. */
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select r from Reserva r where r.idReserva = :idReserva")
+	Optional<Reserva> findByIdBloqueando(Integer idReserva);
+
+	Optional<Reserva> findByPagoSesion(String pagoSesion);
+
+	/** Las pendientes de pago cuyo plazo ya pasó: el repaso pregunta a la pasarela en qué quedaron. */
+	List<Reserva> findByEstadoPagoAndPagoCaducaEnBeforeAndCanceladaEnIsNull(EstadoPago estadoPago, LocalDateTime antes);
 
 	/** Todas las de una sesión, también las canceladas: su historial. */
 	List<Reserva> findByEventoIdEvento(Integer idEvento);

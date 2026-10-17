@@ -185,8 +185,33 @@ export class AdminService {
     return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/datos`, datos);
   }
 
-  /** Cancelar no borra: vuelve la reserva, con su cancelación. El motivo es obligatorio. */
-  cancelarReservaAdmin(idReserva: number, motivo: string): Observable<Reserva> {
-    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo });
+  /** Cancelar no borra: vuelve la reserva, con su cancelación. El motivo es obligatorio; lo cobrado se devuelve si se pide. */
+  cancelarReservaAdmin(idReserva: number, motivo: string, devolver: boolean): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo, devolver });
+  }
+
+  /** Control de ingreso: el participante `orden` (1, 2…) de una reserva entra, o se deshace el error. */
+  marcarEntrada(idReserva: number, orden: number, presente: boolean): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/asistentes/${orden}/entrada`, { presente });
+  }
+
+  /** Control de ingreso de una reserva sin registrar: cuántas de sus plazas han entrado. */
+  contarEntradas(idReserva: number, plazas: number): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/entradas`, { plazas });
+  }
+
+  /** La revisión de adaptaciones y material: aceptadas o no, con una nota para el cliente. */
+  revisarReserva(idReserva: number, aceptada: boolean, nota: string): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`, { aceptada, nota });
+  }
+
+  /** Deshace una cancelación, si quedan plazas y no se movió dinero al cancelarla. */
+  reactivarReserva(idReserva: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/reactivar`, {});
+  }
+
+  /** Una reserva para pagar en taquilla, ya cobrada. */
+  marcarCobrada(idReserva: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cobrada`, {});
   }
 }

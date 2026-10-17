@@ -56,7 +56,7 @@ class ReservasDemoServiceTest {
 		when(eventos.findByEstado(EstadoEvento.ACTIVO)).thenReturn(List.of(casiLlena, amplia));
 		when(eventoService.admiteReservas(any())).thenReturn(true);
 		when(reservas.findAll()).thenReturn(List.of());
-		when(reservaService.reservarConRegistro(anyInt(), anyString(), any())).thenAnswer(llamada -> Reserva
+		when(reservaService.reservarDemo(anyInt(), anyString(), any())).thenAnswer(llamada -> Reserva
 				.builder()
 				.evento(llamada.<Integer>getArgument(0) == 1 ? casiLlena : amplia)
 				.usuario(Usuario.builder().username(llamada.getArgument(1)).build())

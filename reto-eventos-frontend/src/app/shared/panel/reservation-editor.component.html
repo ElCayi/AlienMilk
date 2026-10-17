@@ -6,7 +6,7 @@
         <div class="form-grid">
           <div class="field is-wide">
             <label class="field-label" for="editor-session">Sesión</label>
-            <select id="editor-session" name="idEvento" [(ngModel)]="form.idEvento">
+            <select id="editor-session" name="idEvento" [(ngModel)]="form.idEvento" [disabled]="pending()">
               @for (session of sessionOptions(); track session.idEvento) {
                 <option [ngValue]="session.idEvento" [disabled]="session.idEvento !== target()?.idEvento && !free(session)">
                   {{ session.nombre }} · {{ day(session.fechaInicio) }} ·
@@ -24,6 +24,7 @@
               min="1"
               [max]="maxSeats()"
               [ngModel]="form.cantidad"
+              [disabled]="pending()"
               (ngModelChange)="setSeats($event)"
             />
           </div>
@@ -35,6 +36,19 @@
               }
             </p>
           </div>
+          @if (pending()) {
+            <p class="field-help is-wide">
+              Está pendiente de pago con tarjeta: la sesión y las plazas se cambian cuando se pague o caduque el pago.
+            </p>
+          } @else if (paid()) {
+            <p class="field-help is-wide">
+              @if (refund(); as importe) {
+                Se devolverán {{ money(importe) }} al guardar.
+              } @else {
+                Ya está pagada: se pueden quitar plazas (se devuelve la diferencia), pero las de más van en otra reserva.
+              }
+            </p>
+          }
         </div>
       }
 

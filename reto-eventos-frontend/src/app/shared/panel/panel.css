@@ -699,6 +699,21 @@ th[aria-sort] .sort-button svg {
   margin-top: 0.8rem;
 }
 
+/* El registro de devoluciones, dentro del dato «Pago». */
+.refund-list {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.refund-list li {
+  display: grid;
+  justify-items: start;
+  gap: 0.2rem;
+}
+
 /* El texto de un diálogo pequeño, antes de su campo. */
 .dialog-copy {
   margin: 0 0 1.25rem;

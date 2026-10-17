@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.entities.CanceladaPor;
+import retotransversal.modelo.entities.Devolucion;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
@@ -198,5 +199,36 @@ class PagosReservasTest {
 		assertThatThrownBy(() -> servicio.marcarEntrada(7, 1, true))
 				.isInstanceOf(ConflictoNegocioException.class)
 				.hasMessage("Está pendiente de pago con tarjeta: no puede entrar hasta que se pague");
+	}
+
+	@Test
+	void everyRefundIsRecordedAndADoorRefundStaysPendingUntilHandedOver() {
+		Reserva enTaquilla = reserva(EstadoPago.COBRADA_TAQUILLA, 1);
+		servicio.cancelarReservaAdmin(7, "No puede venir", true);
+
+		assertThat(enTaquilla.getDevoluciones()).singleElement().satisfies(devolucion -> {
+			assertThat(devolucion.getMedio()).isEqualTo(Devolucion.Medio.TAQUILLA);
+			assertThat(devolucion.getEstado()).isEqualTo(Devolucion.Estado.PENDIENTE);
+			assertThat(devolucion.getImporte()).isEqualByComparingTo("35.00");
+		});
+		enTaquilla.getDevoluciones().getFirst().setIdDevolucion(1);
+		servicio.entregarDevolucion(7, 1);
+		assertThat(enTaquilla.getDevoluciones().getFirst().getEstado()).isEqualTo(Devolucion.Estado.HECHA);
+		assertThat(enTaquilla.getDevoluciones().getFirst().getHechaEn()).isNotNull();
+	}
+
+	@Test
+	void aCardRefundKeepsStripesReference() {
+		Reserva pagada = reserva(EstadoPago.PAGADA, 2);
+		when(pasarela.reembolsar(eq("pi_7"), any(), anyString())).thenReturn("re_123");
+
+		servicio.cancelarReserva(7, "ana");
+
+		assertThat(pagada.getDevoluciones()).singleElement().satisfies(devolucion -> {
+			assertThat(devolucion.getMedio()).isEqualTo(Devolucion.Medio.TARJETA);
+			assertThat(devolucion.getEstado()).isEqualTo(Devolucion.Estado.HECHA);
+			assertThat(devolucion.getReferencia()).isEqualTo("re_123");
+			assertThat(devolucion.getMotivo()).isEqualTo("Cancelación del cliente");
+		});
 	}
 }

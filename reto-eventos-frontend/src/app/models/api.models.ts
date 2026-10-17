@@ -72,6 +72,19 @@ export interface ReservaEditar {
   materialDescripcion?: string;
 }
 
+/** Una devolución: a la tarjeta (hecha al momento) o en taquilla (pendiente hasta que se entrega). */
+export interface Devolucion {
+  idDevolucion: number;
+  importe: number;
+  medio: 'TARJETA' | 'TAQUILLA';
+  estado: 'PENDIENTE' | 'HECHA';
+  motivo: string;
+  /** La devolución en Stripe (re_…), si la hubo. */
+  referencia: string | null;
+  creadaEn: string;
+  hechaEn: string | null;
+}
+
 /** Pendiente: en la web, esperando a Stripe. Pagada: con tarjeta. En taquilla: del panel, se cobra al llegar. */
 export type EstadoPago = 'PENDIENTE' | 'PAGADA' | 'EN_TAQUILLA' | 'COBRADA_TAQUILLA';
 
@@ -118,6 +131,8 @@ export interface Reserva {
   pagadaEn: string | null;
   /** Lo devuelto: la diferencia si bajó el importe y, al cancelar, lo que quedaba. */
   importeDevuelto: number;
+  /** Cada devolución con su medio y su estado. */
+  devoluciones: Devolucion[];
   /** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
   entradasSinRegistrar: number;
 }

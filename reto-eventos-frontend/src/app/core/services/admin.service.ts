@@ -210,6 +210,11 @@ export class AdminService {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/reactivar`, {});
   }
 
+  /** Una devolución en taquilla, ya entregada. */
+  entregarDevolucion(idReserva: number, idDevolucion: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/devoluciones/${idDevolucion}/entregada`, {});
+  }
+
   /** Una reserva para pagar en taquilla, ya cobrada. */
   marcarCobrada(idReserva: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cobrada`, {});

@@ -20,6 +20,7 @@ import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.RecursoNoEncontradoException;
 import retotransversal.modelo.dto.EventoAdminDto;
 import retotransversal.modelo.entities.EstadoEvento;
+import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Reserva;
 import retotransversal.modelo.repository.EventoRepository;
@@ -117,7 +118,16 @@ public class EventoServiceImpl implements EventoService {
 	@Transactional
 	public int borrarConReservas(Integer idEvento) {
 		findById(idEvento);
-		reservaRepository.deleteAll(reservaRepository.findByEventoIdEvento(idEvento));
+		List<Reserva> reservas = reservaRepository.findByEventoIdEvento(idEvento);
+		// El historial de cobros no se borra: con dinero de por medio, la sesión se cancela y se archiva.
+		boolean conDinero = reservas.stream().anyMatch(reserva -> reserva.getEstadoPago().cobrada()
+				|| reserva.getEstadoPago() == EstadoPago.PENDIENTE || !reserva.getDevoluciones().isEmpty()
+				|| reserva.getImporteDevuelto().signum() > 0);
+		if (conDinero) {
+			throw new ConflictoNegocioException(
+					"Tiene reservas pagadas o con pagos en curso: cancélala y archívala, el historial de cobros no se borra");
+		}
+		reservaRepository.deleteAll(reservas);
 		eventoRepository.deleteById(idEvento);
 		return 1;
 	}

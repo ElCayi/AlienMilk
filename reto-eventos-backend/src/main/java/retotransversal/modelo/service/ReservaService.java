@@ -37,6 +37,9 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	/** Deshace una cancelación si quedan plazas y no se movió dinero al cancelarla. */
 	Reserva reactivar(Integer idReserva);
 
+	/** Una devolución en taquilla, ya entregada. */
+	Reserva entregarDevolucion(Integer idReserva, Integer idDevolucion);
+
 	/** Una reserva para pagar en taquilla, ya cobrada. */
 	Reserva marcarCobrada(Integer idReserva);
 

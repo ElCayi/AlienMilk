@@ -764,6 +764,25 @@ export class AdminReservationsPanelComponent implements OnInit {
     });
   }
 
+  /** El dinero de una devolución en taquilla ya se ha entregado. */
+  handOver(reserva: Reserva, idDevolucion: number): void {
+    if (this.busy() !== null) {
+      return;
+    }
+    this.busy.set(reserva.idReserva);
+    this.admin.entregarDevolucion(reserva.idReserva, idDevolucion).subscribe({
+      next: (updated) => {
+        this.busy.set(null);
+        this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
+        this.rowNotice.set({ id: updated.idReserva, text: 'Devolución entregada.' });
+      },
+      error: (error) => {
+        this.busy.set(null);
+        this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido marcar.') });
+      },
+    });
+  }
+
   // Cancelar, en su diálogo: desde el panel siempre con motivo, que verá también el cliente.
   readonly cancelDialog = viewChild.required<PanelDialogComponent>('cancelDialog');
   readonly cancelTarget = signal<Reserva | null>(null);
@@ -819,11 +838,15 @@ export class AdminReservationsPanelComponent implements OnInit {
           ),
         );
         const devuelto = Number(updated.importeDevuelto) - Number(reserva.importeDevuelto);
+        const enTaquilla = updated.estadoPago === 'COBRADA_TAQUILLA';
         this.rowNotice.set({
           id: updated.idReserva,
-          text: devuelto > 0
-            ? `Reserva cancelada y ${formatMoney(devuelto)} devueltos. Ahora está en «Canceladas».`
-            : 'Reserva cancelada. Ahora está en «Canceladas».',
+          text:
+            devuelto <= 0
+              ? 'Reserva cancelada. Ahora está en «Canceladas».'
+              : enTaquilla
+                ? `Reserva cancelada: ${formatMoney(devuelto)} por devolver en taquilla. Márcalo al entregarlo.`
+                : `Reserva cancelada y ${formatMoney(devuelto)} devueltos a su tarjeta. Ahora está en «Canceladas».`,
         });
         this.summary.refresh();
       },

@@ -153,6 +153,9 @@
                 @if (refunded(reserva) > 0) {
                   <span class="cell-sub">Devueltos {{ money(refunded(reserva)) }}</span>
                 }
+                @if (toCollect(reserva) > 0) {
+                  <span class="cell-sub">{{ money(toCollect(reserva)) }} para recoger en taquilla</span>
+                }
               </td>
               <td data-label="Notas">
                 @if (reserva.motivoCancelacion) {

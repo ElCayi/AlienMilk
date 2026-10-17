@@ -508,7 +508,40 @@
                         </div>
                         <div>
                           <dt>Pago</dt>
-                          <dd>{{ paymentText(reserva) }}</dd>
+                          <dd>
+                            {{ paymentText(reserva) }}
+                            <!-- El registro de devoluciones: cada una con su medio, su motivo y si ya se hizo. -->
+                            @if (reserva.devoluciones.length) {
+                              <ul class="refund-list">
+                                @for (devolucion of reserva.devoluciones; track devolucion.idDevolucion) {
+                                  <li>
+                                    <span>
+                                      {{ money(devolucion.importe) }}
+                                      {{ devolucion.medio === 'TARJETA' ? 'a la tarjeta' : 'en taquilla' }} ·
+                                      {{ devolucion.motivo }}
+                                    </span>
+                                    <span class="cell-sub">
+                                      @if (devolucion.estado === 'HECHA') {
+                                        Hecha el {{ dayTime(devolucion.hechaEn) }}@if (devolucion.referencia) { · {{ devolucion.referencia }}}
+                                      } @else {
+                                        Pendiente de entregar
+                                      }
+                                    </span>
+                                    @if (devolucion.estado === 'PENDIENTE') {
+                                      <button
+                                        type="button"
+                                        class="btn btn-small"
+                                        [disabled]="busy() === reserva.idReserva"
+                                        (click)="handOver(reserva, devolucion.idDevolucion)"
+                                      >
+                                        Marcar entregada
+                                      </button>
+                                    }
+                                  </li>
+                                }
+                              </ul>
+                            }
+                          </dd>
                         </div>
                         <div>
                           <dt>Teléfono</dt>

@@ -91,6 +91,13 @@ public class AdminReservaRestController {
 		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.reactivar(idReserva)));
 	}
 
+	/** Una devolución en taquilla, ya entregada. */
+	@PostMapping("/{idReserva}/devoluciones/{idDevolucion}/entregada")
+	public ResponseEntity<ReservaDto> devolucionEntregada(@PathVariable Integer idReserva,
+			@PathVariable Integer idDevolucion) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.entregarDevolucion(idReserva, idDevolucion)));
+	}
+
 	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */
 	@PostMapping("/{idReserva}/cobrada")
 	public ResponseEntity<ReservaDto> cobrada(@PathVariable Integer idReserva) {

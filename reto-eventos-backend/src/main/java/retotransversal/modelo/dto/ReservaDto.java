@@ -62,7 +62,10 @@ public class ReservaDto {
 	private String pagoUrl;
 	private LocalDateTime pagoCaducaEn;
 	private LocalDateTime pagadaEn;
+	/** Lo devuelto o por devolver (la suma de sus devoluciones, hechas o pendientes). */
 	private BigDecimal importeDevuelto;
+	/** Cada devolución, con su medio y su estado (ver Devolucion). */
+	private List<DevolucionDto> devoluciones;
 	/** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
 	private int entradasSinRegistrar;
 
@@ -101,6 +104,7 @@ public class ReservaDto {
 				.pagoCaducaEn(reserva.getPagoCaducaEn())
 				.pagadaEn(reserva.getPagadaEn())
 				.importeDevuelto(reserva.getImporteDevuelto())
+				.devoluciones(reserva.getDevoluciones().stream().map(DevolucionDto::de).toList())
 				.entradasSinRegistrar(reserva.getEntradasSinRegistrar())
 				.build();
 	}

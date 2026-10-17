@@ -76,6 +76,10 @@ guarda quién ha entrado en cada sesión, para marcarlo en pantalla desde la hoj
 La del 2026-10-17, `revision`, va después de `control-ingreso` y antes del backend de esa fecha: guarda
 si AlienMilk acepta o no las adaptaciones y el material de cada reserva, con una nota para el cliente.
 
+La del 2026-10-17, `devoluciones`, va después de `revision` y antes del backend de esa fecha: cada
+devolución pasa a tener su propio registro (las de taquilla quedan pendientes hasta que se entregan). Las
+devoluciones anteriores se pasan al registro como hechas.
+
 Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
 el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.
 

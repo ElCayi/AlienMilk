@@ -211,6 +211,7 @@ public class ReservaServiceImpl implements ReservaService {
 		Integer idEvento = datos.idEvento() == null ? reserva.getEvento().getIdEvento() : datos.idEvento();
 		boolean mueve = !idEvento.equals(reserva.getEvento().getIdEvento()) || cantidad != reserva.getCantidad();
 		BigDecimal antes = reserva.getPrecioVenta();
+		boolean mismaSesion = idEvento.equals(reserva.getEvento().getIdEvento());
 		if (mueve) {
 			if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
 				throw new ConflictoNegocioException(
@@ -254,7 +255,8 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		aplicarDatos(reserva, datos);
 		// Lo último, cuando todo lo demás ya vale: una devolución no se deshace.
-		pagos.devolver(reserva, antes.subtract(reserva.getPrecioVenta()));
+		pagos.devolver(reserva, antes.subtract(reserva.getPrecioVenta()),
+				mismaSesion ? "Menos plazas" : "Cambio de sesión");
 		return reservaRepository.save(reserva);
 	}
 
@@ -359,6 +361,11 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		reserva.reactivar();
 		return reservaRepository.save(reserva);
+	}
+
+	@Override
+	public Reserva entregarDevolucion(Integer idReserva, Integer idDevolucion) {
+		return pagos.entregarDevolucion(idReserva, idDevolucion);
 	}
 
 	/** Cobrada en taquilla: lo que el admin marca cuando quien reservó por teléfono paga al llegar. */
@@ -491,7 +498,7 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		// Hasta el día anterior, el cliente recupera todo lo pagado.
 		pagos.cerrarPendiente(reserva);
-		pagos.devolver(reserva, pendienteDeDevolver(reserva));
+		pagos.devolver(reserva, pendienteDeDevolver(reserva), "Cancelación del cliente");
 		cancelar(reserva, CanceladaPor.CLIENTE, null);
 		return 1;
 	}
@@ -509,7 +516,7 @@ public class ReservaServiceImpl implements ReservaService {
 		new ErroresCampos().obligatorio("motivo", limpio, 200, "Indica el motivo de la cancelación").lanzarSiHay();
 		pagos.cerrarPendiente(reserva);
 		if (devolver) {
-			pagos.devolver(reserva, pendienteDeDevolver(reserva));
+			pagos.devolver(reserva, pendienteDeDevolver(reserva), "Cancelación de AlienMilk");
 		}
 		return cancelar(reserva, CanceladaPor.ALIENMILK, limpio);
 	}

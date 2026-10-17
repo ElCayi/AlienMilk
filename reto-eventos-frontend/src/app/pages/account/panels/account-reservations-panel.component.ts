@@ -17,6 +17,7 @@ import {
   cancellationLine,
   formatTime,
   paymentBadge,
+  refunds,
 } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
 
@@ -59,7 +60,8 @@ export class AccountReservationsPanelComponent {
   readonly state = reservationState;
   readonly cancellation = (reserva: Reserva) => cancellationLine(reserva, true);
   readonly payment = paymentBadge;
-  readonly refunded = (reserva: Reserva) => Number(reserva.importeDevuelto);
+  readonly refunded = (reserva: Reserva) => refunds(reserva).hecho;
+  readonly toCollect = (reserva: Reserva) => refunds(reserva).pendiente;
 
   /**
    * Al volver de Stripe (?pago=hecho o ?pago=cancelado y ?reserva=), en cuanto llegan las reservas,

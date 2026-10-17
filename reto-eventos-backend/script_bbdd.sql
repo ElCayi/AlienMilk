@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS pedidos;
 DROP TABLE IF EXISTS productos;
 DROP TABLE IF EXISTS solicitudes;
 DROP TABLE IF EXISTS contacto;
+DROP TABLE IF EXISTS devoluciones;
 DROP TABLE IF EXISTS reservas;
 DROP TABLE IF EXISTS expedientes;
 DROP TABLE IF EXISTS eventos;
@@ -121,6 +122,21 @@ CREATE TABLE asistentes (
 		FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva) ON DELETE CASCADE
 );
 
+-- Cada devolución con su registro (migraciones/2026-10-17-devoluciones.sql).
+CREATE TABLE devoluciones (
+	id_devolucion INT AUTO_INCREMENT PRIMARY KEY,
+	id_reserva INT NOT NULL,
+	importe DECIMAL(9,2) NOT NULL,
+	medio VARCHAR(10) NOT NULL,
+	estado VARCHAR(10) NOT NULL,
+	motivo VARCHAR(120) NOT NULL,
+	referencia VARCHAR(100),
+	creada_en DATETIME NOT NULL,
+	hecha_en DATETIME,
+	CONSTRAINT fk_devoluciones_reservas
+		FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva) ON DELETE CASCADE
+);
+
 INSERT INTO perfiles (nombre) VALUES
 ('ROLE_ADMON'),
 ('ROLE_CLIENTE');
@@ -151,6 +167,10 @@ INSERT INTO reservas (id_evento, username, precio_venta, observaciones, cantidad
 -- Dos canceladas: cancelar no borra, la reserva se queda con quién, cuándo y por qué.
 (3, 'ana', 55.00, NULL, 1, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-04 11:30:00', '2026-10-09 09:12:00', 'CLIENTE', NULL, 'PAGADA', '2026-10-04 11:31:00', 55.00),
 (5, 'luis', 96.00, 'Tomada por teléfono', 2, '+34 611 987 654', NULL, FALSE, NULL, NULL, '2026-10-12 17:45:00', 'ALIENMILK', 'Duplicada: volvió a reservar desde la web con los participantes.', 'EN_TAQUILLA', NULL, 0);
+
+-- La 5 (cancelada por Ana) se devolvió a su tarjeta.
+INSERT INTO devoluciones (id_reserva, importe, medio, estado, motivo, creada_en, hecha_en) VALUES
+(5, 55.00, 'TARJETA', 'HECHA', 'Cancelación del cliente', '2026-10-09 09:12:00', '2026-10-09 09:12:00');
 
 -- La 2 ya está revisada; la 4 (material externo) sigue pendiente.
 UPDATE reservas SET revision_aceptada = TRUE, revision_nota = 'Le reservamos una butaca en la fila de penumbra, junto al pasillo.',

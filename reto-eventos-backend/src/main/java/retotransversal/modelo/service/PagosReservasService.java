@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import retotransversal.exception.ConflictoNegocioException;
+import retotransversal.exception.RecursoNoEncontradoException;
 import retotransversal.modelo.entities.CanceladaPor;
+import retotransversal.modelo.entities.Devolucion;
 import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Reserva;
@@ -141,24 +143,59 @@ public class PagosReservasService {
 	}
 
 	/**
-	 * Devuelve parte o todo lo cobrado. Con tarjeta, por la pasarela; cobrado en taquilla, se anota (el
-	 * dinero se devuelve allí). Si la pasarela falla, la excepción deshace la operación que lo pidió.
+	 * Devuelve parte o todo lo cobrado y lo deja registrado (ver Devolucion). Con tarjeta, por la pasarela,
+	 * y queda hecha con su referencia; cobrado en taquilla, queda pendiente hasta que alguien entregue el
+	 * dinero y lo marque. Si la pasarela falla, la excepción deshace la operación que lo pidió; si la base
+	 * falla después, repetirla no devuelve dos veces (ver la clave).
 	 */
-	public void devolver(Reserva reserva, BigDecimal importe) {
+	public void devolver(Reserva reserva, BigDecimal importe, String motivo) {
 		if (importe.signum() <= 0 || !reserva.getEstadoPago().cobrada()) {
 			return;
 		}
 		BigDecimal devuelto = reserva.getImporteDevuelto().add(importe);
-		if (reserva.getEstadoPago() == EstadoPago.PAGADA && reserva.getPagoId() != null) {
-			if (pasarela == null) {
-				throw new ConflictoNegocioException("Ahora mismo no podemos devolver el pago. Inténtelo más tarde.");
+		Devolucion devolucion = Devolucion.builder()
+				.reserva(reserva)
+				.importe(importe)
+				.motivo(motivo)
+				.creadaEn(ahora())
+				.build();
+		if (reserva.getEstadoPago() == EstadoPago.COBRADA_TAQUILLA) {
+			devolucion.setMedio(Devolucion.Medio.TAQUILLA);
+			devolucion.setEstado(Devolucion.Estado.PENDIENTE);
+		} else {
+			devolucion.setMedio(Devolucion.Medio.TARJETA);
+			devolucion.setEstado(Devolucion.Estado.HECHA);
+			devolucion.setHechaEn(ahora());
+			// Sin cobro en Stripe (reservas de ejemplo, o la web sin el pago activado) no hay nada que mover.
+			if (reserva.getPagoId() != null) {
+				if (pasarela == null) {
+					throw new ConflictoNegocioException("Ahora mismo no podemos devolver el pago. Inténtelo más tarde.");
+				}
+				// La clave lleva lo devuelto en total: un reintento no devuelve dos veces, otra devolución sí.
+				devolucion.setReferencia(pasarela.reembolsar(reserva.getPagoId(), importe,
+						"reembolso-%s-%s".formatted(referencia(reserva), devuelto.toPlainString())));
 			}
-			// La clave lleva lo devuelto en total: un reintento no devuelve dos veces, otra devolución sí.
-			pasarela.reembolsar(reserva.getPagoId(), importe, "reembolso-%s-%s".formatted(referencia(reserva),
-					devuelto.toPlainString()));
 		}
+		reserva.getDevoluciones().add(devolucion);
 		reserva.setImporteDevuelto(devuelto);
-		log.info("Reserva {}: devueltos {} €", referencia(reserva), importe);
+		log.info("Reserva {}: {} € a devolver por {} ({})", referencia(reserva), importe, devolucion.getMedio(), motivo);
+	}
+
+	/** El dinero de una devolución en taquilla ya se ha entregado. */
+	@Transactional
+	public Reserva entregarDevolucion(Integer idReserva, Integer idDevolucion) {
+		Reserva reserva = reservaRepository.findById(idReserva)
+				.orElseThrow(() -> new RecursoNoEncontradoException("Reserva no encontrada"));
+		Devolucion devolucion = reserva.getDevoluciones().stream()
+				.filter(item -> item.getIdDevolucion().equals(idDevolucion))
+				.findFirst()
+				.orElseThrow(() -> new RecursoNoEncontradoException("Esa devolución no es de esta reserva"));
+		if (devolucion.getEstado() == Devolucion.Estado.HECHA) {
+			throw new ConflictoNegocioException("Esa devolución ya está hecha");
+		}
+		devolucion.setEstado(Devolucion.Estado.HECHA);
+		devolucion.setHechaEn(ahora());
+		return reservaRepository.save(reserva);
 	}
 
 	/**
@@ -173,7 +210,8 @@ public class PagosReservasService {
 			if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
 				reserva.cancelar(CanceladaPor.SISTEMA, "La sesión se canceló antes del pago", ahora());
 			} else if (!reserva.cancelada()) {
-				devolver(reserva, reserva.getPrecioVenta().subtract(reserva.getImporteDevuelto()).max(BigDecimal.ZERO));
+				devolver(reserva, reserva.getPrecioVenta().subtract(reserva.getImporteDevuelto()).max(BigDecimal.ZERO),
+						"Sesión cancelada por AlienMilk");
 			}
 			reservaRepository.save(reserva);
 		}

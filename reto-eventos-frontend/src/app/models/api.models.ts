@@ -70,6 +70,9 @@ export interface ReservaEditar {
   materialDescripcion?: string;
 }
 
+/** Pendiente: en la web, esperando a Stripe. Pagada: con tarjeta. En taquilla: del panel, se cobra al llegar. */
+export type EstadoPago = 'PENDIENTE' | 'PAGADA' | 'EN_TAQUILLA' | 'COBRADA_TAQUILLA';
+
 export interface Reserva {
   idReserva: number;
   idEvento: number;
@@ -98,8 +101,16 @@ export interface Reserva {
   sesionArchivada: boolean;
   /** Cancelar no borra: la reserva se queda con cuándo, quién y por qué. Sin fecha, está viva. */
   canceladaEn: string | null;
-  canceladaPor: 'CLIENTE' | 'ALIENMILK' | null;
+  canceladaPor: 'CLIENTE' | 'ALIENMILK' | 'SISTEMA' | null;
   motivoCancelacion: string | null;
+  /** El cobro, aparte del estado de la reserva: ver EstadoPago en el backend. */
+  estadoPago: EstadoPago;
+  /** La página de Stripe, solo mientras está pendiente de pago. */
+  pagoUrl: string | null;
+  pagoCaducaEn: string | null;
+  pagadaEn: string | null;
+  /** Lo devuelto: la diferencia si bajó el importe y, al cancelar, lo que quedaba. */
+  importeDevuelto: number;
 }
 
 export interface Perfil {

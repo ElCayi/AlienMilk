@@ -77,6 +77,32 @@ public class StripePasarela implements PasarelaPago {
 	}
 
 	@Override
+	public SesionPago abrirReserva(String referencia, String concepto, BigDecimal precioPlaza, int plazas, String correo,
+			String vuelta) {
+		Instant caduca = reloj.instant().plus(VIGENCIA);
+		String separador = vuelta.contains("?") ? "&" : "?";
+		SessionCreateParams.Builder datos = SessionCreateParams.builder()
+				.setMode(SessionCreateParams.Mode.PAYMENT)
+				.setLocale(SessionCreateParams.Locale.ES)
+				.setClientReferenceId(referencia)
+				.putMetadata("referencia", referencia)
+				.setExpiresAt(caduca.getEpochSecond())
+				.setSuccessUrl(urlTienda + vuelta + separador + "pago=hecho")
+				.setCancelUrl(urlTienda + vuelta + separador + "pago=cancelado")
+				.addLineItem(linea(concepto, precioPlaza, plazas));
+		if (correo != null && !correo.isBlank()) {
+			datos.setCustomerEmail(correo);
+		}
+		try {
+			Session sesion = stripe.v1().checkout().sessions().create(datos.build(),
+					RequestOptions.builder().setIdempotencyKey("reserva-" + referencia).build());
+			return new SesionPago(sesion.getId(), sesion.getUrl(), caduca);
+		} catch (StripeException e) {
+			throw new PagoNoDisponibleException("No hemos podido abrir el pago. Inténtelo de nuevo en unos minutos.", e);
+		}
+	}
+
+	@Override
 	public EstadoSesionPago consultar(String sesion) {
 		try {
 			Session datos = stripe.v1().checkout().sessions().retrieve(sesion);
@@ -109,6 +135,18 @@ public class StripePasarela implements PasarelaPago {
 		try {
 			return stripe.v1().refunds().create(RefundCreateParams.builder().setPaymentIntent(pago).build(),
 					RequestOptions.builder().setIdempotencyKey("reembolso-" + pago).build()).getId();
+		} catch (StripeException e) {
+			throw new PagoNoDisponibleException("No hemos podido devolver el pago. Inténtelo de nuevo en unos minutos.", e);
+		}
+	}
+
+	@Override
+	public String reembolsar(String pago, BigDecimal importe, String clave) {
+		try {
+			return stripe.v1().refunds().create(RefundCreateParams.builder()
+					.setPaymentIntent(pago)
+					.setAmount(importe.movePointRight(2).longValueExact())
+					.build(), RequestOptions.builder().setIdempotencyKey(clave).build()).getId();
 		} catch (StripeException e) {
 			throw new PagoNoDisponibleException("No hemos podido devolver el pago. Inténtelo de nuevo en unos minutos.", e);
 		}

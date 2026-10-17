@@ -32,6 +32,8 @@ import {
   profileLabel,
   reservationState,
   cancellationLine,
+  paymentBadge,
+  paymentLine,
 } from '../../../shared/panel/panel-format';
 import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
@@ -493,6 +495,8 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   readonly state = reservationState;
   readonly cancellation = (reserva: Reserva) => cancellationLine(reserva);
+  readonly payment = paymentBadge;
+  readonly paymentText = paymentLine;
   readonly day = formatDay;
   readonly when = reservationWhen;
   readonly dayTime = formatDayTime;
@@ -661,15 +665,43 @@ export class AdminReservationsPanelComponent implements OnInit {
       });
   }
 
+  /** Quien reservó por teléfono paga al llegar: se marca aquí, sin pasar por Stripe. */
+  collect(reserva: Reserva): void {
+    if (this.busy() !== null) {
+      return;
+    }
+    this.busy.set(reserva.idReserva);
+    this.admin.marcarCobrada(reserva.idReserva).subscribe({
+      next: (updated) => {
+        this.busy.set(null);
+        this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
+        this.rowNotice.set({ id: updated.idReserva, text: `Cobrada en taquilla: ${formatMoney(updated.precioVenta)}.` });
+      },
+      error: (error) => {
+        this.busy.set(null);
+        this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido marcar como cobrada.') });
+      },
+    });
+  }
+
   // Cancelar, en su diálogo: desde el panel siempre con motivo, que verá también el cliente.
   readonly cancelDialog = viewChild.required<PanelDialogComponent>('cancelDialog');
   readonly cancelTarget = signal<Reserva | null>(null);
   readonly cancelError = signal<string | null>(null);
   cancelReason = '';
+  /** Lo cobrado se devuelve salvo que se desmarque (una duplicada cuyo pago vale para la otra). */
+  cancelRefund = true;
+
+  /** Lo que se devolvería al cancelar: lo cobrado que aún no se ha devuelto. */
+  refundable(reserva: Reserva): number {
+    const cobrada = reserva.estadoPago === 'PAGADA' || reserva.estadoPago === 'COBRADA_TAQUILLA';
+    return cobrada ? Math.max(0, Number(reserva.precioVenta) - Number(reserva.importeDevuelto)) : 0;
+  }
 
   cancel(reserva: Reserva): void {
     this.cancelTarget.set(reserva);
     this.cancelReason = '';
+    this.cancelRefund = true;
     this.cancelError.set(null);
     this.cancelDialog().open();
   }
@@ -689,7 +721,7 @@ export class AdminReservationsPanelComponent implements OnInit {
     }
     this.busy.set(reserva.idReserva);
     this.cancelError.set(null);
-    this.admin.cancelarReservaAdmin(reserva.idReserva, this.cancelReason).subscribe({
+    this.admin.cancelarReservaAdmin(reserva.idReserva, this.cancelReason, this.cancelRefund).subscribe({
       next: (updated) => {
         this.busy.set(null);
         this.cancelDialog().close();
@@ -706,7 +738,13 @@ export class AdminReservationsPanelComponent implements OnInit {
               : session,
           ),
         );
-        this.rowNotice.set({ id: updated.idReserva, text: 'Reserva cancelada. Ahora está en «Canceladas».' });
+        const devuelto = Number(updated.importeDevuelto) - Number(reserva.importeDevuelto);
+        this.rowNotice.set({
+          id: updated.idReserva,
+          text: devuelto > 0
+            ? `Reserva cancelada y ${formatMoney(devuelto)} devueltos. Ahora está en «Canceladas».`
+            : 'Reserva cancelada. Ahora está en «Canceladas».',
+        });
         this.summary.refresh();
       },
       error: (error) => {

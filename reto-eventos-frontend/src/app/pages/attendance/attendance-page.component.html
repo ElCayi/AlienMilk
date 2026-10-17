@@ -284,7 +284,7 @@
         }
         <div class="attendance-submit">
           <button type="submit" class="submit-button" [disabled]="sending()" [attr.aria-busy]="sending()">
-            {{ sending() ? 'Registrando…' : 'Registrar asistencia · ' + price(total()) }}
+            {{ redirecting() ? 'Abriendo el pago…' : sending() ? 'Registrando…' : 'Registrar asistencia · ' + price(total()) }}
           </button>
         </div>
       </form>

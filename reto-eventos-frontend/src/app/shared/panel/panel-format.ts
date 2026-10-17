@@ -32,10 +32,44 @@ export function reservationState(reserva: Pick<Reserva, 'estadoEvento' | 'cancel
   return RESERVATION_STATES[reserva.estadoEvento as EstadoEvento] ?? { label: reserva.estadoEvento, tone: 'off' };
 }
 
-/** «Cancelada por ti el 09 oct 2026», «Cancelada por AlienMilk el …»: quién y cuándo, para la ficha y el historial. */
+/**
+ * «Cancelada por ti el 09 oct 2026», «Cancelada por AlienMilk el …», «Anulada el …» (por el sistema: un
+ * pago que no llegó, una sesión reactivada): quién y cuándo, para la ficha y el historial.
+ */
 export function cancellationLine(reserva: Reserva, propia = false): string {
+  const dia = formatDay(reserva.canceladaEn!.slice(0, 10));
+  if (reserva.canceladaPor === 'SISTEMA') {
+    return `Anulada el ${dia}`;
+  }
   const quien = reserva.canceladaPor === 'CLIENTE' ? (propia ? 'por ti' : 'por el cliente') : 'por AlienMilk';
-  return `Cancelada ${quien} el ${formatDay(reserva.canceladaEn!.slice(0, 10))}`;
+  return `Cancelada ${quien} el ${dia}`;
+}
+
+/** El cobro en una pastilla, solo cuando pide atención: lo pagado es lo normal y no se dice. */
+export function paymentBadge(reserva: Reserva): { label: string; tone: Tone } | null {
+  if (reserva.canceladaEn) {
+    return null;
+  }
+  switch (reserva.estadoPago) {
+    case 'PENDIENTE':
+      return { label: 'Pendiente de pago', tone: 'alert' };
+    case 'EN_TAQUILLA':
+      return { label: 'Pago en taquilla', tone: 'ok' };
+    default:
+      return null;
+  }
+}
+
+/** El cobro en una línea, para la ficha: cómo se pagó y lo devuelto, si algo. */
+export function paymentLine(reserva: Reserva): string {
+  const base = {
+    PENDIENTE: reserva.canceladaEn ? 'Sin pagar' : 'Pendiente de pago con tarjeta',
+    PAGADA: reserva.pagadaEn ? `Pagada con tarjeta el ${formatDay(reserva.pagadaEn.slice(0, 10))}` : 'Pagada',
+    EN_TAQUILLA: reserva.canceladaEn ? 'Sin cobrar' : 'Se paga en taquilla al llegar',
+    COBRADA_TAQUILLA: 'Cobrada en taquilla',
+  }[reserva.estadoPago];
+  const devuelto = Number(reserva.importeDevuelto);
+  return devuelto > 0 ? `${base} · devueltos ${formatMoney(devuelto)}` : base;
 }
 
 const PROFILE_LABELS: Record<string, string> = {
@@ -84,6 +118,11 @@ export function reservationWhen(reserva: Reserva): string {
 
 export function formatDayTime(isoDateTime: string | null | undefined): string {
   return isoDateTime ? DAY_TIME.format(new Date(isoDateTime)) : '—';
+}
+
+/** La hora de una fecha y hora local del servidor («2026-10-17T18:42:00» → «18:42»). */
+export function formatTime(isoDateTime: string): string {
+  return isoDateTime.slice(11, 16);
 }
 
 export function formatMoney(amount: number | null | undefined): string {

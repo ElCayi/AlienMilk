@@ -116,7 +116,30 @@ export class ReservationEditorComponent {
 
   maxSeats(): number {
     const session = this.selectedSession();
-    return Math.min(10, session ? this.free(session) : 10);
+    const max = Math.min(10, session ? this.free(session) : 10);
+    // Ya cobrada, el importe no puede subir: las plazas de más van en otra reserva.
+    return this.paid() ? Math.min(max, this.target()?.cantidad ?? max) : max;
+  }
+
+  /** Ya hay dinero cobrado: el importe puede bajar (se devuelve la diferencia), pero no subir. */
+  paid(): boolean {
+    const pago = this.target()?.estadoPago;
+    return pago === 'PAGADA' || pago === 'COBRADA_TAQUILLA';
+  }
+
+  /** Esperando a Stripe: la sesión y las plazas no se tocan hasta que se pague o caduque. */
+  pending(): boolean {
+    return this.target()?.estadoPago === 'PENDIENTE';
+  }
+
+  /** Lo que se devolvería con el importe nuevo, si baja. */
+  refund(): number {
+    const target = this.target();
+    const session = this.selectedSession();
+    if (!target || !session || !this.paid()) {
+      return 0;
+    }
+    return Math.max(0, Number(target.precioVenta) - session.precio * this.form.cantidad);
   }
 
   submit(): void {
@@ -126,6 +149,10 @@ export class ReservationEditorComponent {
     }
     const { telefono, asistentes } = this.form;
     const datos: ReservaEditar = this.admin() ? { ...this.form } : { telefono, asistentes };
+    if (this.pending()) {
+      delete datos.idEvento;
+      delete datos.cantidad;
+    }
     this.saving.set(true);
     this.error.set(null);
     this.errors.set({});

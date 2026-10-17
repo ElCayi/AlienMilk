@@ -6,7 +6,7 @@ import { AdminService } from '../../../core/services/admin.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
 import { sessionSchedule } from '../../../features/sessions/session.presenter';
 import { EventoAdmin, Reserva } from '../../../models/api.models';
-import { formatDay, plural } from '../../../shared/panel/panel-format';
+import { formatDay, formatMoney, plural } from '../../../shared/panel/panel-format';
 
 /** Una fila de la hoja: un participante registrado, o una reserva cuyos participantes faltan. */
 interface SheetRow {
@@ -16,6 +16,8 @@ interface SheetRow {
   credencial: string | null;
   procedencia: string | null;
   incompatibilidades: string | null;
+  /** La primera fila de su reserva: lo que es de la reserva entera (el cobro) se dice una vez. */
+  first: boolean;
 }
 
 /**
@@ -42,6 +44,7 @@ export class AdminControlSheetComponent implements OnInit {
   readonly day = formatDay;
   readonly schedule = sessionSchedule;
   readonly plural = plural;
+  readonly money = formatMoney;
   readonly credential = credentialLabel;
 
   /** Por orden de reserva: cada participante en su fila; las reservas sin registrar, en una sola. */
@@ -49,15 +52,18 @@ export class AdminControlSheetComponent implements OnInit {
     this.reservations().flatMap((reserva): SheetRow[] => {
       const numero = this.number(reserva);
       if (!reserva.asistentes.length) {
-        return [{ reserva, numero, nombre: null, credencial: null, procedencia: null, incompatibilidades: null }];
+        return [
+          { reserva, numero, nombre: null, credencial: null, procedencia: null, incompatibilidades: null, first: true },
+        ];
       }
-      return reserva.asistentes.map((persona) => ({
+      return reserva.asistentes.map((persona, i) => ({
         reserva,
         numero,
         nombre: persona.nombre,
         credencial: credentialLabel(persona.credencial),
         procedencia: persona.procedencia,
         incompatibilidades: persona.incompatibilidades,
+        first: i === 0,
       }));
     }),
   );

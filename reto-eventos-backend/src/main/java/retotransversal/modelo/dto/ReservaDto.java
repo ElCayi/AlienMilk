@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Reserva;
 
 @AllArgsConstructor
@@ -52,6 +53,13 @@ public class ReservaDto {
 	private String canceladaPor;
 	private String motivoCancelacion;
 
+	/** El cobro (ver EstadoPago). La página de pago solo mientras está pendiente. */
+	private String estadoPago;
+	private String pagoUrl;
+	private LocalDateTime pagoCaducaEn;
+	private LocalDateTime pagadaEn;
+	private BigDecimal importeDevuelto;
+
 	public static ReservaDto fromEntity(Reserva reserva) {
 		return ReservaDto.builder()
 				.idReserva(reserva.getIdReserva())
@@ -77,6 +85,11 @@ public class ReservaDto {
 				.canceladaEn(reserva.getCanceladaEn())
 				.canceladaPor(reserva.getCanceladaPor() == null ? null : reserva.getCanceladaPor().name())
 				.motivoCancelacion(reserva.getMotivoCancelacion())
+				.estadoPago(reserva.getEstadoPago().name())
+				.pagoUrl(reserva.getEstadoPago() == EstadoPago.PENDIENTE && !reserva.cancelada() ? reserva.getPagoUrl() : null)
+				.pagoCaducaEn(reserva.getPagoCaducaEn())
+				.pagadaEn(reserva.getPagadaEn())
+				.importeDevuelto(reserva.getImporteDevuelto())
 				.build();
 	}
 

@@ -101,8 +101,44 @@ public class Reserva {
 	@Column(name = "motivo_cancelacion", length = 200)
 	private String motivoCancelacion;
 
+	/** El cobro: ver EstadoPago. Las reservas anteriores al pago con tarjeta quedan como pagadas. */
+	@Builder.Default
+	@Enumerated(EnumType.STRING)
+	@Column(name = "estado_pago", nullable = false, length = 20)
+	private EstadoPago estadoPago = EstadoPago.PAGADA;
+
+	/** La sesión de pago de Stripe, su página y hasta cuándo se puede pagar (solo mientras está pendiente). */
+	@Column(name = "pago_sesion", length = 100)
+	private String pagoSesion;
+
+	@Column(name = "pago_url", length = 500)
+	private String pagoUrl;
+
+	@Column(name = "pago_caduca_en")
+	private LocalDateTime pagoCaducaEn;
+
+	/** El cobro hecho en Stripe, para poder devolverlo; null si se cobró en taquilla o sin pasarela. */
+	@Column(name = "pago_id", length = 100)
+	private String pagoId;
+
+	@Column(name = "pagada_en")
+	private LocalDateTime pagadaEn;
+
+	/** Lo devuelto hasta ahora: la diferencia cada vez que bajó el importe y, al cancelar, lo que quedaba. */
+	@Builder.Default
+	@Column(name = "importe_devuelto", nullable = false, precision = 9, scale = 2)
+	private BigDecimal importeDevuelto = BigDecimal.ZERO;
+
 	public boolean cancelada() {
 		return canceladaEn != null;
+	}
+
+	/** Cancelar no borra: deja la reserva con quién, cuándo y por qué, y deja de ocupar plazas. */
+	public void cancelar(CanceladaPor quien, String motivo, LocalDateTime cuando) {
+		canceladaEn = cuando;
+		canceladaPor = quien;
+		motivoCancelacion = motivo;
+		pagoUrl = null;
 	}
 
 	/** Con adaptaciones o material externo, alguien de AlienMilk tiene que evaluarla antes de la sesión. */

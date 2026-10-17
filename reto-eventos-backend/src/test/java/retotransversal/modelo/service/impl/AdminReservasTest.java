@@ -26,13 +26,15 @@ import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.entities.*;
 import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.service.EventoService;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.AdminReservaRestController;
 
 class AdminReservasTest {
     private final ReservaRepository repository = mock(ReservaRepository.class);
     private final EventoService eventos = mock(EventoService.class);
-    private final ReservaServiceImpl service = new ReservaServiceImpl(repository, eventos, mock(UsuarioService.class));
+    private final ReservaServiceImpl service = new ReservaServiceImpl(repository, eventos, mock(UsuarioService.class),
+            new PagosReservasService(repository, eventos, null, java.time.Clock.systemUTC()));
     private final Reserva reserva = Reserva.builder().idReserva(7).cantidad(1)
             .precioVenta(new BigDecimal("25.00"))
             .evento(Evento.builder().idEvento(3).estado(EstadoEvento.ACTIVO).build())
@@ -152,7 +154,7 @@ class AdminReservasTest {
         assertThat(reserva.getCanceladaEn()).isNotNull();
 
         // Cancelada, es historial: ni se vuelve a cancelar ni se edita.
-        assertThatThrownBy(() -> service.cancelarReservaAdmin(7, "Otra vez"))
+        assertThatThrownBy(() -> service.cancelarReservaAdmin(7, "Otra vez", true))
                 .isInstanceOf(ConflictoNegocioException.class);
         assertThatThrownBy(() -> service.editarReservaAdmin(7, datosDeAna("600 123 456")))
                 .isInstanceOf(ConflictoNegocioException.class);

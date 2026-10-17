@@ -132,6 +132,12 @@
                     @if (row.reserva.telefono) {
                       <span class="cell-sub">{{ row.reserva.telefono }}</span>
                     }
+                    <!-- Lo que se cobra en la puerta: solo en la primera fila de cada reserva. -->
+                    @if (row.first && row.reserva.estadoPago === 'EN_TAQUILLA') {
+                      <span class="cell-sub sheet-alert">Cobrar en taquilla: {{ money(row.reserva.precioVenta) }}</span>
+                    } @else if (row.first && row.reserva.estadoPago === 'PENDIENTE') {
+                      <span class="cell-sub sheet-alert">Pendiente de pago con tarjeta</span>
+                    }
                   </td>
                 </tr>
               }

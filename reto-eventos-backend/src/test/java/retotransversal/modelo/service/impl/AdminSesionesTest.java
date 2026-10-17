@@ -42,6 +42,7 @@ import retotransversal.modelo.repository.ReservaRepository.OcupacionEvento;
 import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.service.ExpedienteService;
 import retotransversal.modelo.service.ImagenSesionService;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.AdminEventoRestController;
 
@@ -55,12 +56,14 @@ class AdminSesionesTest {
 
 	private final EventoRepository eventos = mock(EventoRepository.class);
 	private final ReservaRepository reservas = mock(ReservaRepository.class);
+	private final EventoServiceImpl servicioSesiones = new EventoServiceImpl(eventos, reservas, HOY);
 	private final TipoEventoRepository tipos = mock(TipoEventoRepository.class);
 	private final TipoEvento cata = TipoEvento.builder().idTipo(1).nombre("CATA_COSMICA").build();
 
 	private final MockMvc mvc = MockMvcBuilders
-			.standaloneSetup(new AdminEventoRestController(new EventoServiceImpl(eventos, reservas, HOY), tipos,
-					mock(ExpedienteService.class), mock(ImagenSesionService.class)))
+			.standaloneSetup(new AdminEventoRestController(servicioSesiones, tipos,
+					mock(ExpedienteService.class), mock(ImagenSesionService.class),
+					new PagosReservasService(reservas, servicioSesiones, null, HOY)))
 			.setControllerAdvice(new GlobalExceptionHandler()).build();
 
 	AdminSesionesTest() {
@@ -249,8 +252,9 @@ class AdminSesionesTest {
 		enCurso.setIdEvento(3);
 		enCurso.setAforoMaximo(40);
 		when(eventos.findById(3)).thenReturn(Optional.of(enCurso));
-		ReservaServiceImpl servicio = new ReservaServiceImpl(reservas, new EventoServiceImpl(eventos, reservas, HOY),
-				mock(UsuarioService.class));
+		EventoServiceImpl sesiones = new EventoServiceImpl(eventos, reservas, HOY);
+		ReservaServiceImpl servicio = new ReservaServiceImpl(reservas, sesiones, mock(UsuarioService.class),
+				new PagosReservasService(reservas, sesiones, null, HOY));
 
 		assertThatThrownBy(() -> servicio.reservarEvento(3, "ana", 1, null))
 				.isInstanceOf(ConflictoNegocioException.class)

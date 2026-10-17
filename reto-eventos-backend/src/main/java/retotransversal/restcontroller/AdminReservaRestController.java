@@ -53,8 +53,17 @@ public class AdminReservaRestController {
 
 	/** Cancelar no borra: la reserva vuelve con su cancelación (ver ReservaService#cancelarReservaAdmin). */
 	@PostMapping("/{idReserva}/cancelar")
-	public ResponseEntity<ReservaDto> cancelar(@PathVariable Integer idReserva, @RequestBody(required = false) Map<String, String> datos) {
-		String motivo = datos == null ? null : datos.get("motivo");
-		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.cancelarReservaAdmin(idReserva, motivo)));
+	public ResponseEntity<ReservaDto> cancelar(@PathVariable Integer idReserva, @RequestBody(required = false) Map<String, Object> datos) {
+		Object motivo = datos == null ? null : datos.get("motivo");
+		// Lo cobrado se devuelve salvo que se pida lo contrario.
+		boolean devolver = datos == null || !Boolean.FALSE.equals(datos.get("devolver"));
+		return ResponseEntity.ok(ReservaDto.fromEntity(
+				reservaService.cancelarReservaAdmin(idReserva, motivo == null ? null : motivo.toString(), devolver)));
+	}
+
+	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */
+	@PostMapping("/{idReserva}/cobrada")
+	public ResponseEntity<ReservaDto> cobrada(@PathVariable Integer idReserva) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.marcarCobrada(idReserva)));
 	}
 }

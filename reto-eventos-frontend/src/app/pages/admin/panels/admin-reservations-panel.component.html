@@ -440,6 +440,9 @@
                 <td data-label="Estado" class="center">
                   <span class="badge-stack">
                     <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                    @if (payment(reserva); as pago) {
+                      <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
+                    }
                     @if (reserva.requiereRevision) {
                       <span class="badge" data-tone="alert">Requiere revisión</span>
                     }
@@ -501,6 +504,10 @@
                         <div>
                           <dt>Lugar</dt>
                           <dd>{{ place(reserva) }}</dd>
+                        </div>
+                        <div>
+                          <dt>Pago</dt>
+                          <dd>{{ paymentText(reserva) }}</dd>
                         </div>
                         <div>
                           <dt>Teléfono</dt>
@@ -567,6 +574,16 @@
                     <div class="row-actions detail-actions">
                       <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. -->
                       @if (!reserva.canceladaEn) {
+                        @if (reserva.estadoPago === 'EN_TAQUILLA') {
+                          <button
+                            type="button"
+                            class="btn btn-small btn-primary"
+                            [disabled]="busy() === reserva.idReserva"
+                            (click)="collect(reserva)"
+                          >
+                            Marcar cobrada · {{ money(reserva.precioVenta) }}
+                          </button>
+                        }
                         <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
                         @if (reserva.estadoEvento === 'ACTIVO') {
                           <button
@@ -651,7 +668,7 @@
       </div>
 
       <div class="field">
-        <span class="field-label">Importe</span>
+        <span class="field-label">Importe <span class="field-note">se paga en taquilla</span></span>
         <p class="field-help">
           @if (selectedSession(); as session) {
             {{ money(session.precio * (form.cantidad || 0)) }} ({{ money(session.precio) }} por plaza)
@@ -686,7 +703,7 @@
   @if (cancelTarget(); as reserva) {
     <form novalidate (ngSubmit)="confirmCancel()">
       <p class="dialog-copy">
-        Se liberan {{ plural(reserva.cantidad, 'plaza', 'plazas') }} de «{{ reserva.nombreEvento }}». La reserva no se
+        {{ reserva.cantidad === 1 ? 'Se libera' : 'Se liberan' }} {{ plural(reserva.cantidad, 'plaza', 'plazas') }} de «{{ reserva.nombreEvento }}». La reserva no se
         borra: pasa a «Canceladas» con el motivo, y {{ reserva.nombreCliente }} la verá en su historial.
       </p>
       <div class="field" [class.is-invalid]="cancelError() && !cancelReason.trim()">
@@ -695,6 +712,15 @@
         </label>
         <textarea id="cancel-reason" name="motivo" rows="3" maxlength="200" [(ngModel)]="cancelReason"></textarea>
       </div>
+      @if (refundable(reserva); as importe) {
+        <label class="check">
+          <input type="checkbox" name="devolver" [(ngModel)]="cancelRefund" />
+          <span>
+            Devolver {{ money(importe) }}
+            {{ reserva.estadoPago === 'PAGADA' ? 'a su tarjeta' : 'en taquilla' }}
+          </span>
+        </label>
+      }
       @if (cancelError(); as message) {
         <p class="notice is-error form-error" role="alert">{{ message }}</p>
       }

@@ -83,6 +83,15 @@ CREATE TABLE reservas (
 	cancelada_en DATETIME,
 	cancelada_por VARCHAR(20),
 	motivo_cancelacion VARCHAR(200),
+	-- El cobro (migraciones/2026-10-17-reservas-pago.sql): ver EstadoPago.
+	estado_pago VARCHAR(20) NOT NULL DEFAULT 'PAGADA',
+	pago_sesion VARCHAR(100),
+	pago_url VARCHAR(500),
+	pago_caduca_en DATETIME,
+	pago_id VARCHAR(100),
+	pagada_en DATETIME,
+	importe_devuelto DECIMAL(9,2) NOT NULL DEFAULT 0,
+	INDEX ix_reservas_pago_sesion (pago_sesion),
 	CONSTRAINT fk_reservas_eventos
 		FOREIGN KEY (id_evento) REFERENCES eventos(id_evento),
 	CONSTRAINT fk_reservas_usuarios
@@ -126,16 +135,17 @@ INSERT INTO eventos (nombre, descripcion, fecha_inicio, hora_inicio, duracion, d
 ('Ruta Nocturna por el Hangar', 'Recorrido guiado por las zonas donde se conserva el primer lote de leche abducida', '2026-11-18', '22:30', 105, 'Acceso Norte del Hangar', 'ACTIVO', 40, 10, 12.00, 4),
 ('Sesion Eclipse Lunar', 'Sesion especial en la cupula de ordeño lunar con ambientacion inmersiva y cata nocturna', '2027-01-01', '21:00', 170, 'Cupula Eclipse', 'ACTIVO', 500, 100, 48.00, 1);
 
-INSERT INTO reservas (id_evento, username, precio_venta, observaciones, cantidad, telefono, adaptaciones, material_externo, material_descripcion, conformidad_en, cancelada_en, cancelada_por, motivo_cancelacion) VALUES
-(1, 'ana', 70.00, 'Queremos mesa cerca del lacteobar', 2, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-01 18:20:00', NULL, NULL, NULL),
-(1, 'luis', 105.00, 'Preferimos la zona de vision panoramica', 3, '+34 611 987 654', 'Uno de los participantes necesita penumbra durante toda la sesión.', FALSE, NULL, '2026-10-02 10:05:00', NULL, NULL, NULL),
-(2, 'ana', 22.50, 'Si puede ser, sin destellos muy fuertes', 1, NULL, NULL, FALSE, NULL, NULL, NULL, NULL, NULL),
-(4, 'luis', 24.00, 'Reserva historica de ejemplo AlienMilk', 2, '+34 611 987 654', NULL, TRUE, 'Respirador de metano portátil, homologado en Titán.', '2026-10-03 21:40:00', NULL, NULL, NULL),
+INSERT INTO reservas (id_evento, username, precio_venta, observaciones, cantidad, telefono, adaptaciones, material_externo, material_descripcion, conformidad_en, cancelada_en, cancelada_por, motivo_cancelacion, estado_pago, pagada_en, importe_devuelto) VALUES
+(1, 'ana', 70.00, 'Queremos mesa cerca del lacteobar', 2, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-01 18:20:00', NULL, NULL, NULL, 'PAGADA', '2026-10-01 18:21:00', 0),
+(1, 'luis', 105.00, 'Preferimos la zona de vision panoramica', 3, '+34 611 987 654', 'Uno de los participantes necesita penumbra durante toda la sesión.', FALSE, NULL, '2026-10-02 10:05:00', NULL, NULL, NULL, 'PAGADA', '2026-10-02 10:07:00', 0),
+(2, 'ana', 22.50, 'Si puede ser, sin destellos muy fuertes', 1, NULL, NULL, FALSE, NULL, NULL, NULL, NULL, NULL, 'EN_TAQUILLA', NULL, 0),
+(4, 'luis', 24.00, 'Reserva historica de ejemplo AlienMilk', 2, '+34 611 987 654', NULL, TRUE, 'Respirador de metano portátil, homologado en Titán.', '2026-10-03 21:40:00', NULL, NULL, NULL, 'PAGADA', '2026-10-03 21:42:00', 0),
 -- Dos canceladas: cancelar no borra, la reserva se queda con quién, cuándo y por qué.
-(3, 'ana', 55.00, NULL, 1, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-04 11:30:00', '2026-10-09 09:12:00', 'CLIENTE', NULL),
-(5, 'luis', 96.00, 'Tomada por teléfono', 2, '+34 611 987 654', NULL, FALSE, NULL, NULL, '2026-10-12 17:45:00', 'ALIENMILK', 'Duplicada: volvió a reservar desde la web con los participantes.');
+(3, 'ana', 55.00, NULL, 1, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-04 11:30:00', '2026-10-09 09:12:00', 'CLIENTE', NULL, 'PAGADA', '2026-10-04 11:31:00', 55.00),
+(5, 'luis', 96.00, 'Tomada por teléfono', 2, '+34 611 987 654', NULL, FALSE, NULL, NULL, '2026-10-12 17:45:00', 'ALIENMILK', 'Duplicada: volvió a reservar desde la web con los participantes.', 'EN_TAQUILLA', NULL, 0);
 
--- La reserva 3 se tomó antes del registro de asistencia: sus participantes quedan sin registrar.
+-- La reserva 3 se tomó por teléfono, antes del registro de asistencia: sus participantes quedan sin
+-- registrar y se paga en taquilla.
 INSERT INTO asistentes (id_reserva, orden, nombre, credencial, procedencia, incompatibilidades) VALUES
 (1, 1, 'Ana Lopez', 'DNI_NIE', 'Madrid, SOL-III', NULL),
 (1, 2, 'Mara Ishikawa', 'DNI_NIE', 'Madrid, SOL-III', 'Lactosa terrestre'),

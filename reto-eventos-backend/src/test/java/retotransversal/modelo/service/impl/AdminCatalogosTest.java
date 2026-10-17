@@ -1,5 +1,6 @@
 package retotransversal.modelo.service.impl;
 
+import java.math.BigDecimal;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -36,6 +37,7 @@ import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.repository.TipoEventoRepository;
 import retotransversal.modelo.repository.UsuarioRepository;
 import retotransversal.modelo.service.EventoService;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.UsuarioService;
 import retotransversal.restcontroller.PerfilRestController;
 import retotransversal.restcontroller.ReservaRestController;
@@ -124,14 +126,15 @@ class AdminCatalogosTest {
 		Usuario ana = Usuario.builder().username("ana").build();
 		Evento cancelada = Evento.builder().idEvento(4).estado(EstadoEvento.CANCELADO).build();
 		Evento activa = Evento.builder().idEvento(5).estado(EstadoEvento.ACTIVO).build();
-		when(reservas.findById(10)).thenReturn(Optional.of(Reserva.builder().idReserva(10).usuario(ana).evento(cancelada).build()));
-		when(reservas.findById(11)).thenReturn(Optional.of(Reserva.builder().idReserva(11).usuario(ana).evento(activa).build()));
+		when(reservas.findById(10)).thenReturn(Optional.of(Reserva.builder().idReserva(10).usuario(ana).evento(cancelada).precioVenta(BigDecimal.TEN).build()));
+		when(reservas.findById(11)).thenReturn(Optional.of(Reserva.builder().idReserva(11).usuario(ana).evento(activa).precioVenta(BigDecimal.TEN).build()));
 		// Las dos son de días que aún no han llegado: lo que decide es el estado de la sesión.
 		EventoService sesiones = mock(EventoService.class);
 		when(sesiones.admiteCancelaciones(any())).thenReturn(true);
 		MockMvc mvc = MockMvcBuilders
 				.standaloneSetup(new ReservaRestController(
-						new ReservaServiceImpl(reservas, sesiones, mock(UsuarioService.class))))
+						new ReservaServiceImpl(reservas, sesiones, mock(UsuarioService.class),
+								new PagosReservasService(reservas, sesiones, null, java.time.Clock.systemUTC()))))
 				.setControllerAdvice(new GlobalExceptionHandler()).build();
 
 		mvc.perform(delete("/api/reservas/10").principal(ana()))

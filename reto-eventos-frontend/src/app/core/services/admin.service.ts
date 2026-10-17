@@ -185,8 +185,13 @@ export class AdminService {
     return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/datos`, datos);
   }
 
-  /** Cancelar no borra: vuelve la reserva, con su cancelación. El motivo es obligatorio. */
-  cancelarReservaAdmin(idReserva: number, motivo: string): Observable<Reserva> {
-    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo });
+  /** Cancelar no borra: vuelve la reserva, con su cancelación. El motivo es obligatorio; lo cobrado se devuelve si se pide. */
+  cancelarReservaAdmin(idReserva: number, motivo: string, devolver: boolean): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo, devolver });
+  }
+
+  /** Una reserva para pagar en taquilla, ya cobrada. */
+  marcarCobrada(idReserva: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cobrada`, {});
   }
 }

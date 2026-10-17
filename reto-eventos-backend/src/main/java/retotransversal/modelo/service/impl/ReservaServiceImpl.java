@@ -20,6 +20,7 @@ import retotransversal.modelo.entities.Asistente;
 import retotransversal.modelo.entities.CanceladaPor;
 import retotransversal.modelo.entities.Credencial;
 import retotransversal.modelo.entities.EstadoEvento;
+import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Reserva;
 import retotransversal.modelo.entities.Usuario;
@@ -27,6 +28,7 @@ import retotransversal.modelo.repository.ReservaRepository;
 import retotransversal.modelo.service.ErroresCampos;
 import retotransversal.modelo.service.EventoService;
 import retotransversal.modelo.service.ReservaService;
+import retotransversal.modelo.service.PagosReservasService;
 import retotransversal.modelo.service.UsuarioService;
 
 @Service
@@ -39,6 +41,7 @@ public class ReservaServiceImpl implements ReservaService {
 	private final ReservaRepository reservaRepository;
 	private final EventoService eventoService;
 	private final UsuarioService usuarioService;
+	private final PagosReservasService pagos;
 
 	@Override
 	public Reserva findById(Integer id) {
@@ -70,8 +73,10 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	@Override
+	@Transactional
 	public List<Reserva> findByUsuario(String username) {
-		return reservaRepository.findByUsuarioUsername(username);
+		// Quien vuelve de pagar ve su reserva ya pagada, aunque el aviso de Stripe no haya llegado.
+		return reservaRepository.findByUsuarioUsername(username).stream().map(pagos::alDia).toList();
 	}
 
 	@Override
@@ -82,12 +87,32 @@ public class ReservaServiceImpl implements ReservaService {
 	@Override
 	@Transactional
 	public Reserva reservarEvento(Integer idEvento, String username, Integer cantidad, String observaciones) {
-		return reservaRepository.save(nueva(idEvento, username, cantidad, observaciones));
+		// Desde el panel (por teléfono, por ejemplo): se cobra al llegar.
+		Reserva reserva = nueva(idEvento, username, cantidad, observaciones);
+		reserva.setEstadoPago(EstadoPago.EN_TAQUILLA);
+		return reservaRepository.save(reserva);
 	}
 
 	@Override
 	@Transactional
 	public Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro) {
+		// Guardada primero (el pago necesita su localizador); si el pago no se puede abrir, se deshace todo.
+		Reserva reserva = reservaRepository.save(registrar(idEvento, username, registro));
+		pagos.abrirPago(reserva);
+		return reservaRepository.save(reserva);
+	}
+
+	@Override
+	@Transactional
+	public Reserva reservarDemo(Integer idEvento, String username, ReservaCrearDto registro) {
+		Reserva reserva = registrar(idEvento, username, registro);
+		reserva.setEstadoPago(EstadoPago.PAGADA);
+		reserva.setPagadaEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
+		return reservaRepository.save(reserva);
+	}
+
+	/** La reserva con su registro de asistencia, comprobada y sin guardar. */
+	private Reserva registrar(Integer idEvento, String username, ReservaCrearDto registro) {
 		Integer cantidad = registro.getCantidad();
 		Reserva reserva = nueva(idEvento, username, cantidad, registro.getObservaciones());
 
@@ -138,7 +163,7 @@ public class ReservaServiceImpl implements ReservaService {
 		if (registro.isAceptaComunicaciones()) {
 			reserva.getUsuario().setAceptaComunicaciones(true);
 		}
-		return reservaRepository.save(reserva);
+		return reserva;
 	}
 
 	/**
@@ -179,8 +204,19 @@ public class ReservaServiceImpl implements ReservaService {
 		int cantidad = datos.cantidad() == null ? reserva.getCantidad() : datos.cantidad();
 		Integer idEvento = datos.idEvento() == null ? reserva.getEvento().getIdEvento() : datos.idEvento();
 		boolean mueve = !idEvento.equals(reserva.getEvento().getIdEvento()) || cantidad != reserva.getCantidad();
+		BigDecimal antes = reserva.getPrecioVenta();
 		if (mueve) {
+			if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
+				throw new ConflictoNegocioException(
+						"Está pendiente de pago: la sesión y las plazas se cambian cuando se pague o caduque el pago");
+			}
 			reubicar(reserva, eventoService.bloquear(idEvento), cantidad);
+			// Ya cobrada, el importe puede bajar (se devuelve la diferencia), pero no subir: lo que falte se
+			// reserva aparte y se paga aparte.
+			if (reserva.getEstadoPago().cobrada() && reserva.getPrecioVenta().compareTo(antes) > 0) {
+				throw new ConflictoNegocioException(
+						"Ya está pagada y el importe subiría: añade las plazas en una reserva nueva");
+			}
 		}
 
 		boolean material = datos.materialExterno() == null ? reserva.isMaterialExterno() : datos.materialExterno();
@@ -203,6 +239,21 @@ public class ReservaServiceImpl implements ReservaService {
 			reserva.setMaterialDescripcion(material ? descripcion : null);
 		}
 		aplicarDatos(reserva, datos);
+		// Lo último, cuando todo lo demás ya vale: una devolución no se deshace.
+		pagos.devolver(reserva, antes.subtract(reserva.getPrecioVenta()));
+		return reservaRepository.save(reserva);
+	}
+
+	/** Cobrada en taquilla: lo que el admin marca cuando quien reservó por teléfono paga al llegar. */
+	@Override
+	@Transactional
+	public Reserva marcarCobrada(Integer idReserva) {
+		Reserva reserva = findById(idReserva);
+		if (reserva.cancelada() || reserva.getEstadoPago() != EstadoPago.EN_TAQUILLA) {
+			throw new ConflictoNegocioException("Solo se marcan como cobradas las reservas pendientes de pago en taquilla");
+		}
+		reserva.setEstadoPago(EstadoPago.COBRADA_TAQUILLA);
+		reserva.setPagadaEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
 		return reservaRepository.save(reserva);
 	}
 
@@ -321,26 +372,39 @@ public class ReservaServiceImpl implements ReservaService {
 		if (!eventoService.admiteCancelaciones(reserva.getEvento())) {
 			throw new ConflictoNegocioException("Las reservas se pueden cancelar hasta el día anterior a la sesión");
 		}
+		// Hasta el día anterior, el cliente recupera todo lo pagado.
+		pagos.cerrarPendiente(reserva);
+		pagos.devolver(reserva, pendienteDeDevolver(reserva));
 		cancelar(reserva, CanceladaPor.CLIENTE, null);
 		return 1;
 	}
 
-	/** Desde el panel, en cualquier momento antes de la sesión, pero siempre con su motivo. */
+	/**
+	 * Desde el panel, en cualquier momento antes de la sesión, siempre con su motivo. Lo cobrado se devuelve
+	 * salvo que se diga lo contrario (una reserva duplicada, por ejemplo, cuyo pago vale para la otra).
+	 */
 	@Override
 	@Transactional
-	public Reserva cancelarReservaAdmin(Integer idReserva, String motivo) {
+	public Reserva cancelarReservaAdmin(Integer idReserva, String motivo, boolean devolver) {
 		Reserva reserva = findById(idReserva);
 		comprobarViva(reserva, "La sesión ya no está activa: la reserva se queda como está");
 		String limpio = ErroresCampos.limpio(motivo);
 		new ErroresCampos().obligatorio("motivo", limpio, 200, "Indica el motivo de la cancelación").lanzarSiHay();
+		pagos.cerrarPendiente(reserva);
+		if (devolver) {
+			pagos.devolver(reserva, pendienteDeDevolver(reserva));
+		}
 		return cancelar(reserva, CanceladaPor.ALIENMILK, limpio);
+	}
+
+	/** Lo cobrado que aún no se ha devuelto. */
+	private static BigDecimal pendienteDeDevolver(Reserva reserva) {
+		return reserva.getPrecioVenta().subtract(reserva.getImporteDevuelto()).max(BigDecimal.ZERO);
 	}
 
 	/** Cancelar no borra: la reserva deja de ocupar plazas y se queda con quién, cuándo y por qué. */
 	private Reserva cancelar(Reserva reserva, CanceladaPor quien, String motivo) {
-		reserva.setCanceladaEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
-		reserva.setCanceladaPor(quien);
-		reserva.setMotivoCancelacion(motivo);
+		reserva.cancelar(quien, motivo, LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
 		return reservaRepository.save(reserva);
 	}
 

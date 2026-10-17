@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { ReservationService } from '../../../core/services/reservation.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
@@ -15,6 +15,8 @@ import {
   plural,
   reservationState,
   cancellationLine,
+  formatTime,
+  paymentBadge,
 } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
 
@@ -33,6 +35,8 @@ export class AccountReservationsPanelComponent {
   private readonly reservationService = inject(ReservationService);
   private readonly confirm = inject(PanelConfirmService);
   readonly store = inject(AccountStore);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly notice = signal<{ text: string; error: boolean } | null>(null);
 
@@ -54,6 +58,54 @@ export class AccountReservationsPanelComponent {
 
   readonly state = reservationState;
   readonly cancellation = (reserva: Reserva) => cancellationLine(reserva, true);
+  readonly payment = paymentBadge;
+  readonly refunded = (reserva: Reserva) => Number(reserva.importeDevuelto);
+
+  /**
+   * Al volver de Stripe (?pago=hecho o ?pago=cancelado y ?reserva=), en cuanto llegan las reservas,
+   * ya puestas al día por el servidor: qué ha pasado con esa. Se dice una vez y se limpia la dirección.
+   */
+  constructor() {
+    const params = this.route.snapshot.queryParamMap;
+    const pago = params.get('pago');
+    const idReserva = Number(params.get('reserva'));
+    if (!pago || !idReserva) {
+      return;
+    }
+    let done = false;
+    effect(() => {
+      const reserva = this.store.reservations()?.find((item) => item.idReserva === idReserva);
+      if (done || !reserva) {
+        return;
+      }
+      done = true;
+      untracked(() => {
+        this.notice.set(this.returnNotice(pago, reserva));
+        void this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { pago: null, reserva: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+          scroll: 'manual',
+        });
+      });
+    });
+  }
+
+  private returnNotice(pago: string, reserva: Reserva): { text: string; error: boolean } {
+    const sesion = `«${reserva.nombreEvento}»`;
+    if (reserva.estadoPago === 'PAGADA') {
+      return { text: `Pago recibido: tu reserva de ${sesion} está confirmada.`, error: false };
+    }
+    if (reserva.canceladaEn) {
+      return { text: `El pago de ${sesion} no se completó a tiempo y la reserva se ha anulado.`, error: true };
+    }
+    if (pago === 'hecho') {
+      return { text: `Estamos confirmando tu pago de ${sesion}. En unos minutos aparecerá como pagada.`, error: false };
+    }
+    const hasta = reserva.pagoCaducaEn ? ` hasta las ${formatTime(reserva.pagoCaducaEn)}` : '';
+    return { text: `No has completado el pago de ${sesion}. Guardamos tus plazas${hasta}: puedes pagar desde aquí.`, error: true };
+  }
   readonly day = formatDay;
   readonly when = reservationWhen;
   readonly credential = credentialLabel;

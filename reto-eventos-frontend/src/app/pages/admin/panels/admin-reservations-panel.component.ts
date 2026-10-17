@@ -39,6 +39,12 @@ import {
 } from '../../../shared/panel/panel-format';
 import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
+import {
+  FilterBarComponent,
+  FilterField,
+  FilterPreset,
+  FilterValues,
+} from '../../../shared/panel/filter-bar.component';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
@@ -46,11 +52,79 @@ import { DemoFootComponent } from '../demo-foot.component';
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
 
+/** Los filtros y lo que valen sin filtrar: lo vivo de todas las sesiones, de cualquier fecha, pago y cliente. */
+const FILTER_DEFAULTS: FilterValues = {
+  q: '',
+  sesion: '',
+  estado: 'vivas',
+  fecha: '',
+  desde: '',
+  hasta: '',
+  pago: '',
+  revision: '',
+  cliente: '',
+};
+
+/** Los días como en la dirección y en la API (2026-11-20), en la hora de quien mira. */
+const isoDay = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+const addDays = (date: Date, days: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+
 /**
- * Lo vivo, por el estado de su sesión (confirmadas, de sesión cancelada o celebradas) o lo que requiere
- * revisión; y, aparte, las canceladas y las de sesiones archivadas, que no se borran pero no estorban.
+ * Si una reserva pasa los filtros que no son de texto ni de sesión (esos los mira `searched`): su estado,
+ * su fecha, su pago, su revisión y si tiene cuenta. Pura: la usan la tabla y las cuentas de los filtros listos.
  */
-type Filter = 'TODAS' | EstadoEvento | 'REVISION' | 'CANCELADAS' | 'ARCHIVADAS';
+function passes(reserva: Reserva, values: FilterValues, today = new Date()): boolean {
+  const vivas = live(reserva);
+  const estado = {
+    vivas,
+    confirmadas: vivas && reserva.estadoEvento === 'ACTIVO',
+    'sesion-cancelada': vivas && reserva.estadoEvento === 'CANCELADO',
+    celebradas: vivas && reserva.estadoEvento === 'TERMINADO',
+    canceladas: !!reserva.canceladaEn && !reserva.sesionArchivada,
+    archivadas: reserva.sesionArchivada,
+    todas: true,
+  }[values['estado'] || 'vivas'];
+  if (!estado) {
+    return false;
+  }
+  const day = reserva.fechaInicioEvento;
+  const hoy = isoDay(today);
+  const fecha = {
+    '': true,
+    hoy: day === hoy,
+    manana: day === isoDay(addDays(today, 1)),
+    semana: day >= hoy && day <= isoDay(addDays(today, 6)),
+    mes: day >= hoy && day <= isoDay(addDays(today, 30)),
+    pasadas: day < hoy,
+    rango: (!values['desde'] || day >= values['desde']) && (!values['hasta'] || day <= values['hasta']),
+  }[values['fecha'] ?? ''];
+  if (!fecha) {
+    return false;
+  }
+  const pago = {
+    '': true,
+    pendiente: reserva.estadoPago === 'PENDIENTE',
+    tarjeta: reserva.estadoPago === 'PAGADA',
+    taquilla: reserva.estadoPago === 'EN_TAQUILLA',
+    cobrada: reserva.estadoPago === 'COBRADA_TAQUILLA',
+    devolver: (reserva.devoluciones ?? []).some((devolucion) => devolucion.estado === 'PENDIENTE'),
+  }[values['pago'] ?? ''];
+  if (!pago) {
+    return false;
+  }
+  const revision = {
+    '': true,
+    alguna: reserva.revision !== null,
+    pendiente: reserva.revision === 'PENDIENTE' && !reserva.canceladaEn,
+    aceptada: reserva.revision === 'ACEPTADA',
+    'no-aceptada': reserva.revision === 'NO_ACEPTADA',
+  }[values['revision'] ?? ''];
+  if (!revision) {
+    return false;
+  }
+  return { '': true, 'con-cuenta': !!reserva.username, 'sin-cuenta': !reserva.username }[values['cliente'] ?? ''] ?? true;
+}
 
 /** Ni cancelada ni de una sesión archivada: lo que se mira a diario. */
 const live = (reserva: Reserva) => !reserva.canceladaEn && !reserva.sesionArchivada;
@@ -160,7 +234,15 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent, ReservationEditorComponent, KeepHeightDirective, DemoFootComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    PanelDialogComponent,
+    ReservationEditorComponent,
+    KeepHeightDirective,
+    DemoFootComponent,
+    FilterBarComponent,
+  ],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -181,13 +263,19 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly notice = signal<{ text: string; error: boolean } | null>(null);
   readonly busy = signal<number | null>(null);
 
-  readonly query = signal('');
+  /**
+   * Los filtros, tal como están en la dirección (?estado=canceladas&pago=taquilla…): la barra los cambia
+   * navegando y aquí se leen. Así un filtro se guarda como marcador o se manda a otra persona.
+   */
+  readonly filterValues = signal<FilterValues>({ ...FILTER_DEFAULTS });
+  readonly filterDefaults = FILTER_DEFAULTS;
+  readonly query = computed(() => this.filterValues()['q'] ?? '');
   /** 0: todas las sesiones. */
-  readonly sessionFilter = signal(0);
+  readonly sessionFilter = computed(() => Number(this.filterValues()['sesion']) || 0);
+  /** Para que KeepHeight sepa que la lista ha cambiado por un filtro. */
+  readonly filterKey = computed(() => JSON.stringify(this.filterValues()));
 
-  readonly filter = signal<Filter>('TODAS');
-
-  /** Las de la sesión elegida (o todas) que coinciden con la búsqueda, antes de filtrar por estado. */
+  /** Las de la sesión elegida (o todas) que coinciden con la búsqueda, antes de los demás filtros. */
   private readonly searched = computed(() => {
     const idEvento = this.sessionFilter();
     const query = this.query();
@@ -210,28 +298,117 @@ export class AdminReservationsPanelComponent implements OnInit {
     );
   });
 
-  readonly filters = computed(() => {
-    const all = this.searched();
-    const list = all.filter(live);
-    const count = (estado: EstadoEvento) => list.filter((reserva) => reserva.estadoEvento === estado).length;
-    return [
-      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
-      { value: 'ACTIVO' as Filter, label: 'Confirmadas', count: count('ACTIVO') },
-      { value: 'CANCELADO' as Filter, label: 'Sesión cancelada', count: count('CANCELADO') },
-      { value: 'TERMINADO' as Filter, label: 'Celebradas', count: count('TERMINADO') },
-      {
-        value: 'REVISION' as Filter,
-        label: 'Requieren revisión',
-        count: list.filter((reserva) => reserva.requiereRevision).length,
-      },
-      {
-        value: 'CANCELADAS' as Filter,
-        label: 'Canceladas',
-        count: all.filter((reserva) => reserva.canceladaEn && !reserva.sesionArchivada).length,
-      },
-      { value: 'ARCHIVADAS' as Filter, label: 'Archivadas', count: all.filter((reserva) => reserva.sesionArchivada).length },
+  /** Los campos del panel de filtros. */
+  readonly filterFields = computed<FilterField[]>(() => [
+    { key: 'q', label: 'Buscar', type: 'text', placeholder: 'Localizador, nombre, correo, teléfono o participante' },
+    {
+      key: 'sesion',
+      label: 'Sesión',
+      type: 'select',
+      options: [
+        { value: '', label: 'Todas las sesiones' },
+        ...this.sessions().map((session) => ({
+          value: String(session.idEvento),
+          label: `${session.nombre} · ${formatDay(session.fechaInicio)}`,
+        })),
+      ],
+    },
+    {
+      key: 'fecha',
+      label: 'Fecha de la sesión',
+      type: 'select',
+      options: [
+        { value: '', label: 'Cualquier fecha' },
+        { value: 'hoy', label: 'Hoy' },
+        { value: 'manana', label: 'Mañana' },
+        { value: 'semana', label: 'Próximos 7 días' },
+        { value: 'mes', label: 'Próximos 30 días' },
+        { value: 'pasadas', label: 'Ya celebradas' },
+        { value: 'rango', label: 'Entre dos fechas' },
+      ],
+    },
+    { key: 'desde', label: 'Desde', type: 'date', showWhen: (values) => values['fecha'] === 'rango' },
+    { key: 'hasta', label: 'Hasta', type: 'date', showWhen: (values) => values['fecha'] === 'rango' },
+    {
+      key: 'estado',
+      label: 'Estado',
+      type: 'select',
+      options: [
+        { value: 'vivas', label: 'Vivas (sin canceladas ni archivadas)' },
+        { value: 'confirmadas', label: 'Confirmadas' },
+        { value: 'sesion-cancelada', label: 'De sesiones canceladas' },
+        { value: 'celebradas', label: 'Celebradas' },
+        { value: 'canceladas', label: 'Canceladas' },
+        { value: 'archivadas', label: 'Archivadas' },
+        { value: 'todas', label: 'Todas, también canceladas y archivadas' },
+      ],
+    },
+    {
+      key: 'pago',
+      label: 'Pago',
+      type: 'select',
+      options: [
+        { value: '', label: 'Cualquiera' },
+        { value: 'pendiente', label: 'Pendiente de pago con tarjeta' },
+        { value: 'tarjeta', label: 'Pagada con tarjeta' },
+        { value: 'taquilla', label: 'Por cobrar en taquilla' },
+        { value: 'cobrada', label: 'Cobrada en taquilla' },
+        { value: 'devolver', label: 'Con devolución por entregar' },
+      ],
+    },
+    {
+      key: 'revision',
+      label: 'Adaptaciones y material',
+      type: 'select',
+      options: [
+        { value: '', label: 'Cualquiera' },
+        { value: 'alguna', label: 'Con adaptaciones o material' },
+        { value: 'pendiente', label: 'Requieren revisión' },
+        { value: 'aceptada', label: 'Aceptadas' },
+        { value: 'no-aceptada', label: 'No aceptadas' },
+      ],
+    },
+    {
+      key: 'cliente',
+      label: 'Cliente',
+      type: 'select',
+      options: [
+        { value: '', label: 'Con o sin cuenta' },
+        { value: 'con-cuenta', label: 'Con cuenta' },
+        { value: 'sin-cuenta', label: 'Sin cuenta (por teléfono)' },
+      ],
+    },
+  ]);
+
+  /** Lo de todos los días, con cuántas hay ahora mismo (de todas las sesiones, sin la búsqueda). */
+  readonly filterPresets = computed<FilterPreset[]>(() => {
+    const presets: FilterPreset[] = [
+      { label: 'Hoy', values: { fecha: 'hoy' } },
+      { label: 'Próximos 7 días', values: { fecha: 'semana' } },
+      { label: 'Por cobrar en taquilla', values: { pago: 'taquilla' } },
+      { label: 'Pagos con tarjeta pendientes', values: { pago: 'pendiente' } },
+      { label: 'Requieren revisión', values: { revision: 'pendiente' } },
+      { label: 'Devoluciones por entregar', values: { pago: 'devolver', estado: 'todas' } },
+      { label: 'Canceladas', values: { estado: 'canceladas' } },
+      { label: 'Archivadas', values: { estado: 'archivadas' } },
     ];
+    const all = this.reservations();
+    return presets.map((preset) => ({
+      ...preset,
+      count: all.filter((reserva) => passes(reserva, { ...FILTER_DEFAULTS, ...preset.values })).length,
+    }));
   });
+
+  /** Aplicar filtros es navegar: la dirección cambia, la vista no se mueve, y se lee de vuelta en ngOnInit. */
+  applyFilters(values: FilterValues, extra: Record<string, string | null> = {}): void {
+    this.stay.set(null);
+    const queryParams: Record<string, string | null> = { cuenta: null, ...extra };
+    for (const key of Object.keys(FILTER_DEFAULTS)) {
+      const value = values[key] ?? '';
+      queryParams[key] = value === FILTER_DEFAULTS[key] ? null : value;
+    }
+    this.go(queryParams);
+  }
 
   /** El orden de la tabla: por la fecha de la sesión, de la más próxima a la más lejana. */
   readonly sort = new TableSort<SortKey>('fecha');
@@ -249,7 +426,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   ];
 
   readonly visible = computed(() => {
-    const filter = this.filter();
+    const values = this.filterValues();
     const { key, dir } = this.sort.state();
     const compare = COMPARE[key];
     const stay = this.stay();
@@ -258,18 +435,7 @@ export class AdminReservationsPanelComponent implements OnInit {
         if (reserva.idReserva === stay) {
           return true;
         }
-        switch (filter) {
-          case 'ARCHIVADAS':
-            return reserva.sesionArchivada;
-          case 'CANCELADAS':
-            return !!reserva.canceladaEn && !reserva.sesionArchivada;
-          case 'TODAS':
-            return live(reserva);
-          case 'REVISION':
-            return live(reserva) && reserva.requiereRevision;
-          default:
-            return live(reserva) && reserva.estadoEvento === filter;
-        }
+        return passes(reserva, values);
       })
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idReserva - b.idReserva);
   });
@@ -441,12 +607,10 @@ export class AdminReservationsPanelComponent implements OnInit {
   /** De una sesión a sus reservas, una por una: la vista por reserva filtrada por esa sesión. */
   openSessionReservations(idEvento: number): void {
     this.stay.set(null);
-    this.filter.set('TODAS');
-    this.query.set('');
     this.expanded.set(null);
     this.view.set('reservas');
-    this.sessionFilter.set(idEvento);
-    this.go({ ver: null, sesion: idEvento });
+    this.filterValues.set({ ...FILTER_DEFAULTS, sesion: String(idEvento) });
+    this.applyFilters(this.filterValues(), { ver: null });
   }
 
   toggleClient(username: string): void {
@@ -465,18 +629,10 @@ export class AdminReservationsPanelComponent implements OnInit {
     }
   }
 
-  /** Cambiar de filtro suelta la reserva recién cancelada: ya está en «Canceladas». */
-  setFilter(filter: Filter): void {
-    this.stay.set(null);
-    this.filter.set(filter);
-  }
-
   /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
   private clearFilters(): void {
     this.stay.set(null);
-    this.filter.set('TODAS');
-    this.query.set('');
-    this.sessionFilter.set(0);
+    this.filterValues.set({ ...FILTER_DEFAULTS });
   }
 
   /**
@@ -550,10 +706,14 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly maxPlazas = MAX_PLAZAS;
 
   ngOnInit(): void {
-    // Desde Usuarios llega la cuenta a buscar; el filtro de sesión sigue a la dirección.
-    this.query.set(this.route.snapshot.queryParamMap.get('cuenta') ?? '');
+    // Los filtros siguen a la dirección. Desde Usuarios llega ?cuenta=, que es buscar esa cuenta.
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      this.sessionFilter.set(Number(params.get('sesion')) || 0);
+      const values: FilterValues = { ...FILTER_DEFAULTS };
+      for (const key of Object.keys(FILTER_DEFAULTS)) {
+        values[key] = params.get(key) ?? FILTER_DEFAULTS[key];
+      }
+      values['q'] = params.get('q') ?? params.get('cuenta') ?? '';
+      this.filterValues.set(values);
       const view = params.get('ver');
       this.view.set(view === 'clientes' || view === 'sesiones' ? view : 'reservas');
     });
@@ -591,13 +751,7 @@ export class AdminReservationsPanelComponent implements OnInit {
    * de página: la vista se queda donde está (scroll: 'manual', como en /sesiones).
    */
   filterBySession(idEvento: number): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { sesion: idEvento || null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-      scroll: 'manual',
-    });
+    this.applyFilters({ ...this.filterValues(), sesion: idEvento ? String(idEvento) : '' });
   }
 
   /**

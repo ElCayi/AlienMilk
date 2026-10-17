@@ -6,11 +6,12 @@ const MARGIN = 12;
  * pulsada por encima de la vista, debajo de la barra fija: si la ficha no cabe, la fila se queda arriba
  * del todo y el resto se ve bajando a mano. Si ya se ve entera, la vista no se mueve.
  */
-export function revealExpanded(detail: HTMLElement | null): void {
+export function revealExpanded(detail: HTMLElement | null, anchor?: HTMLElement): void {
   if (!detail) {
     return;
   }
-  const row = (detail.previousElementSibling as HTMLElement | null) ?? detail;
+  // Lo que no puede quedar por encima de la vista: la fila pulsada (o lo que se pase, como la barra de filtros).
+  const row = anchor ?? (detail.previousElementSibling as HTMLElement | null) ?? detail;
   const top = (document.querySelector('.bar')?.getBoundingClientRect().bottom ?? 0) + MARGIN;
   const bottom = window.innerHeight - MARGIN;
   const rowTop = row.getBoundingClientRect().top;

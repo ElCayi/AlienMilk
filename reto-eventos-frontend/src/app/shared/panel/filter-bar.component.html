@@ -1,0 +1,120 @@
+<div class="filter-bar" [class.is-open]="open()">
+  <div class="filter-field">
+    <svg class="filter-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+    <!-- Lo activo, en chips: cada uno se quita con su ✕. -->
+    @for (chip of chips(); track chip.key) {
+      <span class="filter-chip">
+        {{ chip.label }}
+        <button type="button" [attr.aria-label]="'Quitar el filtro ' + chip.label" (click)="removeChip(chip.key)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+        </button>
+      </span>
+    }
+    <input
+      #text
+      type="search"
+      [attr.aria-label]="placeholder()"
+      [placeholder]="chips().length ? '' : placeholder()"
+      [ngModel]="values()[textKey()] ?? ''"
+      (ngModelChange)="setText($event)"
+    />
+    @if (active()) {
+      <button type="button" class="filter-clear" aria-label="Quitar todos los filtros" (click)="clearAll()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+      </button>
+    }
+  </div>
+  <button
+    type="button"
+    class="btn filter-toggle"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="panelId"
+    (click)="toggle()"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+    Filtros
+  </button>
+
+  @if (open()) {
+    <div class="filter-panel" [id]="panelId" role="dialog" aria-label="Filtros">
+      <!-- A la izquierda, lo de todos los días y lo que haya guardado cada cual. -->
+      <aside class="filter-presets">
+        <ul>
+          @for (preset of presets(); track preset.label) {
+            <li>
+              <button type="button" (click)="usePreset(preset.values)">
+                <span>{{ preset.label }}</span>
+                @if (preset.count !== undefined) {
+                  <span class="segmented-count">{{ preset.count }}</span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+        @if (saved().length) {
+          <p class="filter-presets-title">Mis filtros</p>
+          <ul>
+            @for (item of saved(); track item.nombre) {
+              <li class="filter-saved">
+                <button type="button" (click)="usePreset(item.valores)"><span>{{ item.nombre }}</span></button>
+                <button
+                  type="button"
+                  class="filter-saved-remove"
+                  [attr.aria-label]="'Borrar el filtro ' + item.nombre"
+                  (click)="removeSaved(item.nombre)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+        @if (saving()) {
+          <form class="filter-save" (ngSubmit)="saveDraft()">
+            <label class="visually-hidden" for="{{ panelId }}-name">Nombre del filtro</label>
+            <input [id]="panelId + '-name'" name="nombre" maxlength="40" placeholder="Nombre del filtro" [(ngModel)]="saveName" />
+            <button type="submit" class="btn btn-small">Guardar</button>
+          </form>
+        } @else {
+          <button type="button" class="text-link filter-save-open" (click)="saving.set(true)">+ Guardar este filtro</button>
+        }
+      </aside>
+
+      <!-- A la derecha, los campos: se combinan y se aplican de una vez. -->
+      <form class="filter-fields" (ngSubmit)="apply()">
+        <div class="form-grid">
+          @for (field of visibleFields(); track field.key) {
+            <div class="field" [class.is-wide]="field.type === 'text'">
+              <label class="field-label" [for]="panelId + '-' + field.key">{{ field.label }}</label>
+              @switch (field.type) {
+                @case ('select') {
+                  <select [id]="panelId + '-' + field.key" [name]="field.key" [(ngModel)]="draft[field.key]">
+                    @for (option of field.options; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                }
+                @case ('date') {
+                  <input type="date" [id]="panelId + '-' + field.key" [name]="field.key" [(ngModel)]="draft[field.key]" />
+                }
+                @default {
+                  <input
+                    type="search"
+                    [id]="panelId + '-' + field.key"
+                    [name]="field.key"
+                    [placeholder]="field.placeholder ?? ''"
+                    [(ngModel)]="draft[field.key]"
+                  />
+                }
+              }
+            </div>
+          }
+        </div>
+        <div class="filter-actions">
+          <button type="button" class="btn" (click)="reset()">Reiniciar</button>
+          <button type="submit" class="btn btn-primary">Aplicar</button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

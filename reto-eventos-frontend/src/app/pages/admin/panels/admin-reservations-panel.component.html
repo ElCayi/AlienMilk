@@ -28,36 +28,16 @@
 </div>
 
 <div class="toolbar">
-  <label class="search">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-    <span class="visually-hidden">Buscar reservas</span>
-    <input
-      type="search"
-      placeholder="Localizador, nombre, correo, teléfono o sesión"
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)"
-    />
-  </label>
-  <label>
-    <span class="visually-hidden">Filtrar por sesión</span>
-    <select [ngModel]="sessionFilter()" (ngModelChange)="filterBySession($event)">
-      <option [ngValue]="0">Todas las sesiones</option>
-      @for (session of sessions(); track session.idEvento) {
-        <option [ngValue]="session.idEvento">{{ session.nombre }} · {{ day(session.fechaInicio) }}</option>
-      }
-    </select>
-  </label>
-  <div class="segmented" role="group" aria-label="Filtrar por estado">
-    @for (option of filters(); track option.value) {
-      <button
-        type="button"
-        [attr.aria-pressed]="filter() === option.value"
-        (click)="setFilter(option.value)"
-      >
-        {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
-      </button>
-    }
-  </div>
+  <!-- Una sola barra: se escribe para buscar y «Filtros» abre los filtros listos y los campos. -->
+  <app-filter-bar
+    [fields]="filterFields()"
+    [presets]="filterPresets()"
+    [values]="filterValues()"
+    [defaults]="filterDefaults"
+    placeholder="Buscar por localizador, nombre, correo, teléfono o participante"
+    storageKey="am-filtros-reservas"
+    (valuesChange)="applyFilters($event)"
+  />
   <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->
   <div class="sort-select">
     <span id="reservations-sort-label">Ordenar por</span>
@@ -101,7 +81,7 @@
 } @else {
   @switch (view()) {
     @case ('clientes') {
-      <div class="table-wrap" [appKeepHeight]="'c' + filter() + query() + sessionFilter()">
+      <div class="table-wrap" [appKeepHeight]="'c' + filterKey()">
         <table class="data-table is-expandable">
           <caption>Clientes con reservas coincidentes. Las cifras y la ficha incluyen todas sus reservas.</caption>
           <thead>
@@ -245,7 +225,7 @@
       </div>
     }
     @case ('sesiones') {
-      <div class="table-wrap" [appKeepHeight]="'s' + filter() + query() + sessionFilter()">
+      <div class="table-wrap" [appKeepHeight]="'s' + filterKey()">
         <table class="data-table is-expandable">
           <caption>Sesiones con reservas coincidentes. La ocupación y la ficha incluyen todas sus reservas.</caption>
           <thead>
@@ -376,7 +356,7 @@
       </div>
     }
     @default {
-      <div class="table-wrap" [appKeepHeight]="filter() + query() + sessionFilter()">
+      <div class="table-wrap" [appKeepHeight]="filterKey()">
         <table class="data-table is-expandable">
           <caption>Reservas. Pulsa una para ver su ficha y sus acciones.</caption>
           <thead>

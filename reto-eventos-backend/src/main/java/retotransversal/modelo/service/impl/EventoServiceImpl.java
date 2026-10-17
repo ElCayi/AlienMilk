@@ -39,6 +39,8 @@ public class EventoServiceImpl implements EventoService {
 
 	/** Las reservas cierran con el control de ingreso, estos minutos antes de empezar. */
 	public static final int MINUTOS_CIERRE_RESERVAS = 10;
+	/** Las de la web cierran antes: el plazo de pago de Stripe (30 minutos) más el cierre de la puerta. */
+	public static final int MINUTOS_CIERRE_RESERVAS_ONLINE = 40;
 
 	private final EventoRepository eventoRepository;
 	private final ReservaRepository reservaRepository;
@@ -203,6 +205,11 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public boolean admiteReservas(Evento evento) {
 		return ahora().isBefore(evento.inicio().minusMinutes(MINUTOS_CIERRE_RESERVAS));
+	}
+
+	@Override
+	public boolean admiteReservasOnline(Evento evento) {
+		return ahora().isBefore(evento.inicio().minusMinutes(MINUTOS_CIERRE_RESERVAS_ONLINE));
 	}
 
 	@Override

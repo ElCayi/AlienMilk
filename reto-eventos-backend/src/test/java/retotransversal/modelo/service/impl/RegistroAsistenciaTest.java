@@ -100,6 +100,24 @@ class RegistroAsistenciaTest {
 		assertThat(ana.isAceptaComunicaciones()).isTrue();
 	}
 
+	@Test
+	void theWebStopsTakingBookings40MinutesBeforeSoPaymentEndsBeforeTheDoorCloses() throws Exception {
+		// Empieza dentro de media hora: por teléfono aún se podría (hasta 10 minutos antes), por la web no.
+		when(eventos.findById(6)).thenReturn(Optional.of(Evento.builder().idEvento(6).nombre("Ya casi")
+				.fechaInicio(LocalDate.of(2026, 10, 16)).horaInicio(LocalTime.of(12, 30)).duracion(60)
+				.estado(EstadoEvento.ACTIVO).aforoMaximo(50).precio(new BigDecimal("20.00")).build()));
+		mvc.perform(post("/api/reservas/evento/6").principal(new UsernamePasswordAuthenticationToken("ana", null, List.of()))
+				.contentType(MediaType.APPLICATION_JSON).content("""
+						{"cantidad": 1, "telefono": "+34 600 123 456",
+						 "asistentes": [{"nombre": "Ana Lopez", "credencial": "DNI_NIE"}],
+						 "aceptaEdad": true, "aceptaCondiciones": true}
+						"""))
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.message")
+						.value("Las reservas online de esta sesión ya están cerradas: cierran 40 minutos antes de empezar"));
+		verify(reservas, never()).save(any());
+	}
+
 	private static org.springframework.test.web.servlet.RequestBuilder reservar(String cuerpo) {
 		return post("/api/reservas/evento/5").principal(new UsernamePasswordAuthenticationToken("ana", null, List.of()))
 				.contentType(MediaType.APPLICATION_JSON).content(cuerpo);

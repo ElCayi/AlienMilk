@@ -151,7 +151,8 @@
                         class="sheet-check"
                         [attr.aria-pressed]="!!row.entrada"
                         [attr.aria-label]="(row.entrada ? 'Deshacer la entrada de ' : 'Marcar la entrada de ') + row.nombre"
-                        [disabled]="saving() === key(row)"
+                        [disabled]="saving() === key(row) || row.reserva.estadoPago === 'PENDIENTE'"
+                        [title]="row.reserva.estadoPago === 'PENDIENTE' ? 'Pendiente de pago con tarjeta: no puede entrar todavía' : ''"
                         (click)="toggleEntry(row)"
                       >
                         <span class="sheet-box" aria-hidden="true"></span>
@@ -168,7 +169,8 @@
                             class="sheet-check"
                             [attr.aria-pressed]="seat < row.dentro"
                             [attr.aria-label]="'Plaza ' + (seat + 1) + ' de ' + row.reserva.nombreCliente"
-                            [disabled]="saving() === key(row)"
+                            [disabled]="saving() === key(row) || row.reserva.estadoPago === 'PENDIENTE'"
+                            [title]="row.reserva.estadoPago === 'PENDIENTE' ? 'Pendiente de pago con tarjeta: no puede entrar todavía' : ''"
                             (click)="setSeatsInside(row, seat)"
                           >
                             <span class="sheet-box" aria-hidden="true"></span>
@@ -207,7 +209,7 @@
                       </button>
                       <span class="sheet-print-only sheet-alert">Cobrar en taquilla: {{ money(row.reserva.precioVenta) }}</span>
                     } @else if (row.first && row.reserva.estadoPago === 'PENDIENTE') {
-                      <span class="cell-sub sheet-alert">Pendiente de pago con tarjeta</span>
+                      <span class="cell-sub sheet-alert">Pendiente de pago con tarjeta: no puede entrar todavía</span>
                     } @else if (row.first && row.reserva.estadoPago === 'COBRADA_TAQUILLA') {
                       <span class="cell-sub">Cobrada en taquilla</span>
                     }

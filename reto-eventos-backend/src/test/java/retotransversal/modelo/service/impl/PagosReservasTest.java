@@ -188,4 +188,15 @@ class PagosReservasTest {
 		assertThat(pagada.getCanceladaPor()).isEqualTo(CanceladaPor.SISTEMA);
 		assertThat(enTaquilla.cancelada()).isFalse();
 	}
+
+	@Test
+	void nobodyComesInWhileTheCardPaymentIsPending() {
+		Reserva reserva = reserva(EstadoPago.PENDIENTE, 1);
+		reserva.getAsistentes().add(retotransversal.modelo.entities.Asistente.builder().orden(1).nombre("Ana")
+				.credencial(retotransversal.modelo.entities.Credencial.DNI_NIE).reserva(reserva).build());
+
+		assertThatThrownBy(() -> servicio.marcarEntrada(7, 1, true))
+				.isInstanceOf(ConflictoNegocioException.class)
+				.hasMessage("Está pendiente de pago con tarjeta: no puede entrar hasta que se pague");
+	}
 }

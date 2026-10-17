@@ -47,6 +47,13 @@ public interface EventoService extends CrudGenerico<Evento, Integer> {
 	 */
 	boolean admiteReservas(Evento evento);
 
+	/**
+	 * Si todavía admite reservas desde la web, que se pagan con tarjeta: hasta 40 minutos antes, los 30
+	 * que Stripe da como mínimo para pagar más los 10 del cierre del control de ingreso. Así nadie paga con
+	 * la puerta ya cerrada. Por teléfono o en taquilla, hasta el cierre (ver admiteReservas).
+	 */
+	boolean admiteReservasOnline(Evento evento);
+
 	/** Si una reserva suya aún se puede cancelar: hasta el día anterior, como dicen sus preguntas frecuentes. */
 	boolean admiteCancelaciones(Evento evento);
 

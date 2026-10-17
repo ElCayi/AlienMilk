@@ -98,7 +98,12 @@ public class ReservaServiceImpl implements ReservaService {
 	@Transactional
 	public Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro) {
 		// Guardada primero (el pago necesita su localizador); si el pago no se puede abrir, se deshace todo.
-		Reserva reserva = reservaRepository.save(registrar(idEvento, username, registro));
+		Reserva reserva = registrar(idEvento, username, registro);
+		if (!eventoService.admiteReservasOnline(reserva.getEvento())) {
+			throw new ConflictoNegocioException(
+					"Las reservas online de esta sesión ya están cerradas: cierran 40 minutos antes de empezar");
+		}
+		reserva = reservaRepository.save(reserva);
 		pagos.abrirPago(reserva);
 		return reservaRepository.save(reserva);
 	}
@@ -294,6 +299,10 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		if (reserva.getEvento().getEstado() == EstadoEvento.CANCELADO) {
 			throw new ConflictoNegocioException("Su sesión está cancelada");
+		}
+		// En taquilla se cobra al entrar; con tarjeta, primero tiene que llegar el pago.
+		if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
+			throw new ConflictoNegocioException("Está pendiente de pago con tarjeta: no puede entrar hasta que se pague");
 		}
 		return reserva;
 	}

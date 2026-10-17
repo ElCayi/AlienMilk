@@ -9,9 +9,9 @@
 
     <div class="us-hero-grid">
       <div class="us-hero-copy">
-        <p class="eyebrow">
+        <p class="eyebrow" appFitLine>
           <span class="eyebrow-icon" aria-hidden="true"></span>
-          <span>Una institución dedicada a lo que nos une</span>
+          <span>Dedicados a lo que nos une</span>
         </p>
         <h1 id="us-title" class="visually-hidden">Nosotros</h1>
         <!-- Nota firmada, como la presentación del programa en la portada. Texto de la usuaria,
@@ -24,7 +24,7 @@
             nueva muestra a través de la <b>investigación</b>, la <b>preservación</b> y la
             <b>degustación</b>.
           </p>
-          <figcaption class="us-hero-signature">Dirección general · AlienMilk</figcaption>
+          <figcaption class="us-hero-signature" appFitLine>Dirección general · AlienMilk</figcaption>
         </figure>
         <a class="us-explore" routerLink="/sesiones">
           <span class="us-explore-label">Descubrir sesiones</span>
@@ -160,8 +160,8 @@
     <div class="us-definition-body">
       <div class="us-definition-grid us-work-grid">
         <div class="us-work-block">
-          <h2 id="us-work-title">Del origen a la mesa.</h2>
-          <p class="us-work-subtitle">Cada etapa bajo nuestro control.</p>
+          <h2 id="us-work-title" appFitLine>Del origen a la mesa.</h2>
+          <p class="us-work-subtitle" appFitLine>Cada etapa bajo nuestro control.</p>
           <p class="us-work-text">
             AlienMilk opera mediante un <b>modelo empresarial de integración vertical</b> que abarca
             desde la identificación de nuevas fuentes biológicas hasta el desarrollo y
@@ -258,7 +258,7 @@
             <span class="eyebrow-icon" aria-hidden="true"></span>02 / Nuestro trabajo — 2
           </p>
           <h3>Bajo custodia.</h3>
-          <p class="us-work-subtitle">Cada lote, trazado de principio a fin.</p>
+          <p class="us-work-subtitle" appFitLine>Cada lote, trazado de principio a fin.</p>
           <p class="us-work-text">
             La cadena de custodia de AlienMilk se fundamenta en un
             <b>sistema de trazabilidad integral</b> que vincula cada lote a su fuente biológica, las
@@ -439,8 +439,8 @@
     <div class="us-definition-body">
       <div class="us-definition-grid us-work-grid">
         <div class="us-work-block">
-          <h2 id="us-eco-more-title">Conservar lo imposible.</h2>
-          <p class="us-work-subtitle">Distinción de Custodia Continuada.</p>
+          <h2 id="us-eco-more-title" appFitLine>Conservar lo imposible.</h2>
+          <p class="us-work-subtitle" appFitLine>Distinción de Custodia Continuada.</p>
           <p class="us-work-text">
             AlienMilk ha sido distinguida durante más de dos siglos por sus contribuciones a las
             <b>ciencias de la preservación biológica</b>.
@@ -506,7 +506,7 @@
             <span class="eyebrow-icon" aria-hidden="true"></span>04 / El ecosistema — 2
           </p>
           <h3 appFitLine [appFitLineMin]="32">Del Archivo a la experiencia.</h3>
-          <p class="us-work-subtitle">Producción, distribución y coleccionismo.</p>
+          <p class="us-work-subtitle" appFitLine>Producción, distribución y coleccionismo.</p>
           <p class="us-work-text">
             La conservación es solo el principio. A partir de
             <b>bancos celulares maestros, tejidos secretores y cultivos productores</b>, AlienMilk
@@ -639,7 +639,7 @@
           type="button"
           class="us-arch-toggle"
           [attr.aria-expanded]="archOpen()"
-          (click)="archOpen.set(!archOpen())"
+          (click)="toggleArch()"
         >
           {{ archOpen() ? 'Replegar' : 'Desplegar' }}
           <span aria-hidden="true">{{ archOpen() ? '−' : '+' }}</span>
@@ -901,7 +901,7 @@
         <app-collaborators-door />
       </div>
       <div class="us-invitation-copy">
-        <p class="us-kicker">Programa de colaboradores</p>
+        <p class="us-kicker"><span class="eyebrow-icon" aria-hidden="true"></span>Programa de colaboradores</p>
         <h2 id="us-invitation-title">Hay un sitio <br />para usted.</h2>
         <p>Sin compromiso, sin prisas y sin complicaciones.</p>
         <p class="us-invitation-motto"><span>El dolor es temporal.</span> La gloria es eterna.</p>

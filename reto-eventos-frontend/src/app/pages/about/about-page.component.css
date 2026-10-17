@@ -479,6 +479,10 @@ h2 em {
 .us-label span:first-child,
 .us-work-eyebrow,
 .us-kicker {
+  /* Con su minimilk delante, como los demás rótulos. */
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
   color: var(--coral);
 }
 
@@ -757,8 +761,10 @@ h2 em {
   font-size: 1.32em;
   font-weight: 700;
   line-height: 1.42;
-  text-align: left;
-  text-wrap: pretty;
+  text-align: justify;
+  text-align-last: left;
+  text-justify: inter-character;
+  hyphens: auto;
 }
 
 .us-definition-copy b,
@@ -2380,9 +2386,12 @@ h2 em {
     display: none;
   }
 
-  /* Con tan pocas palabras por línea, justificar abre huecos: la nota va en bandera. */
+  /* Justificada como en escritorio, con la última línea a la izquierda: a todo el ancho del móvil y
+     con guiones, ya no abre huecos (antes iba en bandera). */
   .us-hero-lead {
-    text-align: left;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
   }
 
   .us-functions {
@@ -3092,5 +3101,211 @@ h2 em {
 
   .us-work--banded + .us-ecosystem .us-eco-visual--top {
     border-top-left-radius: 0;
+  }
+}
+
+/* Móvil (hasta 600 px): de «Nuestro campo» hacia abajo, cada sección sale de la columna de la página
+   y ocupa todo el ancho de la pantalla, con menos relleno a los lados: en una pantalla tan
+   estrecha, el texto y las fotos aprovechan todo el ancho. */
+@media (max-width: 600px) {
+  .us > section {
+    --inset: 12vw;
+    margin-inline: calc(50% - 50vw);
+  }
+
+  /* El texto, al margen de la portada (12 % del ancho a cada lado); las fotos y las tarjetas oscuras,
+     más anchas que él, a 16 px del borde, como las imágenes de la portada. */
+  .us-definition .us-definition-visual,
+  .us-work-visual,
+  .us-eco-visual,
+  .us-work-band,
+  .us-eco-states,
+  .us-chain {
+    margin-inline: calc(1rem - var(--inset));
+  }
+
+  /* La cita y el rótulo de la organización no tienen relleno propio (los separaba la columna): el
+     suyo, para que su texto quede donde el de las demás secciones. El tablero llega al borde. */
+  .us > .us-team,
+  .us-org > .us-org-label {
+    padding-inline: var(--inset);
+  }
+
+  /* Las secciones claras, una sola hoja: 40 px de aire arriba y abajo en todas, y esquinas solo por
+     fuera (arriba de la primera, abajo de la última). En las uniones, rectas: a todo el ancho, sus
+     esquinas dejaban asomar la textura como un pico en el borde. */
+  .us > .us-definition,
+  .us > .us-ecosystem {
+    padding-block: 2.5rem;
+  }
+
+  #campo {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .us > .us-work--banded,
+  .us > .us-ecosystem {
+    border-radius: 0;
+  }
+
+  .us > .us-eco-more {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  /* Los cuatro títulos de los bloques, y sus subtítulos, a un mismo tamaño: el que deja en una línea
+     al más largo («Del Archivo a la experiencia.» y «Producción, distribución y coleccionismo.»),
+     en proporción al ancho. Cada uno encogía por su cuenta y quedaban todos distintos. */
+  .us .us-work-block > h2,
+  .us .us-work-block > h3 {
+    font-size: 7.3vw;
+  }
+
+  .us .us-work-block > .us-work-subtitle {
+    font-size: 3.8vw;
+  }
+
+  /* Rótulo de sub-bloque → título, el mismo aire que rótulo de sección → título (24 px a la vista). */
+  .us-work-block .us-work-eyebrow {
+    margin-bottom: 0.95rem;
+  }
+
+  /* El Archivo, con el mismo ritmo que las demás: 20 px del subtítulo a la entrada y entre párrafos. */
+  .us-ecosystem .us-eco-label-aside {
+    margin-bottom: 1.25rem;
+  }
+
+  .us-ecosystem .us-work-block .us-eco-lead {
+    margin-bottom: 0;
+  }
+
+  .us-ecosystem .us-eco-lead + .us-work-text,
+  .us-ecosystem .us-eco-fit .us-work-text + .us-work-text {
+    margin-top: 1.2em;
+  }
+
+  /* Sobre la textura, el mismo aire entre la cita, la organización y la invitación. */
+  .us > .us-invitation {
+    padding-block: 4.5rem;
+  }
+
+  /* La cabecera, también a lo ancho, con su texto a 16 px como el de las secciones; y de ella a la
+     primera tarjeta, el aire de la textura a una tarjeta (72 px, con los 20 de su índice). */
+  .us > .us-hero {
+    --inset: 12vw;
+    margin-inline: calc(50% - 50vw);
+    padding-inline: var(--inset);
+    padding-bottom: 3.25rem;
+  }
+
+  /* «Descubrir sesiones», bajo la ficha de la muestra y con aire claro: la columna del texto deja de
+     ser una caja y sus piezas entran en la rejilla, así el enlace puede ir tras el cultivo. Los
+     huecos los ponen los márgenes de cada pieza, no la rejilla. */
+  .us-hero-copy {
+    display: contents;
+  }
+
+  .us-hero-grid {
+    row-gap: 0;
+  }
+
+  .us-hero-visual {
+    margin-top: 2.25rem;
+    margin-bottom: 0;
+  }
+
+  /* Pegado al índice de debajo: el enlace y las secciones se leen como una unidad. */
+  .us-explore {
+    order: 1;
+    justify-self: start;
+    margin-block: 2.5rem 1rem;
+  }
+
+  /* La ficha, al margen del texto: alineada con el enlace que va debajo. */
+  .us-hero-visual .us-culture-tag {
+    margin-left: calc(var(--inset) - 1rem);
+  }
+
+  /* La columna de la cabecera no crece con el rótulo, que va en una línea (appFitLine lo encoge). */
+  .us-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* El rótulo, a todo lo ancho de la columna: así appFitLine sabe cuánto le cabe. */
+  .us-hero .eyebrow {
+    display: flex;
+    min-width: 0;
+  }
+
+  /* El icono no encoge: sin contenido propio, la caja flexible lo dejaba en 0 px. */
+  .us-hero .eyebrow-icon {
+    flex: none;
+  }
+
+  /* El cultivo, a 16 px del borde izquierdo y a sangre hasta el derecho. */
+  .us-hero-visual {
+    margin-inline: calc(1rem - var(--inset));
+  }
+
+  .us-culture {
+    width: calc(100% + 1rem);
+  }
+}
+
+/* Móvil: las fotos de las subsecciones, a un mismo tamaño y grandes, que ocupen buena parte de la
+   pantalla: 1,4 veces el ancho de la foto de alto (unos 500 px a 390). */
+@media (max-width: 600px) {
+  .us {
+    --photo-height: calc((100vw - 2rem) * 1.4);
+  }
+
+  .us figure.us-work-visual img,
+  .us figure.us-eco-visual img {
+    height: var(--photo-height);
+    aspect-ratio: auto;
+  }
+
+  /* «Nuestro campo»: la foto, a 8 px del marco blanco por arriba y a los lados, con la esquina de
+     arriba a la izquierda en paralelo a la del marco (32 − 8), y el rótulo 01 dentro de ella. El
+     marco abre su esquina de arriba a la derecha para que la de la foto (32) le siga en paralelo. */
+  #campo {
+    padding-top: 0.5rem;
+    border-top-right-radius: 2.5rem;
+  }
+
+  #campo .us-label {
+    position: absolute;
+    z-index: 3;
+    top: calc(0.5rem + 1.25rem);
+    /* Alineado con el titular, que va a --inset del borde de la foto. */
+    left: calc(0.5rem + var(--inset));
+    padding: 0;
+    border: 0;
+  }
+
+  #campo .us-definition-visual {
+    min-height: var(--photo-height);
+    /* Arriba, el sitio del rótulo 01 (hasta 32 px) más 22 px de aire: si el titular no cabe, la foto
+       crece en vez de montarlo sobre el rótulo. */
+    padding-top: 3.375rem;
+    margin-inline: calc(0.5rem - var(--inset));
+    border-radius: 1.5rem 2rem 0.35rem 0;
+  }
+
+  /* El titular, en la columna de la foto (que apila abajo): justo encima de la etiqueta negra, a la
+     misma distancia que hay entre ella y el pie (8 px), al margen de ambos y con más interlineado. */
+  #campo .us-definition-visual h2 {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0 var(--inset) 0.5rem;
+    line-height: 1.15;
+  }
+
+  /* Sin el pie «Archivo visual»: sobre el desierto claro no se leía. La etiqueta y el titular
+     bajan a su sitio (la foto apila abajo). */
+  #campo .us-definition-visual > figcaption {
+    display: none;
   }
 }

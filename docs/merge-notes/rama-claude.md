@@ -203,3 +203,20 @@ primera cata» (Distribution).
   alarga 2 px sobre ella: con anchos fraccionarios asomaban dos rayas claras a todo lo ancho.
 - **Comprobar tras el merge:** a 375×667 y 912×1368, la cinta de socios sin rayas; en tableta,
   medalla y nombre al mismo nivel al elegir otra distinción del palmarés.
+
+## Portada (escritorio) y Nosotros en móvil
+
+- **Portada, escritorio:** el bloque del héroe, 40 px más abajo. El fondo líquido ya no deja un hilo de
+  tinta en el borde izquierdo de la columna por encima de Próximas sesiones (en todos los anchos con
+  columna).
+- **Nosotros, móvil (≤600):** secciones de borde a borde con el texto al margen de la portada (12vw) y
+  fotos y tarjetas a 16 px; espaciados unificados (40/40 por sección, 22 px rótulo → título, 72 px
+  textura ↔ tarjeta); fotos de subsección a un alto común; «Nuestro campo» con el rótulo dentro de la
+  foto y sin el pie «Archivo visual»; «Descubrir sesiones» bajo la ficha de la muestra; títulos de
+  bloque a un mismo tamaño. Al desplegar «Arquitectura ejecutiva» (≤1000) la vista baja hasta verla.
+- **Todos los anchos:** el rótulo de la cabecera de Nosotros y la entrada del menú pasan a
+  «Dedicados a lo que nos une»; «Programa de colaboradores» con su minimilk; la entrada de «Nuestro
+  campo» justificada; el cultivo vibra también al tocarlo.
+- **Ojo:** `about-page.component.css` está a pocos bytes del límite de 48 kB del build.
+- **Comprobar tras el merge:** Nosotros a 360, 390 y 430; la portada a 1536×750 (héroe y borde de la
+  columna junto a la intro).

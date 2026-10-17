@@ -42,7 +42,48 @@ export class AboutPageComponent {
       return;
     }
     this.activeTab.set(index);
+    this.openArch();
+  }
+
+  /** El botón de debajo de las pestañas: despliega o repliega el bloque. */
+  toggleArch(): void {
+    if (this.archOpen()) {
+      this.archOpen.set(false);
+    } else {
+      this.openArch();
+    }
+  }
+
+  /**
+   * Despliega el bloque y, en móvil y tableta, baja la página lo justo para verlo entero, hasta su
+   * último borde, sin que las pestañas se escondan bajo la barra de arriba. Como los desplegables
+   * de Sesiones y Localizaciones.
+   */
+  private openArch(): void {
+    const wasOpen = this.archOpen();
     this.archOpen.set(true);
+    if (wasOpen || !window.matchMedia('(max-width: 1000px)').matches) {
+      return;
+    }
+    // Tras pintar el contenido desplegado.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const block = document.querySelector<HTMLElement>('.us-arch');
+        const tabs = block?.querySelector<HTMLElement>('.us-arch-bar');
+        if (!block || !tabs) {
+          return;
+        }
+        const air = 16;
+        const topbar = document.querySelector<HTMLElement>('.topbar')?.offsetHeight ?? 0;
+        const overflow = block.getBoundingClientRect().bottom + air - window.innerHeight;
+        const room = tabs.getBoundingClientRect().top - topbar - air;
+        const distance = Math.min(overflow, room);
+        if (distance > 0) {
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          window.scrollBy({ top: distance, behavior: reduced ? 'auto' : 'smooth' });
+        }
+      }),
+    );
   }
 
   /** Pestañas con teclado: las flechas pasan a la siguiente o la anterior, Inicio y Fin a los extremos. */

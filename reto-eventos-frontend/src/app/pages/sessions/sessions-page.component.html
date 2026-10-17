@@ -516,6 +516,108 @@
         </ng-container>
       </article>
 
+      <!-- Las reglas del dinero, al final: lo primero de la página es el programa. Texto de la casa, tal cual. -->
+      <section class="refunds" id="devoluciones" aria-labelledby="refunds-title">
+        <div class="refunds-heading">
+          <p class="station-code station-eyebrow">
+            <span class="eyebrow-icon" aria-hidden="true"></span>AM / Devoluciones
+          </p>
+          <h2 id="refunds-title">Cambios, cancelaciones y devoluciones.</h2>
+          <p>
+            Las plazas de AlienMilk Sessions se asignan individualmente y se abonan al formalizar la
+            reserva o, si se reservó por teléfono, en taquilla. Puede cancelar su asistencia y recuperar
+            el importe completo hasta el día anterior a la sesión. Las condiciones dependen de quién
+            solicita la cancelación y del momento en que se produce.
+          </p>
+        </div>
+        <ol class="refunds-list">
+          <li>
+            <span class="refunds-number">01</span>
+            <h3>Cancelaciones hasta el día anterior</h3>
+            <p>
+              Puede cancelar su reserva desde <a routerLink="/cuenta/reservas">Mi panel</a> hasta las
+              23:59 del día anterior a la sesión, en horario de la sede. Le devolveremos el importe
+              completo al mismo medio de pago utilizado en la compra, sin penalizaciones.
+            </p>
+            <p>
+              Hasta ese momento también puede corregir los datos de los participantes y el teléfono de
+              contacto desde su cuenta.
+            </p>
+          </li>
+          <li>
+            <span class="refunds-number">02</span>
+            <h3>El día de la sesión</h3>
+            <p>
+              Las plazas ya están asignadas y el control de ingreso, preparado. Desde el comienzo del día
+              de la sesión no se admiten cancelaciones voluntarias con devolución.
+            </p>
+            <p>
+              El control de ingreso cierra diez minutos antes del inicio. La ausencia o llegada fuera del
+              horario establecido no da derecho a reembolso.
+            </p>
+          </li>
+          <li>
+            <span class="refunds-number">03</span>
+            <h3>Cancelaciones por parte de AlienMilk</h3>
+            <p>
+              Si AlienMilk cancela una sesión antes de su celebración, devolveremos automáticamente el
+              importe completo de las plazas abonadas, sin necesidad de presentar una solicitud. Si una
+              sesión cancelada vuelve a programarse, las reservas ya reembolsadas no se mantienen y
+              deberán formalizarse de nuevo.
+            </p>
+            <p>
+              Si una sesión sufre modificaciones sustanciales de fecha, ubicación o contenido, le
+              informaremos de las nuevas condiciones. Si no las acepta, podrá solicitar la devolución
+              completa de su entrada.
+            </p>
+          </li>
+          <li>
+            <span class="refunds-number">04</span>
+            <h3>Cambios en el número de plazas</h3>
+            <p>
+              Si necesita reducir el número de plazas de una reserva,
+              <a routerLink="/contacto">contacte con AlienMilk</a> para solicitar la modificación y la
+              devolución de la diferencia correspondiente.
+            </p>
+            <p>
+              Las plazas adicionales deberán reservarse por separado, sujetas a disponibilidad. Los
+              cambios de sesión podrán requerir una nueva reserva.
+            </p>
+          </li>
+          <li>
+            <span class="refunds-number">05</span>
+            <h3>Pagos y confirmaciones</h3>
+            <p>
+              Los pagos online se realizan mediante la plataforma segura de Stripe. Al iniciar el pago,
+              las plazas quedan reservadas provisionalmente durante treinta minutos. Si no completa el
+              pago dentro de ese plazo, la reserva se anulará automáticamente y las plazas volverán a
+              estar disponibles.
+            </p>
+            <p>Las reservas formalizadas por teléfono se abonan en taquilla, antes del ingreso.</p>
+          </li>
+          <li>
+            <span class="refunds-number">06</span>
+            <h3>Plazos de devolución</h3>
+            <p>
+              Los reembolsos a tarjeta se tramitan a través del medio de pago original. Habitualmente
+              aparecen reflejados en la cuenta entre cinco y diez días hábiles después de su emisión,
+              dependiendo de la entidad bancaria.
+            </p>
+            <p>Las devoluciones de pagos realizados en taquilla se gestionan directamente con AlienMilk.</p>
+          </li>
+        </ol>
+        <div class="refunds-general">
+          <p class="station-code">Disposición general</p>
+          <p>
+            Las sesiones corresponden a actividades programadas para fechas específicas y, con carácter
+            general, no están sujetas al derecho de desistimiento de catorce días aplicable a otras
+            compras a distancia. Las presentes condiciones de cancelación son ofrecidas por AlienMilk sin
+            perjuicio de los derechos que correspondan a los consumidores conforme a la legislación
+            aplicable.
+          </p>
+        </div>
+      </section>
+
       <!-- Cierre para visitantes: la consulta es pública, la reserva requiere identificarse. -->
       <div class="closing" *ngIf="!authService.isAuthenticated()">
         <app-closing-cta image="/alienmilk-closing-astronaut.webp" labelledBy="closing-cta-title">

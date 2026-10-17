@@ -740,6 +740,31 @@ th[aria-sort] .sort-button svg {
   letter-spacing: 0.04em;
 }
 
+/* La de una sesión, con su día en lugar de iniciales: como la hoja de un calendario. */
+.entity-avatar.is-date {
+  display: grid;
+  align-content: center;
+  gap: 0.05rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.5rem;
+  font:
+    800 0.62rem / 1 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.entity-avatar.is-date strong {
+  font:
+    400 1.35rem / 1 var(--condensed);
+  letter-spacing: 0;
+}
+
+.entity-name p .badge {
+  vertical-align: middle;
+}
+
 .entity-name h3 {
   margin: 0;
   font:
@@ -756,6 +781,16 @@ th[aria-sort] .sort-button svg {
   justify-content: flex-end;
 }
 
+/* Lo que acaba de pasar (guardado, cobrada, cancelada…), bajo la cabecera, donde se está mirando. */
+.entity-notice {
+  margin: 0;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--paper-line);
+  color: var(--paper-muted);
+  background: var(--paper-soft);
+  font-size: 0.9rem;
+}
+
 .entity-body {
   display: grid;
   grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.6fr);
@@ -769,6 +804,18 @@ th[aria-sort] .sort-button svg {
   gap: 1.1rem;
 }
 
+.entity-related {
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+}
+
+/* Dentro de la ficha, los participantes no necesitan el filete que los separaba en la ficha antigua. */
+.entity-related .detail-people {
+  padding-top: 0;
+  border-top: 0;
+}
+
 .entity-line {
   margin: 0 0 0.25rem;
   overflow-wrap: anywhere;
@@ -780,6 +827,7 @@ th[aria-sort] .sort-button svg {
   border-left: 2px solid var(--coral);
 }
 
+.entity-muted,
 .entity-none {
   color: var(--paper-muted);
 }

@@ -315,7 +315,7 @@
                 <td data-label="Reservas" class="num center">{{ group.reservas.length }}
                   @if (group.coincidencias < group.reservas.length) { <span class="cell-sub">{{ group.coincidencias }} {{ group.coincidencias === 1 ? 'coincide' : 'coinciden' }}</span> }
                 </td>
-                <td data-label="Datos de participantes" class="num center">
+                <td data-label="Con datos" class="num center">
                   @if (group.registrados >= group.plazas) {
                     Completo
                   } @else {
@@ -329,50 +329,103 @@
               @if (open) {
                 <tr class="row-detail" [id]="'session-group-' + group.idEvento">
                   <td colspan="6">
-                    <div class="session-detail">
-                      <section class="occupancy" aria-label="Ocupación">
-                        <p class="occupancy-figure">
-                          <strong>{{ group.plazas }}</strong>
-                          <span>{{ group.aforo ? '/ ' + group.aforo + ' plazas' : 'plazas' }}</span>
-                        </p>
-                        <ul class="occupancy-notes">
-                          <li>{{ when(group.primera) }}</li>
-                          <li>{{ plural(group.registrados, 'participante con datos', 'participantes con datos') }}</li>
-                          @if (group.plazas > group.registrados) {
-                            <li class="is-short">{{ group.plazas - group.registrados }} sin registrar</li>
+                    <!-- La ficha de una sesión, con la misma anatomía que la de un cliente: qué es y qué hacer,
+                         arriba; la puerta y lo pendiente, a la izquierda; sus últimas reservas, a la derecha. -->
+                    @let sesionEstado = sessionStateOf(group.primera.estadoEvento);
+                    <article class="entity-card" [attr.aria-label]="'Ficha de ' + group.nombre">
+                      <header class="entity-head">
+                        <span class="entity-avatar is-date" aria-hidden="true">
+                          <strong>{{ dayNumber(group.primera.fechaInicioEvento) }}</strong>
+                          {{ monthShort(group.primera.fechaInicioEvento) }}
+                        </span>
+                        <div class="entity-name">
+                          <h3>{{ group.nombre }}</h3>
+                          <p>
+                            {{ when(group.primera) }}@if (group.lugar) { · {{ group.lugar }}}
+                            · <span class="badge" [attr.data-tone]="sesionEstado.tone">{{ sesionEstado.label }}</span>
+                          </p>
+                        </div>
+                        <div class="row-actions entity-actions">
+                          <a class="btn btn-small btn-primary" [routerLink]="['/admin/sesiones', group.idEvento, 'control']">Hoja de control</a>
+                          @if (group.primera.estadoEvento === 'ACTIVO') {
+                            <button type="button" class="btn btn-small" (click)="openNewForSession(group.idEvento)">Nueva reserva</button>
                           }
-                        </ul>
-                      </section>
-                      <section class="detail-people group-reservations" aria-label="Sus reservas">
-                        <p class="detail-people-title">Sus reservas</p>
-                        <ul class="group-list">
-                          @for (reserva of group.reservas; track reserva.idReserva) {
-                            @let estado = state(reserva);
-                            <li>
-                              <button type="button" class="text-link group-link" (click)="openReservation(reserva)">
-                                {{ number(reserva) }} · {{ reserva.nombreCliente }}
-                              </button>
-                              <span class="group-meta">
-                                {{ plural(reserva.cantidad, 'plaza', 'plazas') }} ·
-                                {{ reserva.asistentes.length ? 'registrada' : 'sin registrar' }}
-                              </span>
-                              <span class="badge-stack group-badges">
-                                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
-                                @if (reserva.requiereRevision) {
-                                  <span class="badge" data-tone="alert">Requiere revisión</span>
-                                }
-                              </span>
-                            </li>
+                        </div>
+                      </header>
+
+                      <div class="entity-body">
+                        <div class="entity-side">
+                          <section aria-labelledby="session-door-{{ group.idEvento }}">
+                            <p class="detail-people-title" id="session-door-{{ group.idEvento }}">La puerta</p>
+                            <p class="entity-line">Han entrado {{ group.dentro }} de {{ group.plazas }}</p>
+                            @if (group.aforo) {
+                              <p class="entity-line">{{ plural(group.aforo - group.plazas, 'plaza libre', 'plazas libres') }}</p>
+                            }
+                            @if (group.minimo) {
+                              <p class="entity-line">
+                                {{ group.plazas >= group.minimo ? 'Supera el mínimo de ' + group.minimo : 'Faltan ' + (group.minimo - group.plazas) + ' para el mínimo de ' + group.minimo }}
+                              </p>
+                            }
+                          </section>
+                          @if (group.revision || group.porCobrar || group.pagosPendientes || group.porDevolver || group.plazas > group.registrados) {
+                            <section class="entity-pending" aria-labelledby="session-pending-{{ group.idEvento }}">
+                              <p class="detail-people-title" id="session-pending-{{ group.idEvento }}">Pendiente</p>
+                              @if (group.revision) {
+                                <p class="entity-line">{{ plural(group.revision, 'reserva requiere', 'reservas requieren') }} revisión</p>
+                              }
+                              @if (group.plazas > group.registrados) {
+                                <p class="entity-line">{{ plural(group.plazas - group.registrados, 'plaza', 'plazas') }} sin datos de participante</p>
+                              }
+                              @if (group.porCobrar) {
+                                <p class="entity-line">{{ money(group.porCobrar) }} por cobrar en taquilla</p>
+                              }
+                              @if (group.pagosPendientes) {
+                                <p class="entity-line">{{ plural(group.pagosPendientes, 'pago', 'pagos') }} con tarjeta sin completar</p>
+                              }
+                              @if (group.porDevolver) {
+                                <p class="entity-line">{{ money(group.porDevolver) }} por devolver en taquilla</p>
+                              }
+                            </section>
                           }
-                        </ul>
-                      </section>
-                    </div>
-                    <div class="row-actions detail-actions">
-                      <a class="btn btn-small" [routerLink]="['/admin/sesiones', group.idEvento, 'control']">Hoja de control</a>
-                      <button type="button" class="btn btn-small" (click)="openSessionReservations(group.idEvento)">
-                        Ver sus reservas una a una
-                      </button>
-                    </div>
+                        </div>
+
+                        <section class="entity-related" aria-labelledby="session-last-{{ group.idEvento }}">
+                          <p class="detail-people-title" id="session-last-{{ group.idEvento }}">Últimas reservas</p>
+                          @if (group.recientes.length) {
+                            <ul class="entity-list">
+                              @for (reserva of group.recientes; track reserva.idReserva) {
+                                @let estado = state(reserva);
+                                <li>
+                                  <button type="button" class="entity-item" (click)="openReservation(reserva)">
+                                    <span class="entity-when">{{ number(reserva) }}<span>{{ plural(reserva.cantidad, 'plaza', 'plazas') }}</span></span>
+                                    <span class="entity-what">
+                                      <strong>{{ reserva.nombreCliente }}</strong>
+                                      <span>{{ reserva.asistentes.length ? 'Participantes registrados' : 'Sin datos de participante' }}</span>
+                                    </span>
+                                    <span class="badge-stack">
+                                      <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                                      @if (payment(reserva); as pago) {
+                                        <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
+                                      }
+                                      @if (reserva.requiereRevision) {
+                                        <span class="badge" data-tone="alert">Requiere revisión</span>
+                                      }
+                                    </span>
+                                    <svg class="entity-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                                  </button>
+                                </li>
+                              }
+                            </ul>
+                          } @else {
+                            <p class="entity-line entity-none">Ninguna viva.</p>
+                          }
+                          <button type="button" class="text-link entity-more" (click)="openSessionReservations(group.idEvento)">
+                            {{ group.reservas.length === 1 ? 'Ver su reserva' : 'Ver sus ' + group.reservas.length + ' reservas' }}
+                            <span aria-hidden="true">→</span>
+                          </button>
+                        </section>
+                      </div>
+                    </article>
                   </td>
                 </tr>
               }
@@ -468,60 +521,109 @@
               @if (open) {
                 <tr class="row-detail" [id]="'reservation-detail-' + reserva.idReserva">
                   <td colspan="7">
-                    <div class="session-detail">
-                      <!-- Lo primero que se mira: cuántas plazas y cuánto se ha pagado. -->
-                      <section class="occupancy" aria-label="Plazas e importe">
-                        <p class="occupancy-figure">
-                          <strong>{{ reserva.cantidad }}</strong>
-                          <span>{{ reserva.cantidad === 1 ? 'plaza' : 'plazas' }}</span>
+                    <!-- La ficha de una reserva, con la anatomía de las de cliente y sesión: quién y cuánto, con lo que
+                         se puede hacer, arriba; la sesión, el cliente y el pago, a la izquierda; lo que se coteja en
+                         la puerta (participantes y revisión), a la derecha. -->
+                    <article class="entity-card" [attr.aria-label]="'Reserva ' + number(reserva)">
+                      <header class="entity-head">
+                        <span class="entity-avatar" aria-hidden="true">{{ initialsOf(reserva.nombreCliente) }}</span>
+                        <div class="entity-name">
+                          <h3>{{ reserva.nombreCliente }}</h3>
+                          <p>
+                            Reserva {{ number(reserva) }} · {{ plural(reserva.cantidad, 'plaza', 'plazas') }} ·
+                            {{ money(reserva.precioVenta) }}
+                            @if (reserva.cantidad > 1) {
+                              ({{ money(seatPrice(reserva)) }} por plaza)
+                            }
+                          </p>
+                        </div>
+                        <div class="row-actions entity-actions">
+                          <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. Si fue un error y no se
+                               movió dinero, se puede reactivar. -->
+                          @if (reactivable(reserva)) {
+                            <button
+                              type="button"
+                              class="btn btn-small"
+                              [disabled]="busy() === reserva.idReserva"
+                              (click)="reactivate(reserva)"
+                            >
+                              Reactivar
+                            </button>
+                          }
+                          @if (!reserva.canceladaEn) {
+                            @if (reserva.estadoPago === 'EN_TAQUILLA') {
+                              <button
+                                type="button"
+                                class="btn btn-small btn-primary"
+                                [disabled]="busy() === reserva.idReserva"
+                                (click)="collect(reserva)"
+                              >
+                                Marcar cobrada · {{ money(reserva.precioVenta) }}
+                              </button>
+                            }
+                            <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
+                            @if (reserva.estadoEvento === 'ACTIVO') {
+                              <button
+                                type="button"
+                                class="btn btn-small btn-danger"
+                                [disabled]="busy() === reserva.idReserva"
+                                (click)="cancel(reserva)"
+                              >
+                                Cancelar reserva
+                              </button>
+                            }
+                          }
+                        </div>
+                      </header>
+                      @if (rowNotice(); as aviso) {
+                        @if (aviso.id === reserva.idReserva) {
+                          <p class="entity-notice" role="status">{{ aviso.text }}</p>
+                        }
+                      } @else if (reserva.canceladaEn && reserva.estadoEvento === 'ACTIVO' && !reactivable(reserva)) {
+                        <p class="entity-notice">
+                          {{ reserva.estadoPago === 'PENDIENTE' ? 'No se llegó a pagar' : 'Se devolvió su importe' }}: para
+                          recuperarla, crea una reserva nueva.
                         </p>
-                        <ul class="occupancy-notes">
-                          <li>{{ money(reserva.precioVenta) }} en total</li>
-                          <li>{{ money(seatPrice(reserva)) }} por plaza</li>
-                        </ul>
-                      </section>
+                      }
 
-                      <dl class="detail-facts">
-                        <div>
-                          <dt>Cliente</dt>
-                          <dd>
-                            {{ reserva.nombreCliente }} · {{ reserva.username ?? 'sin cuenta' }}
+                      <div class="entity-body">
+                        <div class="entity-side">
+                          <section aria-label="Sesión">
+                            <p class="detail-people-title">Sesión</p>
+                            <p class="entity-line">
+                              <button
+                                type="button"
+                                class="text-link"
+                                title="Ver solo las reservas de esta sesión"
+                                (click)="$event.stopPropagation(); filterFromCard(reserva)"
+                              >
+                                {{ reserva.nombreEvento }}
+                              </button>
+                            </p>
+                            <p class="entity-line">
+                              <span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span>
+                            </p>
+                            <p class="entity-line entity-muted">{{ place(reserva) }}</p>
+                          </section>
+
+                          <section aria-label="Cliente">
+                            <p class="detail-people-title">Cliente</p>
+                            <p class="entity-line">{{ reserva.username ?? 'Sin cuenta: reservó por teléfono' }}</p>
+                            <p class="entity-line">{{ reserva.telefono || 'Teléfono no registrado' }}</p>
                             @if (otherReservations(reserva); as others) {
                               <button
                                 type="button"
-                                class="text-link other-reservations"
+                                class="text-link"
                                 (click)="$event.stopPropagation(); openClient(clientKey(reserva))"
                               >
-                                {{ others === 1 ? 'Otra reserva más' : others + ' reservas más' }}
+                                {{ others === 1 ? 'Otra reserva suya' : others + ' reservas suyas más' }}
                               </button>
                             }
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Sesión</dt>
-                          <dd>
-                            <button
-                              type="button"
-                              class="text-link"
-                              title="Ver solo las reservas de esta sesión"
-                              (click)="$event.stopPropagation(); filterFromCard(reserva)"
-                            >
-                              {{ reserva.nombreEvento }}
-                            </button>
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Cuándo</dt>
-                          <dd><span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span></dd>
-                        </div>
-                        <div>
-                          <dt>Lugar</dt>
-                          <dd>{{ place(reserva) }}</dd>
-                        </div>
-                        <div>
-                          <dt>Pago</dt>
-                          <dd>
-                            {{ paymentText(reserva) }}
+                          </section>
+
+                          <section aria-label="Pago">
+                            <p class="detail-people-title">Pago</p>
+                            <p class="entity-line">{{ paymentText(reserva) }}</p>
                             <!-- El registro de devoluciones: cada una con su medio, su motivo y si ya se hizo. -->
                             @if (reserva.devoluciones.length) {
                               <ul class="refund-list">
@@ -553,141 +655,94 @@
                                 }
                               </ul>
                             }
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>Teléfono</dt>
-                          <dd>{{ reserva.telefono || '—' }}</dd>
-                        </div>
-                        <div>
-                          <dt>Conformidad</dt>
-                          <dd>{{ reserva.conformidadEn ? 'Registrada el ' + dayTime(reserva.conformidadEn) : 'Sin registrar' }}</dd>
-                        </div>
-                        @if (reserva.canceladaEn) {
-                          <div>
-                            <dt>Cancelación</dt>
-                            <dd>
-                              {{ cancellation(reserva) }}
-                              @if (reserva.motivoCancelacion) {
-                                <span class="cell-sub">{{ reserva.motivoCancelacion }}</span>
-                              }
-                            </dd>
-                          </div>
-                        }
-                        @if (reserva.observaciones) {
-                          <div>
-                            <dt>Observaciones</dt>
-                            <dd>{{ reserva.observaciones }}</dd>
-                          </div>
-                        }
-                      </dl>
+                          </section>
 
-                      <!-- Quién viene, con la credencial que presentará: lo que se coteja en el control de ingreso. -->
-                      <section class="detail-people" aria-label="Participantes">
-                        <p class="detail-people-title">Participantes</p>
-                        @if (reserva.asistentes.length) {
-                          <ol>
-                            @for (persona of reserva.asistentes; track $index) {
-                              <li>
-                                <span class="detail-people-name">{{ persona.nombre }}</span>
-                                <span class="detail-people-meta">
-                                  {{ credential(persona.credencial) }}@if (persona.procedencia) { · {{ persona.procedencia }}}
-                                </span>
-                                @if (persona.incompatibilidades) {
-                                  <span class="detail-people-compat">{{ persona.incompatibilidades }}</span>
-                                }
-                              </li>
-                            }
-                          </ol>
-                        } @else {
-                          <p class="detail-people-empty">Faltan los datos de los participantes.</p>
-                        }
-                      </section>
-
-                      <!-- Lo que pide y lo que AlienMilk decidió: en coral mientras está pendiente. -->
-                      @if (reserva.revision; as revision) {
-                        <section
-                          class="detail-review"
-                          [class.is-settled]="revision !== 'PENDIENTE'"
-                          aria-label="Adaptaciones y material"
-                        >
-                          <p class="detail-people-title">
-                            {{ revision === 'PENDIENTE' ? 'Requiere revisión' : 'Adaptaciones y material · ' + review(reserva) }}
-                          </p>
-                          @if (reserva.adaptaciones) {
-                            <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
-                          }
-                          @if (reserva.materialExterno) {
-                            <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
-                          }
-                          @if (revision !== 'PENDIENTE') {
-                            <p class="detail-review-decision">
-                              {{ review(reserva) }} el {{ dayTime(reserva.revisadaEn) }}@if (reserva.revisionNota) {: {{ reserva.revisionNota }}}
+                          <section aria-label="Conformidad">
+                            <p class="detail-people-title">Conformidad</p>
+                            <p class="entity-line">
+                              {{ reserva.conformidadEn ? 'Registrada el ' + dayTime(reserva.conformidadEn) : 'Sin registrar' }}
                             </p>
-                          }
-                          @if (!reserva.canceladaEn) {
-                            <div class="row-actions">
-                              @if (revision === 'PENDIENTE') {
-                                <button type="button" class="btn btn-small btn-primary" (click)="openReview(reserva, true)">Aceptar</button>
-                                <button type="button" class="btn btn-small" (click)="openReview(reserva, false)">No aceptar</button>
-                              } @else {
-                                <button type="button" class="btn btn-small" (click)="openReview(reserva, revision === 'ACEPTADA')">
-                                  Cambiar la decisión
-                                </button>
-                              }
-                            </div>
-                          }
-                        </section>
-                      }
-                    </div>
+                          </section>
 
-                    <div class="row-actions detail-actions">
-                      <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. Si fue un error y no se movió
-                           dinero, se puede reactivar. -->
-                      @if (reactivable(reserva)) {
-                        <button
-                          type="button"
-                          class="btn btn-small"
-                          [disabled]="busy() === reserva.idReserva"
-                          (click)="reactivate(reserva)"
-                        >
-                          Reactivar
-                        </button>
-                      } @else if (reserva.canceladaEn && reserva.estadoEvento === 'ACTIVO') {
-                        <span class="detail-saved">
-                          {{ reserva.estadoPago === 'PENDIENTE' ? 'No se llegó a pagar' : 'Se devolvió su importe' }}: para
-                          recuperarla, crea una reserva nueva.
-                        </span>
-                      }
-                      @if (!reserva.canceladaEn) {
-                        @if (reserva.estadoPago === 'EN_TAQUILLA') {
-                          <button
-                            type="button"
-                            class="btn btn-small btn-primary"
-                            [disabled]="busy() === reserva.idReserva"
-                            (click)="collect(reserva)"
-                          >
-                            Marcar cobrada · {{ money(reserva.precioVenta) }}
-                          </button>
-                        }
-                        <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
-                        @if (reserva.estadoEvento === 'ACTIVO') {
-                          <button
-                            type="button"
-                            class="btn btn-small btn-danger"
-                            [disabled]="busy() === reserva.idReserva"
-                            (click)="cancel(reserva)"
-                          >
-                            Cancelar reserva
-                          </button>
-                        }
-                      }
-                      @if (rowNotice(); as aviso) {
-                        @if (aviso.id === reserva.idReserva) {
-                          <span class="detail-saved" role="status">{{ aviso.text }}</span>
-                        }
-                      }
-                    </div>
+                          @if (reserva.canceladaEn) {
+                            <section aria-label="Cancelación">
+                              <p class="detail-people-title">Cancelación</p>
+                              <p class="entity-line">{{ cancellation(reserva) }}</p>
+                              @if (reserva.motivoCancelacion) {
+                                <p class="entity-line entity-muted">{{ reserva.motivoCancelacion }}</p>
+                              }
+                            </section>
+                          }
+
+                          @if (reserva.observaciones) {
+                            <section aria-label="Observaciones">
+                              <p class="detail-people-title">Observaciones</p>
+                              <p class="entity-line">{{ reserva.observaciones }}</p>
+                            </section>
+                          }
+                        </div>
+
+                        <div class="entity-related">
+                          <!-- Quién viene, con la credencial que presentará: lo que se coteja en el control de ingreso. -->
+                          <section class="detail-people" aria-label="Participantes">
+                            <p class="detail-people-title">Participantes</p>
+                            @if (reserva.asistentes.length) {
+                              <ol>
+                                @for (persona of reserva.asistentes; track $index) {
+                                  <li>
+                                    <span class="detail-people-name">{{ persona.nombre }}</span>
+                                    <span class="detail-people-meta">
+                                      {{ credential(persona.credencial) }}@if (persona.procedencia) { · {{ persona.procedencia }}}
+                                    </span>
+                                    @if (persona.incompatibilidades) {
+                                      <span class="detail-people-compat">{{ persona.incompatibilidades }}</span>
+                                    }
+                                  </li>
+                                }
+                              </ol>
+                            } @else {
+                              <p class="detail-people-empty">Faltan los datos de los participantes.</p>
+                            }
+                          </section>
+
+                          <!-- Lo que pide y lo que AlienMilk decidió: en coral mientras está pendiente. -->
+                          @if (reserva.revision; as revision) {
+                            <section
+                              class="detail-review"
+                              [class.is-settled]="revision !== 'PENDIENTE'"
+                              aria-label="Adaptaciones y material"
+                            >
+                              <p class="detail-people-title">
+                                {{ revision === 'PENDIENTE' ? 'Requiere revisión' : 'Adaptaciones y material · ' + review(reserva) }}
+                              </p>
+                              @if (reserva.adaptaciones) {
+                                <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
+                              }
+                              @if (reserva.materialExterno) {
+                                <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
+                              }
+                              @if (revision !== 'PENDIENTE') {
+                                <p class="detail-review-decision">
+                                  {{ review(reserva) }} el {{ dayTime(reserva.revisadaEn) }}@if (reserva.revisionNota) {: {{ reserva.revisionNota }}}
+                                </p>
+                              }
+                              @if (!reserva.canceladaEn) {
+                                <div class="row-actions">
+                                  @if (revision === 'PENDIENTE') {
+                                    <button type="button" class="btn btn-small btn-primary" (click)="openReview(reserva, true)">Aceptar</button>
+                                    <button type="button" class="btn btn-small" (click)="openReview(reserva, false)">No aceptar</button>
+                                  } @else {
+                                    <button type="button" class="btn btn-small" (click)="openReview(reserva, revision === 'ACEPTADA')">
+                                      Cambiar la decisión
+                                    </button>
+                                  }
+                                </div>
+                              }
+                            </section>
+                          }
+                        </div>
+                      </div>
+                    </article>
                   </td>
                 </tr>
               }

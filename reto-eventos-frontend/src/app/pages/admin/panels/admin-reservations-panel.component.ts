@@ -32,6 +32,7 @@ import {
   plural,
   profileLabel,
   reservationState,
+  sessionState,
   cancellationLine,
   paymentBadge,
   paymentLine,
@@ -201,6 +202,29 @@ interface SessionGroup {
   plazas: number;
   registrados: number;
   revision: number;
+  /** Para su ficha: lo de la sesión que la fila no dice, lo pendiente y sus últimas reservas. */
+  lugar: string;
+  minimo: number | null;
+  dentro: number;
+  porCobrar: number;
+  pagosPendientes: number;
+  porDevolver: number;
+  recientes: Reserva[];
+}
+
+/** Lo pendiente de un grupo de reservas, para las fichas de cliente y de sesión. */
+function pendingOf(reservas: Reserva[]): { porCobrar: number; pagosPendientes: number; porDevolver: number } {
+  const vivas = reservas.filter(holds);
+  return {
+    porCobrar: vivas
+      .filter((r) => r.estadoPago === 'EN_TAQUILLA' && r.estadoEvento === 'ACTIVO')
+      .reduce((sum, r) => sum + Number(r.precioVenta), 0),
+    pagosPendientes: vivas.filter((r) => r.estadoPago === 'PENDIENTE').length,
+    porDevolver: reservas
+      .flatMap((r) => r.devoluciones ?? [])
+      .filter((devolucion) => devolucion.estado === 'PENDIENTE')
+      .reduce((sum, devolucion) => sum + Number(devolucion.importe), 0),
+  };
 }
 
 type ClientSortKey = 'cliente' | 'reservas' | 'plazas' | 'importe' | 'proxima';
@@ -490,14 +514,7 @@ export class AdminReservationsPanelComponent implements OnInit {
           revision: vivas.filter((r) => r.requiereRevision).length,
           iniciales: initials(reservas[0].nombreCliente),
           ...this.upcoming(ordered),
-          porCobrar: vivas
-            .filter((r) => r.estadoPago === 'EN_TAQUILLA' && r.estadoEvento === 'ACTIVO')
-            .reduce((sum, r) => sum + Number(r.precioVenta), 0),
-          pagosPendientes: vivas.filter((r) => r.estadoPago === 'PENDIENTE').length,
-          porDevolver: reservas
-            .flatMap((r) => r.devoluciones ?? [])
-            .filter((devolucion) => devolucion.estado === 'PENDIENTE')
-            .reduce((sum, devolucion) => sum + Number(devolucion.importe), 0),
+          ...pendingOf(reservas),
         };
       })
       .filter((group) => group.coincidencias > 0)
@@ -526,6 +543,15 @@ export class AdminReservationsPanelComponent implements OnInit {
           plazas: vivas.reduce((sum, r) => sum + r.cantidad, 0),
           registrados: vivas.reduce((sum, r) => sum + r.asistentes.length, 0),
           revision: vivas.filter((r) => r.requiereRevision).length,
+          lugar: sessions.get(idEvento)?.direccion ?? '',
+          minimo: sessions.get(idEvento)?.minimoAsistencia ?? null,
+          dentro: vivas.reduce(
+            (sum, r) =>
+              sum + (r.asistentes.length ? r.asistentes.filter((a) => a.entradaEn).length : r.entradasSinRegistrar),
+            0,
+          ),
+          ...pendingOf(reservas),
+          recientes: [...vivas].sort((a, b) => b.idReserva - a.idReserva).slice(0, 4),
         };
       })
       .filter((group) => group.coincidencias > 0)
@@ -538,6 +564,16 @@ export class AdminReservationsPanelComponent implements OnInit {
     const list = ordered.filter((r) => holds(r) && r.estadoEvento === 'ACTIVO' && r.fechaInicioEvento >= today);
     return { proximas: list.slice(0, 3), totalProximas: list.length };
   }
+
+  /** «Nueva reserva» desde la ficha de una sesión: el diálogo, con la sesión ya elegida. */
+  openNewForSession(idEvento: number): void {
+    this.form = emptyForm(idEvento);
+    this.formError.set(null);
+    this.formErrors.set({});
+    this.dialog().open();
+  }
+
+  readonly sessionStateOf = sessionState;
 
   /** «Nueva reserva» desde la ficha de un cliente: el diálogo, con él ya puesto (con cuenta o sin ella). */
   openNewFor(client: ClientGroup): void {
@@ -705,9 +741,20 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly when = reservationWhen;
   readonly dayTime = formatDayTime;
   readonly credential = credentialLabel;
+  readonly initialsOf = initials;
+
   /** «05 dic»: en las listas cortas de las fichas, el año solo si no es este (ver otherYear). */
   shortDay(isoDate: string): string {
     return formatDay(isoDate).replace(/ \d{4}$/, '');
+  }
+
+  /** El día y el mes de la hoja de calendario de una ficha de sesión: «05» y «dic». */
+  dayNumber(isoDate: string): string {
+    return isoDate.slice(8, 10);
+  }
+
+  monthShort(isoDate: string): string {
+    return this.shortDay(isoDate).split(' ')[1] ?? '';
   }
 
   otherYear(isoDate: string): string {

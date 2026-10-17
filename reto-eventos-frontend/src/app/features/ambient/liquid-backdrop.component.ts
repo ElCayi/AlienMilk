@@ -152,7 +152,10 @@ void main() {
   float underWhite = smoothstep(-1.5, 1.5, length(max(qw, 0.0)) + min(max(qw.x, qw.y), 0.0) - uJoinRound);
   vec2 qi = vec2(outside + uJoinRound, uInkTop - px.y + uJoinRound);
   float inkCorner = 1.0 - smoothstep(-1.5, 1.5, length(max(qi, 0.0)) + min(max(qi.x, qi.y), 0.0) - uJoinRound);
-  float inked = px.x < uDepthColumn.x ? underWhite : inkCorner;
+  // A la izquierda, solo desde donde empieza esa curva: por encima, en el borde de la columna,
+  // asomaba un hilo de tinta a lo largo de toda la página.
+  float joinStart = step(uInkTop - uJoinRound - 2.0, px.y);
+  float inked = px.x < uDepthColumn.x ? underWhite * joinStart : inkCorner;
   float ink = block * inked * step(px.y, uDark2.y) * uDark.y * (1.0 - pane);
   base = mix(base, uInk, ink);
   // Las piezas de tinta de las secciones (data-backdrop-ink): las pinta el fondo y no su CSS, para

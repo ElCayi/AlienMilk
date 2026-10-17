@@ -579,6 +579,18 @@ th[aria-sort] .sort-button svg {
   background: var(--field);
 }
 
+/* Una ficha más alta que la pantalla se recorre por dentro: la fila pulsada y las acciones siguen a la
+   vista. Al llegar al final, la rueda sigue con la página. En móvil, no: la ficha ocupa el ancho y
+   un scroll dentro de otro, con el dedo, estorba. */
+@media screen and (min-width: 761px) {
+  .row-detail .session-detail {
+    max-height: calc(100dvh - var(--bar-height, 4.25rem) - 10rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--paper-line) transparent;
+  }
+}
+
 .occupancy-figure {
   display: flex;
   align-items: baseline;

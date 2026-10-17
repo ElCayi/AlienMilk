@@ -137,6 +137,19 @@ public class Reserva {
 	@Column(name = "importe_devuelto", nullable = false, precision = 9, scale = 2)
 	private BigDecimal importeDevuelto = BigDecimal.ZERO;
 
+	/**
+	 * La revisión de las adaptaciones y el material: aceptadas o no (null, sin revisar), con la nota que
+	 * verá el cliente y cuándo se decidió.
+	 */
+	@Column(name = "revision_aceptada")
+	private Boolean revisionAceptada;
+
+	@Column(name = "revision_nota", length = 300)
+	private String revisionNota;
+
+	@Column(name = "revisada_en")
+	private LocalDateTime revisadaEn;
+
 	public boolean cancelada() {
 		return canceladaEn != null;
 	}
@@ -150,7 +163,19 @@ public class Reserva {
 	}
 
 	/** Con adaptaciones o material externo, alguien de AlienMilk tiene que evaluarla antes de la sesión. */
+	public boolean pideAdaptaciones() {
+		return (adaptaciones != null && !adaptaciones.isBlank()) || materialExterno;
+	}
+
+	/** Pide adaptaciones o material y nadie las ha evaluado todavía. */
 	public boolean requiereRevision() {
-		return !cancelada() && ((adaptaciones != null && !adaptaciones.isBlank()) || materialExterno);
+		return !cancelada() && pideAdaptaciones() && revisionAceptada == null;
+	}
+
+	/** Lo que se aceptó era otra cosa: si cambian las adaptaciones o el material, se vuelve a revisar. */
+	public void reabrirRevision() {
+		revisionAceptada = null;
+		revisionNota = null;
+		revisadaEn = null;
 	}
 }

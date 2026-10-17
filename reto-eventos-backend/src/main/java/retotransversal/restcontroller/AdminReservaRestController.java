@@ -77,6 +77,14 @@ public class AdminReservaRestController {
 		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.contarEntradas(idReserva, valor)));
 	}
 
+	/** La revisión de las adaptaciones y el material ({"aceptada": true, "nota": "…"}). */
+	@PostMapping("/{idReserva}/revision")
+	public ResponseEntity<ReservaDto> revision(@PathVariable Integer idReserva, @RequestBody Map<String, Object> datos) {
+		Object nota = datos.get("nota");
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.revisar(idReserva,
+				Boolean.TRUE.equals(datos.get("aceptada")), nota == null ? null : nota.toString())));
+	}
+
 	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */
 	@PostMapping("/{idReserva}/cobrada")
 	public ResponseEntity<ReservaDto> cobrada(@PathVariable Integer idReserva) {

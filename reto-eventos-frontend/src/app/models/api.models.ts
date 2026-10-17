@@ -98,6 +98,11 @@ export interface Reserva {
   conformidadEn: string | null;
   /** Con adaptaciones o material externo: AlienMilk tiene que evaluarla. */
   requiereRevision: boolean;
+  /** La revisión de adaptaciones y material; null si no pide ninguna. */
+  revision: 'PENDIENTE' | 'ACEPTADA' | 'NO_ACEPTADA' | null;
+  /** La nota de la revisión, que ve también el cliente. */
+  revisionNota: string | null;
+  revisadaEn: string | null;
   estadoEvento: string;
   /** Si su sesión está archivada: sale de la vista diaria y se queda en el archivo con ella. */
   sesionArchivada: boolean;

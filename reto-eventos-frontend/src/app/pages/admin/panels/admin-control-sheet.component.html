@@ -64,23 +64,29 @@
           }
         </div>
         <div>
-          <p class="sheet-label">Requieren revisión</p>
-          @if (toReview().length) {
+          <p class="sheet-label">Adaptaciones y material</p>
+          @if (adaptations().length) {
             <ul class="sheet-list">
-              @for (reserva of toReview(); track reserva.idReserva) {
+              @for (reserva of adaptations(); track reserva.idReserva) {
                 <li>
-                  <strong>{{ number(reserva) }} · {{ reserva.nombreCliente }}</strong>
+                  <strong>
+                    {{ number(reserva) }} · {{ reserva.nombreCliente }}
+                    <span class="sheet-review" [class.sheet-alert]="reserva.revision !== 'ACEPTADA'">· {{ review(reserva) }}</span>
+                  </strong>
                   @if (reserva.adaptaciones) {
                     <span>Adaptaciones: {{ reserva.adaptaciones }}</span>
                   }
                   @if (reserva.materialExterno) {
                     <span>Material externo: {{ reserva.materialDescripcion }}</span>
                   }
+                  @if (reserva.revisionNota) {
+                    <span>Decisión: {{ reserva.revisionNota }}</span>
+                  }
                 </li>
               }
             </ul>
           } @else {
-            <p class="sheet-none">Nada pendiente.</p>
+            <p class="sheet-none">Ninguna.</p>
           }
         </div>
       </div>

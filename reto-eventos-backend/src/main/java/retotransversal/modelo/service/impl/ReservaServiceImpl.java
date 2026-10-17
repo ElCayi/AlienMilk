@@ -3,6 +3,7 @@ package retotransversal.modelo.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Sort;
@@ -231,12 +232,20 @@ public class ReservaServiceImpl implements ReservaService {
 				.lanzarSiHay();
 
 		reserva.setObservaciones(ErroresCampos.limpio(datos.observaciones()));
+		String adaptacionesAntes = reserva.getAdaptaciones();
+		boolean materialAntes = reserva.isMaterialExterno();
+		String descripcionAntes = reserva.getMaterialDescripcion();
 		if (datos.adaptaciones() != null) {
 			reserva.setAdaptaciones(ErroresCampos.limpio(datos.adaptaciones()));
 		}
 		if (datos.materialExterno() != null) {
 			reserva.setMaterialExterno(material);
 			reserva.setMaterialDescripcion(material ? descripcion : null);
+		}
+		if (!Objects.equals(adaptacionesAntes, reserva.getAdaptaciones())
+				|| materialAntes != reserva.isMaterialExterno()
+				|| !Objects.equals(descripcionAntes, reserva.getMaterialDescripcion())) {
+			reserva.reabrirRevision();
 		}
 		aplicarDatos(reserva, datos);
 		// Lo último, cuando todo lo demás ya vale: una devolución no se deshace.
@@ -287,6 +296,24 @@ public class ReservaServiceImpl implements ReservaService {
 			throw new ConflictoNegocioException("Su sesión está cancelada");
 		}
 		return reserva;
+	}
+
+	@Override
+	@Transactional
+	public Reserva revisar(Integer idReserva, boolean aceptada, String nota) {
+		Reserva reserva = findById(idReserva);
+		if (reserva.cancelada() || !reserva.pideAdaptaciones()) {
+			throw new ConflictoNegocioException("Esta reserva no tiene adaptaciones ni material que revisar");
+		}
+		String limpia = ErroresCampos.limpio(nota);
+		new ErroresCampos()
+				.si(!aceptada && limpia == null, "nota", "Explica al cliente por qué no se aceptan")
+				.maximo("nota", limpia, 300)
+				.lanzarSiHay();
+		reserva.setRevisionAceptada(aceptada);
+		reserva.setRevisionNota(limpia);
+		reserva.setRevisadaEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
+		return reservaRepository.save(reserva);
 	}
 
 	/** Cobrada en taquilla: lo que el admin marca cuando quien reservó por teléfono paga al llegar. */

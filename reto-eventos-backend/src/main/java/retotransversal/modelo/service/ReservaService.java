@@ -31,6 +31,9 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	/** En el control de ingreso: cuántas plazas de una reserva sin registrar han entrado ya. */
 	Reserva contarEntradas(Integer idReserva, int plazas);
 
+	/** La revisión de las adaptaciones y el material: aceptadas o no, con una nota para el cliente. */
+	Reserva revisar(Integer idReserva, boolean aceptada, String nota);
+
 	/** Una reserva para pagar en taquilla, ya cobrada. */
 	Reserva marcarCobrada(Integer idReserva);
 

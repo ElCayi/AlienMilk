@@ -7,7 +7,15 @@ import { AdminService } from '../../../core/services/admin.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
 import { sessionSchedule } from '../../../features/sessions/session.presenter';
 import { EventoAdmin, Reserva } from '../../../models/api.models';
-import { errorMessage, formatDay, formatMoney, formatTime, matches, plural } from '../../../shared/panel/panel-format';
+import {
+  errorMessage,
+  formatDay,
+  formatMoney,
+  formatTime,
+  matches,
+  plural,
+  reviewLabel,
+} from '../../../shared/panel/panel-format';
 
 /** Quién se ve en la tabla: todos, los que faltan por entrar o los que ya han entrado. */
 type DoorFilter = 'TODOS' | 'FALTAN' | 'DENTRO';
@@ -198,7 +206,9 @@ export class AdminControlSheetComponent implements OnInit {
     });
   }
 
-  readonly toReview = computed(() => this.reservations().filter((reserva) => reserva.requiereRevision));
+  /** Todo lo que pide adaptaciones o material, con lo decidido: en sala hay que saber también lo aceptado. */
+  readonly adaptations = computed(() => this.reservations().filter((reserva) => reserva.revision));
+  readonly review = reviewLabel;
 
   ngOnInit(): void {
     this.load();

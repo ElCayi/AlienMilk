@@ -79,6 +79,10 @@ CREATE TABLE reservas (
 	material_externo BOOLEAN NOT NULL DEFAULT FALSE,
 	material_descripcion VARCHAR(500),
 	conformidad_en DATETIME,
+	-- La revisión de adaptaciones y material (migraciones/2026-10-17-revision.sql): null, sin revisar.
+	revision_aceptada BOOLEAN,
+	revision_nota VARCHAR(300),
+	revisada_en DATETIME,
 	-- Cancelar no borra (migraciones/2026-10-17-reservas-cancelacion.sql).
 	cancelada_en DATETIME,
 	cancelada_por VARCHAR(20),
@@ -147,6 +151,10 @@ INSERT INTO reservas (id_evento, username, precio_venta, observaciones, cantidad
 -- Dos canceladas: cancelar no borra, la reserva se queda con quién, cuándo y por qué.
 (3, 'ana', 55.00, NULL, 1, '+34 600 123 456', NULL, FALSE, NULL, '2026-10-04 11:30:00', '2026-10-09 09:12:00', 'CLIENTE', NULL, 'PAGADA', '2026-10-04 11:31:00', 55.00),
 (5, 'luis', 96.00, 'Tomada por teléfono', 2, '+34 611 987 654', NULL, FALSE, NULL, NULL, '2026-10-12 17:45:00', 'ALIENMILK', 'Duplicada: volvió a reservar desde la web con los participantes.', 'EN_TAQUILLA', NULL, 0);
+
+-- La 2 ya está revisada; la 4 (material externo) sigue pendiente.
+UPDATE reservas SET revision_aceptada = TRUE, revision_nota = 'Le reservamos una butaca en la fila de penumbra, junto al pasillo.',
+	revisada_en = '2026-10-03 09:30:00' WHERE id_reserva = 2;
 
 -- La reserva 3 se tomó por teléfono, antes del registro de asistencia: sus participantes quedan sin
 -- registrar y se paga en taquilla.

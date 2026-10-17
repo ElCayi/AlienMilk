@@ -1283,11 +1283,38 @@ th[aria-sort] .sort-button svg {
   border-left: 2px solid var(--coral);
 }
 
+/* Revisada, ya no pide atención: el filete pasa a gris. */
+.detail-review.is-settled {
+  border-left-color: var(--paper-line);
+}
+
+.detail-review .row-actions {
+  margin-top: 0.6rem;
+}
+
+
+
+.review-choice {
+  margin-bottom: 1rem;
+}
+
 .detail-review p:not(.detail-people-title) {
   margin: 0 0 0.4rem;
   color: var(--paper-muted);
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+/* La nota de la revisión en Mi panel, bajo las pastillas: se lee a la izquierda, no centrada. */
+.review-note {
+  max-width: 16rem;
+  margin: 0.45rem auto 0;
+  text-align: left;
+}
+
+/* La decisión, en tinta: es lo que se ha resuelto. */
+.detail-review p.detail-review-decision {
+  color: var(--paper-ink);
 }
 
 /* Los participantes de una reserva en una celda: uno por línea, con su credencial debajo. */

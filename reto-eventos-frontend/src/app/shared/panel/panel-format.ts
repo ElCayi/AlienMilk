@@ -45,6 +45,20 @@ export function cancellationLine(reserva: Reserva, propia = false): string {
   return `Cancelada ${quien} el ${dia}`;
 }
 
+/** La revisión de adaptaciones y material, en palabras: para la ficha, la hoja de control y Mi panel. */
+export function reviewLabel(reserva: Reserva): string {
+  switch (reserva.revision) {
+    case 'ACEPTADA':
+      return 'Aceptadas';
+    case 'NO_ACEPTADA':
+      return 'No aceptadas';
+    case 'PENDIENTE':
+      return 'Pendientes de revisión';
+    default:
+      return '';
+  }
+}
+
 /** El cobro en una pastilla, solo cuando pide atención: lo pagado es lo normal y no se dice. */
 export function paymentBadge(reserva: Reserva): { label: string; tone: Tone } | null {
   if (reserva.canceladaEn) {

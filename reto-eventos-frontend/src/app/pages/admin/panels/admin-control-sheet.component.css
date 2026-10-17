@@ -91,6 +91,10 @@
   font-size: 0.9rem;
 }
 
+.sheet-review {
+  font-weight: 400;
+}
+
 .sheet-none {
   margin: 0.5rem 0 0;
   color: var(--paper-muted);

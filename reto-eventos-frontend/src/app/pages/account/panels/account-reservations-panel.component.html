@@ -62,10 +62,17 @@
                   @if (payment(reserva); as pago) {
                     <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
                   }
-                  @if (reserva.requiereRevision) {
+                  @if (reserva.revision === 'PENDIENTE') {
                     <span class="badge" data-tone="alert" title="AlienMilk evaluará sus adaptaciones o su material externo">En revisión</span>
+                  } @else if (reserva.revision === 'NO_ACEPTADA') {
+                    <span class="badge" data-tone="alert">Adaptaciones no aceptadas</span>
+                  } @else if (reserva.revision === 'ACEPTADA') {
+                    <span class="badge" data-tone="ok">Adaptaciones aceptadas</span>
                   }
                 </span>
+                @if (reserva.revisionNota) {
+                  <span class="cell-sub review-note">{{ reserva.revisionNota }}</span>
+                }
               </td>
               <td data-label="Participantes">
                 @if (reserva.asistentes.length) {

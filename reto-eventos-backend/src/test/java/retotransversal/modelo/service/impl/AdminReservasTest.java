@@ -179,4 +179,21 @@ class AdminReservasTest {
         assertThat(reserva.getEntradasSinRegistrar()).isEqualTo(1);
         assertThatThrownBy(() -> service.contarEntradas(7, 2)).hasMessage("La reserva tiene 1 plaza");
     }
+
+    @Test
+    void aReviewIsDecidedWithANoteAndReopensWhenTheRequestChanges() {
+        assertThat(reserva.requiereRevision()).isTrue();
+        assertThatThrownBy(() -> service.revisar(7, false, " "))
+                .isInstanceOf(retotransversal.exception.DatosNoValidosException.class);
+
+        service.revisar(7, true, "Le reservamos una butaca accesible");
+        assertThat(reserva.requiereRevision()).isFalse();
+        assertThat(reserva.getRevisionNota()).isEqualTo("Le reservamos una butaca accesible");
+
+        // Otra adaptación: lo aceptado era otra cosa.
+        service.editarReservaAdmin(7, new ReservaEditarDto(null, null, null, null, null, "Acceso adaptado y penumbra",
+                false, null));
+        assertThat(reserva.requiereRevision()).isTrue();
+        assertThat(reserva.getRevisionAceptada()).isNull();
+    }
 }

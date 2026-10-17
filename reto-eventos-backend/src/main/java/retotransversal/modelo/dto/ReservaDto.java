@@ -47,6 +47,10 @@ public class ReservaDto {
 	private LocalDateTime conformidadEn;
 	/** Con adaptaciones o material externo: AlienMilk tiene que evaluarla antes de la sesión. */
 	private boolean requiereRevision;
+	/** La revisión: PENDIENTE, ACEPTADA o NO_ACEPTADA; null si no pide adaptaciones ni material. */
+	private String revision;
+	private String revisionNota;
+	private LocalDateTime revisadaEn;
 
 	/** La cancelación, si la hubo: la reserva no se borra (ver Reserva#canceladaEn). */
 	private LocalDateTime canceladaEn;
@@ -84,6 +88,11 @@ public class ReservaDto {
 				.materialDescripcion(reserva.getMaterialDescripcion())
 				.conformidadEn(reserva.getConformidadEn())
 				.requiereRevision(reserva.requiereRevision())
+				.revision(!reserva.pideAdaptaciones() ? null
+						: reserva.getRevisionAceptada() == null ? "PENDIENTE"
+								: reserva.getRevisionAceptada() ? "ACEPTADA" : "NO_ACEPTADA")
+				.revisionNota(reserva.getRevisionNota())
+				.revisadaEn(reserva.getRevisadaEn())
 				.canceladaEn(reserva.getCanceladaEn())
 				.canceladaPor(reserva.getCanceladaPor() == null ? null : reserva.getCanceladaPor().name())
 				.motivoCancelacion(reserva.getMotivoCancelacion())

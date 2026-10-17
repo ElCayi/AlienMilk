@@ -73,6 +73,9 @@ pagadas. Sin `STRIPE_SECRET_KEY`, las reservas se confirman sin cobrar, como los
 La del 2026-10-17, `control-ingreso`, va después de `reservas-pago` y antes del backend de esa fecha:
 guarda quién ha entrado en cada sesión, para marcarlo en pantalla desde la hoja de control.
 
+La del 2026-10-17, `revision`, va después de `control-ingreso` y antes del backend de esa fecha: guarda
+si AlienMilk acepta o no las adaptaciones y el material de cada reserva, con una nota para el cliente.
+
 Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
 el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.
 

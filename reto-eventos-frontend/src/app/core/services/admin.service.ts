@@ -200,6 +200,11 @@ export class AdminService {
     return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/entradas`, { plazas });
   }
 
+  /** La revisión de adaptaciones y material: aceptadas o no, con una nota para el cliente. */
+  revisarReserva(idReserva: number, aceptada: boolean, nota: string): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`, { aceptada, nota });
+  }
+
   /** Una reserva para pagar en taquilla, ya cobrada. */
   marcarCobrada(idReserva: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cobrada`, {});

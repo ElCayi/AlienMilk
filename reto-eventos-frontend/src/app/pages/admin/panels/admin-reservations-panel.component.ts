@@ -34,6 +34,7 @@ import {
   cancellationLine,
   paymentBadge,
   paymentLine,
+  reviewLabel,
 } from '../../../shared/panel/panel-format';
 import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
@@ -497,6 +498,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly cancellation = (reserva: Reserva) => cancellationLine(reserva);
   readonly payment = paymentBadge;
   readonly paymentText = paymentLine;
+  readonly review = reviewLabel;
   readonly day = formatDay;
   readonly when = reservationWhen;
   readonly dayTime = formatDayTime;
@@ -680,6 +682,47 @@ export class AdminReservationsPanelComponent implements OnInit {
       error: (error) => {
         this.busy.set(null);
         this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido marcar como cobrada.') });
+      },
+    });
+  }
+
+  // La revisión de adaptaciones y material, en su diálogo.
+  readonly reviewDialogRef = viewChild.required<PanelDialogComponent>('reviewDialog');
+  readonly reviewTarget = signal<Reserva | null>(null);
+  readonly reviewError = signal<string | null>(null);
+  reviewAccept = true;
+  reviewNote = '';
+
+  openReview(reserva: Reserva, accept: boolean): void {
+    this.reviewTarget.set(reserva);
+    this.reviewAccept = accept;
+    this.reviewNote = reserva.revisionNota ?? '';
+    this.reviewError.set(null);
+    this.reviewDialogRef().open();
+  }
+
+  saveReview(): void {
+    const reserva = this.reviewTarget();
+    if (!reserva || this.busy() !== null) {
+      return;
+    }
+    if (!this.reviewAccept && !this.reviewNote.trim()) {
+      this.reviewError.set('Explica al cliente por qué no se aceptan.');
+      return;
+    }
+    this.busy.set(reserva.idReserva);
+    this.admin.revisarReserva(reserva.idReserva, this.reviewAccept, this.reviewNote).subscribe({
+      next: (updated) => {
+        this.busy.set(null);
+        this.reviewDialogRef().close();
+        this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
+        // Sigue en su sitio aunque ya no «requiera revisión»: se suelta al cambiar de filtro.
+        this.stay.set(updated.idReserva);
+        this.rowNotice.set({ id: updated.idReserva, text: `Adaptaciones ${this.review(updated).toLowerCase()}.` });
+      },
+      error: (error) => {
+        this.busy.set(null);
+        this.reviewError.set(errorMessage(error, 'No se ha podido guardar la decisión.'));
       },
     });
   }

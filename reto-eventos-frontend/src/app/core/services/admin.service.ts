@@ -185,7 +185,8 @@ export class AdminService {
     return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/datos`, datos);
   }
 
-  cancelarReservaAdmin(idReserva: number): Observable<void> {
-    return this.http.delete<void>(`${this.adminUrl}/reservas/${idReserva}`);
+  /** Cancelar no borra: vuelve la reserva, con su cancelación. El motivo es obligatorio. */
+  cancelarReservaAdmin(idReserva: number, motivo: string): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo });
   }
 }

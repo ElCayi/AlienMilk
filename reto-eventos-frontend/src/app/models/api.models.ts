@@ -94,6 +94,12 @@ export interface Reserva {
   /** Con adaptaciones o material externo: AlienMilk tiene que evaluarla. */
   requiereRevision: boolean;
   estadoEvento: string;
+  /** Si su sesión está archivada: sale de la vista diaria y se queda en el archivo con ella. */
+  sesionArchivada: boolean;
+  /** Cancelar no borra: la reserva se queda con cuándo, quién y por qué. Sin fecha, está viva. */
+  canceladaEn: string | null;
+  canceladaPor: 'CLIENTE' | 'ALIENMILK' | null;
+  motivoCancelacion: string | null;
 }
 
 export interface Perfil {

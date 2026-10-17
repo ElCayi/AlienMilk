@@ -227,7 +227,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public EventoAdminDto aAdminDto(Evento evento) {
-		List<Reserva> reservas = reservaRepository.findByEventoIdEvento(evento.getIdEvento());
+		List<Reserva> reservas = reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(evento.getIdEvento());
 		return EventoAdminDto.de(evento, reservas.stream().mapToLong(Reserva::getCantidad).sum(), reservas.size());
 	}
 
@@ -240,7 +240,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	private int plazasReservadas(Integer idEvento) {
-		return reservaRepository.findByEventoIdEvento(idEvento).stream().mapToInt(Reserva::getCantidad).sum();
+		return reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(idEvento).stream().mapToInt(Reserva::getCantidad).sum();
 	}
 
 	private static void limpiar(Evento evento) {

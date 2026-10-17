@@ -3,7 +3,8 @@
     <h2>Mis reservas</h2>
     <p>
       Las sesiones a las que te has apuntado. Puedes modificar los datos de tu reserva o cancelarla hasta el
-      día anterior a la sesión; si la sesión se cancela o ya se ha celebrado, la reserva se queda en el historial.
+      día anterior a la sesión. Las que canceles, y las de sesiones canceladas o ya celebradas, se quedan en el
+      historial.
     </p>
   </div>
   <div class="section-head-actions">
@@ -45,7 +46,7 @@
         </thead>
         <tbody>
           @for (reserva of upcoming(); track reserva.idReserva) {
-            @let estado = state(reserva.estadoEvento);
+            @let estado = state(reserva);
             <tr>
               <td class="cell-title">
                 <a class="cell-main text-link" routerLink="/sesiones" [queryParams]="{ sesion: reserva.idEvento }">{{
@@ -109,19 +110,19 @@
     <h3 class="subsection-title">Historial</h3>
     <div class="table-wrap">
       <table class="data-table">
-        <caption>Reservas en sesiones canceladas o celebradas</caption>
+        <caption>Reservas canceladas y reservas en sesiones canceladas o celebradas</caption>
         <thead>
           <tr>
             <th scope="col">Sesión</th>
             <th scope="col" class="num">Plazas</th>
             <th scope="col" class="num">Importe</th>
             <th scope="col" class="center">Estado</th>
-            <th scope="col">Observaciones</th>
+            <th scope="col">Notas</th>
           </tr>
         </thead>
         <tbody>
           @for (reserva of history(); track reserva.idReserva) {
-            @let estado = state(reserva.estadoEvento);
+            @let estado = state(reserva);
             <tr>
               <td class="cell-title">
                 <span class="cell-main">{{ reserva.nombreEvento }}</span>
@@ -131,9 +132,14 @@
               <td data-label="Importe" class="num">{{ money(reserva.precioVenta) }}</td>
               <td data-label="Estado" class="center">
                 <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                @if (reserva.canceladaEn) {
+                  <span class="cell-sub">{{ cancellation(reserva) }}</span>
+                }
               </td>
-              <td data-label="Observaciones">
-                @if (reserva.observaciones) {
+              <td data-label="Notas">
+                @if (reserva.motivoCancelacion) {
+                  <span class="clamp-2" [title]="reserva.motivoCancelacion">{{ reserva.motivoCancelacion }}</span>
+                } @else if (reserva.observaciones) {
                   <span class="clamp-2" [title]="reserva.observaciones">{{ reserva.observaciones }}</span>
                 } @else {
                   <span class="cell-sub">—</span>

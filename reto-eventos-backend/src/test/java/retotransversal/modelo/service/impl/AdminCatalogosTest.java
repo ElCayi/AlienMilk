@@ -1,6 +1,7 @@
 package retotransversal.modelo.service.impl;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import retotransversal.exception.GlobalExceptionHandler;
+import retotransversal.modelo.entities.CanceladaPor;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Perfil;
@@ -136,8 +138,11 @@ class AdminCatalogosTest {
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.message").value("La sesión ya no está activa: la reserva se queda en tu historial"));
 		mvc.perform(delete("/api/reservas/11").principal(ana())).andExpect(status().isNoContent());
-		verify(reservas, never()).deleteById(10);
-		verify(reservas).deleteById(11);
+		// Cancelar no borra: la reserva se queda, marcada como cancelada por el cliente.
+		verify(reservas, never()).deleteById(any());
+		verify(reservas, never()).save(argThat(r -> r.getIdReserva() == 10));
+		verify(reservas).save(argThat(r -> r.getIdReserva() == 11 && r.getCanceladaPor() == CanceladaPor.CLIENTE
+				&& r.getCanceladaEn() != null));
 	}
 
 	private static UsernamePasswordAuthenticationToken ana() {

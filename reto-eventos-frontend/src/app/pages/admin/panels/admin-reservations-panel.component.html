@@ -51,7 +51,7 @@
       <button
         type="button"
         [attr.aria-pressed]="filter() === option.value"
-        (click)="filter.set(option.value)"
+        (click)="setFilter(option.value)"
       >
         {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
       </button>
@@ -209,7 +209,7 @@
                         <p class="detail-people-title">Sus reservas</p>
                         <ul class="group-list">
                           @for (reserva of client.reservas; track reserva.idReserva) {
-                            @let estado = state(reserva.estadoEvento);
+                            @let estado = state(reserva);
                             <li>
                               <button type="button" class="text-link group-link" (click)="openReservation(reserva)">
                                 {{ number(reserva) }} · {{ reserva.nombreEvento }}
@@ -334,7 +334,7 @@
                         <p class="detail-people-title">Sus reservas</p>
                         <ul class="group-list">
                           @for (reserva of group.reservas; track reserva.idReserva) {
-                            @let estado = state(reserva.estadoEvento);
+                            @let estado = state(reserva);
                             <li>
                               <button type="button" class="text-link group-link" (click)="openReservation(reserva)">
                                 {{ number(reserva) }} · {{ reserva.nombreCliente }}
@@ -419,7 +419,7 @@
           </thead>
           <tbody>
             @for (reserva of visible(); track reserva.idReserva) {
-              @let estado = state(reserva.estadoEvento);
+              @let estado = state(reserva);
               @let open = expanded() === reserva.idReserva;
               <tr class="row-summary" [class.is-open]="open" (click)="toggle(reserva)">
                 <td class="cell-num center">{{ number(reserva) }}</td>
@@ -510,6 +510,17 @@
                           <dt>Conformidad</dt>
                           <dd>{{ reserva.conformidadEn ? 'Registrada el ' + dayTime(reserva.conformidadEn) : 'Sin registrar' }}</dd>
                         </div>
+                        @if (reserva.canceladaEn) {
+                          <div>
+                            <dt>Cancelación</dt>
+                            <dd>
+                              {{ cancellation(reserva) }}
+                              @if (reserva.motivoCancelacion) {
+                                <span class="cell-sub">{{ reserva.motivoCancelacion }}</span>
+                              }
+                            </dd>
+                          </div>
+                        }
                         @if (reserva.observaciones) {
                           <div>
                             <dt>Observaciones</dt>
@@ -554,17 +565,24 @@
                     </div>
 
                     <div class="row-actions detail-actions">
-                      <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
-                      <button
-                        type="button"
-                        class="btn btn-small btn-danger"
-                        [disabled]="busy() === reserva.idReserva"
-                        (click)="cancel(reserva)"
-                      >
-                        Cancelar reserva
-                      </button>
-                      @if (savedId() === reserva.idReserva) {
-                        <span class="detail-saved" role="status">Cambios guardados.</span>
+                      <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. -->
+                      @if (!reserva.canceladaEn) {
+                        <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
+                        @if (reserva.estadoEvento === 'ACTIVO') {
+                          <button
+                            type="button"
+                            class="btn btn-small btn-danger"
+                            [disabled]="busy() === reserva.idReserva"
+                            (click)="cancel(reserva)"
+                          >
+                            Cancelar reserva
+                          </button>
+                        }
+                      }
+                      @if (rowNotice(); as aviso) {
+                        @if (aviso.id === reserva.idReserva) {
+                          <span class="detail-saved" role="status">{{ aviso.text }}</span>
+                        }
                       }
                     </div>
                   </td>
@@ -662,6 +680,32 @@
       </button>
     </div>
   </form>
+</app-panel-dialog>
+
+<app-panel-dialog #cancelDialog [heading]="cancelTarget() ? 'Cancelar la reserva ' + number(cancelTarget()!) : 'Cancelar la reserva'">
+  @if (cancelTarget(); as reserva) {
+    <form novalidate (ngSubmit)="confirmCancel()">
+      <p class="dialog-copy">
+        Se liberan {{ plural(reserva.cantidad, 'plaza', 'plazas') }} de «{{ reserva.nombreEvento }}». La reserva no se
+        borra: pasa a «Canceladas» con el motivo, y {{ reserva.nombreCliente }} la verá en su historial.
+      </p>
+      <div class="field" [class.is-invalid]="cancelError() && !cancelReason.trim()">
+        <label class="field-label" for="cancel-reason">
+          Motivo <span class="field-note">{{ cancelReason.length }}/200</span>
+        </label>
+        <textarea id="cancel-reason" name="motivo" rows="3" maxlength="200" [(ngModel)]="cancelReason"></textarea>
+      </div>
+      @if (cancelError(); as message) {
+        <p class="notice is-error form-error" role="alert">{{ message }}</p>
+      }
+      <div class="form-actions">
+        <button type="button" class="btn" (click)="cancelDialog.close()">Volver</button>
+        <button type="submit" class="btn btn-danger" [disabled]="busy() !== null" [attr.aria-busy]="busy() !== null">
+          {{ busy() !== null ? 'Cancelando…' : 'Cancelar reserva' }}
+        </button>
+      </div>
+    </form>
+  }
 </app-panel-dialog>
 
 <app-reservation-editor [save]="saveData" [admin]="true" [sessions]="sessions()" (saved)="afterEdit($event)" />

@@ -14,12 +14,13 @@ import {
   formatMoney,
   plural,
   reservationState,
+  cancellationLine,
 } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
 
 /**
- * Mis reservas: las de sesiones activas, que se pueden cancelar, y el historial (sesiones canceladas
- * o ya celebradas), que se queda como estaba. La regla es la del servidor.
+ * Mis reservas: las de sesiones activas, que se pueden modificar o cancelar, y el historial (las
+ * reservas canceladas y las de sesiones canceladas o ya celebradas), que se queda como estaba. La regla es la del servidor.
  */
 @Component({
   selector: 'app-account-reservations-panel',
@@ -41,17 +42,18 @@ export class AccountReservationsPanelComponent {
 
   readonly upcoming = computed(() =>
     (this.store.reservations() ?? [])
-      .filter((reserva) => reserva.estadoEvento === 'ACTIVO')
+      .filter((reserva) => reserva.estadoEvento === 'ACTIVO' && !reserva.canceladaEn)
       .sort((a, b) => a.fechaInicioEvento.localeCompare(b.fechaInicioEvento)),
   );
 
   readonly history = computed(() =>
     (this.store.reservations() ?? [])
-      .filter((reserva) => reserva.estadoEvento !== 'ACTIVO')
+      .filter((reserva) => reserva.estadoEvento !== 'ACTIVO' || reserva.canceladaEn)
       .sort((a, b) => b.fechaInicioEvento.localeCompare(a.fechaInicioEvento)),
   );
 
   readonly state = reservationState;
+  readonly cancellation = (reserva: Reserva) => cancellationLine(reserva, true);
   readonly day = formatDay;
   readonly when = reservationWhen;
   readonly credential = credentialLabel;
@@ -85,10 +87,9 @@ export class AccountReservationsPanelComponent {
     this.reservationService.cancelar(reserva.idReserva).subscribe({
       next: () => {
         this.busy.set(null);
-        this.store.reservations.update(
-          (list) => list?.filter((item) => item.idReserva !== reserva.idReserva) ?? null,
-        );
-        this.notice.set({ text: `Reserva de «${reserva.nombreEvento}» cancelada.`, error: false });
+        // No se borra: pasa al historial, marcada como cancelada por ti.
+        this.store.loadReservations();
+        this.notice.set({ text: `Reserva de «${reserva.nombreEvento}» cancelada. La tienes en el historial.`, error: false });
       },
       error: (error) => {
         this.busy.set(null);

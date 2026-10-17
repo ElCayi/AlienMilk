@@ -17,6 +17,7 @@ import retotransversal.modelo.dto.AsistenteDto;
 import retotransversal.modelo.dto.ReservaCrearDto;
 import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.entities.Asistente;
+import retotransversal.modelo.entities.CanceladaPor;
 import retotransversal.modelo.entities.Credencial;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.Evento;
@@ -172,6 +173,9 @@ public class ReservaServiceImpl implements ReservaService {
 	@Transactional
 	public Reserva editarReservaAdmin(Integer idReserva, ReservaEditarDto datos) {
 		Reserva reserva = findById(idReserva);
+		if (reserva.cancelada()) {
+			throw new ConflictoNegocioException("Esta reserva está cancelada: se queda como estaba");
+		}
 		int cantidad = datos.cantidad() == null ? reserva.getCantidad() : datos.cantidad();
 		Integer idEvento = datos.idEvento() == null ? reserva.getEvento().getIdEvento() : datos.idEvento();
 		boolean mueve = !idEvento.equals(reserva.getEvento().getIdEvento()) || cantidad != reserva.getCantidad();
@@ -214,7 +218,7 @@ public class ReservaServiceImpl implements ReservaService {
 		if (evento.getEstado() != EstadoEvento.ACTIVO) {
 			throw new ConflictoNegocioException("Esa sesión ya no admite reservas");
 		}
-		List<Reserva> otras = reservaRepository.findByEventoIdEvento(evento.getIdEvento()).stream()
+		List<Reserva> otras = reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(evento.getIdEvento()).stream()
 				.filter(otra -> !otra.getIdReserva().equals(reserva.getIdReserva()))
 				.toList();
 		int ocupadas = otras.stream().mapToInt(Reserva::getCantidad).sum();
@@ -245,9 +249,7 @@ public class ReservaServiceImpl implements ReservaService {
 		if (!reserva.getUsuario().getUsername().equals(username)) {
 			throw new OperacionNoPermitidaException("Solo puedes modificar tus propias reservas");
 		}
-		if (reserva.getEvento().getEstado() != EstadoEvento.ACTIVO) {
-			throw new ConflictoNegocioException("La sesión ya no está activa: la reserva se queda en tu historial");
-		}
+		comprobarViva(reserva, "La sesión ya no está activa: la reserva se queda en tu historial");
 		if (!eventoService.admiteCancelaciones(reserva.getEvento())) {
 			throw new ConflictoNegocioException("Los datos de la reserva se pueden modificar hasta el día anterior a la sesión");
 		}
@@ -309,27 +311,47 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	@Override
+	@Transactional
 	public int cancelarReserva(Integer idReserva, String username) {
 		Reserva reserva = findById(idReserva);
 		if (!reserva.getUsuario().getUsername().equals(username)) {
 			throw new OperacionNoPermitidaException("Solo puedes cancelar tus propias reservas");
 		}
-		// Una reserva de una sesión cancelada o ya celebrada es historial: se queda en la lista.
-		if (reserva.getEvento().getEstado() != EstadoEvento.ACTIVO) {
-			throw new ConflictoNegocioException("La sesión ya no está activa: la reserva se queda en tu historial");
-		}
+		comprobarViva(reserva, "La sesión ya no está activa: la reserva se queda en tu historial");
 		if (!eventoService.admiteCancelaciones(reserva.getEvento())) {
 			throw new ConflictoNegocioException("Las reservas se pueden cancelar hasta el día anterior a la sesión");
 		}
-		reservaRepository.deleteById(idReserva);
+		cancelar(reserva, CanceladaPor.CLIENTE, null);
 		return 1;
 	}
 
+	/** Desde el panel, en cualquier momento antes de la sesión, pero siempre con su motivo. */
 	@Override
-	public int cancelarReservaAdmin(Integer idReserva) {
-		findById(idReserva);
-		reservaRepository.deleteById(idReserva);
-		return 1;
+	@Transactional
+	public Reserva cancelarReservaAdmin(Integer idReserva, String motivo) {
+		Reserva reserva = findById(idReserva);
+		comprobarViva(reserva, "La sesión ya no está activa: la reserva se queda como está");
+		String limpio = ErroresCampos.limpio(motivo);
+		new ErroresCampos().obligatorio("motivo", limpio, 200, "Indica el motivo de la cancelación").lanzarSiHay();
+		return cancelar(reserva, CanceladaPor.ALIENMILK, limpio);
+	}
+
+	/** Cancelar no borra: la reserva deja de ocupar plazas y se queda con quién, cuándo y por qué. */
+	private Reserva cancelar(Reserva reserva, CanceladaPor quien, String motivo) {
+		reserva.setCanceladaEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
+		reserva.setCanceladaPor(quien);
+		reserva.setMotivoCancelacion(motivo);
+		return reservaRepository.save(reserva);
+	}
+
+	/** Solo se cambian las reservas vivas de sesiones activas: lo demás es historial. */
+	private static void comprobarViva(Reserva reserva, String siNoActiva) {
+		if (reserva.cancelada()) {
+			throw new ConflictoNegocioException("Esta reserva ya está cancelada");
+		}
+		if (reserva.getEvento().getEstado() != EstadoEvento.ACTIVO) {
+			throw new ConflictoNegocioException(siNoActiva);
+		}
 	}
 
 	private void validarReserva(Evento evento, String username, Integer cantidad) {
@@ -347,7 +369,7 @@ public class ReservaServiceImpl implements ReservaService {
 			throw new ConflictoNegocioException("Las reservas de esta sesión ya están cerradas: cierran 10 minutos antes de empezar");
 		}
 
-		int aforoReservado = reservaRepository.findByEventoIdEvento(evento.getIdEvento())
+		int aforoReservado = reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(evento.getIdEvento())
 				.stream()
 				.mapToInt(Reserva::getCantidad)
 				.sum();
@@ -356,7 +378,7 @@ public class ReservaServiceImpl implements ReservaService {
 			throw new ConflictoNegocioException("No quedan plazas suficientes en esta sesión");
 		}
 
-		int entradasUsuario = reservaRepository.findByUsuarioUsernameAndEventoIdEvento(username, evento.getIdEvento())
+		int entradasUsuario = reservaRepository.findByUsuarioUsernameAndEventoIdEventoAndCanceladaEnIsNull(username, evento.getIdEvento())
 				.stream()
 				.mapToInt(Reserva::getCantidad)
 				.sum();

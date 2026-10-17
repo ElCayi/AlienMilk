@@ -100,7 +100,7 @@ export class AdminControlSheetComponent implements OnInit {
         this.session.set(sessions.find((session) => session.idEvento === idEvento) ?? null);
         this.reservations.set(
           reservations
-            .filter((reserva) => reserva.idEvento === idEvento)
+            .filter((reserva) => reserva.idEvento === idEvento && !reserva.canceladaEn)
             .sort((a, b) => a.idReserva - b.idReserva),
         );
         this.loading.set(false);

@@ -687,6 +687,15 @@ th[aria-sort] .sort-button svg {
   margin-top: 0.8rem;
 }
 
+/* El texto de un diálogo pequeño, antes de su campo. */
+.dialog-copy {
+  margin: 0 0 1.25rem;
+  color: var(--paper-muted);
+  line-height: 1.5;
+  text-align: justify;
+  text-align-last: left;
+}
+
 .detail-saved {
   align-self: center;
   color: var(--paper-muted);

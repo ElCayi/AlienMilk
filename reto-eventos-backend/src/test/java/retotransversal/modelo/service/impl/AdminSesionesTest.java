@@ -99,7 +99,7 @@ class AdminSesionesTest {
 	void theCapacityCannotDropBelowTheSeatsAlreadyReserved() throws Exception {
 		when(eventos.findById(7)).thenReturn(Optional.of(sesion(7, EstadoEvento.ACTIVO)));
 		when(tipos.findById(1)).thenReturn(Optional.of(cata));
-		when(reservas.findByEventoIdEvento(7)).thenReturn(List.of(reserva(30), reserva(15)));
+		when(reservas.findByEventoIdEventoAndCanceladaEnIsNull(7)).thenReturn(List.of(reserva(30), reserva(15)));
 
 		mvc.perform(put("/api/admin/eventos/7").contentType(MediaType.APPLICATION_JSON).content(formulario(40)))
 				.andExpect(status().isBadRequest())

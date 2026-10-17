@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -126,7 +127,7 @@ class AdminReservasTest {
         Reserva otra = Reserva.builder().idReserva(8).cantidad(3).evento(sesion)
                 .usuario(Usuario.builder().username("luis").build()).build();
         when(eventos.bloquear(3)).thenReturn(sesion);
-        when(repository.findByEventoIdEvento(3)).thenReturn(List.of(reserva, otra));
+        when(repository.findByEventoIdEventoAndCanceladaEnIsNull(3)).thenReturn(List.of(reserva, otra));
 
         service.editarReservaAdmin(7, new ReservaEditarDto(null, null, null, null, 2, null, null, null));
         assertThat(reserva.getCantidad()).isEqualTo(2);
@@ -134,5 +135,26 @@ class AdminReservasTest {
 
         assertThatThrownBy(() -> service.editarReservaAdmin(7, new ReservaEditarDto(null, null, null, null, 3, null, null, null)))
                 .isInstanceOf(ConflictoNegocioException.class).hasMessageContaining("2 plazas libres");
+    }
+
+    @Test
+    void adminCancelsWithAReasonAndTheBookingStays() throws Exception {
+        mvc.perform(post("/api/admin/reservas/7/cancelar").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores.motivo").exists());
+        mvc.perform(post("/api/admin/reservas/7/cancelar").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"motivo\":\" Lo pidió por teléfono \"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.canceladaPor").value("ALIENMILK"))
+                .andExpect(jsonPath("$.motivoCancelacion").value("Lo pidió por teléfono"))
+                .andExpect(jsonPath("$.requiereRevision").value(false));
+        verify(repository, never()).deleteById(any());
+        assertThat(reserva.getCanceladaEn()).isNotNull();
+
+        // Cancelada, es historial: ni se vuelve a cancelar ni se edita.
+        assertThatThrownBy(() -> service.cancelarReservaAdmin(7, "Otra vez"))
+                .isInstanceOf(ConflictoNegocioException.class);
+        assertThatThrownBy(() -> service.editarReservaAdmin(7, datosDeAna("600 123 456")))
+                .isInstanceOf(ConflictoNegocioException.class);
     }
 }

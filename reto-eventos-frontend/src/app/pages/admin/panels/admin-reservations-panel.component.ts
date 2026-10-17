@@ -19,7 +19,6 @@ import { AdminService } from '../../../core/services/admin.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
 import { sessionSchedule } from '../../../features/sessions/session.presenter';
 import { EstadoEvento, EventoAdmin, Reserva, ReservaEditar, Usuario } from '../../../models/api.models';
-import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
 import { ReservationEditorComponent } from '../../../shared/panel/reservation-editor.component';
 import {
@@ -32,6 +31,7 @@ import {
   plural,
   profileLabel,
   reservationState,
+  cancellationLine,
 } from '../../../shared/panel/panel-format';
 import { TableSort } from '../../../shared/panel/table-sort';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
@@ -41,14 +41,26 @@ import { DemoFootComponent } from '../demo-foot.component';
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
 
-/** Por el estado de su sesión (confirmadas, de sesión cancelada o celebradas), o las que requieren revisión. */
-type Filter = 'TODAS' | EstadoEvento | 'REVISION';
+/**
+ * Lo vivo, por el estado de su sesión (confirmadas, de sesión cancelada o celebradas) o lo que requiere
+ * revisión; y, aparte, las canceladas y las de sesiones archivadas, que no se borran pero no estorban.
+ */
+type Filter = 'TODAS' | EstadoEvento | 'REVISION' | 'CANCELADAS' | 'ARCHIVADAS';
+
+/** Ni cancelada ni de una sesión archivada: lo que se mira a diario. */
+const live = (reserva: Reserva) => !reserva.canceladaEn && !reserva.sesionArchivada;
+
+/** Las que ocupan plazas y cuentan en las cifras: todas menos las canceladas. */
+const holds = (reserva: Reserva) => !reserva.canceladaEn;
 
 /** Columnas por las que se ordena la tabla. */
 type SortKey = 'numero' | 'cliente' | 'sesion' | 'fecha' | 'plazas' | 'estado';
 
 /** Al ordenar por estado: las confirmadas, las de sesión cancelada, las celebradas. */
 const STATE_ORDER: Record<EstadoEvento, number> = { ACTIVO: 0, CANCELADO: 1, TERMINADO: 2 };
+
+/** Las canceladas, al final. */
+const stateRank = (reserva: Reserva) => (reserva.canceladaEn ? 3 : STATE_ORDER[reserva.estadoEvento as EstadoEvento]);
 
 const byText = (a: string, b: string) => a.localeCompare(b, 'es', { sensitivity: 'base' });
 
@@ -59,7 +71,7 @@ const COMPARE: Record<SortKey, (a: Reserva, b: Reserva) => number> = {
   fecha: (a, b) =>
     (a.fechaInicioEvento + a.horaInicioEvento).localeCompare(b.fechaInicioEvento + b.horaInicioEvento),
   plazas: (a, b) => a.cantidad - b.cantidad,
-  estado: (a, b) => STATE_ORDER[a.estadoEvento as EstadoEvento] - STATE_ORDER[b.estadoEvento as EstadoEvento],
+  estado: (a, b) => stateRank(a) - stateRank(b),
 };
 
 /** Las tres preguntas del panel: qué pasa con una reserva, quién es un cliente, cómo va una sesión. */
@@ -140,7 +152,6 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
 })
 export class AdminReservationsPanelComponent implements OnInit {
   private readonly admin = inject(AdminService);
-  private readonly confirm = inject(PanelConfirmService);
   private readonly summary = inject(AdminSummaryService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -186,7 +197,8 @@ export class AdminReservationsPanelComponent implements OnInit {
   });
 
   readonly filters = computed(() => {
-    const list = this.searched();
+    const all = this.searched();
+    const list = all.filter(live);
     const count = (estado: EstadoEvento) => list.filter((reserva) => reserva.estadoEvento === estado).length;
     return [
       { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
@@ -198,6 +210,12 @@ export class AdminReservationsPanelComponent implements OnInit {
         label: 'Requieren revisión',
         count: list.filter((reserva) => reserva.requiereRevision).length,
       },
+      {
+        value: 'CANCELADAS' as Filter,
+        label: 'Canceladas',
+        count: all.filter((reserva) => reserva.canceladaEn && !reserva.sesionArchivada).length,
+      },
+      { value: 'ARCHIVADAS' as Filter, label: 'Archivadas', count: all.filter((reserva) => reserva.sesionArchivada).length },
     ];
   });
 
@@ -220,15 +238,30 @@ export class AdminReservationsPanelComponent implements OnInit {
     const filter = this.filter();
     const { key, dir } = this.sort.state();
     const compare = COMPARE[key];
+    const stay = this.stay();
     return this.searched()
-      .filter((reserva) =>
-        filter === 'TODAS' ? true : filter === 'REVISION' ? reserva.requiereRevision : reserva.estadoEvento === filter,
-      )
+      .filter((reserva) => {
+        if (reserva.idReserva === stay) {
+          return true;
+        }
+        switch (filter) {
+          case 'ARCHIVADAS':
+            return reserva.sesionArchivada;
+          case 'CANCELADAS':
+            return !!reserva.canceladaEn && !reserva.sesionArchivada;
+          case 'TODAS':
+            return live(reserva);
+          case 'REVISION':
+            return live(reserva) && reserva.requiereRevision;
+          default:
+            return live(reserva) && reserva.estadoEvento === filter;
+        }
+      })
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idReserva - b.idReserva);
   });
 
   readonly totals = computed(() => {
-    const list = this.visible();
+    const list = this.visible().filter(holds);
     return {
       plazas: list.reduce((sum, reserva) => sum + reserva.cantidad, 0),
       importe: list.reduce((sum, reserva) => sum + Number(reserva.precioVenta), 0),
@@ -271,6 +304,7 @@ export class AdminReservationsPanelComponent implements OnInit {
       .map(([username, reservas]) => {
         const user = users.get(username);
         const ordered = [...reservas].sort(COMPARE.fecha);
+        const vivas = reservas.filter(holds);
         const telefono = [...reservas].sort((a, b) => b.idReserva - a.idReserva).find((r) => r.telefono)?.telefono;
         return {
           username,
@@ -280,10 +314,10 @@ export class AdminReservationsPanelComponent implements OnInit {
           programa: user ? !!user.aceptaComunicaciones : null,
           reservas: ordered,
           coincidencias: reservas.filter((r) => matching.has(r.idReserva)).length,
-          plazas: reservas.reduce((sum, r) => sum + r.cantidad, 0),
-          importe: reservas.reduce((sum, r) => sum + Number(r.precioVenta), 0),
-          proxima: ordered.find((r) => r.estadoEvento === 'ACTIVO') ?? null,
-          revision: reservas.filter((r) => r.requiereRevision).length,
+          plazas: vivas.reduce((sum, r) => sum + r.cantidad, 0),
+          importe: vivas.reduce((sum, r) => sum + Number(r.precioVenta), 0),
+          proxima: ordered.find((r) => r.estadoEvento === 'ACTIVO' && holds(r)) ?? null,
+          revision: vivas.filter((r) => r.requiereRevision).length,
         };
       })
       .filter((group) => group.coincidencias > 0)
@@ -301,6 +335,7 @@ export class AdminReservationsPanelComponent implements OnInit {
     return [...groups.entries()]
       .map(([idEvento, reservas]) => {
         const ordered = [...reservas].sort((a, b) => a.idReserva - b.idReserva);
+        const vivas = reservas.filter(holds);
         return {
           idEvento,
           nombre: ordered[0].nombreEvento,
@@ -308,9 +343,9 @@ export class AdminReservationsPanelComponent implements OnInit {
           aforo: sessions.get(idEvento)?.aforoMaximo ?? null,
           reservas: ordered,
           coincidencias: reservas.filter((r) => matching.has(r.idReserva)).length,
-          plazas: reservas.reduce((sum, r) => sum + r.cantidad, 0),
-          registrados: reservas.reduce((sum, r) => sum + r.asistentes.length, 0),
-          revision: reservas.filter((r) => r.requiereRevision).length,
+          plazas: vivas.reduce((sum, r) => sum + r.cantidad, 0),
+          registrados: vivas.reduce((sum, r) => sum + r.asistentes.length, 0),
+          revision: vivas.filter((r) => r.requiereRevision).length,
         };
       })
       .filter((group) => group.coincidencias > 0)
@@ -351,14 +386,16 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
   readonly expanded = signal<number | null>(null);
-  /** La reserva recién editada, para decirlo en su ficha y no arriba del todo, fuera de la vista. */
-  readonly savedId = signal<number | null>(null);
+  /** Lo que acaba de pasarle a una reserva, dicho en su ficha y no arriba del todo, fuera de la vista. */
+  readonly rowNotice = signal<{ id: number; text: string } | null>(null);
+  /** Una reserva recién cancelada sigue en su sitio hasta que se cambie de filtro, para no saltar. */
+  readonly stay = signal<number | null>(null);
 
   /** De un cliente o una sesión a una reserva concreta: la vista por reserva, con su ficha abierta. */
   openReservation(reserva: Reserva): void {
     this.clearFilters();
     this.expanded.set(reserva.idReserva);
-    this.savedId.set(null);
+    this.rowNotice.set(null);
     this.view.set('reservas');
     this.go({ ver: null, sesion: null });
     this.reveal(`reservation-detail-${reserva.idReserva}`);
@@ -378,7 +415,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   afterEdit(updated: Reserva): void {
     const before = this.reservations().find((reserva) => reserva.idReserva === updated.idReserva);
     this.reservations.update((list) => list.map((reserva) => (reserva.idReserva === updated.idReserva ? updated : reserva)));
-    this.savedId.set(updated.idReserva);
+    this.rowNotice.set({ id: updated.idReserva, text: 'Cambios guardados.' });
     if (before && (before.idEvento !== updated.idEvento || before.cantidad !== updated.cantidad)) {
       this.admin.getEventos().subscribe((sessions) => this.sessions.set(sessions));
       this.summary.refresh();
@@ -387,6 +424,7 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** De una sesión a sus reservas, una por una: la vista por reserva filtrada por esa sesión. */
   openSessionReservations(idEvento: number): void {
+    this.stay.set(null);
     this.filter.set('TODAS');
     this.query.set('');
     this.expanded.set(null);
@@ -412,7 +450,14 @@ export class AdminReservationsPanelComponent implements OnInit {
   }
 
   /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
+  /** Cambiar de filtro suelta la reserva recién cancelada: ya está en «Canceladas». */
+  setFilter(filter: Filter): void {
+    this.stay.set(null);
+    this.filter.set(filter);
+  }
+
   private clearFilters(): void {
+    this.stay.set(null);
     this.filter.set('TODAS');
     this.query.set('');
     this.sessionFilter.set(0);
@@ -439,6 +484,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   form = emptyForm();
 
   readonly state = reservationState;
+  readonly cancellation = (reserva: Reserva) => cancellationLine(reserva);
   readonly day = formatDay;
   readonly when = reservationWhen;
   readonly dayTime = formatDayTime;
@@ -459,7 +505,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   toggle(reserva: Reserva): void {
     const id = this.expanded() === reserva.idReserva ? null : reserva.idReserva;
     this.expanded.set(id);
-    this.savedId.set(null);
+    this.rowNotice.set(null);
     if (id !== null) {
       afterNextRender(
         () => {
@@ -614,21 +660,40 @@ export class AdminReservationsPanelComponent implements OnInit {
       });
   }
 
-  async cancel(reserva: Reserva): Promise<void> {
-    const confirmed = await this.confirm.ask({
-      title: '¿Cancelar la reserva?',
-      message: `Se liberan ${plural(reserva.cantidad, 'plaza', 'plazas')} de «${reserva.nombreEvento}» y la reserva desaparece del panel de ${reserva.nombreCliente}.`,
-      confirm: 'Cancelar reserva',
-      danger: true,
-    });
-    if (!confirmed) {
+  // Cancelar, en su diálogo: desde el panel siempre con motivo, que verá también el cliente.
+  readonly cancelDialog = viewChild.required<PanelDialogComponent>('cancelDialog');
+  readonly cancelTarget = signal<Reserva | null>(null);
+  readonly cancelError = signal<string | null>(null);
+  cancelReason = '';
+
+  cancel(reserva: Reserva): void {
+    this.cancelTarget.set(reserva);
+    this.cancelReason = '';
+    this.cancelError.set(null);
+    this.cancelDialog().open();
+  }
+
+  /**
+   * La reserva no se borra: vuelve cancelada, libera sus plazas y se queda en su fila, desplegada, hasta
+   * que se cambie de filtro; luego está en «Canceladas».
+   */
+  confirmCancel(): void {
+    const reserva = this.cancelTarget();
+    if (!reserva || this.busy() !== null) {
+      return;
+    }
+    if (!this.cancelReason.trim()) {
+      this.cancelError.set('Indica el motivo de la cancelación.');
       return;
     }
     this.busy.set(reserva.idReserva);
-    this.admin.cancelarReservaAdmin(reserva.idReserva).subscribe({
-      next: () => {
+    this.cancelError.set(null);
+    this.admin.cancelarReservaAdmin(reserva.idReserva, this.cancelReason).subscribe({
+      next: (updated) => {
         this.busy.set(null);
-        this.reservations.update((list) => list.filter((item) => item.idReserva !== reserva.idReserva));
+        this.cancelDialog().close();
+        this.stay.set(updated.idReserva);
+        this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
         this.sessions.update((list) =>
           list.map((session) =>
             session.idEvento === reserva.idEvento
@@ -640,13 +705,12 @@ export class AdminReservationsPanelComponent implements OnInit {
               : session,
           ),
         );
-        this.notice.set({ text: `Reserva de ${reserva.nombreCliente} cancelada.`, error: false });
+        this.rowNotice.set({ id: updated.idReserva, text: 'Reserva cancelada. Ahora está en «Canceladas».' });
         this.summary.refresh();
       },
       error: (error) => {
         this.busy.set(null);
-        this.notice.set({ text: errorMessage(error, 'No se ha podido cancelar la reserva.'), error: true });
-        this.load();
+        this.cancelError.set(errorMessage(error, 'No se ha podido cancelar la reserva.'));
       },
     });
   }

@@ -92,6 +92,9 @@ public class ReservasDemoService {
 		Map<Integer, Integer> ocupadas = new HashMap<>();
 		Map<String, Integer> dePersona = new HashMap<>();
 		for (Reserva reserva : reservaRepository.findAll()) {
+			if (reserva.cancelada()) {
+				continue;
+			}
 			ocupadas.merge(reserva.getEvento().getIdEvento(), reserva.getCantidad(), Integer::sum);
 			dePersona.merge(clave(reserva.getUsuario().getUsername(), reserva.getEvento().getIdEvento()),
 					reserva.getCantidad(), Integer::sum);

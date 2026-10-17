@@ -8,6 +8,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -85,8 +87,26 @@ public class Reserva {
 	@Column(name = "conformidad_en")
 	private LocalDateTime conformidadEn;
 
+	/**
+	 * Una reserva cancelada no se borra: libera sus plazas y se queda en el historial con quién la
+	 * canceló, cuándo y por qué. Sin fecha, la reserva está viva.
+	 */
+	@Column(name = "cancelada_en")
+	private LocalDateTime canceladaEn;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "cancelada_por", length = 20)
+	private CanceladaPor canceladaPor;
+
+	@Column(name = "motivo_cancelacion", length = 200)
+	private String motivoCancelacion;
+
+	public boolean cancelada() {
+		return canceladaEn != null;
+	}
+
 	/** Con adaptaciones o material externo, alguien de AlienMilk tiene que evaluarla antes de la sesión. */
 	public boolean requiereRevision() {
-		return (adaptaciones != null && !adaptaciones.isBlank()) || materialExterno;
+		return !cancelada() && ((adaptaciones != null && !adaptaciones.isBlank()) || materialExterno);
 	}
 }

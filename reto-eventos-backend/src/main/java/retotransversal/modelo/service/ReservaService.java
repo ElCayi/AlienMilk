@@ -3,6 +3,7 @@ package retotransversal.modelo.service;
 import java.util.List;
 
 import retotransversal.modelo.dto.ReservaCrearDto;
+import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.entities.Reserva;
 
 public interface ReservaService extends CrudGenerico<Reserva, Integer> {
@@ -21,7 +22,14 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	 */
 	Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro);
 
+	/** Corrige el teléfono, las observaciones y los participantes; no toca sesión, plazas, precio ni conformidad. */
+	Reserva editarReservaAdmin(Integer idReserva, ReservaEditarDto datos);
+
+	/** Lo mismo desde la cuenta del cliente, sin observaciones y hasta el día anterior a la sesión. */
+	Reserva editarReservaPropia(Integer idReserva, String username, ReservaEditarDto datos);
+
 	int cancelarReserva(Integer idReserva, String username);
 
-	int cancelarReservaAdmin(Integer idReserva);
+	/** Cancela sin borrar: la reserva libera sus plazas y guarda quién, cuándo y por qué. */
+	Reserva cancelarReservaAdmin(Integer idReserva, String motivo);
 }

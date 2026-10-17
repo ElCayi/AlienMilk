@@ -58,6 +58,18 @@ export interface RegistroAsistencia {
   aceptaComunicaciones: boolean;
 }
 
+/** Lo que se corrige de una reserva; lo que no se manda se queda como está (ver ReservaEditarDto). */
+export interface ReservaEditar {
+  telefono: string;
+  observaciones?: string;
+  asistentes: Asistente[];
+  idEvento?: number;
+  cantidad?: number;
+  adaptaciones?: string;
+  materialExterno?: boolean;
+  materialDescripcion?: string;
+}
+
 export interface Reserva {
   idReserva: number;
   idEvento: number;
@@ -82,6 +94,12 @@ export interface Reserva {
   /** Con adaptaciones o material externo: AlienMilk tiene que evaluarla. */
   requiereRevision: boolean;
   estadoEvento: string;
+  /** Si su sesión está archivada: sale de la vista diaria y se queda en el archivo con ella. */
+  sesionArchivada: boolean;
+  /** Cancelar no borra: la reserva se queda con cuándo, quién y por qué. Sin fecha, está viva. */
+  canceladaEn: string | null;
+  canceladaPor: 'CLIENTE' | 'ALIENMILK' | null;
+  motivoCancelacion: string | null;
 }
 
 export interface Perfil {
@@ -108,6 +126,8 @@ export interface Usuario {
   apellidos: string;
   direccion: string;
   enabled: number;
+  /** Si quiere recibir el programa (solo lo cambia la propia persona). */
+  aceptaComunicaciones?: boolean;
   fechaRegistro: string;
   idPerfil: number;
   perfil: string;

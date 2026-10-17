@@ -51,6 +51,8 @@ class RegistroAsistenciaTest {
 			.setControllerAdvice(new GlobalExceptionHandler()).build();
 
 	RegistroAsistenciaTest() {
+		// La lectura con bloqueo devuelve lo mismo que la normal: aquí no hay base de datos que bloquear.
+		when(eventos.findByIdBloqueando(any())).thenAnswer(llamada -> eventos.findById(llamada.getArgument(0)));
 		when(eventos.findById(5)).thenReturn(Optional.of(Evento.builder().idEvento(5).nombre("Eclipse")
 				.fechaInicio(LocalDate.of(2026, 12, 27)).horaInicio(LocalTime.of(21, 0)).duracion(170)
 				.estado(EstadoEvento.ACTIVO).aforoMaximo(500).precio(new BigDecimal("48.00")).build()));

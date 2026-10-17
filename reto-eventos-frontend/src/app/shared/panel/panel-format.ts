@@ -24,8 +24,18 @@ export function sessionState(estado: string): { label: string; tone: Tone } {
   return SESSION_STATES[estado as EstadoEvento] ?? { label: estado, tone: 'off' };
 }
 
-export function reservationState(estadoEvento: string): { label: string; tone: Tone } {
-  return RESERVATION_STATES[estadoEvento as EstadoEvento] ?? { label: estadoEvento, tone: 'off' };
+/** Una reserva: cancelada, si lo está; si no, según cómo está su sesión. */
+export function reservationState(reserva: Pick<Reserva, 'estadoEvento' | 'canceladaEn'>): { label: string; tone: Tone } {
+  if (reserva.canceladaEn) {
+    return { label: 'Cancelada', tone: 'off' };
+  }
+  return RESERVATION_STATES[reserva.estadoEvento as EstadoEvento] ?? { label: reserva.estadoEvento, tone: 'off' };
+}
+
+/** «Cancelada por ti el 09 oct 2026», «Cancelada por AlienMilk el …»: quién y cuándo, para la ficha y el historial. */
+export function cancellationLine(reserva: Reserva, propia = false): string {
+  const quien = reserva.canceladaPor === 'CLIENTE' ? (propia ? 'por ti' : 'por el cliente') : 'por AlienMilk';
+  return `Cancelada ${quien} el ${formatDay(reserva.canceladaEn!.slice(0, 10))}`;
 }
 
 const PROFILE_LABELS: Record<string, string> = {

@@ -32,6 +32,12 @@ public interface EventoService extends CrudGenerico<Evento, Integer> {
 	/** Da por terminadas las sesiones activas cuya fecha ya pasó; devuelve cuántas. */
 	int terminarCelebradas();
 
+	/**
+	 * La sesión, bloqueada hasta que acabe la transacción en curso: para reservar o cambiar su aforo sin
+	 * que otra petición lo haga a la vez (ver EventoRepository#findByIdBloqueando).
+	 */
+	Evento bloquear(Integer idEvento);
+
 	/** Si la sesión ya ha empezado (su fecha y hora, en Madrid). */
 	boolean haEmpezado(Evento evento);
 

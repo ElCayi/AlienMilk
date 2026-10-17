@@ -81,8 +81,10 @@ public class EventoServiceImpl implements EventoService {
 	 * haya pasado; la que ya tenía se respeta, para poder corregir otros datos de una sesión celebrada.
 	 */
 	@Override
+	@Transactional
 	public Evento updateOne(Evento entidad) {
-		Evento actual = findById(entidad.getIdEvento());
+		// Bloqueada: una reserva que entre a la vez no puede dejar el aforo nuevo por debajo de lo reservado.
+		Evento actual = bloquear(entidad.getIdEvento());
 		limpiar(entidad);
 		validar(entidad, plazasReservadas(actual.getIdEvento()), actual.inicio());
 		entidad.setEstado(actual.getEstado());
@@ -188,6 +190,12 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	@Override
+	public Evento bloquear(Integer idEvento) {
+		return eventoRepository.findByIdBloqueando(idEvento)
+				.orElseThrow(() -> new RecursoNoEncontradoException("Evento no encontrado"));
+	}
+
+	@Override
 	public boolean haEmpezado(Evento evento) {
 		return !evento.inicio().isAfter(ahora());
 	}
@@ -219,7 +227,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public EventoAdminDto aAdminDto(Evento evento) {
-		List<Reserva> reservas = reservaRepository.findByEventoIdEvento(evento.getIdEvento());
+		List<Reserva> reservas = reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(evento.getIdEvento());
 		return EventoAdminDto.de(evento, reservas.stream().mapToLong(Reserva::getCantidad).sum(), reservas.size());
 	}
 
@@ -232,7 +240,7 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	private int plazasReservadas(Integer idEvento) {
-		return reservaRepository.findByEventoIdEvento(idEvento).stream().mapToInt(Reserva::getCantidad).sum();
+		return reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(idEvento).stream().mapToInt(Reserva::getCantidad).sum();
 	}
 
 	private static void limpiar(Evento evento) {

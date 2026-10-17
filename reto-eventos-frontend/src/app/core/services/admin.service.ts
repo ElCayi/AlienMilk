@@ -9,6 +9,7 @@ import {
   Perfil,
   PerfilPayload,
   Reserva,
+  ReservaEditar,
   ResumenAdmin,
   TipoEvento,
   TipoEventoPayload,
@@ -180,7 +181,12 @@ export class AdminService {
     );
   }
 
-  cancelarReservaAdmin(idReserva: number): Observable<void> {
-    return this.http.delete<void>(`${this.adminUrl}/reservas/${idReserva}`);
+  editarReserva(idReserva: number, datos: ReservaEditar): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/datos`, datos);
+  }
+
+  /** Cancelar no borra: vuelve la reserva, con su cancelación. El motivo es obligatorio. */
+  cancelarReservaAdmin(idReserva: number, motivo: string): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo });
   }
 }

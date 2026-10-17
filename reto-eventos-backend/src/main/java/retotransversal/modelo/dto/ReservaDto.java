@@ -34,6 +34,8 @@ public class ReservaDto {
 	private LocalTime horaInicioEvento;
 	private Integer duracionEvento;
 	private String estadoEvento;
+	/** Si su sesión está archivada: la reserva sale de la vista diaria y se queda en el archivo con ella. */
+	private boolean sesionArchivada;
 
 	/** El registro de asistencia (vacío en las reservas anteriores a él o tomadas desde el panel). */
 	private List<AsistenteDto> asistentes;
@@ -44,6 +46,11 @@ public class ReservaDto {
 	private LocalDateTime conformidadEn;
 	/** Con adaptaciones o material externo: AlienMilk tiene que evaluarla antes de la sesión. */
 	private boolean requiereRevision;
+
+	/** La cancelación, si la hubo: la reserva no se borra (ver Reserva#canceladaEn). */
+	private LocalDateTime canceladaEn;
+	private String canceladaPor;
+	private String motivoCancelacion;
 
 	public static ReservaDto fromEntity(Reserva reserva) {
 		return ReservaDto.builder()
@@ -59,6 +66,7 @@ public class ReservaDto {
 				.horaInicioEvento(reserva.getEvento().getHoraInicio())
 				.duracionEvento(reserva.getEvento().getDuracion())
 				.estadoEvento(reserva.getEvento().getEstado().name())
+				.sesionArchivada(reserva.getEvento().isArchivada())
 				.asistentes(reserva.getAsistentes().stream().map(AsistenteDto::de).toList())
 				.telefono(reserva.getTelefono())
 				.adaptaciones(reserva.getAdaptaciones())
@@ -66,6 +74,9 @@ public class ReservaDto {
 				.materialDescripcion(reserva.getMaterialDescripcion())
 				.conformidadEn(reserva.getConformidadEn())
 				.requiereRevision(reserva.requiereRevision())
+				.canceladaEn(reserva.getCanceladaEn())
+				.canceladaPor(reserva.getCanceladaPor() == null ? null : reserva.getCanceladaPor().name())
+				.motivoCancelacion(reserva.getMotivoCancelacion())
 				.build();
 	}
 

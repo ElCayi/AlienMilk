@@ -1,10 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ReservationService } from '../../../core/services/reservation.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
 import { cancellable } from '../../../features/sessions/session.presenter';
-import { Reserva } from '../../../models/api.models';
+import { Reserva, ReservaEditar } from '../../../models/api.models';
+import { ReservationEditorComponent } from '../../../shared/panel/reservation-editor.component';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import {
   errorMessage,
@@ -13,17 +14,18 @@ import {
   formatMoney,
   plural,
   reservationState,
+  cancellationLine,
 } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
 
 /**
- * Mis reservas: las de sesiones activas, que se pueden cancelar, y el historial (sesiones canceladas
- * o ya celebradas), que se queda como estaba. La regla es la del servidor.
+ * Mis reservas: las de sesiones activas, que se pueden modificar o cancelar, y el historial (las
+ * reservas canceladas y las de sesiones canceladas o ya celebradas), que se queda como estaba. La regla es la del servidor.
  */
 @Component({
   selector: 'app-account-reservations-panel',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ReservationEditorComponent],
   templateUrl: './account-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -33,21 +35,25 @@ export class AccountReservationsPanelComponent {
   readonly store = inject(AccountStore);
 
   readonly notice = signal<{ text: string; error: boolean } | null>(null);
+
+  readonly editor = viewChild.required(ReservationEditorComponent);
+  readonly saveData = (idReserva: number, datos: ReservaEditar) => this.reservationService.editar(idReserva, datos);
   readonly busy = signal<number | null>(null);
 
   readonly upcoming = computed(() =>
     (this.store.reservations() ?? [])
-      .filter((reserva) => reserva.estadoEvento === 'ACTIVO')
+      .filter((reserva) => reserva.estadoEvento === 'ACTIVO' && !reserva.canceladaEn)
       .sort((a, b) => a.fechaInicioEvento.localeCompare(b.fechaInicioEvento)),
   );
 
   readonly history = computed(() =>
     (this.store.reservations() ?? [])
-      .filter((reserva) => reserva.estadoEvento !== 'ACTIVO')
+      .filter((reserva) => reserva.estadoEvento !== 'ACTIVO' || reserva.canceladaEn)
       .sort((a, b) => b.fechaInicioEvento.localeCompare(a.fechaInicioEvento)),
   );
 
   readonly state = reservationState;
+  readonly cancellation = (reserva: Reserva) => cancellationLine(reserva, true);
   readonly day = formatDay;
   readonly when = reservationWhen;
   readonly credential = credentialLabel;
@@ -58,6 +64,13 @@ export class AccountReservationsPanelComponent {
   }
   readonly money = formatMoney;
   readonly plural = plural;
+
+  afterEdit(updated: Reserva): void {
+    this.store.reservations.update(
+      (list) => list?.map((item) => (item.idReserva === updated.idReserva ? updated : item)) ?? null,
+    );
+    this.notice.set({ text: `Datos de la reserva de «${updated.nombreEvento}» guardados.`, error: false });
+  }
 
   async cancel(reserva: Reserva): Promise<void> {
     const seats = reserva.cantidad === 1 ? 'tu plaza' : `tus ${reserva.cantidad} plazas`;
@@ -74,10 +87,9 @@ export class AccountReservationsPanelComponent {
     this.reservationService.cancelar(reserva.idReserva).subscribe({
       next: () => {
         this.busy.set(null);
-        this.store.reservations.update(
-          (list) => list?.filter((item) => item.idReserva !== reserva.idReserva) ?? null,
-        );
-        this.notice.set({ text: `Reserva de «${reserva.nombreEvento}» cancelada.`, error: false });
+        // No se borra: pasa al historial, marcada como cancelada por ti.
+        this.store.loadReservations();
+        this.notice.set({ text: `Reserva de «${reserva.nombreEvento}» cancelada. La tienes en el historial.`, error: false });
       },
       error: (error) => {
         this.busy.set(null);

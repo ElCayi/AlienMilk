@@ -61,6 +61,10 @@ asistencia (la tabla `asistentes`, el teléfono, las adaptaciones, el material e
 de cada reserva, y si cada cuenta quiere recibir el programa). Las reservas que ya existen quedan con
 sus participantes sin registrar.
 
+La del 2026-10-17, `reservas-cancelacion`, va antes del backend de esa fecha: cancelar una reserva ya no
+la borra, la marca con la fecha, quién la canceló y el motivo (sin las columnas, el backend no arranca).
+Las reservas que ya existen siguen vivas.
+
 Si cambian los datos de `script_bbdd.sql`, regenera el estado de fábrica de la demo (lo que restaura
 el botón de /admin › Demo) con `scripts/fabrica.sh`, en una máquina con MariaDB local.
 

@@ -1,13 +1,14 @@
 package retotransversal.restcontroller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.ReservaCrearDto;
 import retotransversal.modelo.dto.ReservaDto;
+import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.service.ReservaService;
 
-/** Reservas desde el panel de administración: todas, las de una cuenta, altas manuales y cancelaciones. */
+/** Reservas desde el panel de administración: todas, las de una cuenta, altas manuales, ediciones y cancelaciones. */
 @RestController
 @RequestMapping("/api/admin/reservas")
 @RequiredArgsConstructor
@@ -44,9 +46,15 @@ public class AdminReservaRestController {
 						dto.getObservaciones())));
 	}
 
-	@DeleteMapping("/{idReserva}")
-	public ResponseEntity<Void> cancelar(@PathVariable Integer idReserva) {
-		reservaService.cancelarReservaAdmin(idReserva);
-		return ResponseEntity.noContent().build();
+	@PutMapping("/{idReserva}/datos")
+	public ResponseEntity<ReservaDto> editar(@PathVariable Integer idReserva, @RequestBody ReservaEditarDto datos) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.editarReservaAdmin(idReserva, datos)));
+	}
+
+	/** Cancelar no borra: la reserva vuelve con su cancelación (ver ReservaService#cancelarReservaAdmin). */
+	@PostMapping("/{idReserva}/cancelar")
+	public ResponseEntity<ReservaDto> cancelar(@PathVariable Integer idReserva, @RequestBody(required = false) Map<String, String> datos) {
+		String motivo = datos == null ? null : datos.get("motivo");
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.cancelarReservaAdmin(idReserva, motivo)));
 	}
 }

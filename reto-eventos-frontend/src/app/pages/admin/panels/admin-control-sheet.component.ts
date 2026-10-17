@@ -100,7 +100,7 @@ export class AdminControlSheetComponent implements OnInit {
         this.session.set(sessions.find((session) => session.idEvento === idEvento) ?? null);
         this.reservations.set(
           reservations
-            .filter((reserva) => reserva.idEvento === idEvento)
+            .filter((reserva) => reserva.idEvento === idEvento && !reserva.canceladaEn)
             .sort((a, b) => a.idReserva - b.idReserva),
         );
         this.loading.set(false);
@@ -113,7 +113,7 @@ export class AdminControlSheetComponent implements OnInit {
   }
 
   number(reserva: Reserva): string {
-    return String(reserva.idReserva).padStart(3, '0');
+    return String(reserva.idReserva).padStart(4, '0');
   }
 
   /** Una casilla por plaza, para las reservas sin registrar. */

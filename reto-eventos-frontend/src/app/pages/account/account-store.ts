@@ -21,7 +21,7 @@ export class AccountStore {
 
   /** Reservas de sesiones activas: las que aún se pueden cancelar. */
   readonly activeReservations = computed(
-    () => this.reservations()?.filter((reserva) => reserva.estadoEvento === 'ACTIVO').length ?? 0,
+    () => this.reservations()?.filter((reserva) => reserva.estadoEvento === 'ACTIVO' && !reserva.canceladaEn).length ?? 0,
   );
 
   /** Pedidos que no han terminado: por pagar, preparándose o de camino. */

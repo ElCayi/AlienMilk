@@ -40,10 +40,12 @@ import {
 import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
 import {
+  dateFields,
   FilterBarComponent,
   FilterField,
   FilterPreset,
   FilterValues,
+  matchesDate,
 } from '../../../shared/panel/filter-bar.component';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
@@ -65,11 +67,6 @@ const FILTER_DEFAULTS: FilterValues = {
   cliente: '',
 };
 
-/** Los días como en la dirección y en la API (2026-11-20), en la hora de quien mira. */
-const isoDay = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-const addDays = (date: Date, days: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
-
 /**
  * Si una reserva pasa los filtros que no son de texto ni de sesión (esos los mira `searched`): su estado,
  * su fecha, su pago, su revisión y si tiene cuenta. Pura: la usan la tabla y las cuentas de los filtros listos.
@@ -88,18 +85,7 @@ function passes(reserva: Reserva, values: FilterValues, today = new Date()): boo
   if (!estado) {
     return false;
   }
-  const day = reserva.fechaInicioEvento;
-  const hoy = isoDay(today);
-  const fecha = {
-    '': true,
-    hoy: day === hoy,
-    manana: day === isoDay(addDays(today, 1)),
-    semana: day >= hoy && day <= isoDay(addDays(today, 6)),
-    mes: day >= hoy && day <= isoDay(addDays(today, 30)),
-    pasadas: day < hoy,
-    rango: (!values['desde'] || day >= values['desde']) && (!values['hasta'] || day <= values['hasta']),
-  }[values['fecha'] ?? ''];
-  if (!fecha) {
+  if (!matchesDate(reserva.fechaInicioEvento, values, today)) {
     return false;
   }
   const pago = {
@@ -313,22 +299,7 @@ export class AdminReservationsPanelComponent implements OnInit {
         })),
       ],
     },
-    {
-      key: 'fecha',
-      label: 'Fecha de la sesión',
-      type: 'select',
-      options: [
-        { value: '', label: 'Cualquier fecha' },
-        { value: 'hoy', label: 'Hoy' },
-        { value: 'manana', label: 'Mañana' },
-        { value: 'semana', label: 'Próximos 7 días' },
-        { value: 'mes', label: 'Próximos 30 días' },
-        { value: 'pasadas', label: 'Ya celebradas' },
-        { value: 'rango', label: 'Entre dos fechas' },
-      ],
-    },
-    { key: 'desde', label: 'Desde', type: 'date', showWhen: (values) => values['fecha'] === 'rango' },
-    { key: 'hasta', label: 'Hasta', type: 'date', showWhen: (values) => values['fecha'] === 'rango' },
+    ...dateFields('Fecha de la sesión'),
     {
       key: 'estado',
       label: 'Estado',

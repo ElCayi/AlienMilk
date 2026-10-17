@@ -38,6 +38,55 @@ export interface FilterPreset {
   count?: number;
 }
 
+/** Los días como en la dirección y en la API (2026-11-20), en la hora de quien mira. */
+export const isoDay = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const addDays = (date: Date, days: number) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+
+/** El campo de fecha de los paneles, con «Entre dos fechas» y sus dos campos, que solo salen entonces. */
+export function dateFields(label: string): FilterField[] {
+  return [
+    {
+      key: 'fecha',
+      label,
+      type: 'select',
+      options: [
+        { value: '', label: 'Cualquier fecha' },
+        { value: 'hoy', label: 'Hoy' },
+        { value: 'manana', label: 'Mañana' },
+        { value: 'semana', label: 'Próximos 7 días' },
+        { value: 'mes', label: 'Próximos 30 días' },
+        { value: 'pasadas', label: 'Ya celebradas' },
+        { value: 'rango', label: 'Entre dos fechas' },
+      ],
+    },
+    { key: 'desde', label: 'Desde', type: 'date', showWhen: (values) => values['fecha'] === 'rango' },
+    { key: 'hasta', label: 'Hasta', type: 'date', showWhen: (values) => values['fecha'] === 'rango' },
+  ];
+}
+
+/** Si un día (2026-11-20) cae en lo que pide el campo de fecha (ver dateFields). */
+export function matchesDate(day: string, values: FilterValues, today = new Date()): boolean {
+  const hoy = isoDay(today);
+  switch (values['fecha'] ?? '') {
+    case 'hoy':
+      return day === hoy;
+    case 'manana':
+      return day === isoDay(addDays(today, 1));
+    case 'semana':
+      return day >= hoy && day <= isoDay(addDays(today, 6));
+    case 'mes':
+      return day >= hoy && day <= isoDay(addDays(today, 30));
+    case 'pasadas':
+      return day < hoy;
+    case 'rango':
+      return (!values['desde'] || day >= values['desde']) && (!values['hasta'] || day <= values['hasta']);
+    default:
+      return true;
+  }
+}
+
 interface SavedFilter {
   nombre: string;
   valores: FilterValues;

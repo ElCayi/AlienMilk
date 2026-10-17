@@ -112,6 +112,17 @@
   min-height: 2.6rem;
 }
 
+/* El hueco entre la barra y el panel, tapado: con la barra fija, la tabla no asoma por él. */
+.filter-bar.is-open::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 0.4rem;
+  background: var(--field);
+}
+
 .filter-bar.is-open .filter-toggle {
   border-color: var(--paper-ink);
 }
@@ -122,10 +133,13 @@
   top: calc(100% + 0.4rem);
   right: 0;
   left: 0;
-  z-index: 20;
+  z-index: 1;
   display: grid;
+  /* Fijo bajo la cabecera, nunca más alto que lo que queda de pantalla: lo que sobre, con scroll propio. */
+  max-height: calc(100dvh - var(--bar-height, 4.25rem) - 4.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
-  overflow: hidden;
   border: 1px solid var(--paper-rule);
   border-radius: 0.6rem;
   background: var(--paper);

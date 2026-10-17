@@ -217,4 +217,24 @@ class AdminReservasTest {
         when(repository.findByEventoIdEventoAndCanceladaEnIsNull(3)).thenReturn(List.of(otra));
         assertThatThrownBy(() -> service.reactivar(7)).hasMessage("Ya no quedan plazas suficientes en su sesión");
     }
+
+    @Test
+    void aPhoneBookingWithoutAnAccountGoesInTheCallersNameAndIsPaidAtTheDoor() {
+        Evento sesion = reserva.getEvento();
+        sesion.setAforoMaximo(20);
+        sesion.setPrecio(new BigDecimal("12.00"));
+        when(eventos.bloquear(3)).thenReturn(sesion);
+        when(eventos.admiteReservas(any())).thenReturn(true);
+
+        assertThatThrownBy(() -> service.reservarSinCuenta(3, " ", "abc", "no-es-correo", 2, null))
+                .isInstanceOf(retotransversal.exception.DatosNoValidosException.class);
+
+        Reserva nueva = service.reservarSinCuenta(3, " Marta Ruiz ", "611 222 333", null, 2, "Llamó a las 10");
+        assertThat(nueva.getUsuario()).isNull();
+        assertThat(nueva.getClienteNombre()).isEqualTo("Marta Ruiz");
+        assertThat(nueva.getTelefono()).isEqualTo("611 222 333");
+        assertThat(nueva.getEstadoPago()).isEqualTo(EstadoPago.EN_TAQUILLA);
+        assertThat(nueva.getPrecioVenta()).isEqualByComparingTo("24.00");
+        assertThat(retotransversal.modelo.dto.ReservaDto.fromEntity(nueva).getNombreCliente()).isEqualTo("Marta Ruiz");
+    }
 }

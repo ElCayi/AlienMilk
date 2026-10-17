@@ -46,6 +46,20 @@ public class AdminReservaRestController {
 						dto.getObservaciones())));
 	}
 
+	/** Por teléfono, sin cuenta: {"nombre", "telefono", "correo" (opcional), "cantidad", "observaciones"}. */
+	@PostMapping("/sin-cuenta/evento/{idEvento}")
+	public ResponseEntity<ReservaDto> crearSinCuenta(@PathVariable Integer idEvento, @RequestBody Map<String, Object> datos) {
+		Object cantidad = datos.get("cantidad");
+		return ResponseEntity.status(HttpStatus.CREATED).body(ReservaDto.fromEntity(reservaService.reservarSinCuenta(
+				idEvento, texto(datos, "nombre"), texto(datos, "telefono"), texto(datos, "correo"),
+				cantidad instanceof Number numero ? numero.intValue() : null, texto(datos, "observaciones"))));
+	}
+
+	private static String texto(Map<String, Object> datos, String campo) {
+		Object valor = datos.get(campo);
+		return valor == null ? null : valor.toString();
+	}
+
 	@PutMapping("/{idReserva}/datos")
 	public ResponseEntity<ReservaDto> editar(@PathVariable Integer idReserva, @RequestBody ReservaEditarDto datos) {
 		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.editarReservaAdmin(idReserva, datos)));

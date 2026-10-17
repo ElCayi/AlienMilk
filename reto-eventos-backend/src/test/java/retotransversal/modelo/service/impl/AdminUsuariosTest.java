@@ -1,6 +1,7 @@
 package retotransversal.modelo.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -28,9 +29,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import retotransversal.exception.GlobalExceptionHandler;
+import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.EstadoPedido;
+import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Pedido;
 import retotransversal.modelo.entities.Perfil;
+import retotransversal.modelo.entities.Reserva;
 import retotransversal.modelo.entities.Usuario;
 import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.PerfilRepository;
@@ -175,6 +179,32 @@ class AdminUsuariosTest {
 		auth.perform(delete("/api/auth/me").principal(token("ana")).contentType(MediaType.APPLICATION_JSON)
 				.content("{\"password\": \"1234\"}"))
 				.andExpect(status().isNoContent());
+		verify(usuarios).deleteById("ana");
+	}
+
+	@Test
+	void deletingAnAccountKeepsItsPastBookingsUnderTheNameButNotWhileOnesAreUpcoming() {
+		Usuario ana = Usuario.builder().username("ana").nombre("Ana").apellidos("Lopez").email("ana@reto.com")
+				.perfil(cliente).build();
+		when(usuarios.findById("ana")).thenReturn(Optional.of(ana));
+		ReservaRepository reservas = mock(ReservaRepository.class);
+		UsuarioServiceImpl servicio = new UsuarioServiceImpl(usuarios, reservas, pedidos, codificador);
+		Reserva celebrada = Reserva.builder().usuario(ana)
+				.evento(Evento.builder().estado(EstadoEvento.TERMINADO).build()).build();
+		Reserva proxima = Reserva.builder().usuario(ana)
+				.evento(Evento.builder().estado(EstadoEvento.ACTIVO).build()).build();
+
+		when(reservas.findByUsuarioUsername("ana")).thenReturn(List.of(celebrada, proxima));
+		assertThatThrownBy(() -> servicio.deleteOne("ana"))
+				.hasMessage("Tiene reservas para sesiones por celebrar: cancélalas antes de borrar la cuenta");
+		verify(usuarios, never()).deleteById(any());
+
+		when(reservas.findByUsuarioUsername("ana")).thenReturn(List.of(celebrada));
+		servicio.deleteOne("ana");
+		assertThat(celebrada.getUsuario()).isNull();
+		assertThat(celebrada.getClienteNombre()).isEqualTo("Ana Lopez");
+		assertThat(celebrada.getClienteCorreo()).isEqualTo("ana@reto.com");
+		verify(reservas, never()).deleteAll(any());
 		verify(usuarios).deleteById("ana");
 	}
 

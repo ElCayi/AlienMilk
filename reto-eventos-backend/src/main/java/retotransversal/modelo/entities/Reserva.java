@@ -46,9 +46,19 @@ public class Reserva {
 	@JoinColumn(name = "id_evento", nullable = false)
 	private Evento evento;
 
+	/**
+	 * La cuenta de quien reserva; null en las reservas por teléfono sin cuenta y en las de cuentas que se
+	 * borraron. Entonces habla por ella clienteNombre (y clienteCorreo, si se dio).
+	 */
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "username", nullable = false)
+	@JoinColumn(name = "username")
 	private Usuario usuario;
+
+	@Column(name = "cliente_nombre", length = 120)
+	private String clienteNombre;
+
+	@Column(name = "cliente_correo", length = 120)
+	private String clienteCorreo;
 
 	@Column(name = "precio_venta", nullable = false, precision = 9, scale = 2)
 	private BigDecimal precioVenta;
@@ -165,6 +175,11 @@ public class Reserva {
 
 	@Column(name = "revisada_en")
 	private LocalDateTime revisadaEn;
+
+	/** Si es de esa cuenta: las reservas sin cuenta no son de nadie que pueda entrar en Mi panel. */
+	public boolean esDe(String username) {
+		return usuario != null && usuario.getUsername().equals(username);
+	}
 
 	public boolean cancelada() {
 		return canceladaEn != null;

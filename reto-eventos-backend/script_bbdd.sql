@@ -71,7 +71,11 @@ CREATE TABLE eventos (
 CREATE TABLE reservas (
 	id_reserva INT AUTO_INCREMENT PRIMARY KEY,
 	id_evento INT NOT NULL,
-	username VARCHAR(45) NOT NULL,
+	-- Sin cuenta (por teléfono, o de una cuenta borrada): a nombre de cliente_nombre
+	-- (migraciones/2026-10-17-reservas-sin-cuenta.sql).
+	username VARCHAR(45),
+	cliente_nombre VARCHAR(120),
+	cliente_correo VARCHAR(120),
 	precio_venta DECIMAL(9,2) NOT NULL,
 	observaciones VARCHAR(200),
 	cantidad INT NOT NULL,

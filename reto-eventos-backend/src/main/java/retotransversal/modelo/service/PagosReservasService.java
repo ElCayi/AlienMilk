@@ -75,7 +75,7 @@ public class PagosReservasService {
 		Evento sesion = reserva.getEvento();
 		SesionPago pago = pasarela.abrirReserva(referencia(reserva),
 				"%s · %s".formatted(sesion.getNombre(), sesion.getFechaInicio()),
-				sesion.getPrecio(), reserva.getCantidad(), reserva.getUsuario().getEmail(),
+				sesion.getPrecio(), reserva.getCantidad(), reserva.getUsuario() == null ? reserva.getClienteCorreo() : reserva.getUsuario().getEmail(),
 				"/cuenta/reservas?reserva=" + reserva.getIdReserva());
 		reserva.setEstadoPago(EstadoPago.PENDIENTE);
 		reserva.setPagoSesion(pago.id());

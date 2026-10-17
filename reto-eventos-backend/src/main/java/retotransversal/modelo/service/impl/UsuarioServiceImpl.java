@@ -18,8 +18,10 @@ import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.DatosNoValidosException;
 import retotransversal.exception.OperacionNoPermitidaException;
 import retotransversal.exception.RecursoNoEncontradoException;
+import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.EstadoPedido;
 import retotransversal.modelo.entities.Pedido;
+import retotransversal.modelo.entities.Reserva;
 import retotransversal.modelo.entities.Usuario;
 import retotransversal.modelo.repository.PedidoRepository;
 import retotransversal.modelo.repository.ReservaRepository;
@@ -81,9 +83,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	/**
-	 * Las reservas se borran con la cuenta. Los pedidos en curso lo impiden; los cerrados (entregados o
-	 * anulados) se quedan como registro de la venta, a nombre de la persona y sin cuenta, como los de
-	 * un invitado cuyo enlace nadie tiene.
+	 * Borrar una cuenta no borra su historia. Los pedidos en curso y las reservas para sesiones por
+	 * celebrar lo impiden; los pedidos cerrados (entregados o anulados) y las demás reservas se quedan como
+	 * registro, a nombre de la persona y sin cuenta, como los de un invitado.
 	 */
 	@Override
 	@Transactional
@@ -103,7 +105,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 			pedido.setUsuario(null);
 		}
 		pedidoRepository.saveAll(pedidos);
-		reservaRepository.deleteAll(reservaRepository.findByUsuarioUsername(username));
+		// Las reservas, igual: se quedan a su nombre y sin cuenta, con su historial de cobros. Las que siguen
+		// vivas en sesiones por celebrar se cancelan antes (y así se devuelve lo pagado).
+		List<Reserva> reservas = reservaRepository.findByUsuarioUsername(username);
+		if (reservas.stream().anyMatch(reserva -> !reserva.cancelada()
+				&& reserva.getEvento().getEstado() == EstadoEvento.ACTIVO)) {
+			throw new ConflictoNegocioException(
+					"Tiene reservas para sesiones por celebrar: cancélalas antes de borrar la cuenta");
+		}
+		String nombreCompleto = usuario.getApellidos() == null ? usuario.getNombre()
+				: usuario.getNombre() + " " + usuario.getApellidos();
+		for (Reserva reserva : reservas) {
+			reserva.setClienteNombre(nombreCompleto.length() > 120 ? nombreCompleto.substring(0, 120) : nombreCompleto);
+			reserva.setClienteCorreo(usuario.getEmail());
+			reserva.setUsuario(null);
+		}
+		reservaRepository.saveAll(reservas);
 		usuarioRepository.deleteById(username);
 		return 1;
 	}

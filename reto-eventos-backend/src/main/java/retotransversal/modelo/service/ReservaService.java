@@ -22,6 +22,10 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	 */
 	Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro);
 
+	/** Por teléfono, a alguien sin cuenta: a su nombre y su teléfono, para pagar en taquilla. */
+	Reserva reservarSinCuenta(Integer idEvento, String nombre, String telefono, String correo, Integer cantidad,
+			String observaciones);
+
 	/** Lo mismo para las reservas demo del panel: se dan por pagadas, sin pasar por la pasarela. */
 	Reserva reservarDemo(Integer idEvento, String username, ReservaCrearDto registro);
 

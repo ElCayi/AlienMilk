@@ -92,7 +92,7 @@ public class ReservasDemoService {
 		Map<Integer, Integer> ocupadas = new HashMap<>();
 		Map<String, Integer> dePersona = new HashMap<>();
 		for (Reserva reserva : reservaRepository.findAll()) {
-			if (reserva.cancelada()) {
+			if (reserva.cancelada() || reserva.getUsuario() == null) {
 				continue;
 			}
 			ocupadas.merge(reserva.getEvento().getIdEvento(), reserva.getCantidad(), Integer::sum);

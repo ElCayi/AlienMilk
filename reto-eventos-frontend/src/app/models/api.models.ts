@@ -92,7 +92,10 @@ export interface Reserva {
   idReserva: number;
   idEvento: number;
   nombreEvento: string;
-  username: string;
+  /** La cuenta; null si se reservó por teléfono sin cuenta o la cuenta se borró. */
+  username: string | null;
+  /** El correo de la cuenta, o el que se dio al reservar sin cuenta. */
+  clienteCorreo: string | null;
   /** Nombre y apellidos de la cuenta. */
   nombreCliente: string;
   cantidad: number;

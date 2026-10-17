@@ -210,6 +210,14 @@ export class AdminService {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/reactivar`, {});
   }
 
+  /** Por teléfono, a alguien sin cuenta: a su nombre y su teléfono, para pagar en taquilla. */
+  crearReservaSinCuenta(
+    idEvento: number,
+    datos: { nombre: string; telefono: string; correo: string; cantidad: number; observaciones: string },
+  ): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/sin-cuenta/evento/${idEvento}`, datos);
+  }
+
   /** Una devolución en taquilla, ya entregada. */
   entregarDevolucion(idReserva: number, idDevolucion: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/devoluciones/${idDevolucion}/entregada`, {});

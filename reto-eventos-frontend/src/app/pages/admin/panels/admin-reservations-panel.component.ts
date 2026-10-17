@@ -23,6 +23,7 @@ import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.compone
 import { ReservationEditorComponent } from '../../../shared/panel/reservation-editor.component';
 import {
   errorMessage,
+  fieldErrors,
   formatDay,
   formatDayTime,
   reservationWhen,
@@ -87,9 +88,18 @@ const VIEWS: { value: View; label: string }[] = [
   { value: 'sesiones', label: 'Sesión' },
 ];
 
+/**
+ * A quién se agrupa una reserva: su cuenta o, sin cuenta (por teléfono, o de una cuenta borrada), su
+ * teléfono; si tampoco lo hay, va sola.
+ */
+const clientKey = (reserva: Reserva): string =>
+  reserva.username ?? `sin-cuenta-${reserva.telefono?.replace(/\D/g, '') || reserva.idReserva}`;
+
 /** Un cliente, con todas sus reservas y lo que suman. */
 interface ClientGroup {
-  username: string;
+  /** Su cuenta, o la clave de una persona sin cuenta (ver clientKey). */
+  key: string;
+  username: string | null;
   nombre: string;
   email: string | null;
   telefono: string | null;
@@ -194,7 +204,7 @@ export class AdminReservationsPanelComponent implements OnInit {
           reserva.observaciones,
           reserva.telefono,
           reserva.telefono?.replace(/\D/g, ''),
-          users.get(reserva.username)?.email,
+          reserva.username ? users.get(reserva.username)?.email : reserva.clienteCorreo,
           ...reserva.asistentes.map((persona) => persona.nombre),
         ),
     );
@@ -301,19 +311,21 @@ export class AdminReservationsPanelComponent implements OnInit {
     const groups = new Map<string, Reserva[]>();
     const matching = new Set(this.visible().map((reserva) => reserva.idReserva));
     for (const reserva of this.reservations()) {
-      groups.set(reserva.username, [...(groups.get(reserva.username) ?? []), reserva]);
+      groups.set(clientKey(reserva), [...(groups.get(clientKey(reserva)) ?? []), reserva]);
     }
     const { key, dir } = this.clientSort.state();
     return [...groups.entries()]
-      .map(([username, reservas]) => {
-        const user = users.get(username);
+      .map(([clave, reservas]) => {
+        const username = reservas[0].username;
+        const user = username ? users.get(username) : undefined;
         const ordered = [...reservas].sort(COMPARE.fecha);
         const vivas = reservas.filter(holds);
         const telefono = [...reservas].sort((a, b) => b.idReserva - a.idReserva).find((r) => r.telefono)?.telefono;
         return {
+          key: clave,
           username,
           nombre: reservas[0].nombreCliente,
-          email: user?.email ?? null,
+          email: user?.email ?? reservas.find((r) => r.clienteCorreo)?.clienteCorreo ?? null,
           telefono: telefono ?? null,
           programa: user ? !!user.aceptaComunicaciones : null,
           reservas: ordered,
@@ -375,7 +387,7 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** Las demás reservas de su cliente, entre todas (no solo las que pasan los filtros). */
   otherReservations(reserva: Reserva): number {
-    return this.reservations().filter((r) => r.username === reserva.username && r.idReserva !== reserva.idReserva)
+    return this.reservations().filter((r) => clientKey(r) === clientKey(reserva) && r.idReserva !== reserva.idReserva)
       .length;
   }
 
@@ -492,9 +504,11 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly dialog = viewChild.required<PanelDialogComponent>('createDialog');
   readonly saving = signal(false);
   readonly formError = signal<string | null>(null);
+  readonly formErrors = signal<Record<string, string>>({});
   form = emptyForm();
 
   readonly state = reservationState;
+  readonly clientKey = clientKey;
   readonly cancellation = (reserva: Reserva) => cancellationLine(reserva);
   readonly payment = paymentBadge;
   readonly paymentText = paymentLine;
@@ -640,15 +654,18 @@ export class AdminReservationsPanelComponent implements OnInit {
     if (this.saving()) {
       return;
     }
-    const { username, idEvento, cantidad, observaciones } = this.form;
-    if (!username || !idEvento) {
-      this.formError.set('Elige la cuenta y la sesión.');
+    const { username, idEvento, cantidad, observaciones, sinCuenta, nombre, telefono, correo } = this.form;
+    if ((!sinCuenta && !username) || !idEvento) {
+      this.formError.set(sinCuenta ? 'Elige la sesión.' : 'Elige la cuenta y la sesión.');
       return;
     }
     this.saving.set(true);
     this.formError.set(null);
-    this.admin
-      .crearReservaParaUsuario(username, idEvento, { cantidad: cantidad ?? 0, observaciones })
+    this.formErrors.set({});
+    const request = sinCuenta
+      ? this.admin.crearReservaSinCuenta(idEvento, { nombre, telefono, correo, cantidad: cantidad ?? 0, observaciones })
+      : this.admin.crearReservaParaUsuario(username, idEvento, { cantidad: cantidad ?? 0, observaciones });
+    request
       .subscribe({
         next: (reserva) => {
           this.saving.set(false);
@@ -662,6 +679,7 @@ export class AdminReservationsPanelComponent implements OnInit {
         },
         error: (error) => {
           this.saving.set(false);
+          this.formErrors.set(fieldErrors(error));
           this.formError.set(errorMessage(error, 'No se ha podido crear la reserva.'));
         },
       });
@@ -861,6 +879,11 @@ export class AdminReservationsPanelComponent implements OnInit {
 function emptyForm(idEvento: number | null = null) {
   return {
     username: '',
+    /** Por teléfono, a alguien sin cuenta: entonces cuentan nombre, teléfono y correo. */
+    sinCuenta: false,
+    nombre: '',
+    telefono: '',
+    correo: '',
     idEvento,
     cantidad: 1 as number | null,
     observaciones: '',

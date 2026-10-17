@@ -140,19 +140,19 @@
             </tr>
           </thead>
           <tbody>
-            @for (client of clients(); track client.username) {
-              @let open = expandedClient() === client.username;
-              <tr class="row-summary" [class.is-open]="open" (click)="toggleClient(client.username)">
+            @for (client of clients(); track client.key) {
+              @let open = expandedClient() === client.key;
+              <tr class="row-summary" [class.is-open]="open" (click)="toggleClient(client.key)">
                 <td class="cell-title">
                   <button
                     type="button"
                     class="row-disclosure"
                     [attr.aria-expanded]="open"
-                    [attr.aria-controls]="'client-detail-' + client.username"
+                    [attr.aria-controls]="'client-detail-' + client.key"
                   >
                     {{ client.nombre }}
                   </button>
-                  <span class="cell-sub">{{ client.username }}</span>
+                  <span class="cell-sub">{{ client.username ?? 'Sin cuenta' }}</span>
                 </td>
                 <td data-label="Reservas" class="num center">{{ client.reservas.length }}
                   @if (client.coincidencias < client.reservas.length) { <span class="cell-sub">{{ client.coincidencias }} {{ client.coincidencias === 1 ? 'coincide' : 'coinciden' }}</span> }
@@ -175,7 +175,7 @@
                 </td>
               </tr>
               @if (open) {
-                <tr class="row-detail" [id]="'client-detail-' + client.username">
+                <tr class="row-detail" [id]="'client-detail-' + client.key">
                   <td colspan="6">
                     <div class="session-detail">
                       <section class="occupancy" aria-label="Lo que suma">
@@ -191,7 +191,7 @@
                       <dl class="detail-facts">
                         <div>
                           <dt>Cuenta</dt>
-                          <dd>{{ client.username }}</dd>
+                          <dd>{{ client.username ?? 'Sin cuenta: reservó por teléfono' }}</dd>
                         </div>
                         <div>
                           <dt>Correo</dt>
@@ -227,9 +227,11 @@
                         </ul>
                       </section>
                     </div>
-                    <div class="row-actions detail-actions">
-                      <a class="btn btn-small" routerLink="/admin/usuarios" [queryParams]="{ cuenta: client.username }">Ver su cuenta</a>
-                    </div>
+                    @if (client.username) {
+                      <div class="row-actions detail-actions">
+                        <a class="btn btn-small" routerLink="/admin/usuarios" [queryParams]="{ cuenta: client.username }">Ver su cuenta</a>
+                      </div>
+                    }
                   </td>
                 </tr>
               }
@@ -473,12 +475,12 @@
                         <div>
                           <dt>Cliente</dt>
                           <dd>
-                            {{ reserva.nombreCliente }} · {{ reserva.username }}
+                            {{ reserva.nombreCliente }} · {{ reserva.username ?? 'sin cuenta' }}
                             @if (otherReservations(reserva); as others) {
                               <button
                                 type="button"
                                 class="text-link other-reservations"
-                                (click)="$event.stopPropagation(); openClient(reserva.username)"
+                                (click)="$event.stopPropagation(); openClient(clientKey(reserva))"
                               >
                                 {{ others === 1 ? 'Otra reserva más' : others + ' reservas más' }}
                               </button>
@@ -712,17 +714,50 @@
 <app-panel-dialog #createDialog heading="Nueva reserva">
   <form novalidate (ngSubmit)="save()">
     <div class="form-grid">
+      <!-- Quien llama por primera vez no tiene cuenta: la reserva va a su nombre y su teléfono. -->
       <div class="field is-wide">
-        <label class="field-label" for="reservation-user">Cuenta</label>
-        <select id="reservation-user" name="username" [(ngModel)]="form.username">
-          <option value="" disabled>Elige una cuenta</option>
-          @for (user of users(); track user.username) {
-            <option [value]="user.username" [disabled]="!user.enabled">
-              {{ user.nombre }} {{ user.apellidos }} · {{ user.username }} ({{ profile(user.perfil) }}){{ user.enabled ? '' : ' · desactivada' }}
-            </option>
-          }
-        </select>
+        <span class="field-label" id="reservation-who">Cliente</span>
+        <div class="segmented" role="group" aria-labelledby="reservation-who">
+          <button type="button" [attr.aria-pressed]="!form.sinCuenta" (click)="form.sinCuenta = false">Con cuenta</button>
+          <button type="button" [attr.aria-pressed]="form.sinCuenta" (click)="form.sinCuenta = true">Sin cuenta</button>
+        </div>
       </div>
+
+      @if (form.sinCuenta) {
+        <div class="field is-wide" [class.is-invalid]="formErrors()['nombre']">
+          <label class="field-label" for="reservation-name">Nombre y apellidos</label>
+          <input id="reservation-name" name="nombre" maxlength="120" autocomplete="off" [(ngModel)]="form.nombre" />
+          @if (formErrors()['nombre']; as error) {
+            <p class="field-error">{{ error }}</p>
+          }
+        </div>
+        <div class="field" [class.is-invalid]="formErrors()['telefono']">
+          <label class="field-label" for="reservation-phone">Teléfono</label>
+          <input id="reservation-phone" name="telefono" type="tel" maxlength="20" autocomplete="off" [(ngModel)]="form.telefono" />
+          @if (formErrors()['telefono']; as error) {
+            <p class="field-error">{{ error }}</p>
+          }
+        </div>
+        <div class="field" [class.is-invalid]="formErrors()['correo']">
+          <label class="field-label" for="reservation-email">Correo <span class="field-note">opcional</span></label>
+          <input id="reservation-email" name="correo" type="email" maxlength="120" autocomplete="off" [(ngModel)]="form.correo" />
+          @if (formErrors()['correo']; as error) {
+            <p class="field-error">{{ error }}</p>
+          }
+        </div>
+      } @else {
+        <div class="field is-wide">
+          <label class="field-label" for="reservation-user">Cuenta</label>
+          <select id="reservation-user" name="username" [(ngModel)]="form.username">
+            <option value="" disabled>Elige una cuenta</option>
+            @for (user of users(); track user.username) {
+              <option [value]="user.username" [disabled]="!user.enabled">
+                {{ user.nombre }} {{ user.apellidos }} · {{ user.username }} ({{ profile(user.perfil) }}){{ user.enabled ? '' : ' · desactivada' }}
+              </option>
+            }
+          </select>
+        </div>
+      }
 
       <div class="field is-wide">
         <label class="field-label" for="reservation-session">Sesión <span class="field-note">solo las activas</span></label>

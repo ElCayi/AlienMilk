@@ -196,4 +196,25 @@ class AdminReservasTest {
         assertThat(reserva.requiereRevision()).isTrue();
         assertThat(reserva.getRevisionAceptada()).isNull();
     }
+
+    @Test
+    void aCancelledBookingComesBackOnlyIfNoMoneyMovedAndThereIsRoom() {
+        Evento sesion = reserva.getEvento();
+        sesion.setAforoMaximo(2);
+        when(eventos.bloquear(3)).thenReturn(sesion);
+        reserva.cancelar(CanceladaPor.ALIENMILK, "Error", LocalDateTime.now());
+
+        service.reactivar(7);
+        assertThat(reserva.cancelada()).isFalse();
+
+        reserva.cancelar(CanceladaPor.CLIENTE, null, LocalDateTime.now());
+        reserva.setImporteDevuelto(new BigDecimal("25.00"));
+        assertThatThrownBy(() -> service.reactivar(7)).hasMessage("Ya se devolvió su importe: crea una reserva nueva");
+
+        reserva.setImporteDevuelto(BigDecimal.ZERO);
+        Reserva otra = Reserva.builder().idReserva(8).cantidad(2).evento(sesion)
+                .usuario(Usuario.builder().username("luis").build()).build();
+        when(repository.findByEventoIdEventoAndCanceladaEnIsNull(3)).thenReturn(List.of(otra));
+        assertThatThrownBy(() -> service.reactivar(7)).hasMessage("Ya no quedan plazas suficientes en su sesión");
+    }
 }

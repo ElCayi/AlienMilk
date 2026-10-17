@@ -154,6 +154,13 @@ public class Reserva {
 		return canceladaEn != null;
 	}
 
+	/** Deshace la cancelación (ver ReservaService#reactivar). */
+	public void reactivar() {
+		canceladaEn = null;
+		canceladaPor = null;
+		motivoCancelacion = null;
+	}
+
 	/** Cancelar no borra: deja la reserva con quién, cuándo y por qué, y deja de ocupar plazas. */
 	public void cancelar(CanceladaPor quien, String motivo, LocalDateTime cuando) {
 		canceladaEn = cuando;

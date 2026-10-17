@@ -316,6 +316,42 @@ public class ReservaServiceImpl implements ReservaService {
 		return reservaRepository.save(reserva);
 	}
 
+	/**
+	 * Deshace una cancelación (un error, o un cliente que cambia de idea), con las reglas de una reserva
+	 * nueva: sesión activa, plazas libres (leídas con la sesión bloqueada) y diez por persona. Solo si no
+	 * se movió dinero: si se devolvió, o si nunca se llegó a pagar, lo limpio es una reserva nueva.
+	 */
+	@Override
+	@Transactional
+	public Reserva reactivar(Integer idReserva) {
+		Reserva reserva = findById(idReserva);
+		if (!reserva.cancelada()) {
+			throw new ConflictoNegocioException("Esta reserva no está cancelada");
+		}
+		if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
+			throw new ConflictoNegocioException("No se llegó a pagar: crea una reserva nueva");
+		}
+		if (reserva.getImporteDevuelto().signum() > 0) {
+			throw new ConflictoNegocioException("Ya se devolvió su importe: crea una reserva nueva");
+		}
+		Evento evento = eventoService.bloquear(reserva.getEvento().getIdEvento());
+		if (evento.getEstado() != EstadoEvento.ACTIVO) {
+			throw new ConflictoNegocioException("Su sesión ya no está activa");
+		}
+		int ocupadas = reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(evento.getIdEvento()).stream()
+				.mapToInt(Reserva::getCantidad).sum();
+		if (ocupadas + reserva.getCantidad() > evento.getAforoMaximo()) {
+			throw new ConflictoNegocioException("Ya no quedan plazas suficientes en su sesión");
+		}
+		int delCliente = reservaRepository.findByUsuarioUsernameAndEventoIdEventoAndCanceladaEnIsNull(
+				reserva.getUsuario().getUsername(), evento.getIdEvento()).stream().mapToInt(Reserva::getCantidad).sum();
+		if (delCliente + reserva.getCantidad() > 10) {
+			throw new ConflictoNegocioException("Como máximo 10 plazas por persona en la misma sesión");
+		}
+		reserva.reactivar();
+		return reservaRepository.save(reserva);
+	}
+
 	/** Cobrada en taquilla: lo que el admin marca cuando quien reservó por teléfono paga al llegar. */
 	@Override
 	@Transactional

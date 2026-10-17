@@ -596,7 +596,23 @@
                     </div>
 
                     <div class="row-actions detail-actions">
-                      <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. -->
+                      <!-- Cancelada, es historial: ni se edita ni se vuelve a cancelar. Si fue un error y no se movió
+                           dinero, se puede reactivar. -->
+                      @if (reactivable(reserva)) {
+                        <button
+                          type="button"
+                          class="btn btn-small"
+                          [disabled]="busy() === reserva.idReserva"
+                          (click)="reactivate(reserva)"
+                        >
+                          Reactivar
+                        </button>
+                      } @else if (reserva.canceladaEn && reserva.estadoEvento === 'ACTIVO') {
+                        <span class="detail-saved">
+                          {{ reserva.estadoPago === 'PENDIENTE' ? 'No se llegó a pagar' : 'Se devolvió su importe' }}: para
+                          recuperarla, crea una reserva nueva.
+                        </span>
+                      }
                       @if (!reserva.canceladaEn) {
                         @if (reserva.estadoPago === 'EN_TAQUILLA') {
                           <button

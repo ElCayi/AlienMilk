@@ -85,6 +85,12 @@ public class AdminReservaRestController {
 				Boolean.TRUE.equals(datos.get("aceptada")), nota == null ? null : nota.toString())));
 	}
 
+	/** Deshace una cancelación, si quedan plazas y no se movió dinero (ver ReservaService#reactivar). */
+	@PostMapping("/{idReserva}/reactivar")
+	public ResponseEntity<ReservaDto> reactivar(@PathVariable Integer idReserva) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.reactivar(idReserva)));
+	}
+
 	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */
 	@PostMapping("/{idReserva}/cobrada")
 	public ResponseEntity<ReservaDto> cobrada(@PathVariable Integer idReserva) {

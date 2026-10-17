@@ -17,6 +17,15 @@ import {
   reviewLabel,
 } from '../../../shared/panel/panel-format';
 
+/** «Cata de Leche Abducida» → «cata-de-leche-abducida», para el nombre del archivo. */
+const slug = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
 /** Quién se ve en la tabla: todos, los que faltan por entrar o los que ya han entrado. */
 type DoorFilter = 'TODOS' | 'FALTAN' | 'DENTRO';
 
@@ -242,6 +251,45 @@ export class AdminControlSheetComponent implements OnInit {
   /** Una casilla por plaza, para las reservas sin registrar. */
   seatsOf(reserva: Reserva): number[] {
     return Array.from({ length: reserva.cantidad }, (_, i) => i);
+  }
+
+  /**
+   * La lista de la puerta en CSV, para quien la quiera en una hoja de cálculo: una fila por persona (las
+   * reservas sin registrar, una por reserva). Con punto y coma y BOM, que es lo que abre bien Excel en español.
+   */
+  exportCsv(): void {
+    const session = this.session();
+    if (!session) {
+      return;
+    }
+    const header = ['Localizador', 'Cliente', 'Teléfono', 'Participante', 'Credencial', 'Procedencia',
+      'Incompatibilidades', 'Plazas', 'Han entrado', 'Pago'];
+    const pago: Record<string, string> = {
+      PENDIENTE: 'Pendiente de pago',
+      PAGADA: 'Pagada',
+      EN_TAQUILLA: 'En taquilla',
+      COBRADA_TAQUILLA: 'Cobrada en taquilla',
+    };
+    const lines = this.rows().map((row) => [
+      row.numero,
+      row.reserva.nombreCliente,
+      row.reserva.telefono ?? '',
+      row.nombre ?? 'Sin registrar',
+      row.credencial ?? '',
+      row.procedencia ?? '',
+      row.incompatibilidades ?? '',
+      String(row.personas),
+      row.orden === null ? String(row.dentro) : row.entrada ? formatTime(row.entrada) : '',
+      pago[row.reserva.estadoPago] ?? '',
+    ]);
+    const cell = (value: string) => (/[";\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value);
+    const csv = [header, ...lines].map((line) => line.map(cell).join(';')).join('\r\n');
+    const url = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `control-${session.fechaInicio}-${slug(session.nombre)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   print(): void {

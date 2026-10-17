@@ -727,6 +727,43 @@ export class AdminReservationsPanelComponent implements OnInit {
     });
   }
 
+  /** Una cancelada vuelve si su sesión sigue activa y no se movió dinero (el servidor mira las plazas). */
+  reactivable(reserva: Reserva): boolean {
+    return (
+      !!reserva.canceladaEn &&
+      reserva.estadoEvento === 'ACTIVO' &&
+      reserva.estadoPago !== 'PENDIENTE' &&
+      Number(reserva.importeDevuelto) === 0
+    );
+  }
+
+  reactivate(reserva: Reserva): void {
+    if (this.busy() !== null) {
+      return;
+    }
+    this.busy.set(reserva.idReserva);
+    this.admin.reactivarReserva(reserva.idReserva).subscribe({
+      next: (updated) => {
+        this.busy.set(null);
+        this.stay.set(updated.idReserva);
+        this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
+        this.sessions.update((list) =>
+          list.map((session) =>
+            session.idEvento === updated.idEvento
+              ? { ...session, plazasReservadas: session.plazasReservadas + updated.cantidad, reservas: session.reservas + 1 }
+              : session,
+          ),
+        );
+        this.rowNotice.set({ id: updated.idReserva, text: 'Reserva reactivada: vuelve a ocupar sus plazas.' });
+        this.summary.refresh();
+      },
+      error: (error) => {
+        this.busy.set(null);
+        this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido reactivar.') });
+      },
+    });
+  }
+
   // Cancelar, en su diálogo: desde el panel siempre con motivo, que verá también el cliente.
   readonly cancelDialog = viewChild.required<PanelDialogComponent>('cancelDialog');
   readonly cancelTarget = signal<Reserva | null>(null);

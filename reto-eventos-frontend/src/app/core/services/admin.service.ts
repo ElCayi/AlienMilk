@@ -205,6 +205,11 @@ export class AdminService {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`, { aceptada, nota });
   }
 
+  /** Deshace una cancelación, si quedan plazas y no se movió dinero al cancelarla. */
+  reactivarReserva(idReserva: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/reactivar`, {});
+  }
+
   /** Una reserva para pagar en taquilla, ya cobrada. */
   marcarCobrada(idReserva: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cobrada`, {});

@@ -45,9 +45,10 @@ interface SavedFilter {
 
 /**
  * La barra de filtros de los paneles, al estilo de los CRM: una barra que busca mientras se escribe y,
- * al pulsarla, abre un panel con filtros listos a la izquierda (y los que guarde cada cual, en este
- * navegador) y los campos a la derecha, que se combinan y se aplican de una vez. Lo activo se queda en
- * la barra como chips, cada uno con su ✕. Quien la usa guarda los valores y los lleva a la dirección.
+ * con «Filtros», un panel con filtros listos a la izquierda (y los que guarde cada cual, en este
+ * navegador) y los campos a la derecha. Todo se aplica al momento y el panel se queda abierto, para ir
+ * sumando filtros mientras se ve la tabla detrás; «Listo» lo cierra. Lo activo se queda en la barra como
+ * chips, cada uno con su ✕. Quien la usa guarda los valores y los lleva a la dirección.
  */
 @Component({
   selector: 'app-filter-bar',
@@ -74,8 +75,6 @@ export class FilterBarComponent {
   private readonly textInput = viewChild<ElementRef<HTMLInputElement>>('text');
 
   readonly open = signal(false);
-  /** Lo que se está montando en el panel; se aplica con «Aplicar». */
-  draft: FilterValues = {};
   readonly saved = signal<SavedFilter[]>([]);
   readonly saving = signal(false);
   saveName = '';
@@ -115,7 +114,6 @@ export class FilterBarComponent {
     if (this.open()) {
       this.close();
     } else {
-      this.draft = { ...this.defaults(), ...this.values() };
       this.saving.set(false);
       this.open.set(true);
       // Abierto cerca del final de la pantalla, la vista baja lo justo para enseñarlo entero (sin que la
@@ -137,20 +135,34 @@ export class FilterBarComponent {
     this.open.set(false);
   }
 
-  apply(): void {
-    this.valuesChange.emit({ ...this.draft });
-    this.close();
+  /** Un campo del panel, aplicado al momento. */
+  setField(key: string, value: string): void {
+    this.valuesChange.emit({ ...this.values(), [key]: value ?? '' });
   }
 
-  /** Reiniciar deja todo «sin filtrar», también el texto. */
-  reset(): void {
-    this.draft = { ...this.defaults() };
+  /** Si un filtro listo está puesto: todo lo que pide coincide con lo que hay. */
+  isActive(values: FilterValues): boolean {
+    const current = this.values();
+    return Object.entries(values).every(([key, value]) => (current[key] ?? '') === value);
   }
 
-  /** Un filtro listo se aplica entero, encima de nada: lo que pide y nada más. */
+  /**
+   * Un filtro listo se suma a lo que ya hay (lo que pide en sus campos, lo demás se queda); si ya estaba,
+   * pulsarlo lo quita.
+   */
   usePreset(values: FilterValues): void {
+    const current = this.values();
+    if (this.isActive(values)) {
+      const off = Object.fromEntries(Object.keys(values).map((key) => [key, this.defaults()[key] ?? '']));
+      this.valuesChange.emit({ ...current, ...off });
+    } else {
+      this.valuesChange.emit({ ...current, ...values });
+    }
+  }
+
+  /** Los guardados no se suman: son un filtro entero, que sustituye al que hubiera. */
+  useSaved(values: FilterValues): void {
     this.valuesChange.emit({ ...this.defaults(), ...values });
-    this.close();
   }
 
   removeChip(key: string): void {
@@ -163,7 +175,7 @@ export class FilterBarComponent {
   }
 
   visibleFields(): FilterField[] {
-    return this.fields().filter((field) => !field.showWhen || field.showWhen(this.draft));
+    return this.fields().filter((field) => !field.showWhen || field.showWhen(this.values()));
   }
 
   /** Guarda el filtro del panel con un nombre, en este navegador. */
@@ -172,7 +184,7 @@ export class FilterBarComponent {
     if (!nombre) {
       return;
     }
-    const list = [...this.saved().filter((item) => item.nombre !== nombre), { nombre, valores: { ...this.draft } }];
+    const list = [...this.saved().filter((item) => item.nombre !== nombre), { nombre, valores: { ...this.values() } }];
     this.writeSaved(list);
     this.saveName = '';
     this.saving.set(false);

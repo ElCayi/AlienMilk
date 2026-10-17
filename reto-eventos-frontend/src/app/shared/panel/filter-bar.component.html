@@ -42,7 +42,7 @@
         <ul>
           @for (preset of presets(); track preset.label) {
             <li>
-              <button type="button" (click)="usePreset(preset.values)">
+              <button type="button" [attr.aria-pressed]="isActive(preset.values)" (click)="usePreset(preset.values)">
                 <span>{{ preset.label }}</span>
                 @if (preset.count !== undefined) {
                   <span class="segmented-count">{{ preset.count }}</span>
@@ -56,7 +56,7 @@
           <ul>
             @for (item of saved(); track item.nombre) {
               <li class="filter-saved">
-                <button type="button" (click)="usePreset(item.valores)"><span>{{ item.nombre }}</span></button>
+                <button type="button" (click)="useSaved(item.valores)"><span>{{ item.nombre }}</span></button>
                 <button
                   type="button"
                   class="filter-saved-remove"
@@ -80,22 +80,28 @@
         }
       </aside>
 
-      <!-- A la derecha, los campos: se combinan y se aplican de una vez. -->
-      <form class="filter-fields" (ngSubmit)="apply()">
+      <!-- A la derecha, los campos: cada cambio se aplica al momento. -->
+      <form class="filter-fields" (ngSubmit)="close()">
         <div class="form-grid">
           @for (field of visibleFields(); track field.key) {
             <div class="field" [class.is-wide]="field.type === 'text'">
               <label class="field-label" [for]="panelId + '-' + field.key">{{ field.label }}</label>
               @switch (field.type) {
                 @case ('select') {
-                  <select [id]="panelId + '-' + field.key" [name]="field.key" [(ngModel)]="draft[field.key]">
+                  <select [id]="panelId + '-' + field.key" [name]="field.key" [ngModel]="values()[field.key] ?? ''" (ngModelChange)="setField(field.key, $event)">
                     @for (option of field.options; track option.value) {
                       <option [value]="option.value">{{ option.label }}</option>
                     }
                   </select>
                 }
                 @case ('date') {
-                  <input type="date" [id]="panelId + '-' + field.key" [name]="field.key" [(ngModel)]="draft[field.key]" />
+                  <input
+                    type="date"
+                    [id]="panelId + '-' + field.key"
+                    [name]="field.key"
+                    [ngModel]="values()[field.key] ?? ''"
+                    (ngModelChange)="setField(field.key, $event)"
+                  />
                 }
                 @default {
                   <input
@@ -103,7 +109,8 @@
                     [id]="panelId + '-' + field.key"
                     [name]="field.key"
                     [placeholder]="field.placeholder ?? ''"
-                    [(ngModel)]="draft[field.key]"
+                    [ngModel]="values()[field.key] ?? ''"
+                    (ngModelChange)="setField(field.key, $event)"
                   />
                 }
               }
@@ -111,8 +118,8 @@
           }
         </div>
         <div class="filter-actions">
-          <button type="button" class="btn" (click)="reset()">Reiniciar</button>
-          <button type="submit" class="btn btn-primary">Aplicar</button>
+          <button type="button" class="btn" (click)="clearAll()">Reiniciar</button>
+          <button type="submit" class="btn btn-primary">Listo</button>
         </div>
       </form>
     </div>

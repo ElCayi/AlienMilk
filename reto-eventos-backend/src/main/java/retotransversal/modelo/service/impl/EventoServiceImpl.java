@@ -81,8 +81,10 @@ public class EventoServiceImpl implements EventoService {
 	 * haya pasado; la que ya tenía se respeta, para poder corregir otros datos de una sesión celebrada.
 	 */
 	@Override
+	@Transactional
 	public Evento updateOne(Evento entidad) {
-		Evento actual = findById(entidad.getIdEvento());
+		// Bloqueada: una reserva que entre a la vez no puede dejar el aforo nuevo por debajo de lo reservado.
+		Evento actual = bloquear(entidad.getIdEvento());
 		limpiar(entidad);
 		validar(entidad, plazasReservadas(actual.getIdEvento()), actual.inicio());
 		entidad.setEstado(actual.getEstado());
@@ -185,6 +187,12 @@ public class EventoServiceImpl implements EventoService {
 		acabadas.forEach(evento -> evento.setEstado(EstadoEvento.TERMINADO));
 		eventoRepository.saveAll(acabadas);
 		return acabadas.size();
+	}
+
+	@Override
+	public Evento bloquear(Integer idEvento) {
+		return eventoRepository.findByIdBloqueando(idEvento)
+				.orElseThrow(() -> new RecursoNoEncontradoException("Evento no encontrado"));
 	}
 
 	@Override

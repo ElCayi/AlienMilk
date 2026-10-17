@@ -63,6 +63,11 @@ class AdminSesionesTest {
 					mock(ExpedienteService.class), mock(ImagenSesionService.class)))
 			.setControllerAdvice(new GlobalExceptionHandler()).build();
 
+	AdminSesionesTest() {
+		// La lectura con bloqueo devuelve lo mismo que la normal: aquí no hay base de datos que bloquear.
+		when(eventos.findByIdBloqueando(any())).thenAnswer(llamada -> eventos.findById(llamada.getArgument(0)));
+	}
+
 	@Test
 	void theListCarriesEachSessionsOccupancy() throws Exception {
 		when(eventos.findAll()).thenReturn(List.of(sesion(7, EstadoEvento.ACTIVO), sesion(8, EstadoEvento.CANCELADO)));
@@ -101,6 +106,8 @@ class AdminSesionesTest {
 				.andExpect(jsonPath("$.errores.aforoMaximo")
 						.value("Ya hay 45 plazas reservadas: el aforo no puede ser menor"));
 		verify(eventos, never()).save(any());
+		// Se leyó bloqueada: una reserva simultánea no puede colarse entre la comprobación y el guardado.
+		verify(eventos).findByIdBloqueando(7);
 	}
 
 	@Test
@@ -249,6 +256,7 @@ class AdminSesionesTest {
 				.isInstanceOf(ConflictoNegocioException.class)
 				.hasMessage("Las reservas de esta sesión ya están cerradas: cierran 10 minutos antes de empezar");
 		verify(reservas, never()).save(any());
+		verify(eventos).findByIdBloqueando(3);
 	}
 
 	@Test

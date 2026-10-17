@@ -78,6 +78,7 @@ public class ReservaServiceImpl implements ReservaService {
 	}
 
 	@Override
+	@Transactional
 	public Reserva reservarEvento(Integer idEvento, String username, Integer cantidad, String observaciones) {
 		return reservaRepository.save(nueva(idEvento, username, cantidad, observaciones));
 	}
@@ -138,9 +139,12 @@ public class ReservaServiceImpl implements ReservaService {
 		return reservaRepository.save(reserva);
 	}
 
-	/** La reserva, comprobada (aforo, diez por persona, cierre) y sin guardar todavía. */
+	/**
+	 * La reserva, comprobada y sin guardar. La sesión se lee bloqueada: hasta que la transacción termine,
+	 * ninguna otra reserva suya puede contar plazas, así que dos peticiones a la vez no pasan del aforo.
+	 */
 	private Reserva nueva(Integer idEvento, String username, Integer cantidad, String observaciones) {
-		Evento evento = eventoService.findById(idEvento);
+		Evento evento = eventoService.bloquear(idEvento);
 		Usuario usuario = usuarioService.findById(username);
 		validarReserva(evento, username, cantidad);
 		if (observaciones != null && observaciones.strip().length() > 200) {

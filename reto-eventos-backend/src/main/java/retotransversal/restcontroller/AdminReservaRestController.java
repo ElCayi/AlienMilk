@@ -61,6 +61,22 @@ public class AdminReservaRestController {
 				reservaService.cancelarReservaAdmin(idReserva, motivo == null ? null : motivo.toString(), devolver)));
 	}
 
+	/** Control de ingreso: un participante registrado entra ({"presente": true}) o se deshace. */
+	@PutMapping("/{idReserva}/asistentes/{orden}/entrada")
+	public ResponseEntity<ReservaDto> entrada(@PathVariable Integer idReserva, @PathVariable Integer orden,
+			@RequestBody Map<String, Object> datos) {
+		boolean presente = Boolean.TRUE.equals(datos.get("presente"));
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.marcarEntrada(idReserva, orden, presente)));
+	}
+
+	/** Control de ingreso de una reserva sin registrar: cuántas de sus plazas han entrado ({"plazas": 2}). */
+	@PutMapping("/{idReserva}/entradas")
+	public ResponseEntity<ReservaDto> entradas(@PathVariable Integer idReserva, @RequestBody Map<String, Object> datos) {
+		Object plazas = datos.get("plazas");
+		int valor = plazas instanceof Number numero ? numero.intValue() : -1;
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.contarEntradas(idReserva, valor)));
+	}
+
 	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */
 	@PostMapping("/{idReserva}/cobrada")
 	public ResponseEntity<ReservaDto> cobrada(@PathVariable Integer idReserva) {

@@ -96,24 +96,118 @@
   color: var(--paper-muted);
 }
 
-/* La tabla: la casilla vacía para marcar a mano, y en coral lo que no se tolera. */
+/* La cabecera de la tabla: el título y, a la derecha, cuántos han entrado. */
+.sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.sheet-inside {
+  margin: 0;
+  color: var(--paper-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-inside strong {
+  color: var(--paper-ink);
+  font:
+    400 1.6rem / 1 var(--condensed);
+}
+
+.sheet-toolbar {
+  margin-bottom: 1rem;
+}
+
+/* La tabla: una casilla por persona, grande para el dedo en la puerta; en coral, lo que no se tolera. */
+/* Lo justo para sus casillas: de tres en tres, en fila. */
 .sheet-check-col {
-  width: 4.5rem;
+  width: 1%;
 }
 
 .sheet-boxes {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
-  max-width: 4.5rem;
+  gap: 0.15rem;
+  width: max-content;
+  max-width: 9rem;
+}
+
+.sheet-check {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  justify-content: center;
+  padding: 0.25rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: none;
+  cursor: pointer;
+}
+
+.sheet-check:hover .sheet-box {
+  border-color: var(--coral);
+}
+
+.sheet-check:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 1px;
+}
+
+.sheet-check:disabled {
+  cursor: progress;
+  opacity: 0.5;
 }
 
 .sheet-box {
+  position: relative;
   display: inline-block;
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border: 1.5px solid var(--paper-ink);
-  border-radius: 0.2rem;
+  border-radius: 0.25rem;
+}
+
+/* Marcada: la casilla en tinta con su aspa blanca, como se marcaría a boli. */
+.sheet-check[aria-pressed='true'] .sheet-box {
+  background: var(--paper-ink);
+}
+
+.sheet-check[aria-pressed='true'] .sheet-box::after {
+  content: '';
+  position: absolute;
+  top: 0.15rem;
+  left: 0.45rem;
+  width: 0.4rem;
+  height: 0.75rem;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.sheet-time {
+  color: var(--paper-muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Quien ya entró se queda en su sitio, un tono más apagado: lo que importa es lo que falta. */
+.sheet-table tr.is-inside td:not(.sheet-check-col) {
+  color: var(--paper-muted);
+}
+
+.sheet-collect {
+  display: flex;
+  margin-top: 0.45rem;
+}
+
+.sheet-print-only {
+  display: none;
 }
 
 .sheet-alert {
@@ -130,6 +224,29 @@
   .sheet-columns {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* En ficha, la casilla arriba a la izquierda, junto a lo que marca. */
+  .sheet-table td.sheet-check-col {
+    width: auto;
+    padding: 0 0 0.2rem;
+  }
+
+  /* «Incompatibilidades» no cabe en el rótulo de siempre: aquí la columna de rótulos es más ancha. */
+  .sheet-table td:not(.cell-title, .sheet-check-col) {
+    padding-left: 9.25rem;
+  }
+
+  .sheet-table td::before {
+    width: 8.75rem;
+  }
+
+  .sheet-table td.sheet-check-col::before {
+    content: none;
+  }
+
+  .sheet-boxes {
+    max-width: none;
+  }
 }
 
 /* En papel, apaisada: con A4 vertical la tabla no cabe y pasaría a fichas, como en el móvil. */
@@ -145,8 +262,38 @@
   }
 
   .section-head-actions,
-  .back-link {
+  .back-link,
+  .sheet-toolbar,
+  .sheet-collect,
+  .notice {
     display: none;
+  }
+
+  .sheet-print-only {
+    display: block;
+  }
+
+  .sheet-check {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .sheet-box {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .sheet-check[aria-pressed='true'] .sheet-box {
+    background: none;
+  }
+
+  .sheet-check[aria-pressed='true'] .sheet-box::after {
+    top: 0.05rem;
+    left: 0.32rem;
+    width: 0.3rem;
+    height: 0.6rem;
+    border-color: var(--paper-ink);
   }
 
   .sheet-alert {

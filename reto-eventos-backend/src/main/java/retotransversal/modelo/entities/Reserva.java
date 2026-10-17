@@ -83,6 +83,14 @@ public class Reserva {
 	@Column(name = "material_descripcion", length = 500)
 	private String materialDescripcion;
 
+	/**
+	 * En las reservas sin participantes registrados, cuántas de sus plazas han pasado ya el control de
+	 * ingreso (en las registradas, cada participante guarda su propia entrada).
+	 */
+	@Builder.Default
+	@Column(name = "entradas_sin_registrar", nullable = false)
+	private int entradasSinRegistrar = 0;
+
 	/** Cuándo se confirmaron la edad mínima y las condiciones de acceso. */
 	@Column(name = "conformidad_en")
 	private LocalDateTime conformidadEn;

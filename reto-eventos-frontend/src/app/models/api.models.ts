@@ -43,6 +43,8 @@ export interface Asistente {
   credencial: Credencial | '';
   procedencia: string | null;
   incompatibilidades: string | null;
+  /** Cuándo pasó el control de ingreso; null si aún no ha entrado. Solo se lee: se marca en la hoja de control. */
+  entradaEn?: string | null;
 }
 
 /** Lo que se envía desde el Registro de asistencia: un participante por plaza, contacto y conformidad. */
@@ -111,6 +113,8 @@ export interface Reserva {
   pagadaEn: string | null;
   /** Lo devuelto: la diferencia si bajó el importe y, al cancelar, lo que quedaba. */
   importeDevuelto: number;
+  /** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
+  entradasSinRegistrar: number;
 }
 
 export interface Perfil {

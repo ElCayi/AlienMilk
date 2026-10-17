@@ -159,4 +159,24 @@ class AdminReservasTest {
         assertThatThrownBy(() -> service.editarReservaAdmin(7, datosDeAna("600 123 456")))
                 .isInstanceOf(ConflictoNegocioException.class);
     }
+
+    @Test
+    void theDoorMarksWhoComesInAndCanUndoAMistake() {
+        Asistente persona = Asistente.builder().orden(1).nombre("Ana").credencial(Credencial.DNI_NIE).reserva(reserva).build();
+        reserva.setAsistentes(new ArrayList<>(List.of(persona)));
+
+        service.marcarEntrada(7, 1, true);
+        assertThat(persona.getEntradaEn()).isNotNull();
+        service.marcarEntrada(7, 1, false);
+        assertThat(persona.getEntradaEn()).isNull();
+
+        assertThatThrownBy(() -> service.contarEntradas(7, 1)).isInstanceOf(ConflictoNegocioException.class);
+    }
+
+    @Test
+    void anUnregisteredBookingCountsItsSeatsAtTheDoor() {
+        service.contarEntradas(7, 1);
+        assertThat(reserva.getEntradasSinRegistrar()).isEqualTo(1);
+        assertThatThrownBy(() -> service.contarEntradas(7, 2)).hasMessage("La reserva tiene 1 plaza");
+    }
 }

@@ -59,6 +59,8 @@ public class ReservaDto {
 	private LocalDateTime pagoCaducaEn;
 	private LocalDateTime pagadaEn;
 	private BigDecimal importeDevuelto;
+	/** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
+	private int entradasSinRegistrar;
 
 	public static ReservaDto fromEntity(Reserva reserva) {
 		return ReservaDto.builder()
@@ -90,6 +92,7 @@ public class ReservaDto {
 				.pagoCaducaEn(reserva.getPagoCaducaEn())
 				.pagadaEn(reserva.getPagadaEn())
 				.importeDevuelto(reserva.getImporteDevuelto())
+				.entradasSinRegistrar(reserva.getEntradasSinRegistrar())
 				.build();
 	}
 

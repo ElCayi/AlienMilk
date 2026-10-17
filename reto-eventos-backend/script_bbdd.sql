@@ -91,6 +91,8 @@ CREATE TABLE reservas (
 	pago_id VARCHAR(100),
 	pagada_en DATETIME,
 	importe_devuelto DECIMAL(9,2) NOT NULL DEFAULT 0,
+	-- Control de ingreso de las reservas sin registrar (migraciones/2026-10-17-control-ingreso.sql).
+	entradas_sin_registrar INT NOT NULL DEFAULT 0,
 	INDEX ix_reservas_pago_sesion (pago_sesion),
 	CONSTRAINT fk_reservas_eventos
 		FOREIGN KEY (id_evento) REFERENCES eventos(id_evento),
@@ -109,6 +111,8 @@ CREATE TABLE asistentes (
 	credencial VARCHAR(30) NOT NULL,
 	procedencia VARCHAR(80),
 	incompatibilidades VARCHAR(300),
+	-- Cuándo pasó el control de ingreso (migraciones/2026-10-17-control-ingreso.sql).
+	entrada_en DATETIME,
 	CONSTRAINT fk_asistentes_reservas
 		FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva) ON DELETE CASCADE
 );

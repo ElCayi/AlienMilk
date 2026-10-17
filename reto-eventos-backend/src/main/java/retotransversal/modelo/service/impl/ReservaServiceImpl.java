@@ -244,6 +244,51 @@ public class ReservaServiceImpl implements ReservaService {
 		return reservaRepository.save(reserva);
 	}
 
+	/**
+	 * Marca la entrada de un participante, o la deshace si se marcó por error. Se puede en cualquier
+	 * momento: el panel es del personal, y así la demo se prueba con sesiones futuras.
+	 */
+	@Override
+	@Transactional
+	public Reserva marcarEntrada(Integer idReserva, Integer orden, boolean presente) {
+		Reserva reserva = paraControl(idReserva);
+		Asistente persona = reserva.getAsistentes().stream()
+				.filter(asistente -> asistente.getOrden().equals(orden))
+				.findFirst()
+				.orElseThrow(() -> new RecursoNoEncontradoException("Ese participante no está en la reserva"));
+		if (presente != (persona.getEntradaEn() != null)) {
+			persona.setEntradaEn(presente ? LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0) : null);
+		}
+		return reservaRepository.save(reserva);
+	}
+
+	@Override
+	@Transactional
+	public Reserva contarEntradas(Integer idReserva, int plazas) {
+		Reserva reserva = paraControl(idReserva);
+		if (!reserva.getAsistentes().isEmpty()) {
+			throw new ConflictoNegocioException("Sus participantes están registrados: se marcan uno a uno");
+		}
+		if (plazas < 0 || plazas > reserva.getCantidad()) {
+			throw new ConflictoNegocioException(reserva.getCantidad() == 1 ? "La reserva tiene 1 plaza"
+					: "La reserva tiene %d plazas".formatted(reserva.getCantidad()));
+		}
+		reserva.setEntradasSinRegistrar(plazas);
+		return reservaRepository.save(reserva);
+	}
+
+	/** Solo entran las reservas vivas de sesiones que no se han cancelado. */
+	private Reserva paraControl(Integer idReserva) {
+		Reserva reserva = findById(idReserva);
+		if (reserva.cancelada()) {
+			throw new ConflictoNegocioException("Esta reserva está cancelada");
+		}
+		if (reserva.getEvento().getEstado() == EstadoEvento.CANCELADO) {
+			throw new ConflictoNegocioException("Su sesión está cancelada");
+		}
+		return reserva;
+	}
+
 	/** Cobrada en taquilla: lo que el admin marca cuando quien reservó por teléfono paga al llegar. */
 	@Override
 	@Transactional

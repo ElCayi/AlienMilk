@@ -25,6 +25,12 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	/** Lo mismo para las reservas demo del panel: se dan por pagadas, sin pasar por la pasarela. */
 	Reserva reservarDemo(Integer idEvento, String username, ReservaCrearDto registro);
 
+	/** En el control de ingreso: un participante registrado entra (o se deshace un error al marcarlo). */
+	Reserva marcarEntrada(Integer idReserva, Integer orden, boolean presente);
+
+	/** En el control de ingreso: cuántas plazas de una reserva sin registrar han entrado ya. */
+	Reserva contarEntradas(Integer idReserva, int plazas);
+
 	/** Una reserva para pagar en taquilla, ya cobrada. */
 	Reserva marcarCobrada(Integer idReserva);
 

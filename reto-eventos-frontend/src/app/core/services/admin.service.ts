@@ -190,6 +190,16 @@ export class AdminService {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cancelar`, { motivo, devolver });
   }
 
+  /** Control de ingreso: el participante `orden` (1, 2…) de una reserva entra, o se deshace el error. */
+  marcarEntrada(idReserva: number, orden: number, presente: boolean): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/asistentes/${orden}/entrada`, { presente });
+  }
+
+  /** Control de ingreso de una reserva sin registrar: cuántas de sus plazas han entrado. */
+  contarEntradas(idReserva: number, plazas: number): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/entradas`, { plazas });
+  }
+
   /** Una reserva para pagar en taquilla, ya cobrada. */
   marcarCobrada(idReserva: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/cobrada`, {});

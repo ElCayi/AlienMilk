@@ -176,7 +176,7 @@ button.text-link {
 
 .search:focus-within {
   border-color: var(--coral);
-  box-shadow: 0 0 0 2px #ffb8b8;
+  box-shadow: 0 0 0 2px var(--coral);
 }
 
 .search svg {
@@ -687,6 +687,12 @@ th[aria-sort] .sort-button svg {
   margin-top: 0.8rem;
 }
 
+.detail-saved {
+  align-self: center;
+  color: var(--paper-muted);
+  font-size: 0.9rem;
+}
+
 /* Estado: una pastilla con su punto. Tinta para lo que está en marcha, coral para lo que pide
    atención y gris para lo cerrado. */
 .badge {
@@ -852,7 +858,7 @@ th[aria-sort] .sort-button svg {
 .field :is(input, select, textarea):focus {
   border-color: var(--coral);
   outline: none;
-  box-shadow: 0 0 0 2px #ffb8b8;
+  box-shadow: 0 0 0 2px var(--coral);
 }
 
 .field :is(input, select, textarea):disabled {

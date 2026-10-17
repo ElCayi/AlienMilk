@@ -1,10 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ReservationService } from '../../../core/services/reservation.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
 import { cancellable } from '../../../features/sessions/session.presenter';
-import { Reserva } from '../../../models/api.models';
+import { Reserva, ReservaEditar } from '../../../models/api.models';
+import { ReservationEditorComponent } from '../../../shared/panel/reservation-editor.component';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import {
   errorMessage,
@@ -23,7 +24,7 @@ import { AccountStore } from '../account-store';
 @Component({
   selector: 'app-account-reservations-panel',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ReservationEditorComponent],
   templateUrl: './account-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -33,6 +34,9 @@ export class AccountReservationsPanelComponent {
   readonly store = inject(AccountStore);
 
   readonly notice = signal<{ text: string; error: boolean } | null>(null);
+
+  readonly editor = viewChild.required(ReservationEditorComponent);
+  readonly saveData = (idReserva: number, datos: ReservaEditar) => this.reservationService.editar(idReserva, datos);
   readonly busy = signal<number | null>(null);
 
   readonly upcoming = computed(() =>
@@ -58,6 +62,13 @@ export class AccountReservationsPanelComponent {
   }
   readonly money = formatMoney;
   readonly plural = plural;
+
+  afterEdit(updated: Reserva): void {
+    this.store.reservations.update(
+      (list) => list?.map((item) => (item.idReserva === updated.idReserva ? updated : item)) ?? null,
+    );
+    this.notice.set({ text: `Datos de la reserva de «${updated.nombreEvento}» guardados.`, error: false });
+  }
 
   async cancel(reserva: Reserva): Promise<void> {
     const seats = reserva.cantidad === 1 ? 'tu plaza' : `tus ${reserva.cantidad} plazas`;

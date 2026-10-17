@@ -58,6 +58,18 @@ export interface RegistroAsistencia {
   aceptaComunicaciones: boolean;
 }
 
+/** Lo que se corrige de una reserva; lo que no se manda se queda como está (ver ReservaEditarDto). */
+export interface ReservaEditar {
+  telefono: string;
+  observaciones?: string;
+  asistentes: Asistente[];
+  idEvento?: number;
+  cantidad?: number;
+  adaptaciones?: string;
+  materialExterno?: boolean;
+  materialDescripcion?: string;
+}
+
 export interface Reserva {
   idReserva: number;
   idEvento: number;

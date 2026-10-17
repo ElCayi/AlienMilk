@@ -2,8 +2,8 @@
   <div>
     <h2>Mis reservas</h2>
     <p>
-      Las sesiones a las que te has apuntado. Puedes cancelar tu reserva hasta el día anterior a la
-      sesión; si la sesión se cancela o ya se ha celebrado, la reserva se queda en el historial.
+      Las sesiones a las que te has apuntado. Puedes modificar los datos de tu reserva o cancelarla hasta el
+      día anterior a la sesión; si la sesión se cancela o ya se ha celebrado, la reserva se queda en el historial.
     </p>
   </div>
   <div class="section-head-actions">
@@ -80,6 +80,9 @@
               <td class="row-actions-cell">
                 <div class="row-actions">
                   @if (canCancel(reserva)) {
+                    <button type="button" class="btn btn-small" (click)="editor().open(reserva)">
+                      Modificar<span class="visually-hidden"> los datos de la reserva de {{ reserva.nombreEvento }}</span>
+                    </button>
                     <button
                       type="button"
                       class="btn btn-small btn-danger"
@@ -89,7 +92,7 @@
                       Cancelar<span class="visually-hidden"> la reserva de {{ reserva.nombreEvento }}</span>
                     </button>
                   } @else {
-                    <span class="cell-sub">Ya no se puede cancelar</span>
+                    <span class="cell-sub">Ya no se puede modificar ni cancelar</span>
                   }
                 </div>
               </td>
@@ -143,3 +146,5 @@
     </div>
   }
 }
+
+<app-reservation-editor [save]="saveData" (saved)="afterEdit($event)" />

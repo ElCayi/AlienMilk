@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import retotransversal.modelo.dto.ReservaCrearDto;
 import retotransversal.modelo.dto.ReservaDto;
+import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.service.ReservaService;
 
 @RestController
@@ -34,6 +36,13 @@ public class ReservaRestController {
 			@RequestBody ReservaCrearDto dto) {
 		return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
 				.body(ReservaDto.fromEntity(reservaService.reservarConRegistro(idEvento, authentication.getName(), dto)));
+	}
+
+	@PutMapping("/{idReserva}/datos")
+	public ResponseEntity<ReservaDto> editar(@PathVariable Integer idReserva, Authentication authentication,
+			@RequestBody ReservaEditarDto datos) {
+		return ResponseEntity.ok(
+				ReservaDto.fromEntity(reservaService.editarReservaPropia(idReserva, authentication.getName(), datos)));
 	}
 
 	@DeleteMapping("/{idReserva}")

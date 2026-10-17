@@ -9,6 +9,7 @@ import {
   Perfil,
   PerfilPayload,
   Reserva,
+  ReservaEditar,
   ResumenAdmin,
   TipoEvento,
   TipoEventoPayload,
@@ -178,6 +179,10 @@ export class AdminService {
       `${this.adminUrl}/reservas/usuario/${encodeURIComponent(username)}/evento/${idEvento}`,
       payload,
     );
+  }
+
+  editarReserva(idReserva: number, datos: ReservaEditar): Observable<Reserva> {
+    return this.http.put<Reserva>(`${this.adminUrl}/reservas/${idReserva}/datos`, datos);
   }
 
   cancelarReservaAdmin(idReserva: number): Observable<void> {

@@ -113,7 +113,7 @@ export class AdminControlSheetComponent implements OnInit {
   }
 
   number(reserva: Reserva): string {
-    return String(reserva.idReserva).padStart(3, '0');
+    return String(reserva.idReserva).padStart(4, '0');
   }
 
   /** Una casilla por plaza, para las reservas sin registrar. */

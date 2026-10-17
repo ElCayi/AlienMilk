@@ -18,9 +18,10 @@ import { forkJoin } from 'rxjs';
 import { AdminService } from '../../../core/services/admin.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
 import { sessionSchedule } from '../../../features/sessions/session.presenter';
-import { EstadoEvento, EventoAdmin, Reserva, Usuario } from '../../../models/api.models';
+import { EstadoEvento, EventoAdmin, Reserva, ReservaEditar, Usuario } from '../../../models/api.models';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
+import { ReservationEditorComponent } from '../../../shared/panel/reservation-editor.component';
 import {
   errorMessage,
   formatDay,
@@ -70,7 +71,7 @@ const VIEWS: { value: View; label: string }[] = [
   { value: 'sesiones', label: 'Sesión' },
 ];
 
-/** Un cliente, con sus reservas (las que pasan los filtros) y lo que suman. */
+/** Un cliente, con todas sus reservas y lo que suman. */
 interface ClientGroup {
   username: string;
   nombre: string;
@@ -78,6 +79,7 @@ interface ClientGroup {
   telefono: string | null;
   programa: boolean | null;
   reservas: Reserva[];
+  coincidencias: number;
   plazas: number;
   importe: number;
   /** Su próxima reserva confirmada, o null si no tiene ninguna por delante. */
@@ -85,13 +87,14 @@ interface ClientGroup {
   revision: number;
 }
 
-/** Una sesión, con sus reservas (las que pasan los filtros) y su registro de asistencia. */
+/** Una sesión, con todas sus reservas y su registro de asistencia. */
 interface SessionGroup {
   idEvento: number;
   nombre: string;
   primera: Reserva;
   aforo: number | null;
   reservas: Reserva[];
+  coincidencias: number;
   plazas: number;
   registrados: number;
   revision: number;
@@ -122,15 +125,16 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
 
 /**
  * Reservas de todas las cuentas, en una tabla que se ordena y se filtra por estado; cada fila se
- * despliega con su ficha. Buscar por cliente o por sesión, dar de alta una a mano (por teléfono, por
- * ejemplo) y cancelarla. Las reglas de aforo y de diez plazas son las del servidor.
+ * despliega con su ficha. Buscar por cliente, por teléfono o por participante, dar de alta una a mano
+ * (por teléfono, por ejemplo), editarla entera en un diálogo y cancelarla. Las reglas de aforo y de
+ * diez plazas son las del servidor.
  * Se puede llegar filtrada desde Sesiones (?sesion=) o desde Usuarios (?cuenta=). Las mismas reservas
  * se miran por reserva, por cliente o por sesión (?ver=): cada vista responde a una pregunta distinta.
  */
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective, DemoFootComponent],
+  imports: [FormsModule, RouterLink, PanelDialogComponent, ReservationEditorComponent, KeepHeightDirective, DemoFootComponent],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -157,13 +161,12 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly sessionFilter = signal(0);
 
   readonly filter = signal<Filter>('TODAS');
-  /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
-  readonly expanded = signal<number | null>(null);
 
   /** Las de la sesión elegida (o todas) que coinciden con la búsqueda, antes de filtrar por estado. */
   private readonly searched = computed(() => {
     const idEvento = this.sessionFilter();
     const query = this.query();
+    const users = new Map(this.users().map((user) => [user.username, user]));
     return this.reservations().filter(
       (reserva) =>
         (!idEvento || reserva.idEvento === idEvento) &&
@@ -174,6 +177,10 @@ export class AdminReservationsPanelComponent implements OnInit {
           reserva.username,
           reserva.nombreEvento,
           reserva.observaciones,
+          reserva.telefono,
+          reserva.telefono?.replace(/\D/g, ''),
+          users.get(reserva.username)?.email,
+          ...reserva.asistentes.map((persona) => persona.nombre),
         ),
     );
   });
@@ -255,7 +262,8 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly clients = computed<ClientGroup[]>(() => {
     const users = new Map(this.users().map((user) => [user.username, user]));
     const groups = new Map<string, Reserva[]>();
-    for (const reserva of this.visible()) {
+    const matching = new Set(this.visible().map((reserva) => reserva.idReserva));
+    for (const reserva of this.reservations()) {
       groups.set(reserva.username, [...(groups.get(reserva.username) ?? []), reserva]);
     }
     const { key, dir } = this.clientSort.state();
@@ -271,19 +279,22 @@ export class AdminReservationsPanelComponent implements OnInit {
           telefono: telefono ?? null,
           programa: user ? !!user.aceptaComunicaciones : null,
           reservas: ordered,
+          coincidencias: reservas.filter((r) => matching.has(r.idReserva)).length,
           plazas: reservas.reduce((sum, r) => sum + r.cantidad, 0),
           importe: reservas.reduce((sum, r) => sum + Number(r.precioVenta), 0),
           proxima: ordered.find((r) => r.estadoEvento === 'ACTIVO') ?? null,
           revision: reservas.filter((r) => r.requiereRevision).length,
         };
       })
+      .filter((group) => group.coincidencias > 0)
       .sort((a, b) => dir * CLIENT_COMPARE[key](a, b) || byText(a.nombre, b.nombre));
   });
 
   readonly sessionGroups = computed<SessionGroup[]>(() => {
     const sessions = new Map(this.sessions().map((session) => [session.idEvento, session]));
     const groups = new Map<number, Reserva[]>();
-    for (const reserva of this.visible()) {
+    const matching = new Set(this.visible().map((reserva) => reserva.idReserva));
+    for (const reserva of this.reservations()) {
       groups.set(reserva.idEvento, [...(groups.get(reserva.idEvento) ?? []), reserva]);
     }
     const { key, dir } = this.sessionSort.state();
@@ -296,11 +307,13 @@ export class AdminReservationsPanelComponent implements OnInit {
           primera: ordered[0],
           aforo: sessions.get(idEvento)?.aforoMaximo ?? null,
           reservas: ordered,
+          coincidencias: reservas.filter((r) => matching.has(r.idReserva)).length,
           plazas: reservas.reduce((sum, r) => sum + r.cantidad, 0),
           registrados: reservas.reduce((sum, r) => sum + r.asistentes.length, 0),
           revision: reservas.filter((r) => r.requiereRevision).length,
         };
       })
+      .filter((group) => group.coincidencias > 0)
       .sort((a, b) => dir * SESSION_COMPARE[key](a, b) || SESSION_COMPARE.fecha(a, b));
   });
 
@@ -336,13 +349,40 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.reveal(`client-detail-${username}`);
   }
 
+  /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
+  readonly expanded = signal<number | null>(null);
+  /** La reserva recién editada, para decirlo en su ficha y no arriba del todo, fuera de la vista. */
+  readonly savedId = signal<number | null>(null);
+
   /** De un cliente o una sesión a una reserva concreta: la vista por reserva, con su ficha abierta. */
   openReservation(reserva: Reserva): void {
     this.clearFilters();
     this.expanded.set(reserva.idReserva);
+    this.savedId.set(null);
     this.view.set('reservas');
     this.go({ ver: null, sesion: null });
     this.reveal(`reservation-detail-${reserva.idReserva}`);
+  }
+
+  readonly editor = viewChild.required(ReservationEditorComponent);
+  readonly saveData = (idReserva: number, datos: ReservaEditar) => this.admin.editarReserva(idReserva, datos);
+
+  place(reserva: Reserva): string {
+    return this.sessions().find((session) => session.idEvento === reserva.idEvento)?.direccion || 'Sin indicar';
+  }
+
+  /**
+   * Tras editar: la reserva al día en la lista y en su ficha, que sigue desplegada. Si cambió de sesión o de
+   * plazas, la ocupación de las sesiones y las cifras de la cabecera también.
+   */
+  afterEdit(updated: Reserva): void {
+    const before = this.reservations().find((reserva) => reserva.idReserva === updated.idReserva);
+    this.reservations.update((list) => list.map((reserva) => (reserva.idReserva === updated.idReserva ? updated : reserva)));
+    this.savedId.set(updated.idReserva);
+    if (before && (before.idEvento !== updated.idEvento || before.cantidad !== updated.cantidad)) {
+      this.admin.getEventos().subscribe((sessions) => this.sessions.set(sessions));
+      this.summary.refresh();
+    }
   }
 
   /** De una sesión a sus reservas, una por una: la vista por reserva filtrada por esa sesión. */
@@ -393,7 +433,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly openSessions = computed(() => this.sessions().filter((session) => session.estado === 'ACTIVO'));
 
   // Alta manual, en el diálogo.
-  readonly dialog = viewChild.required(PanelDialogComponent);
+  readonly dialog = viewChild.required<PanelDialogComponent>('createDialog');
   readonly saving = signal(false);
   readonly formError = signal<string | null>(null);
   form = emptyForm();
@@ -406,9 +446,9 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly schedule = (reserva: Reserva) =>
     sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
 
-  /** El número de la reserva, con tres cifras como mínimo (007, 012...). */
+  /** El número de la reserva, con cuatro cifras como mínimo (0007, 0012...). */
   number(reserva: Reserva): string {
-    return String(reserva.idReserva).padStart(3, '0');
+    return String(reserva.idReserva).padStart(4, '0');
   }
 
   seatPrice(reserva: Reserva): number {
@@ -419,6 +459,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   toggle(reserva: Reserva): void {
     const id = this.expanded() === reserva.idReserva ? null : reserva.idReserva;
     this.expanded.set(id);
+    this.savedId.set(null);
     if (id !== null) {
       afterNextRender(
         () => {
@@ -560,7 +601,7 @@ export class AdminReservationsPanelComponent implements OnInit {
           this.saving.set(false);
           this.dialog().close();
           this.notice.set({
-            text: `Reserva de ${plural(reserva.cantidad, 'plaza', 'plazas')} en «${reserva.nombreEvento}» para ${reserva.nombreCliente}.`,
+            text: `Reserva ${this.number(reserva)} de ${plural(reserva.cantidad, 'plaza', 'plazas')} en «${reserva.nombreEvento}» para ${reserva.nombreCliente}.`,
             error: false,
           });
           this.load();

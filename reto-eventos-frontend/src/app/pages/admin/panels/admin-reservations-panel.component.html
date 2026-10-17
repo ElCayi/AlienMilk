@@ -32,7 +32,7 @@
     <span class="visually-hidden">Buscar reservas</span>
     <input
       type="search"
-      placeholder="Nº, cliente, cuenta o sesión"
+      placeholder="Localizador, nombre, correo, teléfono o sesión"
       [ngModel]="query()"
       (ngModelChange)="query.set($event)"
     />
@@ -102,7 +102,7 @@
     @case ('clientes') {
       <div class="table-wrap" [appKeepHeight]="'c' + filter() + query() + sessionFilter()">
         <table class="data-table is-expandable">
-          <caption>Clientes con reservas. Pulsa uno para ver su contacto y todas sus reservas.</caption>
+          <caption>Clientes con reservas coincidentes. Las cifras y la ficha incluyen todas sus reservas.</caption>
           <thead>
             <tr>
               <th scope="col" [attr.aria-sort]="clientSort.aria('cliente')">
@@ -153,7 +153,9 @@
                   </button>
                   <span class="cell-sub">{{ client.username }}</span>
                 </td>
-                <td data-label="Reservas" class="num center">{{ client.reservas.length }}</td>
+                <td data-label="Reservas" class="num center">{{ client.reservas.length }}
+                  @if (client.coincidencias < client.reservas.length) { <span class="cell-sub">{{ client.coincidencias }} {{ client.coincidencias === 1 ? 'coincide' : 'coinciden' }}</span> }
+                </td>
                 <td data-label="Plazas" class="num center">{{ client.plazas }}</td>
                 <td data-label="Importe" class="num">{{ money(client.importe) }}</td>
                 <td data-label="Próxima sesión">
@@ -242,7 +244,7 @@
     @case ('sesiones') {
       <div class="table-wrap" [appKeepHeight]="'s' + filter() + query() + sessionFilter()">
         <table class="data-table is-expandable">
-          <caption>Sesiones con reservas. Pulsa una para ver sus reservas y su hoja de control.</caption>
+          <caption>Sesiones con reservas coincidentes. La ocupación y la ficha incluyen todas sus reservas.</caption>
           <thead>
             <tr>
               <th scope="col" [attr.aria-sort]="sessionSort.aria('sesion')">
@@ -271,7 +273,7 @@
               </th>
               <th scope="col" class="center" [attr.aria-sort]="sessionSort.aria('registro')">
                 <button type="button" class="sort-button" (click)="sessionSort.by('registro')">
-                  Registro
+                  Datos de participantes
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sessionSort.icon('registro')" /></svg>
                 </button>
               </th>
@@ -297,8 +299,10 @@
                 </td>
                 <td data-label="Fecha" class="nowrap center">{{ day(group.primera.fechaInicioEvento) }}</td>
                 <td data-label="Plazas" class="num center">{{ group.plazas }}{{ group.aforo ? ' / ' + group.aforo : '' }}</td>
-                <td data-label="Reservas" class="num center">{{ group.reservas.length }}</td>
-                <td data-label="Registro" class="num center">
+                <td data-label="Reservas" class="num center">{{ group.reservas.length }}
+                  @if (group.coincidencias < group.reservas.length) { <span class="cell-sub">{{ group.coincidencias }} {{ group.coincidencias === 1 ? 'coincide' : 'coinciden' }}</span> }
+                </td>
+                <td data-label="Datos de participantes" class="num center">
                   @if (group.registrados >= group.plazas) {
                     Completo
                   } @else {
@@ -320,7 +324,7 @@
                         </p>
                         <ul class="occupancy-notes">
                           <li>{{ when(group.primera) }}</li>
-                          <li>{{ plural(group.registrados, 'participante registrado', 'participantes registrados') }}</li>
+                          <li>{{ plural(group.registrados, 'participante con datos', 'participantes con datos') }}</li>
                           @if (group.plazas > group.registrados) {
                             <li class="is-short">{{ group.plazas - group.registrados }} sin registrar</li>
                           }
@@ -376,7 +380,7 @@
             <tr>
               <th scope="col" class="cell-num center" [attr.aria-sort]="sort.aria('numero')">
                 <button type="button" class="sort-button" (click)="sort.by('numero')">
-                  Nº
+                  Localizador
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="sort.icon('numero')" /></svg>
                 </button>
               </th>
@@ -495,6 +499,10 @@
                           <dd><span class="nowrap">{{ day(reserva.fechaInicioEvento) }} ·</span>{{ " " }}<span class="nowrap">{{ schedule(reserva) || 'sin hora' }}</span></dd>
                         </div>
                         <div>
+                          <dt>Lugar</dt>
+                          <dd>{{ place(reserva) }}</dd>
+                        </div>
+                        <div>
                           <dt>Teléfono</dt>
                           <dd>{{ reserva.telefono || '—' }}</dd>
                         </div>
@@ -528,9 +536,7 @@
                             }
                           </ol>
                         } @else {
-                          <p class="detail-people-empty">
-                            Sin registrar: la reserva se tomó antes del registro de asistencia o desde el panel.
-                          </p>
+                          <p class="detail-people-empty">Faltan los datos de los participantes.</p>
                         }
                       </section>
 
@@ -548,6 +554,7 @@
                     </div>
 
                     <div class="row-actions detail-actions">
+                      <button type="button" class="btn btn-small" (click)="editor().open(reserva)">Editar datos</button>
                       <button
                         type="button"
                         class="btn btn-small btn-danger"
@@ -556,6 +563,9 @@
                       >
                         Cancelar reserva
                       </button>
+                      @if (savedId() === reserva.idReserva) {
+                        <span class="detail-saved" role="status">Cambios guardados.</span>
+                      }
                     </div>
                   </td>
                 </tr>
@@ -590,7 +600,7 @@
   <app-demo-foot kind="reservas" (added)="afterDemo()" />
 }
 
-<app-panel-dialog heading="Nueva reserva">
+<app-panel-dialog #createDialog heading="Nueva reserva">
   <form novalidate (ngSubmit)="save()">
     <div class="form-grid">
       <div class="field is-wide">
@@ -653,3 +663,5 @@
     </div>
   </form>
 </app-panel-dialog>
+
+<app-reservation-editor [save]="saveData" [admin]="true" [sessions]="sessions()" (saved)="afterEdit($event)" />

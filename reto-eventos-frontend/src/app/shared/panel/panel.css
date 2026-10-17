@@ -708,6 +708,190 @@ th[aria-sort] .sort-button svg {
   margin-top: 0.8rem;
 }
 
+/* La ficha de una entidad (un cliente, una sesión…), siempre igual: arriba quién o qué es y lo que se
+   puede hacer; debajo, a la izquierda, sus datos y lo pendiente; a la derecha, lo relacionado, corto, y un
+   enlace a todo. Sin colores nuevos: el orden lo dan el tamaño, el peso y el sitio. */
+.entity-card {
+  border: 1px solid var(--paper-line);
+  border-radius: 0.6rem;
+  background: var(--field);
+}
+
+.entity-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--paper-line);
+}
+
+.entity-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  color: var(--field);
+  background: var(--paper-ink);
+  font:
+    800 0.85rem / 1 'Nunito',
+    sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.entity-name h3 {
+  margin: 0;
+  font:
+    400 1.45rem / 1.1 var(--condensed);
+}
+
+.entity-name p {
+  margin: 0.2rem 0 0;
+  color: var(--paper-muted);
+  font-size: 0.88rem;
+}
+
+.entity-actions {
+  justify-content: flex-end;
+}
+
+.entity-body {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.6fr);
+  gap: 1.25rem 2rem;
+  padding: 1.1rem 1.25rem 1.25rem;
+}
+
+.entity-side {
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+}
+
+.entity-line {
+  margin: 0 0 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+/* Lo pendiente: el filete coral, como «Requiere revisión», porque pide hacer algo. */
+.entity-pending {
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--coral);
+}
+
+.entity-none {
+  color: var(--paper-muted);
+}
+
+.entity-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entity-list li + li {
+  border-top: 1px solid var(--paper-line);
+}
+
+/* Cada reserva relacionada, una fila entera que se pulsa: cuándo, qué, su estado y la flecha. */
+.entity-item {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) auto 1rem;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 0.6rem 0.4rem;
+  border: 0;
+  border-radius: 0.4rem;
+  color: var(--paper-ink);
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.entity-item:hover,
+.entity-item:focus-visible {
+  background: var(--paper-soft);
+}
+
+.entity-item:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 1px;
+}
+
+.entity-when {
+  display: grid;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.entity-when span {
+  color: var(--paper-muted);
+  font-weight: 400;
+}
+
+.entity-what {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.entity-what span {
+  color: var(--paper-muted);
+  font-size: 0.85rem;
+}
+
+.entity-chevron {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: var(--paper-faint);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.entity-more {
+  margin-top: 0.75rem;
+  font-weight: 700;
+}
+
+@media screen and (max-width: 760px) {
+  .entity-head {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 0.9rem;
+  }
+
+  .entity-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
+  .entity-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.9rem;
+  }
+
+  .entity-item {
+    grid-template-columns: 5.5rem minmax(0, 1fr) 1rem;
+  }
+
+  .entity-item .badge-stack {
+    grid-column: 2;
+    justify-items: start;
+  }
+
+  .entity-item .entity-chevron {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
 /* El registro de devoluciones, dentro del dato «Pago». */
 .refund-list {
   display: grid;

@@ -157,61 +157,91 @@
               @if (open) {
                 <tr class="row-detail" [id]="'client-detail-' + client.key">
                   <td colspan="6">
-                    <div class="session-detail">
-                      <section class="occupancy" aria-label="Lo que suma">
-                        <p class="occupancy-figure">
-                          <strong>{{ client.reservas.length }}</strong>
-                          <span>{{ client.reservas.length === 1 ? 'reserva' : 'reservas' }}</span>
-                        </p>
-                        <ul class="occupancy-notes">
-                          <li>{{ plural(client.plazas, 'plaza', 'plazas') }}</li>
-                          <li>{{ money(client.importe) }} en total</li>
-                        </ul>
-                      </section>
-                      <dl class="detail-facts">
-                        <div>
-                          <dt>Cuenta</dt>
-                          <dd>{{ client.username ?? 'Sin cuenta: reservó por teléfono' }}</dd>
+                    <!-- La ficha de un cliente: quién es y qué se puede hacer, arriba; lo que la fila no dice,
+                         debajo (su contacto, lo pendiente y sus próximas reservas); el resto, en un enlace. -->
+                    <article class="entity-card" [attr.aria-label]="'Ficha de ' + client.nombre">
+                      <header class="entity-head">
+                        <span class="entity-avatar" aria-hidden="true">{{ client.iniciales }}</span>
+                        <div class="entity-name">
+                          <h3>{{ client.nombre }}</h3>
+                          <p>
+                            {{ client.username ?? 'Sin cuenta: reservó por teléfono' }}
+                            @if (client.programa !== null) {
+                              · {{ client.programa ? 'recibe el programa' : 'no recibe el programa' }}
+                            }
+                          </p>
                         </div>
-                        <div>
-                          <dt>Correo</dt>
-                          <dd>{{ client.email || '—' }}</dd>
-                        </div>
-                        <div>
-                          <dt>Teléfono</dt>
-                          <dd>{{ client.telefono || 'Sin registrar' }}</dd>
-                        </div>
-                        <div>
-                          <dt>Programa</dt>
-                          <dd>{{ client.programa === null ? '—' : client.programa ? 'Lo recibe' : 'No lo recibe' }}</dd>
-                        </div>
-                      </dl>
-                      <section class="detail-people" aria-label="Sus reservas">
-                        <p class="detail-people-title">Sus reservas</p>
-                        <ul class="group-list">
-                          @for (reserva of client.reservas; track reserva.idReserva) {
-                            @let estado = state(reserva);
-                            <li>
-                              <button type="button" class="text-link group-link" (click)="openReservation(reserva)">
-                                {{ number(reserva) }} · {{ reserva.nombreEvento }}
-                              </button>
-                              <span class="group-meta">{{ when(reserva) }} · {{ plural(reserva.cantidad, 'plaza', 'plazas') }}</span>
-                              <span class="badge-stack group-badges">
-                                <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
-                                @if (reserva.requiereRevision) {
-                                  <span class="badge" data-tone="alert">Requiere revisión</span>
-                                }
-                              </span>
-                            </li>
+                        <div class="row-actions entity-actions">
+                          <button type="button" class="btn btn-small btn-primary" (click)="openNewFor(client)">Nueva reserva</button>
+                          @if (client.username) {
+                            <a class="btn btn-small" routerLink="/admin/usuarios" [queryParams]="{ cuenta: client.username }">Ver su cuenta</a>
                           }
-                        </ul>
-                      </section>
-                    </div>
-                    @if (client.username) {
-                      <div class="row-actions detail-actions">
-                        <a class="btn btn-small" routerLink="/admin/usuarios" [queryParams]="{ cuenta: client.username }">Ver su cuenta</a>
+                        </div>
+                      </header>
+
+                      <div class="entity-body">
+                        <div class="entity-side">
+                          <section aria-labelledby="client-contact-{{ client.key }}">
+                            <p class="detail-people-title" id="client-contact-{{ client.key }}">Contacto</p>
+                            <p class="entity-line">{{ client.email || 'Correo no registrado' }}</p>
+                            <p class="entity-line">{{ client.telefono || 'Teléfono no registrado' }}</p>
+                          </section>
+                          <!-- Solo si hay algo que hacer con él: lo que pide atención, a la vista. -->
+                          @if (client.revision || client.porCobrar || client.pagosPendientes || client.porDevolver) {
+                            <section class="entity-pending" aria-labelledby="client-pending-{{ client.key }}">
+                              <p class="detail-people-title" id="client-pending-{{ client.key }}">Pendiente</p>
+                              @if (client.revision) {
+                                <p class="entity-line">{{ plural(client.revision, 'reserva requiere', 'reservas requieren') }} revisión</p>
+                              }
+                              @if (client.porCobrar) {
+                                <p class="entity-line">{{ money(client.porCobrar) }} por cobrar en taquilla</p>
+                              }
+                              @if (client.pagosPendientes) {
+                                <p class="entity-line">{{ plural(client.pagosPendientes, 'pago', 'pagos') }} con tarjeta sin completar</p>
+                              }
+                              @if (client.porDevolver) {
+                                <p class="entity-line">{{ money(client.porDevolver) }} por devolver en taquilla</p>
+                              }
+                            </section>
+                          }
+                        </div>
+
+                        <section class="entity-related" aria-labelledby="client-next-{{ client.key }}">
+                          <p class="detail-people-title" id="client-next-{{ client.key }}">
+                            Próximas{{ client.totalProximas ? ' · ' + client.totalProximas : '' }}
+                          </p>
+                          @if (client.proximas.length) {
+                            <ul class="entity-list">
+                              @for (reserva of client.proximas; track reserva.idReserva) {
+                                @let estado = state(reserva);
+                                <li>
+                                  <button type="button" class="entity-item" (click)="openReservation(reserva)">
+                                    <span class="entity-when">{{ shortDay(reserva.fechaInicioEvento) }}<span>{{ startTime(reserva) }}{{ otherYear(reserva.fechaInicioEvento) }}</span></span>
+                                    <span class="entity-what">
+                                      <strong>{{ reserva.nombreEvento }}</strong>
+                                      <span>{{ number(reserva) }} · {{ plural(reserva.cantidad, 'plaza', 'plazas') }}</span>
+                                    </span>
+                                    <span class="badge-stack">
+                                      <span class="badge" [attr.data-tone]="estado.tone">{{ estado.label }}</span>
+                                      @if (payment(reserva); as pago) {
+                                        <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
+                                      }
+                                    </span>
+                                    <svg class="entity-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
+                                  </button>
+                                </li>
+                              }
+                            </ul>
+                          } @else {
+                            <p class="entity-line entity-none">Nada por delante.</p>
+                          }
+                          <button type="button" class="text-link entity-more" (click)="showClientReservations(client)">
+                            {{ client.reservas.length === 1 ? 'Ver su reserva' : 'Ver sus ' + client.reservas.length + ' reservas' }}
+                            <span aria-hidden="true">→</span>
+                          </button>
+                        </section>
                       </div>
-                    }
+                    </article>
                   </td>
                 </tr>
               }

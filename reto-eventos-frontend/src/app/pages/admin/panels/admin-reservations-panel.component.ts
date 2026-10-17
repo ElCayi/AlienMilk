@@ -42,6 +42,7 @@ import { TableSort } from '../../../shared/panel/table-sort';
 import {
   dateFields,
   FilterBarComponent,
+  isoDay,
   FilterField,
   FilterPreset,
   FilterValues,
@@ -171,7 +172,23 @@ interface ClientGroup {
   /** Su próxima reserva confirmada, o null si no tiene ninguna por delante. */
   proxima: Reserva | null;
   revision: number;
+  /** Para su ficha: las iniciales, sus próximas (hasta tres) y lo que hay que hacer con él. */
+  iniciales: string;
+  proximas: Reserva[];
+  totalProximas: number;
+  porCobrar: number;
+  pagosPendientes: number;
+  porDevolver: number;
 }
+
+/** «Amara Okafor» → «AO»; «Marta» → «M». */
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join('');
 
 /** Una sesión, con todas sus reservas y su registro de asistencia. */
 interface SessionGroup {
@@ -471,6 +488,16 @@ export class AdminReservationsPanelComponent implements OnInit {
           importe: vivas.reduce((sum, r) => sum + Number(r.precioVenta), 0),
           proxima: ordered.find((r) => r.estadoEvento === 'ACTIVO' && holds(r)) ?? null,
           revision: vivas.filter((r) => r.requiereRevision).length,
+          iniciales: initials(reservas[0].nombreCliente),
+          ...this.upcoming(ordered),
+          porCobrar: vivas
+            .filter((r) => r.estadoPago === 'EN_TAQUILLA' && r.estadoEvento === 'ACTIVO')
+            .reduce((sum, r) => sum + Number(r.precioVenta), 0),
+          pagosPendientes: vivas.filter((r) => r.estadoPago === 'PENDIENTE').length,
+          porDevolver: reservas
+            .flatMap((r) => r.devoluciones ?? [])
+            .filter((devolucion) => devolucion.estado === 'PENDIENTE')
+            .reduce((sum, devolucion) => sum + Number(devolucion.importe), 0),
         };
       })
       .filter((group) => group.coincidencias > 0)
@@ -504,6 +531,40 @@ export class AdminReservationsPanelComponent implements OnInit {
       .filter((group) => group.coincidencias > 0)
       .sort((a, b) => dir * SESSION_COMPARE[key](a, b) || SESSION_COMPARE.fecha(a, b));
   });
+
+  /** Lo que tiene por delante: vivas, de sesiones activas, de hoy en adelante; las tres primeras para la ficha. */
+  private upcoming(ordered: Reserva[]): { proximas: Reserva[]; totalProximas: number } {
+    const today = isoDay(new Date());
+    const list = ordered.filter((r) => holds(r) && r.estadoEvento === 'ACTIVO' && r.fechaInicioEvento >= today);
+    return { proximas: list.slice(0, 3), totalProximas: list.length };
+  }
+
+  /** «Nueva reserva» desde la ficha de un cliente: el diálogo, con él ya puesto (con cuenta o sin ella). */
+  openNewFor(client: ClientGroup): void {
+    this.form = emptyForm(this.sessionFilter() || null);
+    if (client.username) {
+      this.form.username = client.username;
+    } else {
+      this.form.sinCuenta = true;
+      this.form.nombre = client.nombre;
+      this.form.telefono = client.telefono ?? '';
+      this.form.correo = client.email ?? '';
+    }
+    this.formError.set(null);
+    this.formErrors.set({});
+    this.dialog().open();
+  }
+
+  /** Todas sus reservas, una por una: la vista por reserva, buscándolo, con canceladas y archivadas. */
+  showClientReservations(client: ClientGroup): void {
+    this.expanded.set(null);
+    this.view.set('reservas');
+    this.applyFilters(
+      { ...FILTER_DEFAULTS, q: client.username ?? client.telefono ?? client.nombre, estado: 'todas' },
+      { ver: null },
+    );
+    afterNextRender(() => this.showTable(), { injector: this.injector });
+  }
 
   /** Cambiar de vista no es cambiar de página: va en la dirección (?ver=) y la vista no se mueve. */
   setView(view: View): void {
@@ -644,6 +705,21 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly when = reservationWhen;
   readonly dayTime = formatDayTime;
   readonly credential = credentialLabel;
+  /** «05 dic»: en las listas cortas de las fichas, el año solo si no es este (ver otherYear). */
+  shortDay(isoDate: string): string {
+    return formatDay(isoDate).replace(/ \d{4}$/, '');
+  }
+
+  otherYear(isoDate: string): string {
+    const year = isoDate.slice(0, 4);
+    return year === String(new Date().getFullYear()) ? '' : ` · ${year}`;
+  }
+
+  /** La hora de empezar (19:15), para las listas cortas de las fichas. */
+  startTime(reserva: Reserva): string {
+    return reserva.horaInicioEvento?.slice(0, 5) ?? '';
+  }
+
   readonly schedule = (reserva: Reserva) =>
     sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
 

@@ -708,9 +708,6 @@ export class AdminReservationsPanelComponent implements OnInit {
    * vista lleva su fila hasta donde se vea, sin saltos. El id ya no hace falta: la fila es la marcada.
    */
   private reveal(): void {
-    if (!this.drawerRef().isOpen) {
-      this.drawerRef().open();
-    }
     afterNextRender(
       () => document.querySelector<HTMLElement>('tr.row-summary.is-open')?.scrollIntoView({ block: 'nearest' }),
       { injector: this.injector },
@@ -790,15 +787,61 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.rowNotice.set(null);
   }
 
-  /** Si lo marcado desaparece (otro filtro, otra vista sin ficha), el panel se cierra solo. */
-  private readonly closeEmptyDrawer = effect(() => {
+  /** Lo marcado tiene ficha que enseñar (con los datos ya cargados). */
+  private readonly drawerHasItem = computed(() => {
     const view = this.view();
-    const empty =
-      view === 'clientes' ? !this.drawerClient() : view === 'sesiones' ? !this.drawerSession() : !this.drawerReservation();
-    if (empty && this.drawerRef().isOpen) {
-      this.drawerRef().close();
+    return view === 'clientes' ? !!this.drawerClient() : view === 'sesiones' ? !!this.drawerSession() : !!this.drawerReservation();
+  });
+
+  /**
+   * El panel sigue a lo marcado: se abre si hay ficha que enseñar (también al volver a la página con
+   * ?ficha=, cuando llegan los datos) y se cierra solo si lo marcado desaparece (otro filtro, otra vista).
+   */
+  private readonly syncDrawer = effect(() => {
+    if (this.loading()) {
+      return;
+    }
+    const drawer = this.drawerRef();
+    if (this.drawerHasItem()) {
+      if (!drawer.isOpen) {
+        drawer.open();
+      }
+    } else if (drawer.isOpen) {
+      drawer.close();
     }
   });
+
+  /**
+   * La ficha abierta, también en la dirección (?ficha=r-18, c-luis, s-3), sin entradas nuevas en el
+   * historial: si se va a otra página, «atrás» vuelve con el panel abierto donde estaba.
+   */
+  private readonly drawerInUrl = effect(() => {
+    if (this.loading()) {
+      return;
+    }
+    const current = this.drawerCurrent();
+    const prefix = this.view() === 'clientes' ? 'c' : this.view() === 'sesiones' ? 's' : 'r';
+    const ficha = current === null || !this.drawerHasItem() ? null : `${prefix}-${current}`;
+    if (ficha !== this.route.snapshot.queryParamMap.get('ficha')) {
+      this.go({ ficha });
+    }
+  });
+
+  /** Lee ?ficha= al llegar a la página: lo marca, y el panel se abre cuando lleguen los datos. */
+  private readFicha(ficha: string | null): void {
+    const match = ficha?.match(/^([rcs])-(.+)$/);
+    if (!match) {
+      return;
+    }
+    const [, kind, value] = match;
+    if (kind === 'c') {
+      this.expandedClient.set(value);
+    } else if (kind === 's' && Number(value)) {
+      this.expandedSession.set(Number(value));
+    } else if (kind === 'r' && Number(value)) {
+      this.expanded.set(Number(value));
+    }
+  }
 
   /** Solo se reserva en sesiones activas. */
   readonly openSessions = computed(() => this.sessions().filter((session) => session.estado === 'ACTIVO'));
@@ -886,6 +929,7 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   ngOnInit(): void {
     // Los filtros siguen a la dirección. Desde Usuarios llega ?cuenta=, que es buscar esa cuenta.
+    let first = true;
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const values: FilterValues = { ...FILTER_DEFAULTS };
       for (const key of Object.keys(FILTER_DEFAULTS)) {
@@ -895,6 +939,11 @@ export class AdminReservationsPanelComponent implements OnInit {
       this.filterValues.set(values);
       const view = params.get('ver');
       this.view.set(view === 'clientes' || view === 'sesiones' ? view : 'reservas');
+      // La ficha, solo al llegar (o al volver atrás, que crea la página de nuevo): luego la escribe el panel.
+      if (first) {
+        first = false;
+        this.readFicha(params.get('ficha'));
+      }
     });
     this.load();
   }

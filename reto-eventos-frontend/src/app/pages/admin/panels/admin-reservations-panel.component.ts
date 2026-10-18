@@ -53,6 +53,7 @@ import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.dir
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
 import { AdminControlSheetComponent } from './admin-control-sheet.component';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
@@ -262,7 +263,7 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [
+  imports: [SectionHelpComponent, 
     FormsModule,
     RouterLink,
     PanelDialogComponent,

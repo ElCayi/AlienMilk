@@ -11,6 +11,7 @@ import {
   plural,
   profileLabel,
 } from '../../../shared/panel/panel-format';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /**
  * Perfiles de las cuentas. Administrador y Cliente son los del sistema, los que dan acceso: no se
@@ -19,7 +20,7 @@ import {
 @Component({
   selector: 'app-admin-profiles-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent],
+  imports: [SectionHelpComponent, FormsModule, PanelDialogComponent],
   templateUrl: './admin-profiles-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

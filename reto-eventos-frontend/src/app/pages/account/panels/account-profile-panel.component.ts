@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.component';
 import { errorMessage, fieldErrors, profileLabel } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /**
  * La cuenta: sus datos y, al final, borrarla. Lo puede hacer un cliente, con su contraseña como
@@ -14,7 +15,7 @@ import { AccountStore } from '../account-store';
 @Component({
   selector: 'app-account-profile-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent],
+  imports: [SectionHelpComponent, FormsModule, RouterLink, PanelDialogComponent],
   templateUrl: './account-profile-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './account-profile-panel.component.css'],
 })

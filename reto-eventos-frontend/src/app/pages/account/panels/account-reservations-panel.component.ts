@@ -20,6 +20,7 @@ import {
   refunds,
 } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /**
  * Mis reservas: las de sesiones activas, que se pueden modificar o cancelar, y el historial (las
@@ -28,7 +29,7 @@ import { AccountStore } from '../account-store';
 @Component({
   selector: 'app-account-reservations-panel',
   standalone: true,
-  imports: [RouterLink, ReservationEditorComponent],
+  imports: [SectionHelpComponent, RouterLink, ReservationEditorComponent],
   templateUrl: './account-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

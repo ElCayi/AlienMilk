@@ -11,6 +11,7 @@ import {
   humanizeCode,
   plural,
 } from '../../../shared/panel/panel-format';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /**
  * Tipos de sesión: la clasificación del programa y el filtro de la página pública. Un tipo con
@@ -19,7 +20,7 @@ import {
 @Component({
   selector: 'app-admin-types-panel',
   standalone: true,
-  imports: [FormsModule, PanelDialogComponent],
+  imports: [SectionHelpComponent, FormsModule, PanelDialogComponent],
   templateUrl: './admin-types-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

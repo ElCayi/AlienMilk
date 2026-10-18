@@ -17,12 +17,13 @@ import {
 } from '../../../features/contact/opening-hours';
 import { Contacto, ContactoPayload } from '../../../models/api.models';
 import { formatDayTime } from '../../../shared/panel/panel-format';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /** Formulario de la ficha de contacto: edita la única fila de la sede y enseña cómo quedará. */
 @Component({
   selector: 'app-admin-contact-panel',
   standalone: true,
-  imports: [FormsModule],
+  imports: [SectionHelpComponent, FormsModule],
   templateUrl: './admin-contact-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-contact-panel.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

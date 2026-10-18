@@ -49,6 +49,14 @@
   letter-spacing: 0.01em;
 }
 
+/* El título y, a su lado, el «?» con la explicación de la sección. */
+.section-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
 .section-head p {
   max-width: 44rem;
   margin: 0.5rem 0 0;

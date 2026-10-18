@@ -1,0 +1,52 @@
+/* El «?» junto al título: un botón redondo, discreto, con el trazo de los demás; al pasar, coral. */
+:host {
+  display: inline-flex;
+}
+
+.section-help {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 1px solid var(--paper-edge);
+  border-radius: 50%;
+  color: var(--paper-faint);
+  background: var(--field);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.section-help svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.section-help:is(:hover, :focus-visible) {
+  border-color: var(--coral);
+  color: var(--coral-ink);
+}
+
+.section-help:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+/* El texto de la ayuda, como los párrafos de la casa: justificado, con la última línea a la izquierda. */
+.section-help-copy {
+  display: grid;
+  gap: 0.75rem;
+  color: var(--paper-muted);
+  line-height: 1.55;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+}
+

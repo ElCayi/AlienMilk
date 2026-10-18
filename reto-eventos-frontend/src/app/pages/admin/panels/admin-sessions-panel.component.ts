@@ -48,6 +48,7 @@ import {
   sessionPasses,
 } from './session-filters';
 import { PREVIEW_PARAM, SessionPreview, writePreview } from '../../../features/sessions/session-preview';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -84,7 +85,7 @@ const PREVIEW_DESKTOP_WIDTH = 1440;
 @Component({
   selector: 'app-admin-sessions-panel',
   standalone: true,
-  imports: [
+  imports: [SectionHelpComponent, 
     FormsModule,
     RouterLink,
     PanelDialogComponent,

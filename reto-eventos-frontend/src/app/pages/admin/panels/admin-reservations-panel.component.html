@@ -148,7 +148,7 @@
                     <span class="cell-sub">Ninguna por delante</span>
                   }
                   @if (client.revision) {
-                    <span class="badge cell-badge" data-tone="alert">{{ client.revision }} en revisión</span>
+                    <span class="badge cell-badge" data-tone="alert">{{ client.revision }} por revisar</span>
                   }
                 </td>
                 <td class="cell-chevron" aria-hidden="true">
@@ -308,7 +308,7 @@
                     {{ group.nombre }}
                   </button>
                   @if (group.revision) {
-                    <span class="badge cell-badge" data-tone="alert">{{ group.revision }} en revisión</span>
+                    <span class="badge cell-badge" data-tone="alert">{{ group.revision }} por revisar</span>
                   }
                 </td>
                 <td data-label="Fecha" class="nowrap center">{{ day(group.primera.fechaInicioEvento) }}</td>
@@ -409,7 +409,7 @@
                                         <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
                                       }
                                       @if (reserva.requiereRevision) {
-                                        <span class="badge" data-tone="alert" title="Pidió adaptaciones o traer material propio: falta aceptarlo o no">Requiere revisión</span>
+                                        <span class="badge" data-tone="alert" title="Pidió adaptaciones o traer material propio: falta aceptarlo o no">Por revisar</span>
                                       }
                                     </span>
                                     <svg class="entity-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
@@ -511,7 +511,7 @@
                       <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
                     }
                     @if (reserva.requiereRevision) {
-                      <span class="badge" data-tone="alert" title="Pidió adaptaciones o traer material propio: falta aceptarlo o no">Requiere revisión</span>
+                      <span class="badge" data-tone="alert" title="Pidió adaptaciones o traer material propio: falta aceptarlo o no">Por revisar</span>
                     }
                   </span>
                 </td>
@@ -718,7 +718,7 @@
                               aria-label="Adaptaciones y material"
                             >
                               <p class="detail-people-title">
-                                {{ revision === 'PENDIENTE' ? 'Requiere revisión' : 'Adaptaciones y material · ' + review(reserva) }}
+                                {{ revision === 'PENDIENTE' ? 'Por revisar' : 'Adaptaciones y material · ' + review(reserva) }}
                               </p>
                               @if (revision === 'PENDIENTE') {
                                 <p class="detail-review-help">

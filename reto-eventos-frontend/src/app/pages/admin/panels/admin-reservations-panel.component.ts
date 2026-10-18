@@ -378,7 +378,7 @@ export class AdminReservationsPanelComponent implements OnInit {
       options: [
         { value: '', label: 'Cualquiera' },
         { value: 'alguna', label: 'Con adaptaciones o material' },
-        { value: 'pendiente', label: 'Requieren revisión' },
+        { value: 'pendiente', label: 'Por revisar' },
         { value: 'aceptada', label: 'Aceptadas' },
         { value: 'no-aceptada', label: 'No aceptadas' },
       ],
@@ -402,7 +402,7 @@ export class AdminReservationsPanelComponent implements OnInit {
       { label: 'Próximos 7 días', values: { fecha: 'semana' } },
       { label: 'Por cobrar en taquilla', values: { pago: 'taquilla' } },
       { label: 'Pagos con tarjeta pendientes', values: { pago: 'pendiente' } },
-      { label: 'Requieren revisión', values: { revision: 'pendiente' } },
+      { label: 'Por revisar', values: { revision: 'pendiente' } },
       { label: 'Devoluciones por entregar', values: { pago: 'devolver', estado: 'todas' } },
       { label: 'Canceladas', values: { estado: 'canceladas' } },
       { label: 'Archivadas', values: { estado: 'archivadas' } },

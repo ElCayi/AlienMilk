@@ -941,7 +941,7 @@ th[aria-sort] .sort-button svg {
   overflow-wrap: anywhere;
 }
 
-/* Lo pendiente: el filete coral, como «Requiere revisión», porque pide hacer algo. */
+/* Lo pendiente: el filete coral, como «Por revisar», porque pide hacer algo. */
 .entity-pending {
   padding-left: 0.85rem;
   border-left: 2px solid var(--coral);
@@ -1862,7 +1862,7 @@ th[aria-sort] .sort-button svg {
   }
 }
 
-/* Una pastilla bajo el título de una fila (2 en revisión): en su línea, no pegada al nombre. */
+/* Una pastilla bajo el título de una fila (2 por revisar): en su línea, no pegada al nombre. */
 .cell-badge {
   display: block;
   width: fit-content;

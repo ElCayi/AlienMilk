@@ -20,7 +20,7 @@ const WIDGETS: { id: WidgetId; label: string; hint: string }[] = [
   { id: 'hoy', label: 'Hoy', hint: 'Las sesiones de hoy, con su hoja de control.' },
   { id: 'proximas', label: 'Próximas sesiones', hint: 'Las cinco siguientes, con su ocupación.' },
   { id: 'minimo', label: 'Por debajo del mínimo', hint: 'Las de los próximos 30 días que aún no llegan.' },
-  { id: 'revision', label: 'Requieren revisión', hint: 'Adaptaciones y material por aceptar.' },
+  { id: 'revision', label: 'Por revisar', hint: 'Adaptaciones y material por aceptar.' },
   { id: 'taquilla', label: 'Por cobrar en taquilla', hint: 'Lo que se paga al llegar.' },
   { id: 'devoluciones', label: 'Devoluciones por entregar', hint: 'Lo que hay que devolver en taquilla.' },
   { id: 'ultimas', label: 'Últimas reservas', hint: 'Las cinco más recientes.' },

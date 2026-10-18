@@ -128,7 +128,7 @@
         @case ('revision') {
           <section class="widget" [class.is-pending]="revision().length" aria-labelledby="w-revision">
             <header class="widget-head">
-              <h3 id="w-revision">Requieren revisión</h3>
+              <h3 id="w-revision">Por revisar</h3>
               <span class="widget-count">{{ loading() ? '…' : revision().length }}</span>
             </header>
             @if (revision().length) {

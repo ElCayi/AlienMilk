@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +22,6 @@ import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.RecursoNoEncontradoException;
 import retotransversal.modelo.dto.EventoAdminDto;
 import retotransversal.modelo.entities.EstadoEvento;
-import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Reserva;
 import retotransversal.modelo.repository.EventoRepository;
@@ -97,8 +98,8 @@ public class EventoServiceImpl implements EventoService {
 	}
 
 	/**
-	 * Una sesión con reservas no se borra por descuido: se pide confirmarlo aparte (borrarConReservas)
-	 * o cancelarla, y entonces las reservas se quedan en el historial de sus clientes.
+	 * Solo se borra una sesión que nunca ha tenido reservas (una errata, una duplicada): con historia, aunque
+	 * sean canceladas, se cancela y se archiva, y sus reservas siguen en el historial de sus clientes.
 	 */
 	@Override
 	@Transactional
@@ -106,29 +107,11 @@ public class EventoServiceImpl implements EventoService {
 		findById(id);
 		int reservas = reservaRepository.findByEventoIdEvento(id).size();
 		if (reservas > 0) {
-			throw new ConflictoNegocioException(reservas == 1
-					? "Tiene una reserva: cancela la sesión en lugar de borrarla"
-					: "Tiene %d reservas: cancela la sesión en lugar de borrarla".formatted(reservas));
+			throw new ConflictoNegocioException((reservas == 1 ? "Ha tenido una reserva"
+					: "Ha tenido %d reservas".formatted(reservas))
+					+ ": no se borra, se cancela y, cuando ya no estorbe, se archiva");
 		}
 		eventoRepository.deleteById(id);
-		return 1;
-	}
-
-	@Override
-	@Transactional
-	public int borrarConReservas(Integer idEvento) {
-		findById(idEvento);
-		List<Reserva> reservas = reservaRepository.findByEventoIdEvento(idEvento);
-		// El historial de cobros no se borra: con dinero de por medio, la sesión se cancela y se archiva.
-		boolean conDinero = reservas.stream().anyMatch(reserva -> reserva.getEstadoPago().cobrada()
-				|| reserva.getEstadoPago() == EstadoPago.PENDIENTE || !reserva.getDevoluciones().isEmpty()
-				|| reserva.getImporteDevuelto().signum() > 0);
-		if (conDinero) {
-			throw new ConflictoNegocioException(
-					"Tiene reservas pagadas o con pagos en curso: cancélala y archívala, el historial de cobros no se borra");
-		}
-		reservaRepository.deleteAll(reservas);
-		eventoRepository.deleteById(idEvento);
 		return 1;
 	}
 
@@ -229,6 +212,7 @@ public class EventoServiceImpl implements EventoService {
 
 	@Override
 	public List<EventoAdminDto> listadoAdmin() {
+		Set<Integer> conHistoria = new HashSet<>(reservaRepository.eventosConReservas());
 		Map<Integer, OcupacionEvento> ocupacion = reservaRepository.ocupacionPorEvento().stream()
 				.collect(Collectors.toMap(OcupacionEvento::getIdEvento, Function.identity()));
 		return eventoRepository.findAll().stream()
@@ -236,8 +220,8 @@ public class EventoServiceImpl implements EventoService {
 				.map(evento -> {
 					OcupacionEvento datos = ocupacion.get(evento.getIdEvento());
 					return datos == null
-							? EventoAdminDto.de(evento, 0, 0)
-							: EventoAdminDto.de(evento, datos.getPlazas(), datos.getReservas());
+							? EventoAdminDto.de(evento, 0, 0, !conHistoria.contains(evento.getIdEvento()))
+							: EventoAdminDto.de(evento, datos.getPlazas(), datos.getReservas(), false);
 				})
 				.toList();
 	}
@@ -245,7 +229,8 @@ public class EventoServiceImpl implements EventoService {
 	@Override
 	public EventoAdminDto aAdminDto(Evento evento) {
 		List<Reserva> reservas = reservaRepository.findByEventoIdEventoAndCanceladaEnIsNull(evento.getIdEvento());
-		return EventoAdminDto.de(evento, reservas.stream().mapToLong(Reserva::getCantidad).sum(), reservas.size());
+		return EventoAdminDto.de(evento, reservas.stream().mapToLong(Reserva::getCantidad).sum(), reservas.size(),
+				reservaRepository.findByEventoIdEvento(evento.getIdEvento()).isEmpty());
 	}
 
 	private LocalDateTime ahora() {

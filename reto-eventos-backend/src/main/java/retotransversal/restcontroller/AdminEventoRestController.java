@@ -93,18 +93,13 @@ public class AdminEventoRestController {
 	}
 
 	/**
-	 * Con la sesión se van su expediente propio y su foto. Si tiene reservas, hace falta
-	 * {@code ?conReservas=true}: se borran con ella (sin eso, 409 y la propuesta de cancelarla).
+	 * Solo una sesión que nunca ha tenido reservas; con ella se van su expediente propio y su foto. Con
+	 * historia, 409: se cancela y se archiva (ver EventoService#deleteOne).
 	 */
 	@DeleteMapping("/{idEvento}")
-	public ResponseEntity<Void> delete(@PathVariable Integer idEvento,
-			@RequestParam(defaultValue = "false") boolean conReservas) {
+	public ResponseEntity<Void> delete(@PathVariable Integer idEvento) {
 		String imagen = eventoService.findById(idEvento).getImagen();
-		if (conReservas) {
-			eventoService.borrarConReservas(idEvento);
-		} else {
-			eventoService.deleteOne(idEvento);
-		}
+		eventoService.deleteOne(idEvento);
 		expedienteService.borrarDeSesion(idEvento);
 		imagenSesionService.borrarArchivo(imagen);
 		return ResponseEntity.noContent().build();

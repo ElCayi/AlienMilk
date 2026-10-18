@@ -239,14 +239,17 @@
                       Archivar
                     </button>
                   }
-                  <button
-                    type="button"
-                    class="btn btn-small btn-danger"
-                    [disabled]="busy() === session.idEvento"
-                    (click)="remove(session)"
-                  >
-                    Borrar
-                  </button>
+                  <!-- Solo lo que nunca tuvo reservas se borra; con historia, se cancela y se archiva. -->
+                  @if (session.borrable) {
+                    <button
+                      type="button"
+                      class="btn btn-small btn-danger"
+                      [disabled]="busy() === session.idEvento"
+                      (click)="remove(session)"
+                    >
+                      Borrar
+                    </button>
+                  }
                 </div>
               </td>
             </tr>

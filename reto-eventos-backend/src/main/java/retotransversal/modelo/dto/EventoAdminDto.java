@@ -10,8 +10,8 @@ import retotransversal.modelo.entities.Evento;
 
 /**
  * Una sesión vista desde el panel de administración: todos sus datos, para editarla sin pedirla otra
- * vez, y su ocupación. Con reservas no se puede borrar (se cancela) ni bajar el aforo por debajo de
- * las plazas ya reservadas.
+ * vez, y su ocupación. Solo se borra si nunca ha tenido reservas (`borrable`); con historia, se cancela
+ * y se archiva. El aforo no baja de las plazas ya reservadas.
  */
 public record EventoAdminDto(
 		Integer idEvento,
@@ -30,9 +30,10 @@ public record EventoAdminDto(
 		String imagen,
 		boolean archivada,
 		long plazasReservadas,
-		long reservas) {
+		long reservas,
+		boolean borrable) {
 
-	public static EventoAdminDto de(Evento evento, long plazasReservadas, long reservas) {
+	public static EventoAdminDto de(Evento evento, long plazasReservadas, long reservas, boolean borrable) {
 		return new EventoAdminDto(
 				evento.getIdEvento(),
 				evento.getNombre(),
@@ -50,6 +51,7 @@ public record EventoAdminDto(
 				evento.getImagen(),
 				evento.isArchivada(),
 				plazasReservadas,
-				reservas);
+				reservas,
+				borrable);
 	}
 }

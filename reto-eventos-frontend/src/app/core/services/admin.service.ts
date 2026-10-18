@@ -60,11 +60,9 @@ export class AdminService {
     return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/reactivar`, {});
   }
 
-  /** Con reservas, el servidor solo la borra si se confirma aparte (`conReservas`): se van con ella. */
-  borrarEvento(idEvento: number, conReservas = false): Observable<void> {
-    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`, {
-      params: conReservas ? { conReservas: true } : {},
-    });
+  /** Solo una sesión que nunca ha tenido reservas: con historia, se cancela y se archiva. */
+  borrarEvento(idEvento: number): Observable<void> {
+    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`);
   }
 
   /** Sube la foto propia de la sesión (JPG, PNG o WebP, hasta 5 MB); sustituye la anterior. */

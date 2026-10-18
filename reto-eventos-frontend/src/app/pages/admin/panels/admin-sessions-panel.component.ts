@@ -101,8 +101,8 @@ type EditPage = 'datos' | 'expediente';
 
 /**
  * Sesiones: el programa, con su ocupación. Una sesión nace activa; se cancela (y se puede
- * reactivar) con sus acciones, no desde el formulario. Con reservas, borrarla pide confirmarlo aparte
- * (y propone cancelarla, que deja las reservas en el panel de sus clientes).
+ * reactivar) con sus acciones, no desde el formulario. Solo se borra la que nunca tuvo reservas: la que
+ * tiene historia se cancela y se archiva, y sus reservas siguen en el panel de sus clientes.
  */
 @Component({
   selector: 'app-admin-sessions-panel',
@@ -530,42 +530,21 @@ export class AdminSessionsPanelComponent implements OnInit {
   }
 
   /**
-   * Sin reservas, se confirma y se borra. Con reservas, el aviso propone cancelarla (sus clientes la
-   * siguen viendo, cancelada) o borrarla con ellas (desaparecen también de su panel).
+   * Borrar es para lo que nunca tuvo reservas (una errata, una duplicada). Con historia no se ofrece: se
+   * cancela y, cuando ya no estorbe, se archiva (el servidor lo exige igual).
    */
   async remove(session: EventoAdmin): Promise<void> {
-    const withReservations = session.reservas > 0;
-    const cancellable = session.estado === 'ACTIVO';
-    const choice = await this.confirm.choose(
-      withReservations
-        ? {
-            title: '¿Borrar una sesión con reservas?',
-            message:
-              `«${session.nombre}» tiene ${plural(session.reservas, 'reserva', 'reservas')}. Si la borras, ` +
-              (session.reservas === 1 ? 'se borra con ella y desaparece' : 'se borran con ella y desaparecen') +
-              ' también del panel de sus clientes. ' +
-              (cancellable ? 'Si la cancelas, la siguen viendo, cancelada. ' : '') +
-              'Borrarla no se puede deshacer.',
-            confirm: 'Borrar',
-            alternative: cancellable ? 'Cancelar sesión' : undefined,
-            danger: true,
-          }
-        : {
-            title: '¿Borrar la sesión?',
-            message: `«${session.nombre}» desaparecerá del programa y del panel. No se puede deshacer.`,
-            confirm: 'Borrar sesión',
-            danger: true,
-          },
-    );
-    if (choice === 'alternative') {
-      this.changeState(session, this.admin.cancelarEvento(session.idEvento), 'cancelada');
-      return;
-    }
-    if (choice !== 'confirm') {
+    const confirmed = await this.confirm.ask({
+      title: '¿Borrar la sesión?',
+      message: `«${session.nombre}» desaparecerá del programa y del panel. No ha tenido reservas, así que no se pierde historia; no se puede deshacer.`,
+      confirm: 'Borrar sesión',
+      danger: true,
+    });
+    if (!confirmed) {
       return;
     }
     this.busy.set(session.idEvento);
-    this.admin.borrarEvento(session.idEvento, withReservations).subscribe({
+    this.admin.borrarEvento(session.idEvento).subscribe({
       next: () => {
         this.busy.set(null);
         this.sessions.update((list) => list.filter((item) => item.idEvento !== session.idEvento));

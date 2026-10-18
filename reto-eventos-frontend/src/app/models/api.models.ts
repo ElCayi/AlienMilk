@@ -32,6 +32,8 @@ export interface EventoAdmin extends Omit<EventoDetalle, 'estado'> {
   archivada: boolean;
   plazasReservadas: number;
   reservas: number;
+  /** Si nunca ha tenido reservas (ni canceladas): solo entonces se puede borrar; si no, se cancela y se archiva. */
+  borrable: boolean;
 }
 
 /** El documento que un participante presentará en el control de ingreso (nunca se guarda su número). */

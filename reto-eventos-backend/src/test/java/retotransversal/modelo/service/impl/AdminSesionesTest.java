@@ -33,7 +33,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.exception.GlobalExceptionHandler;
 import retotransversal.modelo.entities.EstadoEvento;
-import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
 import retotransversal.modelo.entities.Reserva;
 import retotransversal.modelo.entities.TipoEvento;
@@ -136,33 +135,22 @@ class AdminSesionesTest {
 
 		mvc.perform(delete("/api/admin/eventos/7"))
 				.andExpect(status().isConflict())
-				.andExpect(jsonPath("$.message").value("Tiene 2 reservas: cancela la sesión en lugar de borrarla"));
+				.andExpect(jsonPath("$.message")
+						.value("Ha tenido 2 reservas: no se borra, se cancela y, cuando ya no estorbe, se archiva"));
 		verify(eventos, never()).deleteById(any());
 	}
 
 	@Test
-	void aSessionWithReservationsIsDeletedWithThemOnlyWhenConfirmed() throws Exception {
-		when(eventos.findById(7)).thenReturn(Optional.of(sesion(7, EstadoEvento.ACTIVO)));
-		// Sin dinero de por medio (por cobrar en taquilla): una sesión de prueba, por ejemplo.
-		List<Reserva> suyas = List.of(reserva(2), reserva(3));
-		suyas.forEach(reserva -> reserva.setEstadoPago(EstadoPago.EN_TAQUILLA));
-		when(reservas.findByEventoIdEvento(7)).thenReturn(suyas);
+	void aSessionThatHadReservationsIsNeverDeletedEvenIfAllWereCancelled() throws Exception {
+		when(eventos.findById(7)).thenReturn(Optional.of(sesion(7, EstadoEvento.CANCELADO)));
+		Reserva cancelada = reserva(2);
+		cancelada.cancelar(retotransversal.modelo.entities.CanceladaPor.CLIENTE, null, java.time.LocalDateTime.now());
+		when(reservas.findByEventoIdEvento(7)).thenReturn(List.of(cancelada));
 
-		mvc.perform(delete("/api/admin/eventos/7").param("conReservas", "true")).andExpect(status().isNoContent());
-		verify(reservas).deleteAll(suyas);
-		verify(eventos).deleteById(7);
-	}
-
-	@Test
-	void aSessionWithPaidReservationsIsNeverDeleted() throws Exception {
-		when(eventos.findById(7)).thenReturn(Optional.of(sesion(7, EstadoEvento.ACTIVO)));
-		when(reservas.findByEventoIdEvento(7)).thenReturn(List.of(reserva(2)));
-
-		mvc.perform(delete("/api/admin/eventos/7").param("conReservas", "true"))
+		mvc.perform(delete("/api/admin/eventos/7"))
 				.andExpect(status().isConflict())
-				.andExpect(jsonPath("$.message").value(
-						"Tiene reservas pagadas o con pagos en curso: cancélala y archívala, el historial de cobros no se borra"));
-		verify(reservas, never()).deleteAll(any());
+				.andExpect(jsonPath("$.message")
+						.value("Ha tenido una reserva: no se borra, se cancela y, cuando ya no estorbe, se archiva"));
 		verify(eventos, never()).deleteById(any());
 	}
 

@@ -14,9 +14,9 @@
 } @else {
   <!-- En pantallas anchas, dos columnas que se desplazan cada una por su cuenta (elegir a la izquierda,
        cambiar a la derecha) y nunca un desplazamiento dentro de otro; en móvil, todo en una. -->
-  <div class="bulk-columns">
+  <div class="bulk-columns" [attr.data-wide]="widened()">
     <!-- 1. Las sesiones: los filtros de la lista y una casilla por sesión. -->
-    <section class="bulk-step" aria-labelledby="bulk-sessions">
+    <section class="bulk-step" aria-labelledby="bulk-sessions" data-column="sesiones">
       <div class="bulk-step-head">
         <h3 id="bulk-sessions"><span class="bulk-step-number">1</span> Elige las sesiones</h3>
         <p class="bulk-count" role="status">
@@ -27,6 +27,22 @@
             Ninguna elegida
           }
         </p>
+        <button
+          type="button"
+          class="btn btn-small bulk-widen"
+          [attr.aria-pressed]="widened() === 'sesiones'"
+          [attr.aria-label]="widened() === 'sesiones' ? 'Volver a dos columnas' : 'Ampliar esta columna'"
+          [attr.title]="widened() === 'sesiones' ? null : 'Ampliar esta columna'"
+          [class.is-icon]="widened() !== 'sesiones'"
+          (click)="toggleWide('sesiones')"
+        >
+          @if (widened() === 'sesiones') {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
+            <span aria-hidden="true">Volver a dos columnas</span>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+          }
+        </button>
       </div>
 
       <!-- La misma barra que la lista de Sesiones, con sus filtros listos y los guardados de cada cual. El
@@ -99,9 +115,25 @@
     </section>
 
     <!-- 2. El contenido: cada apartado, cómo está en las elegidas y qué se puede hacer con él. -->
-    <section class="bulk-step" aria-labelledby="bulk-content">
+    <section class="bulk-step" aria-labelledby="bulk-content" data-column="contenido">
       <div class="bulk-step-head">
         <h3 id="bulk-content"><span class="bulk-step-number">2</span> Cambia su contenido</h3>
+        <button
+          type="button"
+          class="btn btn-small bulk-widen"
+          [attr.aria-pressed]="widened() === 'contenido'"
+          [attr.aria-label]="widened() === 'contenido' ? 'Volver a dos columnas' : 'Ampliar esta columna'"
+          [attr.title]="widened() === 'contenido' ? null : 'Ampliar esta columna'"
+          [class.is-icon]="widened() !== 'contenido'"
+          (click)="toggleWide('contenido')"
+        >
+          @if (widened() === 'contenido') {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
+            <span aria-hidden="true">Volver a dos columnas</span>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+          }
+        </button>
       </div>
 
       @if (!selected().size) {

@@ -79,6 +79,13 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   readonly filterStorage = SESSION_FILTER_STORAGE;
   readonly selected = signal<ReadonlySet<number>>(new Set());
 
+  /** En pantallas anchas, una de las dos columnas puede ocupar todo el ancho un rato; null, las dos. */
+  readonly widened = signal<'sesiones' | 'contenido' | null>(null);
+
+  toggleWide(column: 'sesiones' | 'contenido'): void {
+    this.widened.update((current) => (current === column ? null : column));
+  }
+
   // Contenido: lo guardado y la copia de trabajo, que cambia con cada acción hasta guardar.
   private original: Record<number, Dossier> = {};
   private working: Record<number, Dossier> = {};

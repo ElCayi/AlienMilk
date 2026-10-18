@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   Injector,
@@ -11,6 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
@@ -38,7 +40,6 @@ import {
   paymentLine,
   reviewLabel,
 } from '../../../shared/panel/panel-format';
-import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
 import {
   dateFields,
@@ -263,7 +264,7 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [SectionHelpComponent, 
+  imports: [SectionHelpComponent, NgTemplateOutlet, 
     FormsModule,
     RouterLink,
     PanelDialogComponent,
@@ -634,7 +635,7 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.expandedClient.set(username);
     this.view.set('clientes');
     this.go({ ver: 'clientes', sesion: null });
-    this.reveal(`client-detail-${username}`);
+    this.reveal();
   }
 
   /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
@@ -651,7 +652,7 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.rowNotice.set(null);
     this.view.set('reservas');
     this.go({ ver: null, sesion: null });
-    this.reveal(`reservation-detail-${reserva.idReserva}`);
+    this.reveal();
   }
 
   readonly editor = viewChild.required(ReservationEditorComponent);
@@ -685,19 +686,15 @@ export class AdminReservationsPanelComponent implements OnInit {
   }
 
   toggleClient(username: string): void {
-    const value = this.expandedClient() === username ? null : username;
-    this.expandedClient.set(value);
-    if (value) {
-      this.reveal(`client-detail-${value}`, 'nearest');
-    }
+    this.expandedClient.set(username);
+    this.rowNotice.set(null);
+    this.reveal();
   }
 
   toggleSession(idEvento: number): void {
-    const value = this.expandedSession() === idEvento ? null : idEvento;
-    this.expandedSession.set(value);
-    if (value !== null) {
-      this.reveal(`session-group-${value}`, 'nearest');
-    }
+    this.expandedSession.set(idEvento);
+    this.rowNotice.set(null);
+    this.reveal();
   }
 
   /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
@@ -707,22 +704,101 @@ export class AdminReservationsPanelComponent implements OnInit {
   }
 
   /**
-   * Tras pintarse, lleva la vista hasta una ficha: al desplegarla, lo justo para verla entera sin perder su
-   * fila; al llegar desde otra vista, con su fila arriba (ver reveal-row).
+   * Enseña una ficha: en el panel lateral (si ya está abierto, solo cambia lo de dentro) y, detrás, la
+   * vista lleva su fila hasta donde se vea, sin saltos. El id ya no hace falta: la fila es la marcada.
    */
-  private reveal(id: string, mode: 'nearest' | 'top' = 'top'): void {
+  private reveal(): void {
+    if (!this.drawerRef().isOpen) {
+      this.drawerRef().open();
+    }
     afterNextRender(
-      () => {
-        const detail = document.getElementById(id);
-        if (mode === 'top') {
-          revealAtTop(detail);
-        } else {
-          revealExpanded(detail);
-        }
-      },
+      () => document.querySelector<HTMLElement>('tr.row-summary.is-open')?.scrollIntoView({ block: 'nearest' }),
       { injector: this.injector },
     );
   }
+
+  // El panel lateral: la ficha de lo marcado en la vista que toque, con anterior y siguiente.
+  readonly drawerRef = viewChild.required<PanelDialogComponent>('drawer');
+
+  readonly drawerReservation = computed(() => this.reservations().find((reserva) => reserva.idReserva === this.expanded()));
+  readonly drawerClient = computed(() => this.clients().find((client) => client.key === this.expandedClient()));
+  readonly drawerSession = computed(() => this.sessionGroups().find((group) => group.idEvento === this.expandedSession()));
+
+  /** Las de la lista, en su orden: por donde se mueven anterior y siguiente. */
+  readonly drawerList = computed<(string | number)[]>(() => {
+    switch (this.view()) {
+      case 'clientes':
+        return this.clients().map((client) => client.key);
+      case 'sesiones':
+        return this.sessionGroups().map((group) => group.idEvento);
+      default:
+        return this.visible().map((reserva) => reserva.idReserva);
+    }
+  });
+
+  private readonly drawerCurrent = computed<string | number | null>(() => {
+    switch (this.view()) {
+      case 'clientes':
+        return this.expandedClient();
+      case 'sesiones':
+        return this.expandedSession();
+      default:
+        return this.expanded();
+    }
+  });
+
+  readonly drawerIndex = computed(() => {
+    const current = this.drawerCurrent();
+    return current === null ? -1 : this.drawerList().indexOf(current);
+  });
+
+  readonly drawerHeading = computed(() => {
+    switch (this.view()) {
+      case 'clientes':
+        return 'Cliente';
+      case 'sesiones':
+        return 'Sesión';
+      default: {
+        const reserva = this.drawerReservation();
+        return reserva ? `Reserva ${this.number(reserva)}` : 'Reserva';
+      }
+    }
+  });
+
+  /** A la anterior o la siguiente de la lista, sin cerrar el panel. */
+  step(direction: -1 | 1): void {
+    const next = this.drawerList()[this.drawerIndex() + direction];
+    if (next === undefined) {
+      return;
+    }
+    this.rowNotice.set(null);
+    if (this.view() === 'clientes') {
+      this.expandedClient.set(next as string);
+    } else if (this.view() === 'sesiones') {
+      this.expandedSession.set(next as number);
+    } else {
+      this.expanded.set(next as number);
+    }
+    this.reveal();
+  }
+
+  /** Al cerrar el panel (✕, Esc o clic fuera), ya no hay nada marcado. */
+  onDrawerClosed(): void {
+    this.expanded.set(null);
+    this.expandedClient.set(null);
+    this.expandedSession.set(null);
+    this.rowNotice.set(null);
+  }
+
+  /** Si lo marcado desaparece (otro filtro, otra vista sin ficha), el panel se cierra solo. */
+  private readonly closeEmptyDrawer = effect(() => {
+    const view = this.view();
+    const empty =
+      view === 'clientes' ? !this.drawerClient() : view === 'sesiones' ? !this.drawerSession() : !this.drawerReservation();
+    if (empty && this.drawerRef().isOpen) {
+      this.drawerRef().close();
+    }
+  });
 
   /** Solo se reserva en sesiones activas. */
   readonly openSessions = computed(() => this.sessions().filter((session) => session.estado === 'ACTIVO'));
@@ -793,12 +869,9 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** Despliega la ficha de la reserva, o la recoge; al desplegar, la vista baja lo justo para verla entera. */
   toggle(reserva: Reserva): void {
-    const id = this.expanded() === reserva.idReserva ? null : reserva.idReserva;
-    this.expanded.set(id);
+    this.expanded.set(reserva.idReserva);
     this.rowNotice.set(null);
-    if (id !== null) {
-      this.reveal(`reservation-detail-${id}`, 'nearest');
-    }
+    this.reveal();
   }
 
   /** Tras añadir reservas demo desde el pie: la lista y las cifras de la cabecera. */

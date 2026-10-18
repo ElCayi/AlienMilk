@@ -1946,3 +1946,57 @@ th[aria-sort] .sort-button svg {
   width: fit-content;
   margin-top: 0.35rem;
 }
+
+/* El panel lateral de una ficha: «3 de 12» y las flechas a la anterior y la siguiente, junto a la ✕. */
+.drawer-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drawer-count {
+  margin-right: 0.25rem;
+  color: var(--paper-faint);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.drawer-step {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 1px solid var(--paper-rule);
+  border-radius: 50%;
+  color: var(--paper-ink);
+  background: transparent;
+  cursor: pointer;
+}
+
+.drawer-step svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.drawer-step:is(:hover, :focus-visible):not(:disabled) {
+  border-color: var(--coral);
+  color: var(--coral-ink);
+}
+
+.drawer-step:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.drawer-step:disabled {
+  opacity: 0.35;
+  cursor: default;
+}

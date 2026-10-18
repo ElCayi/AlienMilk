@@ -52,6 +52,50 @@
   overflow-y: auto;
 }
 
+/* El panel lateral: a la derecha, a todo el alto; la cabecera fija y solo el cuerpo se desplaza. El fondo,
+   menos oscuro que el de los diálogos, para que la lista se siga viendo. */
+.panel-dialog.is-drawer {
+  width: min(64rem, calc(100vw - 3rem));
+  max-width: none;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  border-radius: 1.25rem 0 0 1.25rem;
+}
+
+.panel-dialog.is-drawer[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: panel-drawer-in 220ms ease-out;
+}
+
+.panel-dialog.is-drawer .panel-dialog-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.panel-dialog.is-drawer::backdrop {
+  background: rgba(5, 10, 16, 0.4);
+  backdrop-filter: none;
+}
+
+@keyframes panel-drawer-in {
+  from {
+    opacity: 0.4;
+    transform: translateX(3rem);
+  }
+}
+
+@media (max-width: 760px) {
+  .panel-dialog.is-drawer {
+    width: 100vw;
+    border-radius: 0;
+  }
+}
+
 .panel-dialog.is-tall {
   height: min(46rem, calc(100dvh - 2rem));
 }
@@ -141,6 +185,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .panel-dialog.is-drawer[open],
   .panel-dialog[open] {
     animation: none;
     transition: none;

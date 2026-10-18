@@ -22,10 +22,12 @@ let nextId = 0;
   selector: 'app-panel-dialog',
   standalone: true,
   template: `
-    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [style.width]="width()" [class.is-max]="huge() && maximized()" [attr.aria-labelledby]="headingId" (close)="onClose()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
+    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [class.is-drawer]="drawer()" [attr.tabindex]="drawer() ? -1 : null" [style.width]="width()" [class.is-max]="huge() && maximized()" [attr.aria-labelledby]="headingId" (close)="onClose()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
       <div class="panel-dialog-head" (dblclick)="onHeadDblClick($event)">
         <h2 [id]="headingId">{{ heading() }}</h2>
         <div class="panel-dialog-tools">
+          <!-- Botones propios de quien lo usa (anterior / siguiente, en el panel lateral). -->
+          <ng-content select="[dialog-tools]" />
           @if (huge()) {
             <button
               type="button"
@@ -62,6 +64,11 @@ export class PanelDialogComponent {
   readonly tall = input(false);
   /** Casi toda la pantalla, para lo que antes era una página aparte (la hoja de control). */
   readonly huge = input(false);
+  /**
+   * Panel lateral: entra desde la derecha a todo el alto y deja ver, oscurecida, la lista de la que sale.
+   * Es para consultar (una ficha), no un formulario: un clic fuera lo cierra.
+   */
+  readonly drawer = input(false);
   /** Un ancho a medida (los filtros), cuando ninguno de los anteriores encaja. */
   readonly width = input<string | null>(null);
   /**
@@ -101,6 +108,11 @@ export class PanelDialogComponent {
     if (!dialog.open) {
       dialog.showModal();
     }
+    // El panel lateral es para leer: el foco, en el panel (sin el anillo en la ✕ como si estuviera resaltada).
+    if (this.drawer()) {
+      dialog.focus();
+      return;
+    }
     afterNextRender(
       () =>
         dialog
@@ -110,6 +122,24 @@ export class PanelDialogComponent {
           ?.focus(),
       { injector: this.injector },
     );
+  }
+
+  /** El panel lateral se cierra con un clic en el fondo (el clic cae en el propio <dialog>, fuera del panel). */
+  @HostListener('click', ['$event'])
+  onBackdropClick(event: MouseEvent): void {
+    if (this.drawer() && event.target === this.dialog().nativeElement) {
+      const box = this.dialog().nativeElement.getBoundingClientRect();
+      const inside =
+        event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom;
+      if (!inside) {
+        this.close();
+      }
+    }
+  }
+
+  /** Si está abierto (para no abrir dos veces el panel lateral al pasar de una ficha a otra). */
+  get isOpen(): boolean {
+    return this.dialog().nativeElement.open;
   }
 
   close(): void {

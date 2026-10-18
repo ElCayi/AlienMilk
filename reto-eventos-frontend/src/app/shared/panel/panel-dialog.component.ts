@@ -7,6 +7,7 @@ import {
   Injector,
   input,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 
@@ -21,12 +22,30 @@ let nextId = 0;
   selector: 'app-panel-dialog',
   standalone: true,
   template: `
-    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [attr.aria-labelledby]="headingId" (close)="closed.emit()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
-      <div class="panel-dialog-head">
+    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [class.is-max]="huge() && maximized()" [attr.aria-labelledby]="headingId" (close)="onClose()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
+      <div class="panel-dialog-head" (dblclick)="onHeadDblClick($event)">
         <h2 [id]="headingId">{{ heading() }}</h2>
-        <button type="button" class="panel-dialog-close" aria-label="Cerrar" (click)="requestClose()">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
+        <div class="panel-dialog-tools">
+          @if (huge()) {
+            <button
+              type="button"
+              class="panel-dialog-close"
+              [attr.aria-label]="maximized() ? 'Volver al tamaño normal' : 'Maximizar'"
+              [attr.title]="maximized() ? 'Volver al tamaño normal' : 'Maximizar'"
+              [attr.aria-pressed]="maximized()"
+              (click)="toggleMaximized()"
+            >
+              @if (maximized()) {
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+              }
+            </button>
+          }
+          <button type="button" class="panel-dialog-close" aria-label="Cerrar" (click)="requestClose()">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
       </div>
       <div class="panel-dialog-body">
         <ng-content />
@@ -51,6 +70,25 @@ export class PanelDialogComponent {
   readonly closed = output<void>();
 
   readonly headingId = `panel-dialog-${++nextId}`;
+
+  /** El grande, a toda la ventana (con su botón o doble clic en la cabecera); al cerrar vuelve a su tamaño. */
+  readonly maximized = signal(false);
+
+  toggleMaximized(): void {
+    this.maximized.update((value) => !value);
+  }
+
+  /** Doble clic en la cabecera, como en las ventanas del escritorio; en sus botones, no. */
+  onHeadDblClick(event: MouseEvent): void {
+    if (this.huge() && !(event.target as HTMLElement).closest('button')) {
+      this.toggleMaximized();
+    }
+  }
+
+  onClose(): void {
+    this.maximized.set(false);
+    this.closed.emit();
+  }
 
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly injector = inject(Injector);

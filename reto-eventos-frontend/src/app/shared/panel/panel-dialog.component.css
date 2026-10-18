@@ -31,6 +31,19 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition:
+    width 200ms ease,
+    height 200ms ease,
+    border-radius 200ms ease;
+}
+
+/* Maximizado: toda la ventana, sin esquinas; el mismo botón (o doble clic en la cabecera) lo devuelve. */
+.panel-dialog.is-huge.is-max {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  border-radius: 0;
 }
 
 .panel-dialog.is-huge .panel-dialog-body {
@@ -72,6 +85,12 @@
     400 clamp(1.7rem, 2.2vw, 2.1rem) / 1.1 'Barlow Condensed',
     'Arial Narrow',
     sans-serif;
+}
+
+.panel-dialog-tools {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
 }
 
 .panel-dialog-close {
@@ -124,5 +143,6 @@
 @media (prefers-reduced-motion: reduce) {
   .panel-dialog[open] {
     animation: none;
+    transition: none;
   }
 }

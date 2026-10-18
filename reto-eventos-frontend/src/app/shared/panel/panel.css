@@ -258,11 +258,14 @@ button.text-link {
 
 .segmented button {
   display: flex;
-  align-items: baseline;
+  /* Centrado también en vertical: con baseline, el rótulo se quedaba arriba de su caja. */
+  align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   min-height: 2.1rem;
-  padding: 0.4rem 0.75rem;
+  /* Un píxel más arriba que abajo: Nunito deja más aire bajo las letras que sobre ellas y, con el mismo
+     relleno, las mayúsculas se ven altas. Así quedan en el centro óptico de la caja. */
+  padding: calc(0.4rem + 1px) 0.75rem calc(0.4rem - 1px);
   border: 1px solid transparent;
   border-radius: 0.42rem;
   color: var(--paper-muted);

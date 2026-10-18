@@ -270,3 +270,25 @@
     animation: none;
   }
 }
+
+/* En su propia ventana: centrada en la pantalla, a un tamaño cómodo, con el fondo apenas velado para que
+   la lista se siga viendo detrás. */
+.filter-dialog {
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: none;
+}
+
+.filter-dialog::backdrop {
+  background: rgba(5, 10, 16, 0.25);
+}
+
+.filter-panel.is-floating {
+  position: static;
+  width: min(54rem, calc(100vw - 2rem));
+  max-height: min(38rem, calc(100dvh - 2rem));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}

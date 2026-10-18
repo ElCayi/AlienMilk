@@ -13,6 +13,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { revealExpanded } from './reveal-row';
@@ -102,7 +103,7 @@ interface SavedFilter {
 @Component({
   selector: 'app-filter-bar',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, NgTemplateOutlet],
   templateUrl: './filter-bar.component.html',
   styleUrls: ['./panel.css', './filter-bar.component.css'],
 })
@@ -117,11 +118,14 @@ export class FilterBarComponent {
   readonly placeholder = input('Filtrar y buscar');
   /** Dónde se guardan los filtros de cada cual (localStorage). */
   readonly storageKey = input.required<string>();
+  /** En una caja estrecha, el panel sale en su propia ventana, centrada, en vez de desplegarse debajo. */
+  readonly floating = input(false);
   readonly valuesChange = output<FilterValues>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
   private readonly textInput = viewChild<ElementRef<HTMLInputElement>>('text');
+  private readonly floatDialog = viewChild<ElementRef<HTMLDialogElement>>('floatDialog');
 
   readonly open = signal(false);
   readonly saved = signal<SavedFilter[]>([]);
@@ -169,6 +173,11 @@ export class FilterBarComponent {
       // barra se vaya bajo la cabecera fija).
       afterNextRender(
         () => {
+          const dialog = this.floatDialog()?.nativeElement;
+          if (dialog) {
+            dialog.showModal();
+            return;
+          }
           const panel = this.host.nativeElement.querySelector<HTMLElement>('.filter-panel');
           const bar = this.host.nativeElement.querySelector<HTMLElement>('.filter-bar');
           if (panel && bar) {
@@ -241,6 +250,21 @@ export class FilterBarComponent {
 
   removeSaved(nombre: string): void {
     this.writeSaved(this.saved().filter((item) => item.nombre !== nombre));
+  }
+
+  /** En su ventana, un clic en el fondo la cierra. */
+  onDialogClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.close();
+    }
+  }
+
+  /** En su ventana, Esc cierra solo los filtros: no sigue hasta el diálogo de debajo. */
+  onDialogEscape(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.close();
+    this.textInput()?.nativeElement.focus();
   }
 
   /** Esc cierra; un clic fuera, también (sin aplicar lo que estuviera a medias). */

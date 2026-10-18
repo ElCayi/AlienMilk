@@ -7,10 +7,10 @@
   --bar-line: rgba(247, 248, 249, 0.16);
   --bar-height: 4.25rem;
   --paper: #f8f6f2;
-  --paper-soft: #efece6;
+  --paper-soft: #e9e4da;
   --paper-ink: #28333a;
   --paper-muted: #3d474e;
-  --paper-rule: #c9aea7;
+  --paper-rule: #aaa295;
   --coral: #ff7f7f;
   --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   display: block;

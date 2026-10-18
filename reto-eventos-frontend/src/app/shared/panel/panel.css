@@ -4,18 +4,18 @@
    panel-shell.css. */
 :host {
   --paper: #f8f6f2;
-  /* Franjas y tarjetas: papel con un tinte coral, que se distinga del blanco. */
-  --paper-soft: #f6e2dd;
-  --paper-stripe: rgba(255, 127, 127, 0.06);
+  /* Franjas y tarjetas: un beige que se distinga del blanco. */
+  --paper-soft: #e9e4da;
+  --paper-stripe: rgba(40, 51, 58, 0.045);
   --paper-ink: #28333a;
   --paper-muted: #3d474e;
   --paper-faint: #535d63;
   /* Filetes: entre filas y alrededor de las tarjetas. */
-  --paper-line: #dcc3bd;
+  --paper-line: #c2baad;
   /* Bordes de separación más marcados (cabeceras de tabla, pies). */
-  --paper-edge: #c9aea7;
+  --paper-edge: #aaa295;
   /* Bordes de los controles (campos, selectores, buscador): al menos 3:1 sobre blanco, para verlos. */
-  --paper-rule: #9b8580;
+  --paper-rule: #857d70;
   --field: #fff;
   --coral: #ff7f7f;
   /* El coral en texto sobre papel: el de la casa no llega al contraste mínimo. */
@@ -372,7 +372,7 @@ button.text-link {
 }
 
 .data-table tbody tr:hover {
-  background: rgba(255, 127, 127, 0.1);
+  background: rgba(40, 51, 58, 0.07);
 }
 
 .data-table .num {
@@ -509,7 +509,7 @@ th[aria-sort] .sort-button svg {
 
 /* La regla de arriba gana a la del hover general en las filas pares: aquí se repite para todas. */
 .data-table.is-expandable .row-summary:not(.is-open):hover {
-  background: rgba(255, 127, 127, 0.1);
+  background: rgba(40, 51, 58, 0.07);
 }
 
 .data-table.is-expandable .row-summary td {

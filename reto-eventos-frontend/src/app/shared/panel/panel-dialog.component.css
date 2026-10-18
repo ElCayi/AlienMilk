@@ -76,7 +76,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem) 1rem;
-  border-bottom: 1px solid #dcc3bd;
+  border-bottom: 1px solid #c2baad;
 }
 
 .panel-dialog-head h2 {

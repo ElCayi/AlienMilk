@@ -3,7 +3,7 @@
 .inbox {
   margin: 1.25rem 0 0;
   padding: 0;
-  border-top: 1px solid var(--paper-edge, #c9aea7);
+  border-top: 1px solid var(--paper-edge, #aaa295);
   list-style: none;
 }
 

@@ -1,3 +1,43 @@
+/* Dentro de su diálogo grande: en pantallas anchas llena el cuerpo del diálogo, con la entradilla arriba,
+   las dos columnas en medio (cada una con su desplazamiento) y lo pendiente abajo. */
+:host {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  :host {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100%;
+  }
+
+  .bulk-columns {
+    display: grid;
+    grid-template-columns: minmax(20rem, 0.85fr) minmax(0, 1.15fr);
+    gap: 1.75rem;
+    min-height: 0;
+  }
+
+  .bulk-columns > .bulk-step {
+    min-height: 0;
+    margin-top: 0;
+    padding-right: 0.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  /* La cabecera de la lista se queda arriba de su columna, no de una caja propia. */
+  .bulk-table thead th {
+    top: 0;
+  }
+
+  .bulk-foot .bulk-bar {
+    position: static;
+    margin-top: 1rem;
+  }
+}
+
 /* Edición en lote: dos pasos (elegir sesiones, cambiar su contenido) y una barra fija con lo pendiente. */
 .bulk-step {
   margin-top: 1.75rem;
@@ -55,14 +95,11 @@
     sans-serif;
 }
 
-/* La lista, en su caja con desplazamiento propio: con muchas sesiones, el contenido sigue cerca. */
+/* La lista crece con su columna: el único desplazamiento es el de la columna (o el de la página, en móvil). */
 .bulk-list {
-  max-height: 22rem;
   margin-top: 1rem;
-  overflow-y: auto;
   border: 1px solid var(--paper-line);
   border-radius: 0.6rem;
-  overscroll-behavior: contain;
 }
 
 .bulk-table thead th {
@@ -325,10 +362,6 @@
 @media (max-width: 760px) {
   .bulk-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .bulk-list {
-    max-height: 26rem;
   }
 
   .bulk-row,

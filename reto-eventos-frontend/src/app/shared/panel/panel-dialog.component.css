@@ -24,6 +24,20 @@
   height: min(54rem, calc(100dvh - 2rem));
 }
 
+/* El grande: la cabecera fija y solo el cuerpo se desplaza, para que lo de dentro pueda repartir su altura
+   (la edición en lote, en dos columnas) sin un desplazamiento dentro de otro. */
+.panel-dialog.is-huge[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-dialog.is-huge .panel-dialog-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .panel-dialog.is-tall {
   height: min(46rem, calc(100dvh - 2rem));
 }

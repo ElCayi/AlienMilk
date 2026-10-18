@@ -45,8 +45,7 @@
         </button>
       </div>
 
-      <!-- La misma barra que la lista de Sesiones, con sus filtros listos y los guardados de cada cual. El
-           panel sale en su ventana, encima: la columna es estrecha. -->
+      <!-- La misma barra que la lista de Sesiones, con sus filtros listos y los guardados de cada cual. -->
       <div class="toolbar">
         <app-filter-bar
           [fields]="filterFields()"
@@ -55,7 +54,6 @@
           [defaults]="filterDefaults"
           placeholder="Buscar por nº, nombre, referencia, tipo o lugar"
           [storageKey]="filterStorage"
-          [floating]="true"
           (valuesChange)="filterValues.set($event)"
         />
       </div>

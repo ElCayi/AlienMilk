@@ -125,12 +125,6 @@
   color: var(--paper-ink);
 }
 
-/* Los filtros salen en su ventana: la barra no tiene que quedarse pegada bajo la cabecera de la web. */
-.bulk-step .toolbar:has(.filter-bar.is-open) {
-  position: static;
-  background: none;
-}
-
 /* La lista crece con su columna: el único desplazamiento es el de la columna (o el de la página, en móvil). */
 .bulk-list {
   margin-top: 1rem;

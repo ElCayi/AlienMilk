@@ -22,7 +22,7 @@ let nextId = 0;
   selector: 'app-panel-dialog',
   standalone: true,
   template: `
-    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [class.is-max]="huge() && maximized()" [attr.aria-labelledby]="headingId" (close)="onClose()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
+    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [style.width]="width()" [class.is-max]="huge() && maximized()" [attr.aria-labelledby]="headingId" (close)="onClose()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
       <div class="panel-dialog-head" (dblclick)="onHeadDblClick($event)">
         <h2 [id]="headingId">{{ heading() }}</h2>
         <div class="panel-dialog-tools">
@@ -62,6 +62,8 @@ export class PanelDialogComponent {
   readonly tall = input(false);
   /** Casi toda la pantalla, para lo que antes era una página aparte (la hoja de control). */
   readonly huge = input(false);
+  /** Un ancho a medida (los filtros), cuando ninguno de los anteriores encaja. */
+  readonly width = input<string | null>(null);
   /**
    * Antes de cerrar con la ✕ o con Esc: si devuelve false, el diálogo se queda abierto (hay cambios sin
    * guardar y no se quieren perder). Cerrar desde el código (tras guardar) no pregunta.
@@ -129,6 +131,10 @@ export class PanelDialogComponent {
    */
   @HostListener('keydown.escape', ['$event'])
   onEscape(event: Event): void {
+    // Un diálogo abierto dentro de este (los filtros, en la edición en lote) atiende su propio Esc.
+    if ((event.target as Element | null)?.closest('dialog') !== this.dialog().nativeElement) {
+      return;
+    }
     if (this.beforeClose()) {
       event.preventDefault();
       void this.requestClose();

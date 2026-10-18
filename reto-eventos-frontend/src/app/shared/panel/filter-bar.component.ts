@@ -1,22 +1,7 @@
-import {
-  afterNextRender,
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  HostListener,
-  inject,
-  Injector,
-  input,
-  output,
-  signal,
-  untracked,
-  viewChild,
-} from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { Component, computed, effect, ElementRef, input, output, signal, untracked, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { revealExpanded } from './reveal-row';
+import { PanelDialogComponent } from './panel-dialog.component';
 
 /** Los filtros, por su clave: '' es «cualquiera». Van tal cual a la dirección (?pago=taquilla…). */
 export type FilterValues = Record<string, string>;
@@ -95,15 +80,15 @@ interface SavedFilter {
 
 /**
  * La barra de filtros de los paneles, al estilo de los CRM: una barra que busca mientras se escribe y,
- * con «Filtros», un panel con filtros listos a la izquierda (y los que guarde cada cual, en este
- * navegador) y los campos a la derecha. Todo se aplica al momento y el panel se queda abierto, para ir
- * sumando filtros mientras se ve la tabla detrás; «Listo» lo cierra. Lo activo se queda en la barra como
- * chips, cada uno con su ✕. Quien la usa guarda los valores y los lleva a la dirección.
+ * con «Filtros», un diálogo como los demás del panel, centrado y con el fondo oscurecido: los filtros
+ * listos (y los que guarde cada cual, en este navegador) a la izquierda y los campos a la derecha. Todo se
+ * aplica al momento, para ir sumando filtros; «Listo» lo cierra. Lo activo se queda en la barra como chips,
+ * cada uno con su ✕. Quien la usa guarda los valores y los lleva a la dirección.
  */
 @Component({
   selector: 'app-filter-bar',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet],
+  imports: [FormsModule, PanelDialogComponent],
   templateUrl: './filter-bar.component.html',
   styleUrls: ['./panel.css', './filter-bar.component.css'],
 })
@@ -118,14 +103,10 @@ export class FilterBarComponent {
   readonly placeholder = input('Filtrar y buscar');
   /** Dónde se guardan los filtros de cada cual (localStorage). */
   readonly storageKey = input.required<string>();
-  /** En una caja estrecha, el panel sale en su propia ventana, centrada, en vez de desplegarse debajo. */
-  readonly floating = input(false);
   readonly valuesChange = output<FilterValues>();
 
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly injector = inject(Injector);
   private readonly textInput = viewChild<ElementRef<HTMLInputElement>>('text');
-  private readonly floatDialog = viewChild<ElementRef<HTMLDialogElement>>('floatDialog');
+  private readonly dialog = viewChild.required<PanelDialogComponent>('dialog');
 
   readonly open = signal(false);
   readonly saved = signal<SavedFilter[]>([]);
@@ -145,7 +126,8 @@ export class FilterBarComponent {
       .map((field) => {
         const value = values[field.key] ?? '';
         const option = field.options?.find((item) => item.value === value);
-        return { key: field.key, label: field.type === 'select' ? (option?.label ?? value) : `${field.label}: ${value}` };
+        const shown = field.type === 'select' ? (option?.label ?? value) : field.type === 'date' ? shortDay(value) : value;
+        return { key: field.key, label: field.type === 'select' ? shown : `${field.label}: ${shown}` };
       });
   });
 
@@ -164,33 +146,23 @@ export class FilterBarComponent {
   }
 
   toggle(): void {
-    if (this.open()) {
-      this.close();
-    } else {
-      this.saving.set(false);
-      this.open.set(true);
-      // Abierto cerca del final de la pantalla, la vista baja lo justo para enseñarlo entero (sin que la
-      // barra se vaya bajo la cabecera fija).
-      afterNextRender(
-        () => {
-          const dialog = this.floatDialog()?.nativeElement;
-          if (dialog) {
-            dialog.showModal();
-            return;
-          }
-          const panel = this.host.nativeElement.querySelector<HTMLElement>('.filter-panel');
-          const bar = this.host.nativeElement.querySelector<HTMLElement>('.filter-bar');
-          if (panel && bar) {
-            revealExpanded(panel, bar);
-          }
-        },
-        { injector: this.injector },
-      );
-    }
+    this.saving.set(false);
+    this.saveName = '';
+    // Los guardados pueden haber cambiado en otro panel que usa la misma lista (Sesiones y su lote).
+    this.saved.set(this.readSaved(this.storageKey()));
+    this.open.set(true);
+    this.dialog().open();
   }
 
   close(): void {
+    this.dialog().close();
+  }
+
+  /** El diálogo se ha cerrado (Listo, la ✕ o Esc): la barra vuelve a tener el foco. */
+  onClosed(): void {
     this.open.set(false);
+    this.saving.set(false);
+    this.textInput()?.nativeElement.focus();
   }
 
   /** Un campo del panel, aplicado al momento. */
@@ -202,6 +174,13 @@ export class FilterBarComponent {
   isActive(values: FilterValues): boolean {
     const current = this.values();
     return Object.entries(values).every(([key, value]) => (current[key] ?? '') === value);
+  }
+
+  /** Si un filtro guardado es exactamente lo que hay puesto. */
+  isSavedActive(values: FilterValues): boolean {
+    const full = { ...this.defaults(), ...values };
+    const current = this.values();
+    return this.fields().every((field) => (current[field.key] ?? '') === (full[field.key] ?? ''));
   }
 
   /**
@@ -218,9 +197,9 @@ export class FilterBarComponent {
     }
   }
 
-  /** Los guardados no se suman: son un filtro entero, que sustituye al que hubiera. */
+  /** Los guardados no se suman: son un filtro entero, que sustituye al que hubiera; pulsarlo otra vez lo quita. */
   useSaved(values: FilterValues): void {
-    this.valuesChange.emit({ ...this.defaults(), ...values });
+    this.valuesChange.emit(this.isSavedActive(values) ? { ...this.defaults() } : { ...this.defaults(), ...values });
   }
 
   removeChip(key: string): void {
@@ -229,20 +208,33 @@ export class FilterBarComponent {
 
   clearAll(): void {
     this.valuesChange.emit({ ...this.defaults() });
-    this.textInput()?.nativeElement.focus();
+    if (!this.open()) {
+      this.textInput()?.nativeElement.focus();
+    }
   }
 
   visibleFields(): FilterField[] {
     return this.fields().filter((field) => !field.showWhen || field.showWhen(this.values()));
   }
 
-  /** Guarda el filtro del panel con un nombre, en este navegador. */
+  /** Lo que se guarda: solo los campos que no están en su valor de «sin filtrar». */
+  private currentFilter(): FilterValues {
+    const values = this.values();
+    const defaults = this.defaults();
+    return Object.fromEntries(
+      this.fields()
+        .map((field) => [field.key, values[field.key] ?? ''] as const)
+        .filter(([key, value]) => value !== (defaults[key] ?? '')),
+    );
+  }
+
+  /** Guarda el filtro puesto con un nombre, en este navegador; con un nombre que ya existe, lo sustituye. */
   saveDraft(): void {
     const nombre = this.saveName.trim();
-    if (!nombre) {
+    if (!nombre || !this.active()) {
       return;
     }
-    const list = [...this.saved().filter((item) => item.nombre !== nombre), { nombre, valores: { ...this.values() } }];
+    const list = [...this.saved().filter((item) => item.nombre !== nombre), { nombre, valores: this.currentFilter() }];
     this.writeSaved(list);
     this.saveName = '';
     this.saving.set(false);
@@ -252,41 +244,13 @@ export class FilterBarComponent {
     this.writeSaved(this.saved().filter((item) => item.nombre !== nombre));
   }
 
-  /** En su ventana, un clic en el fondo la cierra. */
-  onDialogClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
-      this.close();
-    }
-  }
-
-  /** En su ventana, Esc cierra solo los filtros: no sigue hasta el diálogo de debajo. */
-  onDialogEscape(event: Event): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.close();
-    this.textInput()?.nativeElement.focus();
-  }
-
-  /** Esc cierra; un clic fuera, también (sin aplicar lo que estuviera a medias). */
-  @HostListener('document:keydown.escape')
-  onEscape(): void {
-    if (this.open()) {
-      this.close();
-      this.textInput()?.nativeElement.focus();
-    }
-  }
-
-  @HostListener('document:pointerdown', ['$event'])
-  onPointerDown(event: PointerEvent): void {
-    if (this.open() && !this.host.nativeElement.contains(event.target as Node)) {
-      this.close();
-    }
-  }
-
   private readSaved(key: string): SavedFilter[] {
     try {
       const raw = localStorage.getItem(key);
-      return raw ? (JSON.parse(raw) as SavedFilter[]) : [];
+      const list = raw ? (JSON.parse(raw) as unknown) : [];
+      return Array.isArray(list)
+        ? list.filter((item): item is SavedFilter => !!item && typeof item.nombre === 'string' && !!item.valores)
+        : [];
     } catch {
       return [];
     }
@@ -300,4 +264,15 @@ export class FilterBarComponent {
       // Sin almacenamiento (modo privado estricto): el filtro vale mientras dure la página.
     }
   }
+}
+
+/** Un día de la dirección (2026-11-20) como se lee en un chip: 20 nov 2026. */
+function shortDay(value: string): string {
+  const [year, month, day] = value.split('-').map(Number);
+  if (!year || !month || !day) {
+    return value;
+  }
+  return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+    .format(new Date(year, month - 1, day))
+    .replace('.', '');
 }

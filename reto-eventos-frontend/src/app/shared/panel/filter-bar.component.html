@@ -1,4 +1,4 @@
-<div class="filter-bar" [class.is-open]="open()">
+<div class="filter-bar">
   <div class="filter-field">
     <svg class="filter-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
     <!-- Lo activo, en chips: cada uno se quita con su ✕. -->
@@ -27,122 +27,120 @@
   <button
     type="button"
     class="btn filter-toggle"
+    aria-haspopup="dialog"
     [attr.aria-expanded]="open()"
-    [attr.aria-controls]="panelId"
     (click)="toggle()"
   >
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
     Filtros
-  </button>
-
-  @if (open()) {
-    @if (floating()) {
-      <!-- En una caja estrecha (la edición en lote), el panel sale en su propia ventana, centrada encima. -->
-      <dialog
-        #floatDialog
-        class="filter-dialog"
-        tabindex="-1"
-        aria-label="Filtros"
-        (click)="onDialogClick($event)"
-        (keydown.escape)="onDialogEscape($event)"
-        (close)="open.set(false)"
-      >
-        <div class="filter-panel is-floating" [id]="panelId">
-          <ng-container [ngTemplateOutlet]="panelBody" />
-        </div>
-      </dialog>
-    } @else {
-      <div class="filter-panel" [id]="panelId" role="dialog" aria-label="Filtros">
-        <ng-container [ngTemplateOutlet]="panelBody" />
-      </div>
+    @if (chips().length) {
+      <span class="filter-count">{{ chips().length }}</span>
     }
-  }
+  </button>
 </div>
 
-<ng-template #panelBody>
-  <!-- A la izquierda, lo de todos los días y lo que haya guardado cada cual. -->
-  <aside class="filter-presets">
-    <ul>
-      @for (preset of presets(); track preset.label) {
-        <li>
-          <button type="button" [attr.aria-pressed]="isActive(preset.values)" (click)="usePreset(preset.values)">
-            <span>{{ preset.label }}</span>
-            @if (preset.count !== undefined) {
-              <span class="segmented-count">{{ preset.count }}</span>
-            }
-          </button>
-        </li>
-      }
-    </ul>
-    @if (saved().length) {
-      <p class="filter-presets-title">Mis filtros</p>
-      <ul>
-        @for (item of saved(); track item.nombre) {
-          <li class="filter-saved">
-            <button type="button" (click)="useSaved(item.valores)"><span>{{ item.nombre }}</span></button>
-            <button
-              type="button"
-              class="filter-saved-remove"
-              [attr.aria-label]="'Borrar el filtro ' + item.nombre"
-              (click)="removeSaved(item.nombre)"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
-            </button>
-          </li>
-        }
-      </ul>
-    }
-    @if (saving()) {
-      <form class="filter-save" (ngSubmit)="saveDraft()">
-        <label class="visually-hidden" for="{{ panelId }}-name">Nombre del filtro</label>
-        <input [id]="panelId + '-name'" name="nombre" maxlength="40" placeholder="Nombre del filtro" [(ngModel)]="saveName" />
-        <button type="submit" class="btn btn-small">Guardar</button>
-      </form>
-    } @else {
-      <button type="button" class="text-link filter-save-open" (click)="saving.set(true)">+ Guardar este filtro</button>
-    }
-  </aside>
-
-  <!-- A la derecha, los campos: cada cambio se aplica al momento. -->
-  <form class="filter-fields" (ngSubmit)="close()">
-    <div class="form-grid">
-      @for (field of visibleFields(); track field.key) {
-        <div class="field" [class.is-wide]="field.type === 'text'">
-          <label class="field-label" [for]="panelId + '-' + field.key">{{ field.label }}</label>
-          @switch (field.type) {
-            @case ('select') {
-              <select [id]="panelId + '-' + field.key" [name]="field.key" [ngModel]="values()[field.key] || ''" (ngModelChange)="setField(field.key, $event)">
-                @for (option of field.options; track option.value) {
-                  <option [value]="option.value">{{ option.label }}</option>
+<!-- Los filtros, en un diálogo como los demás: centrado y con el fondo oscurecido. -->
+<app-panel-dialog #dialog heading="Filtros" width="min(60rem, calc(100vw - 2rem))" (closed)="onClosed()">
+  @if (open()) {
+    <div class="filter-panel" [id]="panelId">
+      <!-- A la izquierda, lo de todos los días y lo que haya guardado cada cual. -->
+      <aside class="filter-presets">
+        <p class="filter-presets-title">Filtros listos</p>
+        <ul>
+          @for (preset of presets(); track preset.label) {
+            <li>
+              <button type="button" class="filter-option" data-fit-wrap [attr.aria-pressed]="isActive(preset.values)" (click)="usePreset(preset.values)">
+                <span>{{ preset.label }}</span>
+                @if (preset.count !== undefined) {
+                  <span class="segmented-count">{{ preset.count }}</span>
                 }
-              </select>
+              </button>
+            </li>
+          }
+        </ul>
+
+        <p class="filter-presets-title">Mis filtros</p>
+        @if (saved().length) {
+          <ul>
+            @for (item of saved(); track item.nombre) {
+              <li class="filter-saved">
+                <button type="button" class="filter-option" data-fit-wrap [attr.aria-pressed]="isSavedActive(item.valores)" (click)="useSaved(item.valores)">
+                  <span>{{ item.nombre }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="filter-saved-remove"
+                  [attr.aria-label]="'Borrar el filtro ' + item.nombre"
+                  title="Borrar este filtro"
+                  (click)="removeSaved(item.nombre)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+                </button>
+              </li>
             }
-            @case ('date') {
-              <input
-                type="date"
-                [id]="panelId + '-' + field.key"
-                [name]="field.key"
-                [ngModel]="values()[field.key] || ''"
-                (ngModelChange)="setField(field.key, $event)"
-              />
-            }
-            @default {
-              <input
-                type="search"
-                [id]="panelId + '-' + field.key"
-                [name]="field.key"
-                [placeholder]="field.placeholder ?? ''"
-                [ngModel]="values()[field.key] || ''"
-                (ngModelChange)="setField(field.key, $event)"
-              />
-            }
+          </ul>
+        } @else {
+          <p class="filter-none">Pon unos filtros y guárdalos con un nombre para tenerlos aquí.</p>
+        }
+        @if (saving()) {
+          <form class="filter-save" (ngSubmit)="saveDraft()">
+            <label class="visually-hidden" [for]="panelId + '-name'">Nombre del filtro</label>
+            <input [id]="panelId + '-name'" name="nombre" maxlength="40" placeholder="Nombre del filtro" [(ngModel)]="saveName" />
+            <div class="filter-save-actions">
+              <button type="button" class="btn btn-small" (click)="saving.set(false)">Cancelar</button>
+              <button type="submit" class="btn btn-small btn-primary" [disabled]="!saveName.trim()">Guardar</button>
+            </div>
+          </form>
+        } @else {
+          <button type="button" class="text-link filter-save-open" [disabled]="!active()" (click)="saving.set(true)">
+            + Guardar los filtros puestos
+          </button>
+        }
+      </aside>
+
+      <!-- A la derecha, los campos: cada cambio se aplica al momento. -->
+      <form class="filter-fields" (ngSubmit)="close()">
+        <div class="form-grid">
+          @for (field of visibleFields(); track field.key) {
+            <div class="field" [class.is-wide]="field.type === 'text'">
+              <label class="field-label" [for]="panelId + '-' + field.key">{{ field.label }}</label>
+              @switch (field.type) {
+                @case ('select') {
+                  <select [id]="panelId + '-' + field.key" [name]="field.key" [ngModel]="values()[field.key] || ''" (ngModelChange)="setField(field.key, $event)">
+                    @for (option of field.options; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                }
+                @case ('date') {
+                  <input
+                    type="date"
+                    [id]="panelId + '-' + field.key"
+                    [name]="field.key"
+                    [ngModel]="values()[field.key] || ''"
+                    (ngModelChange)="setField(field.key, $event)"
+                  />
+                }
+                @default {
+                  <!-- De texto y no de búsqueda: en una de búsqueda, Chrome se queda el Esc y el diálogo no se cierra. -->
+                  <input
+                    type="text"
+                    [id]="panelId + '-' + field.key"
+                    [name]="field.key"
+                    [placeholder]="field.placeholder ?? ''"
+                    [ngModel]="values()[field.key] || ''"
+                    (ngModelChange)="setField(field.key, $event)"
+                  />
+                }
+              }
+            </div>
           }
         </div>
-      }
+        <div class="filter-actions">
+          <button type="button" class="btn" [disabled]="!active()" (click)="clearAll()">Quitar todos</button>
+          <button type="submit" class="btn btn-primary">Listo</button>
+        </div>
+      </form>
     </div>
-    <div class="filter-actions">
-      <button type="button" class="btn" (click)="clearAll()">Reiniciar</button>
-      <button type="submit" class="btn btn-primary">Listo</button>
-    </div>
-  </form>
-</ng-template>
+  }
+</app-panel-dialog>

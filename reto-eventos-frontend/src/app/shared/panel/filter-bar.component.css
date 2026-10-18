@@ -1,5 +1,5 @@
 /* La barra de filtros: el buscador de siempre, con lo activo en chips, y a su lado «Filtros», que abre
-   el panel justo debajo, a todo el ancho de la barra. */
+   su diálogo. */
 :host {
   display: block;
   flex: 1 1 32rem;
@@ -112,72 +112,57 @@
   min-height: 2.6rem;
 }
 
-/* El hueco entre la barra y el panel, tapado: con la barra fija, la tabla no asoma por él. */
-.filter-bar.is-open::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  right: 0;
-  left: 0;
-  height: 0.4rem;
-  background: var(--field);
+/* Cuántos filtros hay puestos (sin contar lo escrito), junto a «Filtros». */
+.filter-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.3rem;
+  height: 1.3rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  color: var(--field);
+  background: var(--paper-ink);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
 }
 
-.filter-bar.is-open .filter-toggle {
-  border-color: var(--paper-ink);
-}
-
-/* El panel: los filtros listos a la izquierda, en la franja del papel; los campos a la derecha. */
+/* El diálogo: los filtros listos a la izquierda, en la franja del papel; los campos a la derecha. La
+   columna de la izquierda tiene su ancho y lo de dentro se ajusta a él, nunca al revés. */
 .filter-panel {
-  position: absolute;
-  top: calc(100% + 0.4rem);
-  right: 0;
-  left: 0;
-  z-index: 1;
   display: grid;
-  /* Fijo bajo la cabecera, nunca más alto que lo que queda de pantalla: lo que sobre, con scroll propio.
-     Dentro de una caja (la edición en lote), la caja dice su alto con --filter-panel-max. */
-  max-height: var(--filter-panel-max, calc(100dvh - var(--bar-height, 4.25rem) - 4.5rem));
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
-  border: 1px solid var(--paper-rule);
-  border-radius: 0.6rem;
-  background: var(--paper);
-  box-shadow: 0 18px 40px rgba(40, 51, 58, 0.18);
-  animation: filter-in 160ms ease;
-  container-type: inline-size;
-}
-
-@keyframes filter-in {
-  from {
-    opacity: 0;
-    transform: translateY(-0.25rem);
-  }
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
 }
 
 .filter-presets {
   display: grid;
+  /* Una sola columna con el ancho del lado izquierdo: lo largo se parte, no lo ensancha. */
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  min-width: 0;
   padding: 0.75rem;
+  border-radius: 0.6rem;
   background: var(--paper-soft);
 }
 
 .filter-presets ul {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.15rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.filter-presets li > button:first-child {
+.filter-option {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
   width: 100%;
+  min-width: 0;
   padding: 0.5rem 0.6rem;
   border: 0;
   border-radius: 0.4rem;
@@ -190,24 +175,47 @@
   cursor: pointer;
 }
 
-.filter-presets li > button:first-child:hover,
-.filter-presets li > button:first-child:focus-visible {
+.filter-option > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.filter-option:hover,
+.filter-option:focus-visible {
   background: var(--field);
 }
 
-/* Puesto: en blanco y perfilado, como el filtro elegido de antes; pulsarlo otra vez lo quita. */
-.filter-presets li > button[aria-pressed='true'] {
+/* Puesto: en blanco y perfilado; pulsarlo otra vez lo quita. */
+.filter-option[aria-pressed='true'] {
   outline: 1px solid var(--paper-rule);
   background: var(--field);
 }
 
+/* Un filtro guardado: su nombre y, a su lado, siempre a la vista, la ✕ para borrarlo. */
 .filter-saved {
   display: flex;
   align-items: center;
+  gap: 0.2rem;
+}
+
+.filter-saved .filter-option {
+  flex: 1;
+}
+
+.filter-saved-remove {
+  flex: none;
+}
+
+/* Las ✕ que no están dentro de la barra (la de los guardados) necesitan su trazo; sin él no se veían. */
+.filter-saved-remove svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
 }
 
 .filter-presets-title {
-  margin: 0.5rem 0 0;
+  margin: 0.4rem 0 0;
   padding: 0 0.6rem;
   color: var(--paper-faint);
   font:
@@ -217,28 +225,59 @@
   text-transform: uppercase;
 }
 
-.filter-save-open {
-  justify-self: start;
-  margin: 0.5rem 0.6rem 0;
+.filter-presets-title:first-child {
+  margin-top: 0;
 }
 
+.filter-none {
+  margin: 0;
+  padding: 0 0.6rem;
+  color: var(--paper-muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.filter-save-open {
+  justify-self: start;
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  margin: 0.4rem 0.6rem 0;
+}
+
+.filter-save-open:disabled {
+  color: var(--paper-faint);
+  text-decoration: none;
+  cursor: default;
+}
+
+/* Guardar: el nombre a todo el ancho de la columna y los botones debajo, para que quepa siempre. */
 .filter-save {
-  display: flex;
+  display: grid;
   gap: 0.4rem;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
 .filter-save input {
-  flex: 1;
+  width: 100%;
   min-width: 0;
-  padding: 0.4rem 0.6rem;
+  padding: 0.45rem 0.6rem;
   border: 1px solid var(--paper-rule);
   border-radius: 0.4rem;
   background: var(--field);
+  font:
+    0.9rem 'Nunito',
+    sans-serif;
+}
+
+.filter-save-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
 }
 
 .filter-fields {
-  padding: 1rem 1.25rem 1.1rem;
+  min-width: 0;
 }
 
 .filter-actions {
@@ -246,13 +285,6 @@
   justify-content: flex-end;
   gap: 0.6rem;
   margin-top: 1.1rem;
-}
-
-/* En un panel estrecho (la columna de la edición en lote), los campos uno debajo de otro. */
-@container (max-width: 40rem) {
-  .filter-fields .form-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 @media (max-width: 760px) {
@@ -263,32 +295,4 @@
   .filter-fields .form-grid {
     grid-template-columns: minmax(0, 1fr);
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .filter-panel {
-    animation: none;
-  }
-}
-
-/* En su propia ventana: centrada en la pantalla, a un tamaño cómodo, con el fondo apenas velado para que
-   la lista se siga viendo detrás. */
-.filter-dialog {
-  max-width: none;
-  max-height: none;
-  padding: 0;
-  border: 0;
-  overflow: visible;
-  background: none;
-}
-
-.filter-dialog::backdrop {
-  background: rgba(5, 10, 16, 0.25);
-}
-
-.filter-panel.is-floating {
-  position: static;
-  width: min(54rem, calc(100vw - 2rem));
-  max-height: min(38rem, calc(100dvh - 2rem));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }

@@ -166,15 +166,6 @@ button.text-link {
   margin: 1.25rem 0 0;
 }
 
-/* Con el panel de filtros abierto, la barra se queda bajo la cabecera fija y la tabla pasa por detrás:
-   así se ve el resultado sin perder los filtros. Sin cambiar márgenes, para que abrirlo no mueva nada. */
-.toolbar:has(.filter-bar.is-open) {
-  position: sticky;
-  top: var(--bar-height, 4.25rem);
-  z-index: 15;
-  background: var(--field);
-}
-
 .search {
   display: flex;
   flex: 1 1 16rem;

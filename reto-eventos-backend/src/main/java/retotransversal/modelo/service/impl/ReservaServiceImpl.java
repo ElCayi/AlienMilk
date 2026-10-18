@@ -356,6 +356,17 @@ public class ReservaServiceImpl implements ReservaService {
 		return reservaRepository.save(reserva);
 	}
 
+	@Override
+	@Transactional
+	public Reserva reabrirRevision(Integer idReserva) {
+		Reserva reserva = findById(idReserva);
+		if (reserva.cancelada() || !reserva.pideAdaptaciones()) {
+			throw new ConflictoNegocioException("Esta reserva no tiene adaptaciones ni material que revisar");
+		}
+		reserva.reabrirRevision();
+		return reservaRepository.save(reserva);
+	}
+
 	/**
 	 * Deshace una cancelación (un error, o un cliente que cambia de idea), con las reglas de una reserva
 	 * nueva: sesión activa, plazas libres (leídas con la sesión bloqueada) y diez por persona. Solo si no

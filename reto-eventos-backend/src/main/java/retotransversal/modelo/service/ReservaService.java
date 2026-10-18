@@ -38,6 +38,9 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	/** La revisión de las adaptaciones y el material: aceptadas o no, con una nota para el cliente. */
 	Reserva revisar(Integer idReserva, boolean aceptada, String nota);
 
+	/** Vuelve a dejar «por revisar» una reserva ya revisada (el «Deshacer» de la ✕ del panel). */
+	Reserva reabrirRevision(Integer idReserva);
+
 	/** Deshace una cancelación si quedan plazas y no se movió dinero al cancelarla. */
 	Reserva reactivar(Integer idReserva);
 

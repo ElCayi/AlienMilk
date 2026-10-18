@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -97,6 +98,12 @@ public class AdminReservaRestController {
 		Object nota = datos.get("nota");
 		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.revisar(idReserva,
 				Boolean.TRUE.equals(datos.get("aceptada")), nota == null ? null : nota.toString())));
+	}
+
+	/** La vuelve a dejar por revisar: deshace la ✕ con la que se dio por revisada. */
+	@DeleteMapping("/{idReserva}/revision")
+	public ResponseEntity<ReservaDto> reabrirRevision(@PathVariable Integer idReserva) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.reabrirRevision(idReserva)));
 	}
 
 	/** Deshace una cancelación, si quedan plazas y no se movió dinero (ver ReservaService#reactivar). */

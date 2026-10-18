@@ -13,7 +13,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
@@ -640,7 +640,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
   readonly expanded = signal<number | null>(null);
   /** Lo que acaba de pasarle a una reserva, dicho en su ficha y no arriba del todo, fuera de la vista. */
-  readonly rowNotice = signal<{ id: number; text: string } | null>(null);
+  readonly rowNotice = signal<{ id: number; text: string; undoReview?: boolean } | null>(null);
   /** Una reserva recién cancelada sigue en su sitio hasta que se cambie de filtro, para no saltar. */
   readonly stay = signal<number | null>(null);
 
@@ -964,43 +964,34 @@ export class AdminReservationsPanelComponent implements OnInit {
     });
   }
 
-  // La revisión de adaptaciones y material, en su diálogo.
-  readonly reviewDialogRef = viewChild.required<PanelDialogComponent>('reviewDialog');
-  readonly reviewTarget = signal<Reserva | null>(null);
-  readonly reviewError = signal<string | null>(null);
-  reviewAccept = true;
-  reviewNote = '';
-
-  openReview(reserva: Reserva, accept: boolean): void {
-    this.reviewTarget.set(reserva);
-    this.reviewAccept = accept;
-    this.reviewNote = reserva.revisionNota ?? '';
-    this.reviewError.set(null);
-    this.reviewDialogRef().open();
+  /**
+   * Por revisar: lo que pidió el cliente se gestiona a mano y, hecho, se da por revisado con la ✕ (sin
+   * decisión formal: el cliente deja de ver «En revisión»). El aviso deja deshacerlo.
+   */
+  markReviewed(reserva: Reserva): void {
+    this.setReview(reserva, this.admin.revisarReserva(reserva.idReserva, true, ''), 'Revisada: ya no sale en «Por revisar».', true);
   }
 
-  saveReview(): void {
-    const reserva = this.reviewTarget();
-    if (!reserva || this.busy() !== null) {
-      return;
-    }
-    if (!this.reviewAccept && !this.reviewNote.trim()) {
-      this.reviewError.set('Explica al cliente por qué no se aceptan.');
+  undoReview(reserva: Reserva): void {
+    this.setReview(reserva, this.admin.reabrirRevision(reserva.idReserva), 'Vuelve a estar por revisar.', false);
+  }
+
+  private setReview(reserva: Reserva, request: Observable<Reserva>, text: string, undo: boolean): void {
+    if (this.busy() !== null) {
       return;
     }
     this.busy.set(reserva.idReserva);
-    this.admin.revisarReserva(reserva.idReserva, this.reviewAccept, this.reviewNote).subscribe({
+    request.subscribe({
       next: (updated) => {
         this.busy.set(null);
-        this.reviewDialogRef().close();
         this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
-        // Sigue en su sitio aunque ya no «requiera revisión»: se suelta al cambiar de filtro.
+        // Sigue en su sitio aunque ya no esté por revisar: se suelta al cambiar de filtro.
         this.stay.set(updated.idReserva);
-        this.rowNotice.set({ id: updated.idReserva, text: `Adaptaciones ${this.review(updated).toLowerCase()}.` });
+        this.rowNotice.set({ id: updated.idReserva, text, undoReview: undo });
       },
       error: (error) => {
         this.busy.set(null);
-        this.reviewError.set(errorMessage(error, 'No se ha podido guardar la decisión.'));
+        this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido guardar.') });
       },
     });
   }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -195,6 +196,18 @@ class AdminReservasTest {
                 false, null));
         assertThat(reserva.requiereRevision()).isTrue();
         assertThat(reserva.getRevisionAceptada()).isNull();
+    }
+
+    @Test
+    void aReviewMarkedDoneCanBeReopenedFromThePanel() throws Exception {
+        service.revisar(7, true, null);
+        assertThat(reserva.requiereRevision()).isFalse();
+
+        mvc.perform(delete("/api/admin/reservas/7/revision"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requiereRevision").value(true))
+                .andExpect(jsonPath("$.revision").value("PENDIENTE"));
+        assertThat(reserva.getRevisadaEn()).isNull();
     }
 
     @Test

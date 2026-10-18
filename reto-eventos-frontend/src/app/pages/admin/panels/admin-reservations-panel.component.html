@@ -578,7 +578,14 @@
                       </header>
                       @if (rowNotice(); as aviso) {
                         @if (aviso.id === reserva.idReserva) {
-                          <p class="entity-notice" role="status">{{ aviso.text }}</p>
+                          <p class="entity-notice" role="status">
+                            {{ aviso.text }}
+                            @if (aviso.undoReview) {
+                              <button type="button" class="text-link" [disabled]="busy() === reserva.idReserva" (click)="undoReview(reserva)">
+                                Deshacer
+                              </button>
+                            }
+                          </p>
                         }
                       } @else if (reserva.canceladaEn && reserva.estadoEvento === 'ACTIVO' && !reactivable(reserva)) {
                         <p class="entity-notice">
@@ -587,8 +594,40 @@
                         </p>
                       }
 
-                      <!-- A lo ancho: los datos breves en fila, arriba, y debajo quién viene y lo que pide revisión. -->
+                      <!-- A lo ancho: lo que está por revisar, lo primero; los datos breves en fila y, debajo, quién viene. -->
                       <div class="entity-body is-spread">
+                        <!-- Por revisar: lo que pidió al reservar. Se gestiona a mano y, hecho, se quita con la ✕. -->
+                        @if (reserva.revision === 'PENDIENTE') {
+                          <section class="review-todo" aria-labelledby="review-todo-{{ reserva.idReserva }}">
+                            <header class="review-todo-head">
+                              <p class="review-todo-title" id="review-todo-{{ reserva.idReserva }}">
+                                <span class="review-todo-dot" aria-hidden="true"></span>
+                                Por revisar
+                              </p>
+                              @if (!reserva.canceladaEn) {
+                                <button
+                                  type="button"
+                                  class="review-todo-done"
+                                  aria-label="Dar por revisada"
+                                  title="Dar por revisada"
+                                  [disabled]="busy() === reserva.idReserva"
+                                  (click)="markReviewed(reserva)"
+                                >
+                                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                                </button>
+                              }
+                            </header>
+                            <p class="review-todo-help">
+                              Al reservar pidió esto. Gestiónalo antes de la sesión y, cuando esté, quítalo con la ✕.
+                            </p>
+                            @if (reserva.adaptaciones) {
+                              <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
+                            }
+                            @if (reserva.materialExterno) {
+                              <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
+                            }
+                          </section>
+                        }
                         <div class="entity-side">
                           <section aria-label="Sesión">
                             <p class="detail-people-title">Sesión</p>
@@ -710,45 +749,19 @@
                             }
                           </section>
 
-                          <!-- Lo que pide y lo que AlienMilk decidió: en coral mientras está pendiente. -->
-                          @if (reserva.revision; as revision) {
-                            <section
-                              class="detail-review"
-                              [class.is-settled]="revision !== 'PENDIENTE'"
-                              aria-label="Adaptaciones y material"
-                            >
-                              <p class="detail-people-title">
-                                {{ revision === 'PENDIENTE' ? 'Por revisar' : 'Adaptaciones y material · ' + review(reserva) }}
-                              </p>
-                              @if (revision === 'PENDIENTE') {
-                                <p class="detail-review-help">
-                                  Al reservar, pidió lo de aquí abajo. Decide si se acepta antes de la sesión: verá la
-                                  decisión, con tu nota, en su panel.
-                                </p>
-                              }
+                          <!-- Ya revisada: lo que pidió sigue aquí, como un dato más, sin resaltar. -->
+                          @if (reserva.revision && reserva.revision !== 'PENDIENTE') {
+                            <section class="detail-review is-settled" aria-label="Adaptaciones y material">
+                              <p class="detail-people-title">Adaptaciones y material</p>
                               @if (reserva.adaptaciones) {
                                 <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
                               }
                               @if (reserva.materialExterno) {
                                 <p><strong>Material externo.</strong> {{ reserva.materialDescripcion }}</p>
                               }
-                              @if (revision !== 'PENDIENTE') {
-                                <p class="detail-review-decision">
-                                  {{ review(reserva) }} el {{ dayTime(reserva.revisadaEn) }}@if (reserva.revisionNota) {: {{ reserva.revisionNota }}}
-                                </p>
-                              }
-                              @if (!reserva.canceladaEn) {
-                                <div class="row-actions">
-                                  @if (revision === 'PENDIENTE') {
-                                    <button type="button" class="btn btn-small btn-primary" (click)="openReview(reserva, true)">Aceptar</button>
-                                    <button type="button" class="btn btn-small" (click)="openReview(reserva, false)">No aceptar</button>
-                                  } @else {
-                                    <button type="button" class="btn btn-small" (click)="openReview(reserva, revision === 'ACEPTADA')">
-                                      Cambiar la decisión
-                                    </button>
-                                  }
-                                </div>
-                              }
+                              <p class="detail-review-decision">
+                                {{ reserva.revision === 'NO_ACEPTADA' ? 'No aceptadas' : 'Revisado' }} el {{ dayTime(reserva.revisadaEn) }}@if (reserva.revisionNota) {: {{ reserva.revisionNota }}}
+                              </p>
                             </section>
                           }
                         </div>
@@ -914,45 +927,6 @@
         <button type="submit" class="btn btn-danger" [disabled]="busy() !== null" [attr.aria-busy]="busy() !== null">
           {{ busy() !== null ? 'Cancelando…' : 'Cancelar reserva' }}
         </button>
-      </div>
-    </form>
-  }
-</app-panel-dialog>
-
-<app-panel-dialog #reviewDialog heading="Revisar adaptaciones y material">
-  @if (reviewTarget(); as reserva) {
-    <form novalidate (ngSubmit)="saveReview()">
-      <p class="dialog-copy">
-        {{ number(reserva) }} · {{ reserva.nombreCliente }} · {{ reserva.nombreEvento }}. La nota la verá también el
-        cliente en Mi panel.
-      </p>
-      <div class="segmented review-choice" role="group" aria-label="Decisión">
-        <button type="button" [attr.aria-pressed]="reviewAccept" (click)="reviewAccept = true">
-          Aceptar
-        </button>
-        <button type="button" [attr.aria-pressed]="!reviewAccept" (click)="reviewAccept = false">
-          No aceptar
-        </button>
-      </div>
-      <div class="field" [class.is-invalid]="reviewError() && !reviewAccept && !reviewNote.trim()">
-        <label class="field-label" for="review-note">
-          Nota {{ reviewAccept ? '(opcional)' : '' }} <span class="field-note">{{ reviewNote.length }}/300</span>
-        </label>
-        <textarea
-          id="review-note"
-          name="nota"
-          rows="3"
-          maxlength="300"
-          [placeholder]="reviewAccept ? 'Le reservamos una butaca en la fila de penumbra.' : 'Por qué no se aceptan y qué alternativas tiene.'"
-          [(ngModel)]="reviewNote"
-        ></textarea>
-      </div>
-      @if (reviewError(); as message) {
-        <p class="notice is-error form-error" role="alert">{{ message }}</p>
-      }
-      <div class="form-actions">
-        <button type="button" class="btn" (click)="reviewDialog.close()">Volver</button>
-        <button type="submit" class="btn btn-primary" [disabled]="busy() !== null">Guardar la decisión</button>
       </div>
     </form>
   }

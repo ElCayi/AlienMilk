@@ -203,6 +203,11 @@ export class AdminService {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`, { aceptada, nota });
   }
 
+  /** La vuelve a dejar por revisar (el «Deshacer» de la ✕). */
+  reabrirRevision(idReserva: number): Observable<Reserva> {
+    return this.http.delete<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`);
+  }
+
   /** Deshace una cancelación, si quedan plazas y no se movió dinero al cancelarla. */
   reactivarReserva(idReserva: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/reactivar`, {});

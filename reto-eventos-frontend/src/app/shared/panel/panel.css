@@ -894,15 +894,96 @@ th[aria-sort] .sort-button svg {
 }
 
 /* La revisión lleva su filete coral (o gris, ya decidida) a la izquierda: esa esquina, recta. */
-/* Lo que pide decidir va primero, antes que los participantes. */
-.entity-body.is-spread > .entity-related > .detail-review:not(.is-settled) {
-  order: -1;
+/* Por revisar: lo primero de la ficha y lo que más destaca, con trazo coral (sin relleno, como los demás
+   recuadros). La ✕ arriba a la derecha lo da por hecho. */
+.review-todo {
+  padding: 0.85rem 1rem 0.95rem 1.1rem;
+  border: 1.5px solid var(--coral);
+  border-left-width: 4px;
+  border-radius: 0.3rem 0.6rem 0.6rem 0.3rem;
+  background: var(--field);
 }
 
-.entity-related .detail-review p.detail-review-help {
+.review-todo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.review-todo-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--coral-ink);
+  font:
+    800 0.78rem / 1.3 'Nunito',
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.review-todo-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.review-todo-done {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--paper-rule);
+  border-radius: 50%;
+  color: var(--paper-ink);
+  background: var(--field);
+  cursor: pointer;
+}
+
+.review-todo-done svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.review-todo-done:is(:hover, :focus-visible) {
+  border-color: var(--coral);
+  color: var(--coral-ink);
+}
+
+.review-todo-done:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.review-todo p:not(.review-todo-title) {
+  margin: 0 0 0.35rem;
+  color: var(--paper-ink);
+  font-size: 0.97rem;
+  line-height: 1.5;
+}
+
+.review-todo p.review-todo-help {
   margin-bottom: 0.6rem;
   color: var(--paper-faint);
   font-size: 0.88rem;
+}
+
+.review-todo p:last-child {
+  margin-bottom: 0;
+}
+
+.entity-notice .text-link {
+  margin-left: 0.4rem;
 }
 
 .entity-body.is-spread > .entity-related > .detail-review {
@@ -1715,9 +1796,6 @@ th[aria-sort] .sort-button svg {
 
 
 
-.review-choice {
-  margin-bottom: 1rem;
-}
 
 .detail-review p:not(.detail-people-title) {
   margin: 0 0 0.4rem;

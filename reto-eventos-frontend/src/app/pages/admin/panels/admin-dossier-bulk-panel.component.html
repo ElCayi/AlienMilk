@@ -15,7 +15,7 @@
   <!-- En pantallas anchas, dos columnas que se desplazan cada una por su cuenta (elegir a la izquierda,
        cambiar a la derecha) y nunca un desplazamiento dentro de otro; en móvil, todo en una. -->
   <div class="bulk-columns">
-    <!-- 1. Las sesiones: los mismos filtros que la lista y una casilla por sesión. -->
+    <!-- 1. Las sesiones: los filtros de la lista y una casilla por sesión. -->
     <section class="bulk-step" aria-labelledby="bulk-sessions">
       <div class="bulk-step-head">
         <h3 id="bulk-sessions"><span class="bulk-step-number">1</span> Elige las sesiones</h3>
@@ -29,37 +29,17 @@
         </p>
       </div>
 
+      <!-- La misma barra que la lista de Sesiones, con sus filtros listos y los guardados de cada cual. -->
       <div class="toolbar">
-        <label class="search">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-          <span class="visually-hidden">Buscar sesiones</span>
-          <input
-            type="search"
-            placeholder="Nº, nombre, tipo o lugar"
-            [ngModel]="query()"
-            (ngModelChange)="query.set($event)"
-          />
-        </label>
-        <label class="bulk-type">
-          <span class="visually-hidden">Tipo</span>
-          <select [ngModel]="type()" (ngModelChange)="type.set($event)">
-            <option value="">Todos los tipos</option>
-            @for (item of types(); track item) {
-              <option [value]="item">{{ typeLabel(item) }}</option>
-            }
-          </select>
-        </label>
-        <div class="segmented" role="group" aria-label="Filtrar por estado">
-          @for (option of filters(); track option.value) {
-            <button
-              type="button"
-              [attr.aria-pressed]="filter() === option.value"
-              (click)="filter.set(option.value)"
-            >
-              {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
-            </button>
-          }
-        </div>
+        <app-filter-bar
+          [fields]="filterFields()"
+          [presets]="filterPresets()"
+          [values]="filterValues()"
+          [defaults]="filterDefaults"
+          placeholder="Buscar por nº, nombre, referencia, tipo o lugar"
+          [storageKey]="filterStorage"
+          (valuesChange)="filterValues.set($event)"
+        />
       </div>
 
       <div class="bulk-list">
@@ -271,20 +251,28 @@
       </ul>
     }
 
-    <!-- Lo pendiente, siempre a la vista mientras haya algo sin guardar. -->
-    @if (changedIds().length) {
-      <div class="bulk-bar" role="region" aria-label="Cambios sin guardar">
-        <p>
+    <!-- Guardar, siempre a la vista: apagado hasta que haya algo que guardar. -->
+    <div class="bulk-bar" [class.is-idle]="!changedIds().length" role="region" aria-label="Cambios sin guardar">
+      <p>
+        @if (changedIds().length) {
           <strong>{{ plural(changedIds().length, 'sesión', 'sesiones') }}</strong> con cambios sin guardar
-        </p>
-        <div class="bulk-bar-actions">
-          <button type="button" class="btn" [disabled]="saving()" (click)="discard()">Descartar</button>
-          <button type="button" class="btn btn-primary" [disabled]="saving()" [attr.aria-busy]="saving()" (click)="save()">
-            {{ saving() ? 'Guardando…' : 'Guardar' }}
-          </button>
-        </div>
+        } @else {
+          Sin cambios por guardar
+        }
+      </p>
+      <div class="bulk-bar-actions">
+        <button type="button" class="btn" [disabled]="saving() || !changedIds().length" (click)="discard()">Descartar</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="saving() || !changedIds().length"
+          [attr.aria-busy]="saving()"
+          (click)="save()"
+        >
+          {{ saving() ? 'Guardando…' : 'Guardar' }}
+        </button>
       </div>
-    }
+    </div>
   </div>
 
 }

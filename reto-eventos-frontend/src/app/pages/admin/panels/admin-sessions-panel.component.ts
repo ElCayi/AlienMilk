@@ -32,14 +32,7 @@ import {
   sessionState,
 } from '../../../shared/panel/panel-format';
 import { TableSort } from '../../../shared/panel/table-sort';
-import {
-  dateFields,
-  FilterBarComponent,
-  FilterField,
-  FilterPreset,
-  FilterValues,
-  matchesDate,
-} from '../../../shared/panel/filter-bar.component';
+import { FilterBarComponent, FilterField, FilterPreset, FilterValues } from '../../../shared/panel/filter-bar.component';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { revealExpanded } from '../../../shared/panel/reveal-row';
 import { AdminSummaryService } from '../admin-summary.service';
@@ -47,45 +40,21 @@ import { DemoFootComponent } from '../demo-foot.component';
 import { AdminControlSheetComponent } from './admin-control-sheet.component';
 import { AdminDossierBulkPanelComponent } from './admin-dossier-bulk-panel.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
+import {
+  SESSION_FILTER_DEFAULTS,
+  SESSION_FILTER_STORAGE,
+  sessionFilterFields,
+  sessionFilterPresets,
+  sessionPasses,
+} from './session-filters';
 import { PREVIEW_PARAM, SessionPreview, writePreview } from '../../../features/sessions/session-preview';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
-/** Los filtros y lo que valen sin filtrar: las no archivadas, de cualquier fecha, tipo y ocupación. */
-const FILTER_DEFAULTS: FilterValues = { q: '', estado: 'vivas', fecha: '', desde: '', hasta: '', tipo: '', ocupacion: '' };
-
-/**
- * Si una sesión pasa los filtros que no son de texto: estado, fecha, tipo y ocupación. Pura: la usan la
- * tabla y las cuentas de los filtros listos.
- */
-function passes(session: EventoAdmin, values: FilterValues, today = new Date()): boolean {
-  const estado = {
-    vivas: !session.archivada,
-    activas: !session.archivada && session.estado === 'ACTIVO',
-    canceladas: !session.archivada && session.estado === 'CANCELADO',
-    terminadas: !session.archivada && session.estado === 'TERMINADO',
-    archivadas: session.archivada,
-    todas: true,
-  }[values['estado'] || 'vivas'];
-  if (!estado || !matchesDate(session.fechaInicio, values, today)) {
-    return false;
-  }
-  if (values['tipo'] && String(session.idTipo) !== values['tipo']) {
-    return false;
-  }
-  const libres = session.aforoMaximo - session.plazasReservadas;
-  return (
-    {
-      '': true,
-      'sin-reservas': session.plazasReservadas === 0,
-      'bajo-minimo': session.plazasReservadas < session.minimoAsistencia,
-      'casi-completas': libres > 0 && session.plazasReservadas >= session.aforoMaximo * 0.8,
-      completas: libres <= 0,
-    }[values['ocupacion'] ?? ''] ?? true
-  );
-}
+const FILTER_DEFAULTS = SESSION_FILTER_DEFAULTS;
+const passes = sessionPasses;
 
 /** Columnas por las que se ordena la tabla. */
 type SortKey = 'numero' | 'nombre' | 'fecha' | 'aforo' | 'estado';
@@ -154,68 +123,15 @@ export class AdminSessionsPanelComponent implements OnInit {
    */
   readonly filterValues = signal<FilterValues>({ ...FILTER_DEFAULTS });
   readonly filterDefaults = FILTER_DEFAULTS;
+  readonly filterStorage = SESSION_FILTER_STORAGE;
   readonly query = computed(() => this.filterValues()['q'] ?? '');
   /** Para que KeepHeight sepa que la lista ha cambiado por un filtro. */
   readonly filterKey = computed(() => JSON.stringify(this.filterValues()));
 
-  readonly filterFields = computed<FilterField[]>(() => [
-    { key: 'q', label: 'Buscar', type: 'text', placeholder: 'Nº, nombre, referencia, tipo o lugar' },
-    {
-      key: 'estado',
-      label: 'Estado',
-      type: 'select',
-      options: [
-        { value: 'vivas', label: 'Sin las archivadas' },
-        { value: 'activas', label: 'Activas' },
-        { value: 'canceladas', label: 'Canceladas' },
-        { value: 'terminadas', label: 'Terminadas' },
-        { value: 'archivadas', label: 'Archivadas' },
-        { value: 'todas', label: 'Todas, también las archivadas' },
-      ],
-    },
-    ...dateFields('Fecha'),
-    {
-      key: 'tipo',
-      label: 'Tipo',
-      type: 'select',
-      options: [
-        { value: '', label: 'Cualquier tipo' },
-        ...this.types().map((type) => ({ value: String(type.idTipo), label: humanizeCode(type.nombre) })),
-      ],
-    },
-    {
-      key: 'ocupacion',
-      label: 'Ocupación',
-      type: 'select',
-      options: [
-        { value: '', label: 'Cualquiera' },
-        { value: 'sin-reservas', label: 'Sin reservas' },
-        { value: 'bajo-minimo', label: 'Por debajo del mínimo' },
-        { value: 'casi-completas', label: 'Casi completas (80 % o más)' },
-        { value: 'completas', label: 'Completas' },
-      ],
-    },
-  ]);
+  readonly filterFields = computed<FilterField[]>(() => sessionFilterFields(this.types()));
 
   /** Lo de todos los días, con cuántas hay ahora mismo. */
-  readonly filterPresets = computed<FilterPreset[]>(() => {
-    const presets: FilterPreset[] = [
-      { label: 'Hoy', values: { fecha: 'hoy' } },
-      { label: 'Próximos 7 días', values: { fecha: 'semana' } },
-      { label: 'Activas', values: { estado: 'activas' } },
-      { label: 'Por debajo del mínimo', values: { estado: 'activas', ocupacion: 'bajo-minimo' } },
-      { label: 'Casi completas', values: { ocupacion: 'casi-completas' } },
-      { label: 'Sin reservas', values: { ocupacion: 'sin-reservas' } },
-      { label: 'Terminadas por archivar', values: { estado: 'terminadas' } },
-      { label: 'Canceladas', values: { estado: 'canceladas' } },
-      { label: 'Archivadas', values: { estado: 'archivadas' } },
-    ];
-    const all = this.sessions();
-    return presets.map((preset) => ({
-      ...preset,
-      count: all.filter((session) => passes(session, { ...FILTER_DEFAULTS, ...preset.values })).length,
-    }));
-  });
+  readonly filterPresets = computed<FilterPreset[]>(() => sessionFilterPresets(this.sessions()));
 
   /** Aplicar filtros es navegar sin mover la vista; la dirección se lee de vuelta en ngOnInit. */
   applyFilters(values: FilterValues): void {

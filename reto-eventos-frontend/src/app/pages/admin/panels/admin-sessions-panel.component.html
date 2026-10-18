@@ -24,7 +24,7 @@
     [values]="filterValues()"
     [defaults]="filterDefaults"
     placeholder="Buscar por nº, nombre, referencia, tipo o lugar"
-    storageKey="am-filtros-sesiones"
+    [storageKey]="filterStorage"
     (valuesChange)="applyFilters($event)"
   />
   <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->

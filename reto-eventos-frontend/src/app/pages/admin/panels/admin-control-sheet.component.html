@@ -1,11 +1,13 @@
 <div class="control-sheet">
   <header class="section-head">
     <div>
-      <a class="back-link" routerLink="/admin/sesiones">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
-        Sesiones
-      </a>
-      <h2>Hoja de control de ingreso</h2>
+      @if (!embedded()) {
+        <a class="back-link" routerLink="/admin/sesiones">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+          Sesiones
+        </a>
+        <h2>Hoja de control de ingreso</h2>
+      }
       @if (session(); as data) {
         <p class="sheet-session">
           <strong>{{ data.nombre }}</strong>

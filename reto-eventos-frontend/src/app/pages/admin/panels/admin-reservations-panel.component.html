@@ -346,7 +346,7 @@
                           </p>
                         </div>
                         <div class="row-actions entity-actions">
-                          <a class="btn btn-small btn-primary" [routerLink]="['/admin/sesiones', group.idEvento, 'control']">Hoja de control</a>
+                          <button type="button" class="btn btn-small btn-primary" (click)="openControl(group.idEvento)">Hoja de control</button>
                           @if (group.primera.estadoEvento === 'ACTIVO') {
                             <button type="button" class="btn btn-small" (click)="openNewForSession(group.idEvento)">Nueva reserva</button>
                           }
@@ -948,3 +948,10 @@
 </app-panel-dialog>
 
 <app-reservation-editor [save]="saveData" [admin]="true" [sessions]="sessions()" (saved)="afterEdit($event)" />
+
+<!-- La hoja de control, encima de la página: sin salir del panel ni perder lo que se estaba mirando. -->
+<app-panel-dialog #controlDialog heading="Hoja de control de ingreso" [huge]="true" (closed)="controlId.set(null)">
+  @if (controlId(); as id) {
+    <app-admin-control-sheet [idEvento]="id" [embedded]="true" />
+  }
+</app-panel-dialog>

@@ -52,6 +52,7 @@ import {
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
+import { AdminControlSheetComponent } from './admin-control-sheet.component';
 
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
@@ -269,6 +270,7 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
     KeepHeightDirective,
     DemoFootComponent,
     FilterBarComponent,
+    AdminControlSheetComponent,
   ],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
@@ -723,6 +725,15 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** Solo se reserva en sesiones activas. */
   readonly openSessions = computed(() => this.sessions().filter((session) => session.estado === 'ACTIVO'));
+
+  /** La hoja de control de una sesión, en su diálogo. */
+  readonly controlId = signal<number | null>(null);
+  readonly controlDialog = viewChild.required<PanelDialogComponent>('controlDialog');
+
+  openControl(idEvento: number): void {
+    this.controlId.set(idEvento);
+    this.controlDialog().open();
+  }
 
   // Alta manual, en el diálogo.
   readonly dialog = viewChild.required<PanelDialogComponent>('createDialog');

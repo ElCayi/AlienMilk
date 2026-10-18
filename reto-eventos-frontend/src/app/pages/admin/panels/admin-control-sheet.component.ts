@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -64,6 +64,11 @@ interface SheetRow {
 export class AdminControlSheetComponent implements OnInit {
   private readonly admin = inject(AdminService);
   private readonly route = inject(ActivatedRoute);
+
+  /** La sesión, si se abre en un diálogo; si no, sale de la dirección (/admin/sesiones/:id/control). */
+  readonly idEvento = input<number | null>(null);
+  /** Dentro de un diálogo: sin el enlace de volver ni el título, que ya pone el diálogo. */
+  readonly embedded = input(false);
 
   readonly session = signal<EventoAdmin | null>(null);
   readonly reservations = signal<Reserva[]>([]);
@@ -224,7 +229,7 @@ export class AdminControlSheetComponent implements OnInit {
   }
 
   load(): void {
-    const idEvento = Number(this.route.snapshot.paramMap.get('id'));
+    const idEvento = this.idEvento() ?? Number(this.route.snapshot.paramMap.get('id'));
     this.loading.set(true);
     this.loadError.set(false);
     forkJoin({ sessions: this.admin.getEventos(), reservations: this.admin.getReservas() }).subscribe({
@@ -236,6 +241,9 @@ export class AdminControlSheetComponent implements OnInit {
             .sort((a, b) => a.idReserva - b.idReserva),
         );
         this.loading.set(false);
+        if (!this.embedded() && this.route.snapshot.queryParamMap.get('imprimir')) {
+          setTimeout(() => window.print(), 300);
+        }
       },
       error: () => {
         this.loading.set(false);
@@ -292,7 +300,16 @@ export class AdminControlSheetComponent implements OnInit {
     URL.revokeObjectURL(url);
   }
 
+  /**
+   * Imprimir desde un diálogo no sale bien en los navegadores: desde el diálogo se abre la hoja sola en
+   * otra pestaña, que se imprime al cargar (?imprimir=1).
+   */
   print(): void {
+    const session = this.session();
+    if (this.embedded() && session) {
+      window.open(`/admin/sesiones/${session.idEvento}/control?imprimir=1`, '_blank', 'noopener');
+      return;
+    }
     window.print();
   }
 }

@@ -42,6 +42,7 @@ import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.dir
 import { revealExpanded } from '../../../shared/panel/reveal-row';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
+import { AdminControlSheetComponent } from './admin-control-sheet.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
@@ -115,6 +116,7 @@ type EditPage = 'datos' | 'expediente';
     KeepHeightDirective,
     DemoFootComponent,
     FilterBarComponent,
+    AdminControlSheetComponent,
   ],
   templateUrl: './admin-sessions-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
@@ -261,8 +263,17 @@ export class AdminSessionsPanelComponent implements OnInit {
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idEvento - b.idEvento);
   });
 
+  /** La hoja de control de una sesión, en su diálogo. */
+  readonly controlId = signal<number | null>(null);
+  readonly controlDialog = viewChild.required<PanelDialogComponent>('controlDialog');
+
+  openControl(idEvento: number): void {
+    this.controlId.set(idEvento);
+    this.controlDialog().open();
+  }
+
   // Formulario de alta y edición, en el diálogo.
-  readonly dialog = viewChild.required(PanelDialogComponent);
+  readonly dialog = viewChild.required<PanelDialogComponent>('editDialog');
   readonly editing = signal<EventoAdmin | null>(null);
   /** Reactivar una sesión cuya fecha ya pasó: primero se le da otra fecha, después se reactiva. */
   readonly reactivating = signal(false);

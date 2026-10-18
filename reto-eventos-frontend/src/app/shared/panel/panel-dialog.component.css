@@ -19,6 +19,11 @@
   width: min(48rem, calc(100vw - 2rem));
 }
 
+.panel-dialog.is-huge {
+  width: min(78rem, calc(100vw - 2rem));
+  height: min(54rem, calc(100dvh - 2rem));
+}
+
 .panel-dialog.is-tall {
   height: min(46rem, calc(100dvh - 2rem));
 }

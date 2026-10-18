@@ -199,7 +199,7 @@
                     Modificar
                   </button>
                   @if (session.reservas) {
-                    <a class="btn btn-small" [routerLink]="[session.idEvento, 'control']">Hoja de control</a>
+                    <button type="button" class="btn btn-small" (click)="openControl(session.idEvento)">Hoja de control</button>
                   }
                   @if (session.archivada) {
                     <button
@@ -277,6 +277,7 @@
 }
 
 <app-panel-dialog
+  #editDialog
   [heading]="reactivating() ? 'Reactivar sesión' : editing() ? 'Modificar sesión' : 'Nueva sesión'"
   [wide]="true"
   [tall]="true"
@@ -457,3 +458,9 @@
   </form>
 </app-panel-dialog>
 
+<!-- La hoja de control, encima de la página: sin salir del panel ni perder lo que se estaba mirando. -->
+<app-panel-dialog #controlDialog heading="Hoja de control de ingreso" [huge]="true" (closed)="controlId.set(null)">
+  @if (controlId(); as id) {
+    <app-admin-control-sheet [idEvento]="id" [embedded]="true" />
+  }
+</app-panel-dialog>

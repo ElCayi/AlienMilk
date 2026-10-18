@@ -20,7 +20,7 @@ let nextId = 0;
   selector: 'app-panel-dialog',
   standalone: true,
   template: `
-    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [attr.aria-labelledby]="headingId" (close)="closed.emit()">
+    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [attr.aria-labelledby]="headingId" (close)="closed.emit()">
       <div class="panel-dialog-head">
         <h2 [id]="headingId">{{ heading() }}</h2>
         <button type="button" class="panel-dialog-close" aria-label="Cerrar" (click)="close()">
@@ -40,6 +40,8 @@ export class PanelDialogComponent {
   readonly wide = input(false);
   /** Alto fijo, para diálogos con pestañas: cambiar de pestaña no lo encoge ni lo mueve. */
   readonly tall = input(false);
+  /** Casi toda la pantalla, para lo que antes era una página aparte (la hoja de control). */
+  readonly huge = input(false);
   readonly closed = output<void>();
 
   readonly headingId = `panel-dialog-${++nextId}`;

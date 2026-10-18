@@ -277,6 +277,11 @@ button.text-link {
     color 160ms ease;
 }
 
+/* Sin cifra, el rótulo va centrado en su caja; con cifra, rótulo a la izquierda y cifra a la derecha. */
+.segmented button:not(:has(.segmented-count)) {
+  justify-content: center;
+}
+
 .segmented button:hover {
   color: var(--paper-ink);
   background: rgba(255, 255, 255, 0.6);

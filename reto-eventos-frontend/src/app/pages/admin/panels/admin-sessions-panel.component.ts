@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  ElementRef,
   inject,
   Injector,
   OnInit,
@@ -11,6 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
@@ -44,6 +46,7 @@ import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
 import { AdminControlSheetComponent } from './admin-control-sheet.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
+import { PREVIEW_PARAM, SessionPreview, writePreview } from '../../../features/sessions/session-preview';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -97,8 +100,11 @@ const COMPARE: Record<SortKey, (a: EventoAdmin, b: EventoAdmin) => number> = {
   estado: (a, b) => STATE_ORDER[a.estado] - STATE_ORDER[b.estado],
 };
 
-/** Las dos páginas de Modificar sesión. */
-type EditPage = 'datos' | 'expediente';
+/** Las páginas de Modificar sesión: los datos, el expediente y cómo se verá todo en la web. */
+type EditPage = 'datos' | 'expediente' | 'vista';
+
+/** El ancho de ordenador con el que se pinta la vista previa (luego se reduce para que quepa). */
+const PREVIEW_DESKTOP_WIDTH = 1440;
 
 /**
  * Sesiones: el programa, con su ocupación. Una sesión nace activa; se cancela (y se puede
@@ -290,6 +296,67 @@ export class AdminSessionsPanelComponent implements OnInit {
 
   readonly dossierForm = viewChild.required(AdminDossierFormComponent);
   readonly page = signal<EditPage>('datos');
+
+  // La vista previa: la página pública de verdad, en un iframe, con lo que hay en el formulario.
+  private readonly sanitizer = inject(DomSanitizer);
+  readonly previewSrc = this.sanitizer.bypassSecurityTrustResourceUrl(`/sesiones?${PREVIEW_PARAM}=1`);
+  /** El iframe se crea la primera vez que se abre la pestaña, no antes. */
+  readonly previewOpened = signal(false);
+  readonly previewDevice = signal<'ordenador' | 'movil'>('ordenador');
+  readonly previewScale = signal(0.5);
+  private readonly previewBox = viewChild<ElementRef<HTMLElement>>('previewBox');
+
+  /** Pasa a una página del diálogo; la vista previa se pone al día con lo que hay en el formulario. */
+  showPage(page: EditPage): void {
+    this.page.set(page);
+    if (page === 'vista') {
+      writePreview(this.buildPreview());
+      this.previewOpened.set(true);
+      afterNextRender(() => this.fitPreview(), { injector: this.injector });
+    }
+  }
+
+  setPreviewDevice(device: 'ordenador' | 'movil'): void {
+    this.previewDevice.set(device);
+    afterNextRender(() => this.fitPreview(), { injector: this.injector });
+  }
+
+  /** La página de ordenador, reducida hasta el ancho del diálogo. */
+  private fitPreview(): void {
+    const box = this.previewBox()?.nativeElement;
+    if (box) {
+      this.previewScale.set(Math.min(1, box.clientWidth / PREVIEW_DESKTOP_WIDTH));
+    }
+  }
+
+  /** La sesión tal como está en el formulario, sin guardar: la que pinta la vista previa. */
+  private buildPreview(): SessionPreview {
+    const editing = this.editing();
+    const form = this.form;
+    const type = this.types().find((item) => item.idTipo === form.idTipo);
+    return {
+      detail: {
+        idEvento: editing?.idEvento ?? 0,
+        nombre: form.nombre || 'Sesión sin nombre',
+        descripcion: form.descripcion,
+        fechaInicio: form.fechaInicio || this.today,
+        horaInicio: form.horaInicio || '19:00',
+        duracion: form.duracion ?? 0,
+        direccion: form.direccion,
+        aforoMaximo: form.aforoMaximo ?? 0,
+        minimoAsistencia: form.minimoAsistencia ?? 0,
+        precio: form.precio ?? 0,
+        idTipo: form.idTipo ?? 0,
+        tipoEvento: type?.nombre ?? editing?.tipoEvento ?? '',
+        estado: editing?.estado ?? 'ACTIVO',
+        imagen: this.removePhoto() ? null : (editing?.imagen ?? null),
+      },
+      layer: this.dossierForm().preview(),
+      imageUrl: this.photoFile() ? this.photoPreview() : null,
+    };
+  }
+
+  readonly previewDesktopWidth = PREVIEW_DESKTOP_WIDTH;
   /** De qué sesiones se puede copiar el expediente: todas menos la que se modifica. */
   readonly dossierSources = computed(() =>
     this.sessions()

@@ -281,16 +281,47 @@
   [heading]="reactivating() ? 'Reactivar sesión' : editing() ? 'Modificar sesión' : 'Nueva sesión'"
   [wide]="true"
   [tall]="true"
+  [huge]="page() === 'vista'"
 >
   <form novalidate (ngSubmit)="save()">
-    <!-- Dos páginas: los datos de la sesión y su expediente (lo que enseña su ficha pública). -->
+    <!-- Tres páginas: los datos de la sesión, su expediente (lo que enseña su ficha pública) y cómo se
+         verá todo en la web antes de guardar. -->
     <div class="segmented edit-pages" role="group" aria-label="Páginas de la sesión">
-      <button type="button" [attr.aria-pressed]="page() === 'datos'" (click)="page.set('datos')">
+      <button type="button" [attr.aria-pressed]="page() === 'datos'" (click)="showPage('datos')">
         Datos
       </button>
-      <button type="button" [attr.aria-pressed]="page() === 'expediente'" (click)="page.set('expediente')">
+      <button type="button" [attr.aria-pressed]="page() === 'expediente'" (click)="showPage('expediente')">
         Expediente
       </button>
+      <button type="button" [attr.aria-pressed]="page() === 'vista'" (click)="showPage('vista')">
+        Vista previa
+      </button>
+    </div>
+
+    <!-- La página pública de verdad, con lo que hay en el formulario sin guardar. -->
+    <div class="edit-page preview-page" [hidden]="page() !== 'vista'">
+      <div class="preview-bar">
+        <p class="field-help">Así se verá en la web al guardar. Nada se publica hasta entonces.</p>
+        <div class="segmented" role="group" aria-label="Pantalla">
+          <button type="button" [attr.aria-pressed]="previewDevice() === 'ordenador'" (click)="setPreviewDevice('ordenador')">
+            Ordenador
+          </button>
+          <button type="button" [attr.aria-pressed]="previewDevice() === 'movil'" (click)="setPreviewDevice('movil')">
+            Móvil
+          </button>
+        </div>
+      </div>
+      <div class="preview-box" #previewBox [class.is-mobile]="previewDevice() === 'movil'">
+        @if (previewOpened()) {
+          <iframe
+            title="Vista previa de la sesión"
+            [src]="previewSrc"
+            [style.width.px]="previewDevice() === 'movil' ? 390 : previewDesktopWidth"
+            [style.height]="previewDevice() === 'movil' ? '100%' : 'calc(100% / ' + previewScale() + ')'"
+            [style.transform]="previewDevice() === 'movil' ? 'none' : 'scale(' + previewScale() + ')'"
+          ></iframe>
+        }
+      </div>
     </div>
 
     <div class="edit-page" [hidden]="page() !== 'expediente'">

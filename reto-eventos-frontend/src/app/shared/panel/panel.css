@@ -940,6 +940,51 @@ th[aria-sort] .sort-button svg {
   }
 }
 
+/* La vista previa de una sesión, en su diálogo: la página pública en un iframe, que en «Ordenador» se
+   pinta a 1440 px y se reduce hasta el ancho del diálogo. */
+.preview-page {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  height: calc(100% - 3.5rem);
+  min-height: 28rem;
+}
+
+.preview-page[hidden] {
+  display: none;
+}
+
+.preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.preview-box {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.6rem;
+  background: var(--paper-soft);
+}
+
+.preview-box iframe {
+  display: block;
+  border: 0;
+  transform-origin: 0 0;
+}
+
+.preview-box.is-mobile {
+  display: grid;
+  justify-items: center;
+}
+
+.preview-box.is-mobile iframe {
+  border-inline: 1px solid var(--paper-line);
+}
+
 /* El registro de devoluciones, dentro del dato «Pago». */
 .refund-list {
   display: grid;

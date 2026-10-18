@@ -1,3 +1,9 @@
+<!-- En la vista previa del panel: lo que se ve aún no está guardado ni publicado. -->
+@if (previewMode()) {
+  <p class="preview-banner" role="status">
+    <b>Vista previa.</b> Así se verá la sesión al guardar; todavía no está publicada.
+  </p>
+}
 <section class="program">
   <!-- Franja superior a sangre: textura de fondo con el copy y el índice recortados en lienzo. -->
   <div class="program-stage">
@@ -273,7 +279,7 @@
                         type="button"
                         class="booking-button"
                         (click)="reservar()"
-                        [disabled]="loadingReservation() || !bookingsOpen(data)"
+                        [disabled]="previewMode() || loadingReservation() || !bookingsOpen(data)"
                       >
                         {{
                           !bookingsOpen(data)

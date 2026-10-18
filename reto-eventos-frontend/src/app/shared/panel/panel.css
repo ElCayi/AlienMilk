@@ -4,13 +4,18 @@
    panel-shell.css. */
 :host {
   --paper: #f8f6f2;
-  --paper-soft: #efece6;
-  --paper-stripe: rgba(40, 51, 58, 0.028);
+  /* Franjas y tarjetas: papel con un tinte coral, que se distinga del blanco. */
+  --paper-soft: #f6e2dd;
+  --paper-stripe: rgba(255, 127, 127, 0.06);
   --paper-ink: #28333a;
   --paper-muted: #3d474e;
-  --paper-faint: #5f696f;
-  --paper-line: #dcdedb;
-  --paper-rule: #c9cdca;
+  --paper-faint: #535d63;
+  /* Filetes: entre filas y alrededor de las tarjetas. */
+  --paper-line: #dcc3bd;
+  /* Bordes de separación más marcados (cabeceras de tabla, pies). */
+  --paper-edge: #c9aea7;
+  /* Bordes de los controles (campos, selectores, buscador): al menos 3:1 sobre blanco, para verlos. */
+  --paper-rule: #9b8580;
   --field: #fff;
   --coral: #ff7f7f;
   /* El coral en texto sobre papel: el de la casa no llega al contraste mínimo. */
@@ -29,7 +34,7 @@
   justify-content: space-between;
   gap: 1rem 2rem;
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--paper-rule);
+  border-bottom: 1px solid var(--paper-edge);
 }
 
 .section-head h2 {
@@ -345,7 +350,7 @@ button.text-link {
 
 .data-table th {
   padding: 0.7rem 0.75rem;
-  border-bottom: 1px solid var(--paper-rule);
+  border-bottom: 1px solid var(--paper-edge);
   color: var(--paper-faint);
   font:
     800 0.66rem / 1.5 'Nunito',
@@ -367,7 +372,7 @@ button.text-link {
 }
 
 .data-table tbody tr:hover {
-  background: rgba(40, 51, 58, 0.05);
+  background: rgba(255, 127, 127, 0.1);
 }
 
 .data-table .num {
@@ -424,7 +429,7 @@ th[aria-sort] .sort-button svg {
 
 /* Totales al pie, separados por el filete de la cabecera. */
 .data-table tfoot td {
-  border-top: 1px solid var(--paper-rule);
+  border-top: 1px solid var(--paper-edge);
   border-bottom: 0;
   font-weight: 700;
 }
@@ -504,7 +509,7 @@ th[aria-sort] .sort-button svg {
 
 /* La regla de arriba gana a la del hover general en las filas pares: aquí se repite para todas. */
 .data-table.is-expandable .row-summary:not(.is-open):hover {
-  background: rgba(40, 51, 58, 0.05);
+  background: rgba(255, 127, 127, 0.1);
 }
 
 .data-table.is-expandable .row-summary td {
@@ -817,8 +822,9 @@ th[aria-sort] .sort-button svg {
 .entity-body.is-spread > .entity-side > section,
 .entity-body.is-spread > .entity-related > section {
   padding: 0.8rem 1rem 0.9rem;
+  border: 1px solid var(--paper-line);
   border-radius: 0.6rem;
-  background: var(--paper);
+  background: var(--paper-soft);
 }
 
 .entity-body.is-spread > .entity-side > section > .entity-line {
@@ -861,7 +867,12 @@ th[aria-sort] .sort-button svg {
 
 /* La revisión lleva su filete coral (o gris, ya decidida) a la izquierda: esa esquina, recta. */
 .entity-body.is-spread > .entity-related > .detail-review {
+  border-left: 2px solid var(--coral);
   border-radius: 0 0.6rem 0.6rem 0;
+}
+
+.entity-body.is-spread > .entity-related > .detail-review.is-settled {
+  border-left-color: var(--paper-edge);
 }
 
 .entity-body.is-spread .entity-line .text-link {
@@ -1412,7 +1423,7 @@ th[aria-sort] .sort-button svg {
   }
 
   .data-table tbody tr:first-child {
-    border-top: 1px solid var(--paper-rule);
+    border-top: 1px solid var(--paper-edge);
   }
 
   /* El rótulo, a la izquierda y fuera del flujo: el contenido de la celda sigue como está. */

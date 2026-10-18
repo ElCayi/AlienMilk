@@ -167,7 +167,7 @@
 .bulk-placeholder {
   margin: 1rem 0 0;
   padding: 1.5rem;
-  border: 1px dashed var(--paper-rule);
+  border: 1px dashed var(--paper-edge);
   border-radius: 0.6rem;
   color: var(--paper-faint);
   text-align: center;

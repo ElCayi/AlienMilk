@@ -26,7 +26,7 @@
 .danger-zone {
   margin-top: 2.5rem;
   padding-top: 0.25rem;
-  border-top: 1px solid var(--paper-edge, #aaa295);
+  border-top: 1px solid var(--paper-edge, #aeb8c0);
 }
 
 .danger-zone .subsection-title {
@@ -74,7 +74,7 @@
 .programme {
   margin-top: 2.5rem;
   padding-top: 0.25rem;
-  border-top: 1px solid var(--paper-edge, #aaa295);
+  border-top: 1px solid var(--paper-edge, #aeb8c0);
 }
 
 .programme .subsection-title {

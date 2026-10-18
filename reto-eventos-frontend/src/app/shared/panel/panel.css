@@ -4,18 +4,18 @@
    panel-shell.css. */
 :host {
   --paper: #f8f6f2;
-  /* Franjas y tarjetas: un beige que se distinga del blanco. */
-  --paper-soft: #e9e4da;
-  --paper-stripe: rgba(40, 51, 58, 0.045);
+  /* Franjas, la fila abierta y lo seleccionado: un gris azulado claro, el mismo del ratón encima. */
+  --paper-soft: #f0f1f1;
+  --paper-stripe: rgba(40, 51, 58, 0.035);
   --paper-ink: #28333a;
   --paper-muted: #3d474e;
   --paper-faint: #535d63;
   /* Filetes: entre filas y alrededor de las tarjetas. */
-  --paper-line: #c2baad;
+  --paper-line: #cbd2d8;
   /* Bordes de separación más marcados (cabeceras de tabla, pies). */
-  --paper-edge: #aaa295;
+  --paper-edge: #aeb8c0;
   /* Bordes de los controles (campos, selectores, buscador): al menos 3:1 sobre blanco, para verlos. */
-  --paper-rule: #857d70;
+  --paper-rule: #828e99;
   --field: #fff;
   --coral: #ff7f7f;
   /* El coral en texto sobre papel: el de la casa no llega al contraste mínimo. */
@@ -516,9 +516,11 @@ th[aria-sort] .sort-button svg {
   vertical-align: middle;
 }
 
-.data-table.is-expandable .row-summary.is-open,
-.data-table.is-expandable .row-detail {
-  background: var(--paper-soft);
+/* Con «tbody tr» delante, para ganar a la regla que quita las franjas: si no, la fila abierta y su ficha
+   perdían el fondo cuando caían en posición par. */
+.data-table.is-expandable tbody tr.row-summary.is-open,
+.data-table.is-expandable tbody tr.row-detail {
+  background: rgba(40, 51, 58, 0.07);
 }
 
 .data-table.is-expandable .row-summary.is-open td {
@@ -585,7 +587,7 @@ th[aria-sort] .sort-button svg {
   grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr);
   gap: 1rem 2.5rem;
   padding: 1.1rem 1.25rem;
-  border: 1px solid var(--paper-line);
+  border: 1px solid var(--paper-edge);
   border-radius: 0.6rem;
   background: var(--field);
 }
@@ -714,7 +716,7 @@ th[aria-sort] .sort-button svg {
    puede hacer; debajo, a la izquierda, sus datos y lo pendiente; a la derecha, lo relacionado, corto, y un
    enlace a todo. Sin colores nuevos: el orden lo dan el tamaño, el peso y el sitio. */
 .entity-card {
-  border: 1px solid var(--paper-line);
+  border: 1px solid var(--paper-edge);
   border-radius: 0.6rem;
   background: var(--field);
 }
@@ -806,7 +808,7 @@ th[aria-sort] .sort-button svg {
   gap: 1.1rem;
 }
 
-/* A lo ancho (la ficha de una reserva): cada bloque en su tarjeta de papel, los breves en fila y lo largo
+/* A lo ancho (la ficha de una reserva): cada bloque en su recuadro, blanco y con su trazo, los breves en fila y lo largo
    ocupando dos; debajo, quién viene y lo que pide revisión, a lo ancho. En cada tarjeta, el dato que
    importa en negrita y lo demás, más pequeño y apagado. */
 .entity-body.is-spread {
@@ -822,9 +824,9 @@ th[aria-sort] .sort-button svg {
 .entity-body.is-spread > .entity-side > section,
 .entity-body.is-spread > .entity-related > section {
   padding: 0.8rem 1rem 0.9rem;
-  border: 1px solid var(--paper-line);
+  border: 1px solid var(--paper-edge);
   border-radius: 0.6rem;
-  background: var(--paper-soft);
+  background: var(--field);
 }
 
 .entity-body.is-spread > .entity-side > section > .entity-line {

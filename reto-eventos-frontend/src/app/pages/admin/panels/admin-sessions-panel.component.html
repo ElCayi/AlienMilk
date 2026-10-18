@@ -8,7 +8,7 @@
     </p>
   </div>
   <div class="section-head-actions">
-    <a class="btn" routerLink="lote">Edición en lote</a>
+    <button type="button" class="btn" (click)="openBulk()">Edición en lote</button>
     <button type="button" class="btn btn-primary" (click)="openNew()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
       Nueva sesión
@@ -493,5 +493,18 @@
 <app-panel-dialog #controlDialog heading="Hoja de control de ingreso" [huge]="true" (closed)="controlId.set(null)">
   @if (controlId(); as id) {
     <app-admin-control-sheet [idEvento]="id" [embedded]="true" />
+  }
+</app-panel-dialog>
+
+<!-- La edición en lote de los expedientes, encima de Sesiones. Con cambios sin guardar, cerrar pregunta. -->
+<app-panel-dialog
+  #bulkDialog
+  heading="Edición en lote"
+  [huge]="true"
+  [beforeClose]="confirmBulkClose"
+  (closed)="bulkOpen.set(false)"
+>
+  @if (bulkOpen()) {
+    <app-admin-dossier-bulk-panel />
   }
 </app-panel-dialog>

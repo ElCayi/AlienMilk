@@ -1,16 +1,8 @@
-<header class="section-head">
-  <div>
-    <a class="back-link" routerLink="/admin/sesiones">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
-      Sesiones
-    </a>
-    <h2>Edición en lote</h2>
-    <p>
-      Cambia el contenido de la ficha pública de varias sesiones a la vez. Elige las sesiones y, en cada
-      apartado, verás cómo está en ellas. Nada se guarda hasta pulsar Guardar.
-    </p>
-  </div>
-</header>
+<!-- Dentro de su diálogo, en Sesiones: el título lo pone el diálogo. -->
+<p class="dialog-copy">
+  Cambia el contenido de la ficha pública de varias sesiones a la vez. Elige las sesiones y, en cada
+  apartado, verás cómo está en ellas. Nada se guarda hasta pulsar Guardar.
+</p>
 
 @if (loading()) {
   <p class="empty">Cargando sesiones y expedientes…</p>

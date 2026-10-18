@@ -45,6 +45,7 @@ import { revealExpanded } from '../../../shared/panel/reveal-row';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
 import { AdminControlSheetComponent } from './admin-control-sheet.component';
+import { AdminDossierBulkPanelComponent } from './admin-dossier-bulk-panel.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
 import { PREVIEW_PARAM, SessionPreview, writePreview } from '../../../features/sessions/session-preview';
 
@@ -123,6 +124,7 @@ const PREVIEW_DESKTOP_WIDTH = 1440;
     DemoFootComponent,
     FilterBarComponent,
     AdminControlSheetComponent,
+    AdminDossierBulkPanelComponent,
   ],
   templateUrl: './admin-sessions-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
@@ -268,6 +270,19 @@ export class AdminSessionsPanelComponent implements OnInit {
       )
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idEvento - b.idEvento);
   });
+
+  /** La edición en lote de los expedientes, en su diálogo. */
+  readonly bulkOpen = signal(false);
+  readonly bulkDialog = viewChild.required<PanelDialogComponent>('bulkDialog');
+  private readonly bulk = viewChild(AdminDossierBulkPanelComponent);
+
+  openBulk(): void {
+    this.bulkOpen.set(true);
+    this.bulkDialog().open();
+  }
+
+  /** Cerrar con cambios sin guardar pregunta antes (ver AdminDossierBulkPanelComponent#canLeave). */
+  readonly confirmBulkClose = (): Promise<boolean> => this.bulk()?.canLeave() ?? Promise.resolve(true);
 
   /** La hoja de control de una sesión, en su diálogo. */
   readonly controlId = signal<number | null>(null);

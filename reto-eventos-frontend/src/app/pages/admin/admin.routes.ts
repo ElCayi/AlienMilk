@@ -4,13 +4,6 @@ import { Routes } from '@angular/router';
 export const ADMIN_ROUTES: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'sesiones' },
   {
-    // Edición en lote de los expedientes: cuelga de Sesiones, que sigue marcada en el menú.
-    path: 'sesiones/lote',
-    loadComponent: () =>
-      import('./panels/admin-dossier-bulk-panel.component').then((m) => m.AdminDossierBulkPanelComponent),
-    canDeactivate: [(panel: { canLeave(): Promise<boolean> }) => panel.canLeave()],
-  },
-  {
     // La hoja de control de ingreso de una sesión, con su parte para sala; también cuelga de Sesiones.
     path: 'sesiones/:id/control',
     loadComponent: () =>

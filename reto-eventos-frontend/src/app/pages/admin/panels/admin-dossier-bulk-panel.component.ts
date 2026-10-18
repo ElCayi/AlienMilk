@@ -1,6 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 
 import { AdminService } from '../../../core/services/admin.service';
 import { EstadoEvento, EventoAdmin } from '../../../models/api.models';
@@ -49,7 +48,7 @@ interface TextVersion {
 @Component({
   selector: 'app-admin-dossier-bulk-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, DossierRowEditorComponent],
+  imports: [FormsModule, DossierRowEditorComponent],
   templateUrl: './admin-dossier-bulk-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-dossier-bulk-panel.component.css'],
 })
@@ -478,14 +477,15 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   }
 
   /** Para salir de la página con cambios sin guardar (ver admin.routes.ts). */
+  /** Antes de cerrar su diálogo (ver Sesiones): con cambios sin guardar, pregunta. */
   async canLeave(): Promise<boolean> {
     if (!this.changedIds().length) {
       return true;
     }
     return this.confirm.ask({
-      title: '¿Salir sin guardar?',
-      message: `Hay cambios sin guardar en ${plural(this.changedIds().length, 'sesión', 'sesiones')}. Si sales, se pierden.`,
-      confirm: 'Salir sin guardar',
+      title: '¿Cerrar sin guardar?',
+      message: `Hay cambios sin guardar en ${plural(this.changedIds().length, 'sesión', 'sesiones')}. Si cierras, se pierden.`,
+      confirm: 'Cerrar sin guardar',
       danger: true,
     });
   }

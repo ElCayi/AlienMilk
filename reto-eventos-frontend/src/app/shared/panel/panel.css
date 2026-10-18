@@ -845,18 +845,28 @@ th[aria-sort] .sort-button svg {
   background: var(--field);
 }
 
+/* Dentro de cada recuadro: el rótulo, el dato principal y lo secundario, cada cosa con su aire. */
+.entity-body.is-spread > .entity-side > section > .detail-people-title {
+  margin-bottom: 0.55rem;
+}
+
 .entity-body.is-spread > .entity-side > section > .entity-line {
-  margin: 0;
+  margin: 0 0 0.3rem;
   color: var(--paper-muted);
-  font-size: 0.88rem;
-  line-height: 1.45;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.entity-body.is-spread > .entity-side > section > .entity-line:last-child {
+  margin-bottom: 0;
 }
 
 .entity-body.is-spread > .entity-side > section > .detail-people-title + .entity-line {
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.45rem;
   color: var(--paper-ink);
-  font-size: 1rem;
+  font-size: 1.02rem;
   font-weight: 700;
+  line-height: 1.35;
 }
 
 /* Lo largo (observaciones, cancelación) se lee como texto, no como un dato destacado. */
@@ -884,6 +894,17 @@ th[aria-sort] .sort-button svg {
 }
 
 /* La revisión lleva su filete coral (o gris, ya decidida) a la izquierda: esa esquina, recta. */
+/* Lo que pide decidir va primero, antes que los participantes. */
+.entity-body.is-spread > .entity-related > .detail-review:not(.is-settled) {
+  order: -1;
+}
+
+.entity-related .detail-review p.detail-review-help {
+  margin-bottom: 0.6rem;
+  color: var(--paper-faint);
+  font-size: 0.88rem;
+}
+
 .entity-body.is-spread > .entity-related > .detail-review {
   border-left: 2px solid var(--coral);
   border-radius: 0 0.6rem 0.6rem 0;

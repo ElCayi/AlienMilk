@@ -409,7 +409,7 @@
                                         <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
                                       }
                                       @if (reserva.requiereRevision) {
-                                        <span class="badge" data-tone="alert">Requiere revisión</span>
+                                        <span class="badge" data-tone="alert" title="Pidió adaptaciones o traer material propio: falta aceptarlo o no">Requiere revisión</span>
                                       }
                                     </span>
                                     <svg class="entity-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
@@ -511,7 +511,7 @@
                       <span class="badge" [attr.data-tone]="pago.tone">{{ pago.label }}</span>
                     }
                     @if (reserva.requiereRevision) {
-                      <span class="badge" data-tone="alert">Requiere revisión</span>
+                      <span class="badge" data-tone="alert" title="Pidió adaptaciones o traer material propio: falta aceptarlo o no">Requiere revisión</span>
                     }
                   </span>
                 </td>
@@ -628,9 +628,11 @@
                             <p class="detail-people-title">Pago</p>
                             <p class="entity-line">{{ paymentText(reserva) }}</p>
                             <!-- El registro de devoluciones: cada una con su medio, su motivo y si ya se hizo. -->
-                            @if (reserva.devoluciones.length) {
+                            <!-- Con «?? []»: un backend sin el registro (anterior a las devoluciones) no rompe la ficha. -->
+                            @let devoluciones = reserva.devoluciones ?? [];
+                            @if (devoluciones.length) {
                               <ul class="refund-list">
-                                @for (devolucion of reserva.devoluciones; track devolucion.idDevolucion) {
+                                @for (devolucion of devoluciones; track devolucion.idDevolucion) {
                                   <li>
                                     <span>
                                       {{ money(devolucion.importe) }}
@@ -718,6 +720,12 @@
                               <p class="detail-people-title">
                                 {{ revision === 'PENDIENTE' ? 'Requiere revisión' : 'Adaptaciones y material · ' + review(reserva) }}
                               </p>
+                              @if (revision === 'PENDIENTE') {
+                                <p class="detail-review-help">
+                                  Al reservar, pidió lo de aquí abajo. Decide si se acepta antes de la sesión: verá la
+                                  decisión, con tu nota, en su panel.
+                                </p>
+                              }
                               @if (reserva.adaptaciones) {
                                 <p><strong>Adaptaciones de participación.</strong> {{ reserva.adaptaciones }}</p>
                               }

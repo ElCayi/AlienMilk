@@ -15,7 +15,7 @@
       type="search"
       [attr.aria-label]="placeholder()"
       [placeholder]="chips().length ? '' : placeholder()"
-      [ngModel]="values()[textKey()] ?? ''"
+      [ngModel]="values()[textKey()] || ''"
       (ngModelChange)="setText($event)"
     />
     @if (active()) {
@@ -88,7 +88,7 @@
               <label class="field-label" [for]="panelId + '-' + field.key">{{ field.label }}</label>
               @switch (field.type) {
                 @case ('select') {
-                  <select [id]="panelId + '-' + field.key" [name]="field.key" [ngModel]="values()[field.key] ?? ''" (ngModelChange)="setField(field.key, $event)">
+                  <select [id]="panelId + '-' + field.key" [name]="field.key" [ngModel]="values()[field.key] || ''" (ngModelChange)="setField(field.key, $event)">
                     @for (option of field.options; track option.value) {
                       <option [value]="option.value">{{ option.label }}</option>
                     }
@@ -99,7 +99,7 @@
                     type="date"
                     [id]="panelId + '-' + field.key"
                     [name]="field.key"
-                    [ngModel]="values()[field.key] ?? ''"
+                    [ngModel]="values()[field.key] || ''"
                     (ngModelChange)="setField(field.key, $event)"
                   />
                 }
@@ -109,7 +109,7 @@
                     [id]="panelId + '-' + field.key"
                     [name]="field.key"
                     [placeholder]="field.placeholder ?? ''"
-                    [ngModel]="values()[field.key] ?? ''"
+                    [ngModel]="values()[field.key] || ''"
                     (ngModelChange)="setField(field.key, $event)"
                   />
                 }

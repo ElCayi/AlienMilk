@@ -166,6 +166,11 @@
   white-space: nowrap;
 }
 
+/* El rótulo de la sección, dentro de su hoja, justo encima del título. */
+.section-kicker {
+  margin-bottom: 0.75rem;
+}
+
 /* La sección abierta, en una hoja blanca sobre el papel. */
 .page-content {
   padding: clamp(1.25rem, 2.5vw, 2.25rem);

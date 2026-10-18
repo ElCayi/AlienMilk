@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { profileLabel } from './panel-format';
 
 export type PanelIcon =
+  | 'resumen'
   | 'sesiones'
   | 'reservas'
   | 'tipos'
@@ -28,6 +29,7 @@ export interface PanelNavItem {
 
 /** Trazos de los iconos, en una rejilla de 24: uno por sección. */
 const ICONS: Record<PanelIcon, string> = {
+  resumen: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
   sesiones: 'M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM8 3v4M16 3v4M4 10h16',
   reservas:
     'M4 7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v3a2 2 0 0 0 0 4v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a2 2 0 0 0 0-4zM14 6v2M14 11v2M14 16v2',

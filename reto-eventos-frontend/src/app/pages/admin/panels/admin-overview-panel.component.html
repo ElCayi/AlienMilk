@@ -1,0 +1,259 @@
+<header class="page-head overview-head">
+  <div>
+    <p class="page-kicker"><span class="eyebrow-icon" aria-hidden="true"></span>Panel de control · Visión general</p>
+    <app-panel-greeting />
+    <p class="page-intro">Todo lo necesario para gestionar AlienMilk Sessions, en un solo lugar.</p>
+  </div>
+  <button type="button" class="btn overview-customize" (click)="customize()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8M14 4v6M8 14v6" /></svg>
+    Personalizar
+  </button>
+</header>
+
+@if (loadError()) {
+  <div class="empty">
+    <p>No se ha podido cargar el resumen.</p>
+    <button type="button" class="btn" (click)="load()">Reintentar</button>
+  </div>
+} @else if (!layout().length) {
+  <p class="empty">No hay nada en el tablero. Pulsa «Personalizar» para elegir qué ver aquí.</p>
+} @else {
+  <!-- El tablero: las piezas que cada cual ha elegido, en su orden. Cada una lleva a su sitio, filtrado. -->
+  <div class="overview-grid">
+    @for (id of layout(); track id) {
+      @switch (id) {
+        @case ('cifras') {
+          <ul class="panel-figures overview-figures" aria-label="Cifras">
+            <li>
+              <a routerLink="/admin/sesiones" [queryParams]="{ estado: 'activas' }">
+                <strong>{{ figure(summary()?.sesionesActivas) }}</strong>
+                <span>Sesiones activas</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="/admin/reservas">
+                <strong>{{ figure(summary()?.plazasReservadas) }}</strong>
+                <span>Plazas reservadas</span>
+              </a>
+            </li>
+            <li [class.is-pending]="(summary()?.pedidosPorPreparar ?? 0) > 0">
+              <a routerLink="/admin/pedidos">
+                <strong>{{ figure(summary()?.pedidosPorPreparar) }}</strong>
+                <span>Pedidos por preparar</span>
+              </a>
+            </li>
+            <li [class.is-pending]="(summary()?.solicitudesNuevas ?? 0) > 0">
+              <a routerLink="/admin/solicitudes">
+                <strong>{{ figure(summary()?.solicitudesNuevas) }}</strong>
+                <span>Solicitudes sin atender</span>
+              </a>
+            </li>
+          </ul>
+        }
+
+        @case ('hoy') {
+          <section class="widget" aria-labelledby="w-hoy">
+            <header class="widget-head">
+              <h3 id="w-hoy">Hoy</h3>
+              <span class="widget-count">{{ loading() ? '…' : hoy().length }}</span>
+            </header>
+            @if (hoy().length) {
+              <ul class="widget-list">
+                @for (session of hoy(); track session.idEvento) {
+                  <li>
+                    <span class="widget-main">
+                      <strong>{{ session.nombre }}</strong>
+                      <span>{{ schedule(session) }} · {{ session.plazasReservadas }} / {{ session.aforoMaximo }} plazas</span>
+                    </span>
+                    <button type="button" class="btn btn-small" (click)="openControl(session.idEvento)">Hoja de control</button>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'Hoy no hay sesiones.' }}</p>
+            }
+          </section>
+        }
+
+        @case ('proximas') {
+          <section class="widget" aria-labelledby="w-proximas">
+            <header class="widget-head">
+              <h3 id="w-proximas">Próximas sesiones</h3>
+            </header>
+            @if (proximas().length) {
+              <ul class="widget-list">
+                @for (session of proximas(); track session.idEvento) {
+                  <li>
+                    <span class="widget-main">
+                      <strong>{{ session.nombre }}</strong>
+                      <span>{{ day(session.fechaInicio) }} · {{ session.plazasReservadas }} / {{ session.aforoMaximo }}</span>
+                    </span>
+                    <span class="widget-meter" [attr.aria-label]="occupancy(session) + ' % ocupada'">
+                      <span [style.width.%]="occupancy(session)"></span>
+                    </span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'No hay sesiones por delante.' }}</p>
+            }
+            <a class="text-link widget-more" routerLink="/admin/sesiones" [queryParams]="{ estado: 'activas' }">Ver el programa →</a>
+          </section>
+        }
+
+        @case ('minimo') {
+          <section class="widget" [class.is-pending]="bajoMinimo().length" aria-labelledby="w-minimo">
+            <header class="widget-head">
+              <h3 id="w-minimo">Por debajo del mínimo</h3>
+              <span class="widget-count">{{ loading() ? '…' : bajoMinimo().length }}</span>
+            </header>
+            @if (bajoMinimo().length) {
+              <ul class="widget-list">
+                @for (session of bajoMinimo().slice(0, 5); track session.idEvento) {
+                  <li>
+                    <span class="widget-main">
+                      <strong>{{ session.nombre }}</strong>
+                      <span>{{ day(session.fechaInicio) }} · faltan {{ session.minimoAsistencia - session.plazasReservadas }} para el mínimo</span>
+                    </span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'Todas llegan al mínimo en los próximos 30 días.' }}</p>
+            }
+            <a class="text-link widget-more" routerLink="/admin/sesiones" [queryParams]="{ estado: 'activas', ocupacion: 'bajo-minimo', fecha: 'mes' }">Verlas en Sesiones →</a>
+          </section>
+        }
+
+        @case ('revision') {
+          <section class="widget" [class.is-pending]="revision().length" aria-labelledby="w-revision">
+            <header class="widget-head">
+              <h3 id="w-revision">Requieren revisión</h3>
+              <span class="widget-count">{{ loading() ? '…' : revision().length }}</span>
+            </header>
+            @if (revision().length) {
+              <ul class="widget-list">
+                @for (reserva of revision().slice(0, 5); track reserva.idReserva) {
+                  <li>
+                    <a class="widget-main" routerLink="/admin/reservas" [queryParams]="{ q: number(reserva) }">
+                      <strong>{{ reserva.nombreCliente }}</strong>
+                      <span>{{ number(reserva) }} · {{ reserva.nombreEvento }} · {{ day(reserva.fechaInicioEvento) }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'Nada por revisar.' }}</p>
+            }
+            <a class="text-link widget-more" routerLink="/admin/reservas" [queryParams]="{ revision: 'pendiente' }">Verlas en Reservas →</a>
+          </section>
+        }
+
+        @case ('taquilla') {
+          <section class="widget" aria-labelledby="w-taquilla">
+            <header class="widget-head">
+              <h3 id="w-taquilla">Por cobrar en taquilla</h3>
+              <span class="widget-count">{{ loading() ? '…' : money(porCobrar()) }}</span>
+            </header>
+            @if (taquilla().length) {
+              <ul class="widget-list">
+                @for (reserva of taquilla().slice(0, 5); track reserva.idReserva) {
+                  <li>
+                    <a class="widget-main" routerLink="/admin/reservas" [queryParams]="{ q: number(reserva) }">
+                      <strong>{{ reserva.nombreCliente }}</strong>
+                      <span>{{ reserva.nombreEvento }} · {{ day(reserva.fechaInicioEvento) }}</span>
+                    </a>
+                    <span class="widget-figure">{{ money(reserva.precioVenta) }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'Nada por cobrar.' }}</p>
+            }
+            <a class="text-link widget-more" routerLink="/admin/reservas" [queryParams]="{ pago: 'taquilla' }">Verlas en Reservas →</a>
+          </section>
+        }
+
+        @case ('devoluciones') {
+          <section class="widget" [class.is-pending]="devoluciones().length" aria-labelledby="w-devoluciones">
+            <header class="widget-head">
+              <h3 id="w-devoluciones">Devoluciones por entregar</h3>
+              <span class="widget-count">{{ loading() ? '…' : money(porDevolver()) }}</span>
+            </header>
+            @if (devoluciones().length) {
+              <ul class="widget-list">
+                @for (item of devoluciones().slice(0, 5); track item.devolucion.idDevolucion) {
+                  <li>
+                    <a class="widget-main" routerLink="/admin/reservas" [queryParams]="{ q: number(item.reserva), estado: 'todas' }">
+                      <strong>{{ item.reserva.nombreCliente }}</strong>
+                      <span>{{ item.devolucion.motivo }}</span>
+                    </a>
+                    <span class="widget-figure">{{ money(item.devolucion.importe) }}</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'Nada por devolver.' }}</p>
+            }
+            <a class="text-link widget-more" routerLink="/admin/reservas" [queryParams]="{ pago: 'devolver', estado: 'todas' }">Verlas en Reservas →</a>
+          </section>
+        }
+
+        @case ('ultimas') {
+          <section class="widget" aria-labelledby="w-ultimas">
+            <header class="widget-head">
+              <h3 id="w-ultimas">Últimas reservas</h3>
+            </header>
+            @if (ultimas().length) {
+              <ul class="widget-list">
+                @for (reserva of ultimas(); track reserva.idReserva) {
+                  <li>
+                    <a class="widget-main" routerLink="/admin/reservas" [queryParams]="{ q: number(reserva), estado: 'todas' }">
+                      <strong>{{ reserva.nombreCliente }}</strong>
+                      <span>{{ number(reserva) }} · {{ reserva.nombreEvento }} · {{ plural(reserva.cantidad, 'plaza', 'plazas') }}</span>
+                    </a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="widget-none">{{ loading() ? 'Cargando…' : 'Todavía no hay reservas.' }}</p>
+            }
+            <a class="text-link widget-more" routerLink="/admin/reservas">Ver todas →</a>
+          </section>
+        }
+      }
+    }
+  </div>
+}
+
+<!-- Elegir el tablero: cada pieza se enseña o no y sube o baja. Se guarda en este navegador. -->
+<app-panel-dialog #customizeDialog heading="Personalizar la visión general">
+  <p class="dialog-copy">Elige qué ver en la visión general y en qué orden. Se guarda en este navegador.</p>
+  <ol class="customize-list">
+    @for (item of draft(); track item.id; let i = $index, first = $first, last = $last) {
+      <li [class.is-hidden]="!item.visible">
+        <label class="check">
+          <input type="checkbox" [checked]="item.visible" (change)="toggleDraft(i)" />
+          <span>
+            {{ widgetLabel(item.id) }}
+            <small>{{ widgetHint(item.id) }}</small>
+          </span>
+        </label>
+        <span class="customize-move">
+          <button type="button" class="btn btn-small" [disabled]="first" [attr.aria-label]="'Subir ' + widgetLabel(item.id)" (click)="moveDraft(i, -1)">↑</button>
+          <button type="button" class="btn btn-small" [disabled]="last" [attr.aria-label]="'Bajar ' + widgetLabel(item.id)" (click)="moveDraft(i, 1)">↓</button>
+        </span>
+      </li>
+    }
+  </ol>
+  <div class="form-actions">
+    <button type="button" class="btn" (click)="resetDraft()">Volver a lo de serie</button>
+    <button type="button" class="btn btn-primary" (click)="saveLayout()">Guardar</button>
+  </div>
+</app-panel-dialog>
+
+<app-panel-dialog #controlDialog heading="Hoja de control de ingreso" [huge]="true" (closed)="controlId.set(null)">
+  @if (controlId(); as id) {
+    <app-admin-control-sheet [idEvento]="id" [embedded]="true" />
+  }
+</app-panel-dialog>

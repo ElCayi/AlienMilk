@@ -38,6 +38,12 @@
   letter-spacing: -0.005em;
 }
 
+/* En la administración, sin el saludo de arriba, el título de la sección es el de la página. */
+:host-context(.is-titled) .section-head h2 {
+  font: 700 clamp(2.4rem, 3.4vw, 3.4rem) / 0.95 var(--condensed);
+  letter-spacing: 0.01em;
+}
+
 .section-head p {
   max-width: 44rem;
   margin: 0.5rem 0 0;

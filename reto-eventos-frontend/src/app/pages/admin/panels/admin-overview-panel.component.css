@@ -1,0 +1,185 @@
+/* La visión general: el saludo arriba, con «Personalizar» a la derecha, y debajo el tablero: las cifras a
+   todo el ancho y las demás piezas en tarjetas blancas sobre el papel, como las cifras de siempre. */
+.overview-head {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.overview-customize {
+  align-self: end;
+}
+
+/* En columnas que se rellenan de arriba abajo: piezas de alturas distintas, sin huecos entre ellas. */
+.overview-grid {
+  columns: 22rem 3;
+  column-gap: 1rem;
+}
+
+.overview-grid > * {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+/* Las cifras cortan las columnas y ocupan su fila entera, en cajas iguales. */
+.overview-figures {
+  column-span: all;
+  grid-auto-columns: minmax(0, 1fr);
+}
+
+.widget {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem 1.15rem 1.1rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+/* Si hay algo que hacer, el filete coral a la izquierda, como «Pendiente» en las fichas. */
+.widget.is-pending {
+  border-left: 3px solid var(--coral);
+}
+
+.widget-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.widget-head h3 {
+  margin: 0;
+  color: var(--paper-faint);
+  font:
+    800 0.66rem / 1.5 'Nunito',
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.widget-count {
+  font: 400 1.6rem / 1 var(--condensed);
+  font-variant-numeric: tabular-nums;
+}
+
+.widget-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.widget-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.widget-list li:first-child {
+  border-top: 0;
+}
+
+.widget-main {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  color: var(--paper-ink);
+  text-decoration: none;
+}
+
+a.widget-main:hover strong,
+a.widget-main:focus-visible strong {
+  color: var(--coral);
+}
+
+.widget-main span {
+  color: var(--paper-muted);
+  font-size: 0.85rem;
+}
+
+.widget-figure {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* La ocupación, en una barra fina: tinta sobre la franja del papel. */
+.widget-meter {
+  flex: none;
+  width: 5rem;
+  height: 0.35rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--paper-line);
+}
+
+.widget-meter span {
+  display: block;
+  height: 100%;
+  background: var(--paper-ink);
+}
+
+.widget-none {
+  margin: 0;
+  color: var(--paper-muted);
+}
+
+.widget-more {
+  justify-self: start;
+  font-weight: 700;
+}
+
+/* Personalizar: una fila por pieza, con su casilla y sus flechas. */
+.customize-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.customize-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid var(--paper-line);
+}
+
+.customize-list li:first-child {
+  border-top: 0;
+}
+
+.customize-list li.is-hidden .check span {
+  color: var(--paper-faint);
+}
+
+.customize-list small {
+  display: block;
+  color: var(--paper-muted);
+  font-weight: 400;
+  font-size: 0.82rem;
+}
+
+.customize-move {
+  display: flex;
+  gap: 0.3rem;
+}
+
+@media (max-width: 700px) {
+  .overview-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .overview-customize {
+    justify-self: start;
+  }
+
+  .overview-figures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+}

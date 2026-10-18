@@ -1,14 +1,14 @@
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 
 import { PanelConfirmComponent } from '../../shared/panel/panel-confirm';
 import { PanelFrameComponent, PanelNavItem } from '../../shared/panel/panel-frame.component';
-import { PanelGreetingComponent } from '../../shared/panel/panel-greeting.component';
 import { AdminSummaryService } from './admin-summary.service';
 
 const SECTIONS: PanelNavItem[] = [
+  { path: 'resumen', label: 'Visión general', icon: 'resumen' },
   { path: 'sesiones', label: 'Sesiones', icon: 'sesiones' },
   { path: 'reservas', label: 'Reservas', icon: 'reservas' },
   { path: 'tipos', label: 'Tipos de sesión', icon: 'tipos' },
@@ -21,13 +21,13 @@ const SECTIONS: PanelNavItem[] = [
 ];
 
 /**
- * Panel de administración: el marco de la aplicación (barra y menú lateral), el saludo con el
- * resumen y, debajo, la sección abierta (cada una en su dirección, ver admin.routes.ts).
+ * Panel de administración: el marco de la aplicación (barra y menú lateral) y la sección abierta, cada
+ * una en su dirección (ver admin.routes.ts). El saludo y el resumen viven en la visión general.
  */
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, PanelConfirmComponent, PanelFrameComponent, PanelGreetingComponent],
+  imports: [RouterOutlet, PanelConfirmComponent, PanelFrameComponent],
   templateUrl: './admin-page.component.html',
   styleUrl: '../../shared/panel/panel-shell.css',
 })
@@ -69,8 +69,4 @@ export class AdminPageComponent {
     this.summaryService.refresh();
   }
 
-  /** Una cifra del resumen, o un guion mientras llega (o si no llega). */
-  figure(value: number | undefined): string {
-    return value === undefined ? '—' : new Intl.NumberFormat('es-ES').format(value);
-  }
 }

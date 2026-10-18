@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AdminService } from '../../../core/services/admin.service';
@@ -56,7 +57,7 @@ interface TextVersion {
 @Component({
   selector: 'app-admin-dossier-bulk-panel',
   standalone: true,
-  imports: [FormsModule, DossierRowEditorComponent, FilterBarComponent],
+  imports: [FormsModule, NgTemplateOutlet, DossierRowEditorComponent, FilterBarComponent],
   templateUrl: './admin-dossier-bulk-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-dossier-bulk-panel.component.css'],
 })
@@ -262,6 +263,39 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   }
 
   /** Los nombres de las sesiones, para el título de una cobertura parcial. */
+  /** Las líneas de «dónde» que se ven enteras (las demás, con las tres primeras y «y N más»). */
+  readonly openWhere = signal<ReadonlySet<string>>(new Set());
+
+  /**
+   * Dónde está una versión o una fila, con número y nombre; si está en más de la mitad, dónde falta, que es
+   * lo que interesa. En todas: nada que decir.
+   */
+  where(ids: number[]): { label: string; sessions: string[] } | null {
+    const chosen = this.selection();
+    if (ids.length >= chosen.length) {
+      return null;
+    }
+    const inside = ids.length <= chosen.length / 2;
+    return {
+      label: inside ? 'En' : 'Falta en',
+      sessions: chosen
+        .filter((session) => ids.includes(session.idEvento) === inside)
+        .map((session) => `${this.number(session)} ${session.nombre}`),
+    };
+  }
+
+  toggleWhere(key: string): void {
+    this.openWhere.update((set) => {
+      const next = new Set(set);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }
+
   names(ids: number[]): string {
     return this.sessions()
       .filter((session) => ids.includes(session.idEvento))

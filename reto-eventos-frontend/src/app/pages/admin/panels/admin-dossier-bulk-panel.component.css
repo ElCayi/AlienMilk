@@ -267,6 +267,24 @@
   line-height: 1.45;
 }
 
+/* Debajo del texto, en qué sesiones está (o falta), en pequeño. */
+.bulk-where {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--paper-faint);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.bulk-where strong {
+  color: var(--paper-muted);
+}
+
+.bulk-where .text-link {
+  margin-left: 0.25rem;
+  font-size: inherit;
+}
+
 .bulk-row-actions {
   display: flex;
   flex-wrap: wrap;

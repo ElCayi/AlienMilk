@@ -143,7 +143,13 @@
                       @for (version of versions; track version.value) {
                         <li>
                           <span class="bulk-chip" [title]="names(version.ids)">{{ coverage(version.ids) }}</span>
-                          <span class="bulk-version-text">{{ version.value || 'Vacío' }}</span>
+                          <span class="bulk-version-text">
+                            {{ version.value || 'Vacío' }}
+                            <ng-container
+                              [ngTemplateOutlet]="whereLine"
+                              [ngTemplateOutletContext]="{ ids: version.ids, key: field.key + ':v:' + version.value }"
+                            />
+                          </span>
                           @if (version.value) {
                             <button type="button" class="text-link" (click)="setTextDraft(field, version.value)">
                               Usar este
@@ -201,7 +207,13 @@
                           <span class="bulk-chip" [class.is-mixed]="row.ids.length < selected().size" [title]="names(row.ids)">
                             {{ coverage(row.ids) }}
                           </span>
-                          <span class="bulk-row-text">{{ rowText(field, row.value) }}</span>
+                          <span class="bulk-row-text">
+                            {{ rowText(field, row.value) }}
+                            <ng-container
+                              [ngTemplateOutlet]="whereLine"
+                              [ngTemplateOutletContext]="{ ids: row.ids, key: field.key + ':r:' + row.key }"
+                            />
+                          </span>
                           <div class="bulk-row-actions">
                             @if (row.ids.length < selected().size) {
                               <button type="button" class="btn btn-small" (click)="spread(field, row)">
@@ -278,3 +290,20 @@
   </div>
 
 }
+
+<!-- Dónde está una versión o una fila (o dónde falta), con número y nombre: las tres primeras y «y N más». -->
+<ng-template #whereLine let-ids="ids" let-key="key">
+  @let place = where(ids);
+  @if (place) {
+    @let all = openWhere().has(key) || place.sessions.length <= 4;
+    <span class="bulk-where">
+      <strong>{{ place.label }}:</strong>
+      {{ (all ? place.sessions : place.sessions.slice(0, 3)).join(' · ') }}
+      @if (place.sessions.length > 4) {
+        <button type="button" class="text-link" (click)="toggleWhere(key)">
+          {{ openWhere().has(key) ? 'ver menos' : 'y ' + (place.sessions.length - 3) + ' más' }}
+        </button>
+      }
+    </span>
+  }
+</ng-template>

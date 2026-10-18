@@ -586,7 +586,8 @@
                         </p>
                       }
 
-                      <div class="entity-body">
+                      <!-- A lo ancho: los datos breves en fila, arriba, y debajo quién viene y lo que pide revisión. -->
+                      <div class="entity-body is-spread">
                         <div class="entity-side">
                           <section aria-label="Sesión">
                             <p class="detail-people-title">Sesión</p>
@@ -594,6 +595,7 @@
                               <button
                                 type="button"
                                 class="text-link"
+                                data-fit-wrap
                                 title="Ver solo las reservas de esta sesión"
                                 (click)="$event.stopPropagation(); filterFromCard(reserva)"
                               >
@@ -665,7 +667,7 @@
                           </section>
 
                           @if (reserva.canceladaEn) {
-                            <section aria-label="Cancelación">
+                            <section class="is-long" aria-label="Cancelación">
                               <p class="detail-people-title">Cancelación</p>
                               <p class="entity-line">{{ cancellation(reserva) }}</p>
                               @if (reserva.motivoCancelacion) {
@@ -675,7 +677,7 @@
                           }
 
                           @if (reserva.observaciones) {
-                            <section aria-label="Observaciones">
+                            <section class="is-long" aria-label="Observaciones">
                               <p class="detail-people-title">Observaciones</p>
                               <p class="entity-line">{{ reserva.observaciones }}</p>
                             </section>

@@ -589,7 +589,7 @@ th[aria-sort] .sort-button svg {
    vista. Al llegar al final, la rueda sigue con la página. En móvil, no: la ficha ocupa el ancho y
    un scroll dentro de otro, con el dedo, estorba. */
 @media screen and (min-width: 761px) {
-  .row-detail .session-detail {
+  .row-detail :is(.session-detail, .entity-card) {
     max-height: calc(100dvh - var(--bar-height, 4.25rem) - 10rem);
     overflow-y: auto;
     scrollbar-width: thin;
@@ -799,6 +799,79 @@ th[aria-sort] .sort-button svg {
   display: grid;
   align-content: start;
   gap: 1.1rem;
+}
+
+/* A lo ancho (la ficha de una reserva): cada bloque en su tarjeta de papel, los breves en fila y lo largo
+   ocupando dos; debajo, quién viene y lo que pide revisión, a lo ancho. En cada tarjeta, el dato que
+   importa en negrita y lo demás, más pequeño y apagado. */
+.entity-body.is-spread {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.entity-body.is-spread > .entity-side {
+  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
+  gap: 0.75rem;
+}
+
+.entity-body.is-spread > .entity-side > section,
+.entity-body.is-spread > .entity-related > section {
+  padding: 0.8rem 1rem 0.9rem;
+  border-radius: 0.6rem;
+  background: var(--paper);
+}
+
+.entity-body.is-spread > .entity-side > section > .entity-line {
+  margin: 0;
+  color: var(--paper-muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.entity-body.is-spread > .entity-side > section > .detail-people-title + .entity-line {
+  margin-bottom: 0.15rem;
+  color: var(--paper-ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Lo largo (observaciones, cancelación) se lee como texto, no como un dato destacado. */
+.entity-body.is-spread > .entity-side > .is-long > .detail-people-title + .entity-line {
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.entity-body.is-spread > .entity-side > section > .text-link {
+  margin-top: 0.35rem;
+  font-size: 0.88rem;
+}
+
+/* Solo donde caben al menos dos columnas: con una, un span 2 crearía una columna de más. */
+@media (min-width: 900px) {
+  .entity-body.is-spread > .entity-side > .is-long {
+    grid-column: span 2;
+  }
+}
+
+.entity-body.is-spread > .entity-related {
+  gap: 0.75rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* La revisión lleva su filete coral (o gris, ya decidida) a la izquierda: esa esquina, recta. */
+.entity-body.is-spread > .entity-related > .detail-review {
+  border-radius: 0 0.6rem 0.6rem 0;
+}
+
+.entity-body.is-spread .entity-line .text-link {
+  text-align: left;
+}
+
+.entity-body.is-spread .detail-people ol {
+  grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+  align-items: start;
+  gap: 0.75rem 2rem;
 }
 
 .entity-related {

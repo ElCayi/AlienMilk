@@ -1,0 +1,733 @@
+/* Nosotros en móvil (hasta 600 px). Va aparte de about-page.component.css, que llega al límite de
+   tamaño del build; se carga después, así que manda sobre ella como si estuviera al final. */
+
+/* Móvil (hasta 600 px): de «Nuestro campo» hacia abajo, cada sección sale de la columna de la página
+   y ocupa todo el ancho de la pantalla, con menos relleno a los lados: en una pantalla tan
+   estrecha, el texto y las fotos aprovechan todo el ancho. */
+@media (max-width: 600px) {
+  .us > section,
+  .us > .us-hero {
+    --inset: 12vw;
+    margin-inline: calc(50% - 50vw);
+  }
+
+  /* El texto, al margen de la portada (12 % del ancho a cada lado); las fotos y las tarjetas oscuras,
+     más anchas que él, a 16 px del borde, como las imágenes de la portada. */
+  .us-definition .us-definition-visual,
+  .us-work-visual,
+  .us-eco-visual,
+  .us-work-band,
+  .us-eco-states,
+  .us-chain {
+    margin-inline: calc(1rem - var(--inset));
+  }
+
+  /* Las fotos, tan anchas como la de «Nuestro campo»: a 8 px del borde. */
+  .us-work-visual,
+  .us-eco-visual {
+    margin-inline: calc(0.5rem - var(--inset));
+  }
+
+  /* La cita y el rótulo de la organización no tienen relleno propio (los separaba la columna): el
+     suyo, para que su texto quede donde el de las demás secciones. El tablero llega al borde. */
+  .us > .us-team,
+  .us-org > .us-org-label {
+    padding-inline: var(--inset);
+  }
+
+  /* Las secciones claras, una sola hoja: 40 px de aire arriba y abajo en todas, y esquinas solo por
+     fuera (arriba de la primera, abajo de la última). En las uniones, rectas: a todo el ancho, sus
+     esquinas dejaban asomar la textura como un pico en el borde. */
+  .us > .us-definition,
+  .us > .us-ecosystem {
+    padding-block: 2.5rem;
+  }
+
+  #campo {
+    padding-top: 0.5rem;
+    border-radius: var(--corner) 2.5rem 0 0;
+  }
+
+  .us > .us-work--banded,
+  .us > .us-ecosystem {
+    border-radius: 0;
+  }
+
+  /* La última hoja acaba en su foto: a 8 px de ella, como a los lados, y con las esquinas de abajo en
+     paralelo con las suyas (32 + 8). */
+  .us > .us-eco-more {
+    padding-bottom: 0.5rem;
+    border-radius: 0 0 2.5rem 2.5rem;
+  }
+
+  /* Los cuatro títulos de los bloques, y sus subtítulos, a un mismo tamaño: el que deja en una línea
+     al más largo («Del Archivo a la experiencia.» y «Producción, distribución y coleccionismo.»),
+     en proporción al ancho. Cada uno encogía por su cuenta y quedaban todos distintos. */
+  .us .us-work-block > h2,
+  .us .us-work-block > h3 {
+    font-size: 7.3vw;
+  }
+
+  .us .us-work-block > .us-work-subtitle {
+    font-size: 3.8vw;
+  }
+
+  /* Rótulo → título, el mismo aire en las secciones y los sub-bloques (unos 30 px a la vista). */
+  .us-work > .us-label {
+    padding-bottom: 1.3rem;
+  }
+
+  .us-work-block .us-work-eyebrow {
+    margin-bottom: 1.35rem;
+  }
+
+  /* El Archivo, con el mismo ritmo que las demás: 20 px del subtítulo a la entrada y entre párrafos. */
+  .us-ecosystem .us-eco-label-aside {
+    margin-bottom: 1.25rem;
+  }
+
+  .us-ecosystem .us-work-block .us-eco-lead {
+    margin-bottom: 0;
+  }
+
+  .us-ecosystem .us-eco-lead + .us-work-text,
+  .us-ecosystem .us-eco-fit .us-work-text + .us-work-text {
+    margin-top: 1.2em;
+  }
+
+  /* Sobre la textura, el mismo aire entre la cita, la organización y la invitación. */
+  .us > .us-invitation {
+    padding-block: 4.5rem;
+  }
+
+  /* La cabecera, también a lo ancho, con su texto a 16 px como el de las secciones; y de ella a la
+     primera tarjeta, el aire de la textura a una tarjeta (72 px, con los 20 de su índice). */
+  .us > .us-hero {
+    padding: 0 var(--inset) 3.25rem;
+  }
+
+  /* «Descubrir sesiones», bajo la ficha de la muestra y con aire claro: la columna del texto deja de
+     ser una caja y sus piezas entran en la rejilla, así el enlace puede ir tras el cultivo. Los
+     huecos los ponen los márgenes de cada pieza, no la rejilla. */
+  .us-hero-copy {
+    display: contents;
+  }
+
+  .us-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0;
+  }
+
+  .us-hero-visual {
+    margin: 2.25rem calc(1rem - var(--inset)) 0;
+  }
+
+  /* Pegado al índice de debajo: el enlace y las secciones se leen como una unidad. */
+  .us-explore {
+    order: 1;
+    justify-self: start;
+    margin-block: 2.5rem 1rem;
+  }
+
+  /* La ficha, al margen del texto: alineada con el enlace que va debajo. */
+  .us-hero-visual .us-culture-tag {
+    margin-left: calc(var(--inset) - 1rem);
+  }
+
+  /* La columna de la cabecera no crece con el rótulo, que va en una línea (appFitLine lo encoge). */
+
+
+  /* El cultivo, a 16 px del borde izquierdo y a sangre hasta el derecho. */
+
+  .us-culture {
+    width: calc(100% + 1rem);
+  }
+
+  /* Las fotos de las subsecciones, a un mismo tamaño y grandes (1,4 veces su ancho de alto). */
+  .us {
+    --photo-height: calc((100vw - 2rem) * 1.4);
+  }
+
+  .us figure.us-work-visual img,
+  .us figure.us-eco-visual img {
+    height: var(--photo-height);
+    aspect-ratio: auto;
+  }
+
+  /* «Nuestro campo»: la foto, a 8 px del marco blanco por arriba y a los lados, con la esquina de
+     arriba a la izquierda en paralelo a la del marco (32 − 8), y el rótulo 01 dentro de ella. El
+     marco abre su esquina de arriba a la derecha para que la de la foto (32) le siga en paralelo. */
+
+  #campo .us-label {
+    position: absolute;
+    z-index: 3;
+    top: calc(0.5rem + 1.25rem);
+    /* Alineado con el titular, que va a --inset del borde de la foto. */
+    left: calc(0.5rem + var(--inset));
+    padding: 0;
+    border: 0;
+  }
+
+  #campo .us-definition-visual {
+    /* Lo mismo que las fotos de las subsecciones con su ficha oscura debajo (6rem). */
+    min-height: calc(var(--photo-height) + 6rem);
+    /* Arriba, el sitio del rótulo 01 (hasta 32 px) más 22 px de aire: si el titular no cabe, la foto
+       crece en vez de montarlo sobre el rótulo. */
+    padding-top: 3.375rem;
+    margin-inline: calc(0.5rem - var(--inset));
+    border-radius: 1.5rem 2rem 0.35rem 0;
+  }
+
+  /* El titular, en la columna de la foto (que apila abajo): justo encima de la etiqueta negra, a la
+     misma distancia que hay entre ella y el pie (8 px), al margen de ambos y con más interlineado. */
+  #campo .us-definition-visual h2 {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: 0 var(--inset) 1.25rem;
+    line-height: 1.3;
+  }
+
+  /* Sin el pie «Archivo visual»: sobre el desierto claro no se leía. La etiqueta y el titular
+     bajan a su sitio (la foto apila abajo). */
+  #campo .us-definition-visual > figcaption {
+    display: none;
+  }
+
+  /* Las funciones, una banda oscura de transición entre la 01 y la 02, de borde a borde y pegada al
+     final de la 01; las cuatro en fila, en claro y pequeñas. */
+  #campo .us-functions {
+    position: relative;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 2.5rem calc(-1 * var(--inset)) -2.5rem;
+    padding: 1.5rem var(--inset);
+    background: var(--night);
+  }
+
+  /* La ilusión de que todo es redondo: el lienzo claro de arriba acaba en curva sobre la banda y el
+     de abajo empieza en curva, con la tinta rellenando las esquinas. */
+  #campo .us-functions::before,
+  #campo .us-functions::after {
+    /* Algo más abierta que la unión de las secciones (24 px). */
+    --seam: 2rem;
+    --c: transparent calc(var(--seam) - 0.5px), var(--night) var(--seam);
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--seam);
+    background:
+      radial-gradient(circle at 100% 0, var(--c)) 0 0 / var(--seam) 100% no-repeat,
+      radial-gradient(circle at 0 0, var(--c)) 100% 0 / var(--seam) 100% no-repeat;
+  }
+
+  /* Arriba, sobre el final de la 01; abajo, el mismo dibujo girado, sobre el principio de la 02 (la
+     01 deja de recortar y queda por encima de ella). */
+  #campo .us-functions::before {
+    bottom: 100%;
+  }
+
+  #campo .us-functions::after {
+    top: 100%;
+    rotate: 180deg;
+  }
+
+  #campo {
+    z-index: 1;
+    overflow: visible;
+  }
+
+  #campo .us-functions div::before {
+    height: 1px;
+    background: var(--light-rule);
+    mix-blend-mode: normal;
+  }
+
+  /* El nombre, en blanco con fusión «diferencia» como en escritorio: sobre la banda, casi blanco. */
+  #campo .us-functions dd {
+    /* «Señalización» cabe en su cuarto de banda a cualquier ancho. */
+    font-size: min(1rem, 4.4vw - 2px);
+  }
+}
+
+/* «Leer más»: solo en móvil. Fuera de él el botón no existe (ni ocupa sitio en las rejillas). */
+.us-more {
+  display: none;
+}
+
+/* Móvil: los textos largos de la 02 y la 04 llegan recortados (título, subtítulo y unas siete
+   líneas), con lo que queda fundido hacia abajo, y un «Leer más» como el «Desplegar» de la
+   arquitectura los abre enteros. Mejor que un recuadro con desplazamiento propio, que en el móvil
+   atrapa el dedo. */
+@media (max-width: 600px) {
+  .us-work-block:not(.us-eco-block):not(.is-open) {
+    max-height: 20rem;
+    overflow: hidden;
+    mask: linear-gradient(to bottom, #000 calc(100% - 6rem), transparent);
+  }
+
+  .us-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    justify-self: end;
+    /* Pegado al fundido: es el remate del texto. */
+    margin-top: -1.5rem;
+    padding: 0;
+    border: 0;
+    color: var(--muted);
+    background: none;
+    font: 800 0.66rem 'Nunito', sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .us-more span {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font: 400 1.1rem / 1 'Nunito', sans-serif;
+    letter-spacing: 0;
+  }
+
+  /* Abierto, el botón acompaña la lectura pegado al pie de la pantalla: se puede plegar en cualquier
+     momento, no solo al llegar al final. Sobre el texto, en una cápsula del lienzo. */
+  .us-more[aria-expanded='true'] {
+    position: sticky;
+    z-index: 2;
+    bottom: 1rem;
+    padding: 0.4rem 0.4rem 0.4rem 1rem;
+    border-radius: 999px;
+    background: var(--page-canvas);
+    box-shadow: 0 0.4rem 1.2rem rgba(13, 21, 30, 0.14);
+  }
+
+  .us-more:focus-visible {
+    outline: 2px solid var(--coral);
+    outline-offset: 4px;
+  }
+}
+
+/* Móvil: las etiquetas de las fotos (de la 01 a la 04 — 1), todas como la de «Nuestro campo»:
+   dentro de la imagen, al pie y al margen del texto, sobre un velo oscuro que se funde hacia la
+   derecha; y algo más grandes. Las fotos crecen lo que ocupaba la placa de debajo (6rem): así
+   miden lo mismo que la de «Nuestro campo». */
+@media (max-width: 600px) {
+  .us-station-tag {
+    max-width: 17rem;
+    font-size: 0.55rem;
+  }
+
+  .us-station-tag-id {
+    font-size: 0.68rem;
+  }
+
+  .us-work-visual .us-farm-tag,
+  .us-eco-visual .us-eco-tag {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--photo-height) + 6rem - 1rem);
+    /* Donde la de «Nuestro campo»: al margen del texto, medido desde la foto. */
+    left: var(--inset);
+    margin: 0;
+    max-width: 17rem;
+    padding: 0.45rem 1.6rem 0.5rem 0.6rem;
+    background: linear-gradient(
+      to right,
+      rgba(13, 21, 30, 0.88),
+      rgba(13, 21, 30, 0.82) 62%,
+      rgba(13, 21, 30, 0)
+    );
+    translate: 0 -100%;
+  }
+
+  .us figure:is(.us-work-visual--top, .us-work-visual--custody, .us-eco-visual):has(.us-station-tag)
+    img {
+    height: calc(var(--photo-height) + 6rem);
+  }
+
+  /* Las fotos, redondeadas por sus cuatro esquinas. */
+  .us figure.us-work-visual,
+  .us figure.us-eco-visual {
+    overflow: hidden;
+    border-radius: 2rem;
+  }
+
+  /* El Archivo: el sello, dentro de la foto, arriba a la derecha. La ficha del lote no cabe sin tapar
+     el rótulo de AlienMilk de la gradilla: en móvil se quita (sigue en tableta y escritorio). */
+  .us-eco-visual .us-eco-stamp {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.25rem;
+    margin: 0;
+  }
+
+  .us-eco-visual .us-eco-record {
+    display: none;
+  }
+
+  /* El recorrido de la 02, como las funciones de la 01: una banda oscura de borde a borde, con el
+     claro de arriba y de abajo en curva. Dentro, el tren de etapas (ver más abajo). */
+  .us-chain:not(.us-eco-routes) {
+    /* La curva, en paralelo con la esquina de la foto de encima (32 + 8). Entre la foto y la banda, los
+       mismos 8 px que a los lados de la foto: el hueco de la rejilla es de 2rem. */
+    --seam: 2.5rem;
+    margin: -1.5rem calc(-1 * var(--inset)) 0.25rem;
+    padding: 1.5rem var(--inset);
+    background: var(--night);
+  }
+
+  .us-chain:not(.us-eco-routes)::before,
+  .us-chain:not(.us-eco-routes)::after {
+    --c: transparent calc(var(--seam) - 0.5px), var(--night) var(--seam);
+    content: '';
+    position: absolute;
+    inset: auto 0;
+    z-index: 0;
+    height: var(--seam);
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 100% 0, var(--c)) 0 0 / var(--seam) 100% no-repeat,
+      radial-gradient(circle at 0 0, var(--c)) 100% 0 / var(--seam) 100% no-repeat;
+  }
+
+  .us-chain:not(.us-eco-routes)::before {
+    bottom: 100%;
+  }
+
+  .us-chain:not(.us-eco-routes)::after {
+    top: 100%;
+    rotate: 180deg;
+  }
+}
+
+/* Móvil: las dos bandas de transición (funciones y recorrido), al mismo alto, con lo de dentro
+   centrado: aunque las funciones quepan en menos, todas las transiciones miden igual. */
+@media (max-width: 600px) {
+  #campo .us-functions,
+  .us-chain:not(.us-eco-routes) {
+    box-sizing: border-box;
+    min-height: 9rem;
+    align-content: center;
+  }
+
+  .us-chain:not(.us-eco-routes) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* La copia del tren solo existe en móvil, donde empalma la cinta. */
+.us-chain li.us-chain-copy {
+  display: none;
+}
+
+/* Móvil: el recorrido, como en escritorio un tren de cápsulas unidas por su filamento, pero en una
+   sola fila que avanza sola en bucle, como la cinta de socios de la portada: no hace falta adivinar
+   que hay más. Al tocarla se para. Las dos mitades (la lista y su copia) miden lo mismo, así que
+   desplazar la mitad empalma sin salto. */
+@media (max-width: 600px) {
+  .us-chain:not(.us-eco-routes) {
+    padding-inline: 0;
+    overflow-x: clip;
+  }
+
+  .us-chain:not(.us-eco-routes) ol {
+    flex-wrap: nowrap;
+    width: max-content;
+    font-size: 0.85rem;
+    animation: us-train 40s linear infinite;
+  }
+
+  .us-chain:not(.us-eco-routes):active ol {
+    animation-play-state: paused;
+  }
+
+  .us-chain:not(.us-eco-routes) li,
+  .us-chain:not(.us-eco-routes) li:last-child {
+    flex: none;
+  }
+
+  .us-chain:not(.us-eco-routes) .us-chain-copy {
+    display: flex;
+  }
+
+  /* Cada cápsula, con su tramo de filamento detrás, también la última: lleva a la copia. */
+  .us-chain:not(.us-eco-routes) li::after {
+    content: '';
+    flex: 0 0 1.5rem;
+    min-width: 0;
+    height: 1.5px;
+    background: rgba(247, 248, 249, 0.22);
+  }
+}
+
+@keyframes us-train {
+  to {
+    translate: -50% 0;
+  }
+}
+
+/* Con «reducir movimiento», quieta: se desliza con el dedo y sin copia. */
+@media (max-width: 600px) and (prefers-reduced-motion: reduce) {
+  .us-chain:not(.us-eco-routes) {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .us-chain:not(.us-eco-routes) ol {
+    padding-inline: var(--inset);
+    animation: none;
+  }
+
+  .us-chain:not(.us-eco-routes) .us-chain-copy {
+    display: none;
+  }
+}
+
+/* Móvil: el medidor del final de la 02, otra banda de transición como las funciones y el tren: de
+   borde a borde, pegada al final de la 02, con el claro de arriba y de abajo en curva y el mismo alto.
+   Para caber, una sola barra partida en sus tres tramos (71 · 18 · 11, como en escritorio) y debajo
+   los tres destinos en fila, cada uno con su cifra. La 02 deja de recortar y queda por encima de la
+   03, para que la curva de abajo se pinte sobre ella. */
+@media (max-width: 600px) {
+  .us > .us-work--banded {
+    z-index: 1;
+    overflow: visible;
+  }
+
+  .us-work--banded .us-work-band {
+    --seam: 2.5rem;
+    position: relative;
+    box-sizing: border-box;
+    display: grid;
+    align-content: center;
+    min-height: 9rem;
+    /* Bajo la foto, 8 px como a sus lados; la curva, en paralelo con su esquina (32 + 8). */
+    margin: 0.5rem calc(-1 * var(--inset)) -2.5rem;
+    padding: 0.85rem var(--inset);
+    border-radius: 0;
+  }
+
+  .us-work--banded .us-work-band::before,
+  .us-work--banded .us-work-band::after {
+    --c: transparent calc(var(--seam) - 0.5px), var(--night) var(--seam);
+    content: '';
+    position: absolute;
+    inset: auto 0;
+    height: var(--seam);
+    background:
+      radial-gradient(circle at 100% 0, var(--c)) 0 0 / var(--seam) 100% no-repeat,
+      radial-gradient(circle at 0 0, var(--c)) 100% 0 / var(--seam) 100% no-repeat;
+  }
+
+  .us-work--banded .us-work-band::before {
+    bottom: 100%;
+  }
+
+  .us-work--banded .us-work-band::after {
+    top: 100%;
+    rotate: 180deg;
+  }
+
+  .us-work-meter-head {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Sin «Media de los últimos doce ciclos»: más sitio para los destinos. */
+  .us-work-meter-head span + span {
+    display: none;
+  }
+
+  /* La barra, partida en sus tramos (cada destino, en su columna del ancho de su parte) y cada nombre
+     pegado a su tramo: Sesiones debajo, al principio; Investigación encima, al final del suyo;
+     Archivo debajo, al final de la barra. Los dos estrechos crecen hacia la izquierda, sin pisarse. */
+  .us-work--banded .us-work-meter {
+    display: grid;
+    grid-template-columns: 71fr 18fr 11fr;
+    gap: 0 3px;
+    padding-top: 2.4rem;
+  }
+
+  .us-work--banded .us-work-meter div {
+    padding-top: calc(6px + 0.6rem);
+  }
+
+  .us-work--banded .us-work-meter div::before {
+    width: auto;
+    right: 0;
+  }
+
+  .us-work--banded .us-work-meter div:not(:first-child) {
+    display: grid;
+    /* Una columna que no crece con el nombre: así, alineado al final, sobresale hacia la izquierda. */
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    justify-items: end;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* Investigación, encima: nombre y cifra en una línea, sobre la barra (que baja lo mismo que sube
+     el bloque). */
+  .us-work--banded .us-work-meter div:nth-child(2) {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 0.35em;
+    margin-top: -2.4rem;
+    padding-top: 0;
+  }
+
+  .us-work--banded .us-work-meter div:nth-child(2)::before {
+    top: 2.4rem;
+  }
+
+  .us-work--banded .us-work-meter div:nth-child(2) dd {
+    margin: 0;
+  }
+
+  .us-work--banded .us-work-meter dt {
+    font-size: 1.15rem;
+  }
+
+  .us-work--banded .us-work-meter dd {
+    margin-top: 0.25rem;
+    font-size: 0.66rem;
+  }
+}
+
+/* Móvil: los estados de una muestra, la tercera banda de transición, entre la 03 y la 04: como las
+   funciones, de borde a borde y pegada al final de la 03, los cuatro en fila; la curva, como la del
+   recorrido, en paralelo con la esquina de la foto de encima, a 8 px de ella. */
+@media (max-width: 600px) {
+  .us > .us-ecosystem {
+    z-index: 1;
+    overflow: visible;
+  }
+
+  .us-ecosystem .us-eco-states {
+    --seam: 2.5rem;
+    box-sizing: border-box;
+    min-height: 9rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-content: center;
+    gap: 0.5rem;
+    margin: 0.5rem calc(-1 * var(--inset)) -2.5rem;
+    padding: 1.5rem var(--inset);
+    border-radius: 0;
+  }
+
+  .us-ecosystem .us-eco-states::before,
+  .us-ecosystem .us-eco-states::after {
+    --c: transparent calc(var(--seam) - 0.5px), var(--night) var(--seam);
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--seam);
+    background:
+      radial-gradient(circle at 100% 0, var(--c)) 0 0 / var(--seam) 100% no-repeat,
+      radial-gradient(circle at 0 0, var(--c)) 100% 0 / var(--seam) 100% no-repeat;
+  }
+
+  .us-ecosystem .us-eco-states::before {
+    bottom: 100%;
+  }
+
+  .us-ecosystem .us-eco-states::after {
+    top: 100%;
+    rotate: 180deg;
+  }
+
+  /* El filete y la letra de las funciones; el nombre, en dos líneas si no cabe, y algo menor para que «reproducción» quepa en su cuarto. */
+  .us-ecosystem .us-eco-states div {
+    border-top: 1px solid var(--light-rule);
+  }
+
+  .us-ecosystem .us-eco-states dd {
+    font-size: min(1rem, 4.2vw - 2px);
+    white-space: normal;
+  }
+}
+
+/* Móvil: la equivalencia del último lote, la cuarta banda de transición, como el recorrido de la 02:
+   de borde a borde, a 8 px de la foto de encima y con la curva en paralelo con su esquina. Dentro,
+   el rótulo en una línea y los tres análisis en fila, cada uno con su nombre y su cifra encima de su
+   medidor. */
+@media (max-width: 600px) {
+  .us-chain.us-eco-routes {
+    --seam: 2.5rem;
+    box-sizing: border-box;
+    min-height: 9rem;
+    justify-content: center;
+    gap: 0.85rem;
+    margin: -1.5rem calc(-1 * var(--inset)) 0.25rem;
+    padding: 1.5rem var(--inset);
+    border-radius: 0;
+    background: var(--night);
+  }
+
+  .us-chain.us-eco-routes::before,
+  .us-chain.us-eco-routes::after {
+    --c: transparent calc(var(--seam) - 0.5px), var(--night) var(--seam);
+    content: '';
+    position: absolute;
+    inset: auto 0;
+    height: var(--seam);
+    border-radius: 0;
+    background:
+      radial-gradient(circle at 100% 0, var(--c)) 0 0 / var(--seam) 100% no-repeat,
+      radial-gradient(circle at 0 0, var(--c)) 100% 0 / var(--seam) 100% no-repeat;
+  }
+
+  .us-chain.us-eco-routes::before {
+    bottom: 100%;
+  }
+
+  .us-chain.us-eco-routes::after {
+    top: 100%;
+    rotate: 180deg;
+  }
+
+  .us-eco-routes-label span {
+    display: none;
+  }
+
+  .us-eco-routes .us-eco-equiv {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .us-eco-routes .us-eco-equiv div {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .us-eco-routes .us-eco-equiv dt {
+    font-size: min(1.15rem, 4.8vw - 2px);
+  }
+
+  .us-eco-routes .us-eco-equiv dd {
+    font-size: 0.9rem;
+  }
+}
+
+/* Móvil: el laboratorio, la foto entera con su sala (ver la plantilla), que llena su recuadro como las
+   demás en vez de ir recortada y contenida. */
+@media (max-width: 600px) {
+  .us figure.us-lab-visual img {
+    padding: 0;
+    object-fit: cover;
+    mask: none;
+  }
+
+  .us-lab-visual picture {
+    display: block;
+  }
+}

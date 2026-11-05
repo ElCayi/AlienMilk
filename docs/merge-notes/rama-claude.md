@@ -210,13 +210,35 @@ primera cata» (Distribution).
   tinta en el borde izquierdo de la columna por encima de Próximas sesiones (en todos los anchos con
   columna).
 - **Nosotros, móvil (≤600):** secciones de borde a borde con el texto al margen de la portada (12vw) y
-  fotos y tarjetas a 16 px; espaciados unificados (40/40 por sección, 22 px rótulo → título, 72 px
+  fotos y tarjetas a 16 px; espaciados unificados (40/40 por sección, unos 28 px rótulo → título, 72 px
   textura ↔ tarjeta); fotos de subsección a un alto común; «Nuestro campo» con el rótulo dentro de la
   foto y sin el pie «Archivo visual»; «Descubrir sesiones» bajo la ficha de la muestra; títulos de
   bloque a un mismo tamaño. Al desplegar «Arquitectura ejecutiva» (≤1000) la vista baja hasta verla.
 - **Todos los anchos:** el rótulo de la cabecera de Nosotros y la entrada del menú pasan a
   «Dedicados a lo que nos une»; «Programa de colaboradores» con su minimilk; la entrada de «Nuestro
   campo» justificada; el cultivo vibra también al tocarlo.
-- **Ojo:** `about-page.component.css` está a pocos bytes del límite de 48 kB del build.
+- **Ojo:** las reglas de móvil de Nosotros viven en `about-page.mobile.css` (`styleUrls`); `about-page.component.css`
+  ya no las lleva, porque rozaba el límite de 48 kB por archivo. Si otra rama toca el móvil de Nosotros en el CSS
+  antiguo, hay que llevarlo allí.
 - **Comprobar tras el merge:** Nosotros a 360, 390 y 430; la portada a 1536×750 (héroe y borde de la
   columna junto a la intro).
+
+## Nosotros en móvil: bandas de transición y fotos
+
+Todo en ≤600 salvo donde se indica.
+
+- **Cinco bandas oscuras iguales** (144 px, de borde a borde, con el claro en curva): funciones, tren de
+  etapas, medidor, estados M-01…M-04 y equivalencia del último lote.
+- **Tren:** avanza solo en bucle. Su copia para empalmar es `CHAIN_COPY` en el `.ts`: si cambian las
+  etapas de la plantilla, hay que cambiarla también.
+- **Medidor:** las columnas `71fr 18fr 11fr` están escritas en el CSS: si cambian los porcentajes,
+  también. Sin «Media de los últimos doce ciclos». La equivalencia, sin «Frente al material de
+  referencia».
+- **«Leer más»** en los cuatro textos largos, y se puede cerrar en cualquier momento.
+- **Fotos:** esquinas redondeadas y etiquetas dentro de la foto. En el Archivo, el sello dentro y sin
+  la ficha del lote. La última hoja acaba a 8 px de su foto.
+- **Foto nueva solo en móvil:** `alienmilk-about-laboratory-scene.webp`, con `<picture>`; tableta y
+  escritorio siguen con el robot recortado.
+- **Todos los anchos:** «…cada nueva muestra. La incorporación incluye…» pasa a ser un solo párrafo.
+- **Comprobar tras el merge:** Nosotros a 360, 390 y 430, con el tren en marcha y abriendo y cerrando
+  «Leer más»; a 912 y a 1536, que el robot recortado sigue como estaba.

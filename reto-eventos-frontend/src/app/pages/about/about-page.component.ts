@@ -14,6 +14,19 @@ const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
   { id: 'continuidad', code: '04', label: 'Continuidad' },
 ];
 
+/** Las etapas del recorrido de la 02, para la copia que empalma la cinta en móvil (la lista visible
+ *  está escrita en la plantilla). */
+const CHAIN_COPY: readonly { code: string; label: string; end?: boolean }[] = [
+  { code: '01', label: 'Localización' },
+  { code: '02', label: 'Recogida' },
+  { code: '03', label: 'Tránsito' },
+  { code: '04', label: 'Recepción' },
+  { code: '05', label: 'Acondicionamiento' },
+  { code: '06', label: 'Evaluación' },
+  { code: '07', label: 'Conservación' },
+  { code: '08', label: 'Incorporación', end: true },
+];
+
 /** Nosotros, vestida con el lenguaje visual del resto del sitio. */
 @Component({
   selector: 'app-about-page',
@@ -26,13 +39,37 @@ const ARCHITECTURE: readonly { id: string; code: string; label: string }[] = [
     FitLineDirective,
   ],
   templateUrl: './about-page.component.html',
-  styleUrl: './about-page.component.css',
+  styleUrls: ['./about-page.component.css', './about-page.mobile.css'],
 })
 export class AboutPageComponent {
   protected readonly architecture = ARCHITECTURE;
+  protected readonly chainCopy = CHAIN_COPY;
   protected readonly activeTab = signal(0);
   /** El bloque de la arquitectura empieza plegado: solo la cabecera y las pestañas. */
   protected readonly archOpen = signal(false);
+
+  /** En móvil, los textos largos de la 02 y la 04 desplegados con su «Leer más» (por orden, 0–3). */
+  protected readonly openTexts = signal<ReadonlySet<number>>(new Set());
+
+  /**
+   * Despliega o pliega un texto. Al plegarlo, la página sube lo que ha encogido para que el botón se
+   * quede bajo el dedo, en vez de saltar muy por encima de la vista.
+   */
+  toggleText(index: number, block: HTMLElement): void {
+    const open = new Set(this.openTexts());
+    const closing = open.delete(index);
+    if (!closing) {
+      open.add(index);
+    }
+    const button = block.nextElementSibling as HTMLElement | null;
+    const before = button?.getBoundingClientRect().top ?? 0;
+    this.openTexts.set(open);
+    if (closing && button) {
+      requestAnimationFrame(() => {
+        window.scrollBy({ top: button.getBoundingClientRect().top - before, behavior: 'instant' });
+      });
+    }
+  }
 
   /** Una pestaña elige su capa y, si el bloque está plegado, lo despliega. Pulsar la pestaña que ya
    *  está abierta lo repliega. */

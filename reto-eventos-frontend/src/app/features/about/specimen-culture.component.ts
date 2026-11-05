@@ -249,6 +249,7 @@ export class SpecimenCultureComponent {
 
     this.idleStartsAt = performance.now() / 1000 + 8;
     window.addEventListener('pointermove', this.onPointerMove, { passive: true });
+    window.addEventListener('pointerdown', this.onTap, { passive: true });
 
     // El atributo muted no basta cuando Angular crea el elemento: sin la propiedad, el navegador
     // no permite la reproducción automática.
@@ -268,6 +269,7 @@ export class SpecimenCultureComponent {
       resize.disconnect();
       visibility.disconnect();
       window.removeEventListener('pointermove', this.onPointerMove);
+      window.removeEventListener('pointerdown', this.onTap);
       this.pause(video);
     };
   }
@@ -277,18 +279,7 @@ export class SpecimenCultureComponent {
       return;
     }
 
-    const rect = this.canvas().nativeElement.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    let hovered: number | null = null;
-    for (let index = this.placed.length - 1; index >= 0; index--) {
-      const { x: blobX, y: blobY, r } = this.placed[index];
-      if (Math.hypot(x - blobX, y - blobY) <= r) {
-        hovered = ROOTS[index];
-        break;
-      }
-    }
-
+    const hovered = this.rootAt(event);
     if (hovered !== this.hoveredRoot) {
       this.hoveredRoot = hovered;
       if (hovered !== null) {
@@ -296,6 +287,32 @@ export class SpecimenCultureComponent {
       }
     }
   };
+
+  /** Con el dedo no hay paso por encima: tocar una pompa la hace vibrar, otra vez a cada toque. */
+  private readonly onTap = (event: PointerEvent): void => {
+    if (!this.visible || event.pointerType !== 'touch') {
+      return;
+    }
+    const touched = this.rootAt(event);
+    if (touched !== null) {
+      this.hoveredRoot = touched;
+      this.hoverStartedAt = performance.now() / 1000;
+    }
+  };
+
+  /** El grupo de la pompa bajo el puntero, o null si no hay ninguna. */
+  private rootAt(event: PointerEvent): number | null {
+    const rect = this.canvas().nativeElement.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    for (let index = this.placed.length - 1; index >= 0; index--) {
+      const { x: blobX, y: blobY, r } = this.placed[index];
+      if (Math.hypot(x - blobX, y - blobY) <= r) {
+        return ROOTS[index];
+      }
+    }
+    return null;
+  }
 
   private play(video: HTMLVideoElement): void {
     video.play().catch(() => undefined);

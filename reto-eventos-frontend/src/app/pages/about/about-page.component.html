@@ -9,9 +9,9 @@
 
     <div class="us-hero-grid">
       <div class="us-hero-copy">
-        <p class="eyebrow">
+        <p class="eyebrow" appFitLine>
           <span class="eyebrow-icon" aria-hidden="true"></span>
-          <span>Una institución dedicada a lo que nos une</span>
+          <span>Dedicados a lo que nos une</span>
         </p>
         <h1 id="us-title" class="visually-hidden">Nosotros</h1>
         <!-- Nota firmada, como la presentación del programa en la portada. Texto de la usuaria,
@@ -24,7 +24,7 @@
             nueva muestra a través de la <b>investigación</b>, la <b>preservación</b> y la
             <b>degustación</b>.
           </p>
-          <figcaption class="us-hero-signature">Dirección general · AlienMilk</figcaption>
+          <figcaption class="us-hero-signature" appFitLine>Dirección general · AlienMilk</figcaption>
         </figure>
         <a class="us-explore" routerLink="/sesiones">
           <span class="us-explore-label">Descubrir sesiones</span>
@@ -159,9 +159,9 @@
     </div>
     <div class="us-definition-body">
       <div class="us-definition-grid us-work-grid">
-        <div class="us-work-block">
-          <h2 id="us-work-title">Del origen a la mesa.</h2>
-          <p class="us-work-subtitle">Cada etapa bajo nuestro control.</p>
+        <div class="us-work-block" #block0 [class.is-open]="openTexts().has(0)">
+          <h2 id="us-work-title" appFitLine>Del origen a la mesa.</h2>
+          <p class="us-work-subtitle" appFitLine>Cada etapa bajo nuestro control.</p>
           <p class="us-work-text">
             AlienMilk opera mediante un <b>modelo empresarial de integración vertical</b> que abarca
             desde la identificación de nuevas fuentes biológicas hasta el desarrollo y
@@ -204,6 +204,11 @@
             <b>ninguna oportunidad de especial relevancia científica quede desatendida</b>.
           </p>
         </div>
+        <!-- Móvil: el texto llega recortado a un alto fijo; este botón lo despliega entero. -->
+        <button type="button" class="us-more" [attr.aria-expanded]="openTexts().has(0)" (click)="toggleText(0, block0)">
+          {{ openTexts().has(0) ? 'Leer menos' : 'Leer más' }}
+          <span aria-hidden="true">{{ openTexts().has(0) ? '−' : '+' }}</span>
+        </button>
         <!-- Arriba, en el recuadro oscuro, el androide de la granja: sale por el borde de la sección. -->
         <figure class="us-work-visual us-work-visual--top">
           <img
@@ -249,16 +254,23 @@
             <li class="us-chain-end">
               <span><b>08</b> Incorporación</span>
             </li>
+            <!-- Móvil: la cinta avanza sola en bucle; esta copia la empalma sin salto. Oculta en escritorio y
+                 para los lectores de pantalla. -->
+            @for (step of chainCopy; track step.code) {
+              <li class="us-chain-copy" [class.us-chain-end]="step.end" aria-hidden="true">
+                <span><b>{{ step.code }}</b> {{ step.label }}</span>
+              </li>
+            }
           </ol>
         </div>
 
-        <div class="us-work-block us-work-block--custody">
+        <div class="us-work-block us-work-block--custody" #block1 [class.is-open]="openTexts().has(1)">
           <!-- La segunda parte de la sección, con su propio rótulo. -->
           <p class="us-work-eyebrow">
             <span class="eyebrow-icon" aria-hidden="true"></span>02 / Nuestro trabajo — 2
           </p>
           <h3>Bajo custodia.</h3>
-          <p class="us-work-subtitle">Cada lote, trazado de principio a fin.</p>
+          <p class="us-work-subtitle" appFitLine>Cada lote, trazado de principio a fin.</p>
           <p class="us-work-text">
             La cadena de custodia de AlienMilk se fundamenta en un
             <b>sistema de trazabilidad integral</b> que vincula cada lote a su fuente biológica, las
@@ -285,6 +297,11 @@
             reservados por razones de seguridad y confidencialidad estratégica.
           </p>
         </div>
+        <!-- Móvil: el texto llega recortado a un alto fijo; este botón lo despliega entero. -->
+        <button type="button" class="us-more" [attr.aria-expanded]="openTexts().has(1)" (click)="toggleText(1, block1)">
+          {{ openTexts().has(1) ? 'Leer menos' : 'Leer más' }}
+          <span aria-hidden="true">{{ openTexts().has(1) ? '−' : '+' }}</span>
+        </button>
         <!-- El recuadro oscuro, a todo el alto de la sección; la foto, junto a «Bajo custodia». -->
         <figure class="us-work-visual us-work-visual--custody">
           <img
@@ -351,10 +368,7 @@
           </p>
           <p class="us-work-text">
             Ontologías biológicas y sensoriales, grafos de procedencia, perfiles composicionales y
-            modelos de similitud comparan cada nueva muestra.
-          </p>
-          <p class="us-work-text">
-            La incorporación incluye un
+            modelos de similitud comparan cada nueva muestra. La incorporación incluye un
             <b>protocolo de reproducción</b> que permite generar nuevos lotes sin consumir el
             material original.
           </p>
@@ -438,9 +452,9 @@
     </div>
     <div class="us-definition-body">
       <div class="us-definition-grid us-work-grid">
-        <div class="us-work-block">
-          <h2 id="us-eco-more-title">Conservar lo imposible.</h2>
-          <p class="us-work-subtitle">Distinción de Custodia Continuada.</p>
+        <div class="us-work-block" #block2 [class.is-open]="openTexts().has(2)">
+          <h2 id="us-eco-more-title" appFitLine>Conservar lo imposible.</h2>
+          <p class="us-work-subtitle" appFitLine>Distinción de Custodia Continuada.</p>
           <p class="us-work-text">
             AlienMilk ha sido distinguida durante más de dos siglos por sus contribuciones a las
             <b>ciencias de la preservación biológica</b>.
@@ -463,6 +477,11 @@
             biológica.
           </p>
         </div>
+        <!-- Móvil: el texto llega recortado a un alto fijo; este botón lo despliega entero. -->
+        <button type="button" class="us-more" [attr.aria-expanded]="openTexts().has(2)" (click)="toggleText(2, block2)">
+          {{ openTexts().has(2) ? 'Leer menos' : 'Leer más' }}
+          <span aria-hidden="true">{{ openTexts().has(2) ? '−' : '+' }}</span>
+        </button>
         <!-- Arriba, el biorreactor del laboratorio, girado en vertical para llenar el recuadro, con su
              ficha. -->
         <figure class="us-work-visual us-work-visual--top us-bioreactor-visual">
@@ -501,12 +520,12 @@
           </dl>
         </div>
 
-        <div class="us-work-block us-work-block--custody">
+        <div class="us-work-block us-work-block--custody" #block3 [class.is-open]="openTexts().has(3)">
           <p class="us-work-eyebrow">
             <span class="eyebrow-icon" aria-hidden="true"></span>04 / El ecosistema — 2
           </p>
           <h3 appFitLine [appFitLineMin]="32">Del Archivo a la experiencia.</h3>
-          <p class="us-work-subtitle">Producción, distribución y coleccionismo.</p>
+          <p class="us-work-subtitle" appFitLine>Producción, distribución y coleccionismo.</p>
           <p class="us-work-text">
             La conservación es solo el principio. A partir de
             <b>bancos celulares maestros, tejidos secretores y cultivos productores</b>, AlienMilk
@@ -529,15 +548,29 @@
             <b>remanentes irrepetibles del hallazgo original</b>.
           </p>
         </div>
-        <!-- Abajo, el sistema quirúrgico del laboratorio, recortado sobre el negro. -->
+        <!-- Móvil: el texto llega recortado a un alto fijo; este botón lo despliega entero. -->
+        <button type="button" class="us-more" [attr.aria-expanded]="openTexts().has(3)" (click)="toggleText(3, block3)">
+          {{ openTexts().has(3) ? 'Leer menos' : 'Leer más' }}
+          <span aria-hidden="true">{{ openTexts().has(3) ? '−' : '+' }}</span>
+        </button>
+        <!-- Abajo, el sistema quirúrgico del laboratorio, recortado sobre el negro; en móvil, la foto
+             entera, con su sala, como las demás. -->
         <figure class="us-work-visual us-work-visual--custody us-lab-visual">
-          <img
-            src="/alienmilk-about-laboratory.webp"
-            alt="Un manipulador robótico de brazos blancos, iluminado en turquesa y coral, sostiene con sus pinzas una esfera blanca y nacarada; un conducto dorado le lleva un fluido."
-            width="1145"
-            height="1374"
-            loading="lazy"
-          />
+          <picture>
+            <source
+              media="(max-width: 600px)"
+              srcset="/alienmilk-about-laboratory-scene.webp"
+              width="1122"
+              height="1402"
+            />
+            <img
+              src="/alienmilk-about-laboratory.webp"
+              alt="Un manipulador robótico de brazos blancos, iluminado en turquesa y coral, sostiene con sus pinzas una esfera blanca y nacarada; un conducto dorado le lleva un fluido."
+              width="1145"
+              height="1374"
+              loading="lazy"
+            />
+          </picture>
         </figure>
       </div>
     </div>
@@ -639,7 +672,7 @@
           type="button"
           class="us-arch-toggle"
           [attr.aria-expanded]="archOpen()"
-          (click)="archOpen.set(!archOpen())"
+          (click)="toggleArch()"
         >
           {{ archOpen() ? 'Replegar' : 'Desplegar' }}
           <span aria-hidden="true">{{ archOpen() ? '−' : '+' }}</span>
@@ -901,7 +934,7 @@
         <app-collaborators-door />
       </div>
       <div class="us-invitation-copy">
-        <p class="us-kicker">Programa de colaboradores</p>
+        <p class="us-kicker"><span class="eyebrow-icon" aria-hidden="true"></span>Programa de colaboradores</p>
         <h2 id="us-invitation-title">Hay un sitio <br />para usted.</h2>
         <p>Sin compromiso, sin prisas y sin complicaciones.</p>
         <p class="us-invitation-motto"><span>El dolor es temporal.</span> La gloria es eterna.</p>

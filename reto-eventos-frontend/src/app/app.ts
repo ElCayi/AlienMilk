@@ -44,7 +44,7 @@ const NAV_GROUPS: readonly NavGroup[] = [
     label: 'Nosotros',
     path: '/nosotros',
     sections: [
-      { label: 'Una institución dedicada a lo que nos une' },
+      { label: 'Dedicados a lo que nos une' },
       { label: 'Nuestro campo', fragment: 'campo' },
       { label: 'Nuestro trabajo', fragment: 'trabajo' },
       { label: 'El Archivo', fragment: 'archivo' },

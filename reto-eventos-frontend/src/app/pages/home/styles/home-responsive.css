@@ -166,10 +166,12 @@
         margin: -0.5rem 0 0 auto;
       }
 
+      /* Todo el bloque, 40 px más abajo: arriba quedaba algo descentrado (Cayi, 2026-10-15). */
       .hero-copy {
         transform: scale(1);
         transform-origin: center;
         transition: transform 180ms ease;
+        translate: 0 40px;
       }
 
       .hero-brand-cta {

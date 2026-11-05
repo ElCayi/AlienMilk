@@ -479,6 +479,10 @@ h2 em {
 .us-label span:first-child,
 .us-work-eyebrow,
 .us-kicker {
+  /* Con su minimilk delante, como los demás rótulos. */
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
   color: var(--coral);
 }
 
@@ -757,8 +761,10 @@ h2 em {
   font-size: 1.32em;
   font-weight: 700;
   line-height: 1.42;
-  text-align: left;
-  text-wrap: pretty;
+  text-align: justify;
+  text-align-last: left;
+  text-justify: inter-character;
+  hyphens: auto;
 }
 
 .us-definition-copy b,
@@ -2380,9 +2386,12 @@ h2 em {
     display: none;
   }
 
-  /* Con tan pocas palabras por línea, justificar abre huecos: la nota va en bandera. */
+  /* Justificada como en escritorio, con la última línea a la izquierda: a todo el ancho del móvil y
+     con guiones, ya no abre huecos (antes iba en bandera). */
   .us-hero-lead {
-    text-align: left;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
   }
 
   .us-functions {

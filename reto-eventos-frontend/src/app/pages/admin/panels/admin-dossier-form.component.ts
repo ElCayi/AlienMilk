@@ -144,6 +144,11 @@ export class AdminDossierFormComponent {
     return isListKind(field.kind);
   }
 
+  /** Lo que se está editando, para la vista previa: lo mismo que se guardaría. */
+  preview(): SessionDossierLayer | null {
+    return this.loading() || this.loadError() ? null : this.layer();
+  }
+
   /** El expediente tal como se guarda: las listas vacías no cuentan. */
   private layer(): SessionDossierLayer {
     const layer = { ...this.draft };

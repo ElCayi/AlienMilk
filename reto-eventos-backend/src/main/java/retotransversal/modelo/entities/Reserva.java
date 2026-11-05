@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,9 +46,19 @@ public class Reserva {
 	@JoinColumn(name = "id_evento", nullable = false)
 	private Evento evento;
 
+	/**
+	 * La cuenta de quien reserva; null en las reservas por teléfono sin cuenta y en las de cuentas que se
+	 * borraron. Entonces habla por ella clienteNombre (y clienteCorreo, si se dio).
+	 */
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "username", nullable = false)
+	@JoinColumn(name = "username")
 	private Usuario usuario;
+
+	@Column(name = "cliente_nombre", length = 120)
+	private String clienteNombre;
+
+	@Column(name = "cliente_correo", length = 120)
+	private String clienteCorreo;
 
 	@Column(name = "precio_venta", nullable = false, precision = 9, scale = 2)
 	private BigDecimal precioVenta;
@@ -132,7 +145,20 @@ public class Reserva {
 	@Column(name = "pagada_en")
 	private LocalDateTime pagadaEn;
 
-	/** Lo devuelto hasta ahora: la diferencia cada vez que bajó el importe y, al cancelar, lo que quedaba. */
+	/**
+	 * Las devoluciones, cada una con su registro (ver Devolucion). importeDevuelto es su suma, hechas o
+	 * pendientes de entregar en taquilla: lo que ya no se debe cobrar ni volver a devolver.
+	 */
+	@Builder.Default
+	@OneToMany(mappedBy = "reserva", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OrderBy("idDevolucion")
+	// Con una consulta aparte: dos listas EAGER a la vez, Hibernate no las sabe traer de una.
+	@Fetch(FetchMode.SELECT)
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	private List<Devolucion> devoluciones = new ArrayList<>();
+
+	/** Lo devuelto o por devolver: la diferencia cada vez que bajó el importe y, al cancelar, lo que quedaba. */
 	@Builder.Default
 	@Column(name = "importe_devuelto", nullable = false, precision = 9, scale = 2)
 	private BigDecimal importeDevuelto = BigDecimal.ZERO;
@@ -149,6 +175,11 @@ public class Reserva {
 
 	@Column(name = "revisada_en")
 	private LocalDateTime revisadaEn;
+
+	/** Si es de esa cuenta: las reservas sin cuenta no son de nadie que pueda entrar en Mi panel. */
+	public boolean esDe(String username) {
+		return usuario != null && usuario.getUsername().equals(username);
+	}
 
 	public boolean cancelada() {
 		return canceladaEn != null;

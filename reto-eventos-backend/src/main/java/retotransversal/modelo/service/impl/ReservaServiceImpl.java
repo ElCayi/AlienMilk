@@ -98,8 +98,42 @@ public class ReservaServiceImpl implements ReservaService {
 	@Transactional
 	public Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro) {
 		// Guardada primero (el pago necesita su localizador); si el pago no se puede abrir, se deshace todo.
-		Reserva reserva = reservaRepository.save(registrar(idEvento, username, registro));
+		Reserva reserva = registrar(idEvento, username, registro);
+		if (!eventoService.admiteReservasOnline(reserva.getEvento())) {
+			throw new ConflictoNegocioException(
+					"Las reservas online de esta sesión ya están cerradas: cierran 40 minutos antes de empezar");
+		}
+		reserva = reservaRepository.save(reserva);
 		pagos.abrirPago(reserva);
+		return reservaRepository.save(reserva);
+	}
+
+	/**
+	 * Por teléfono, a alguien sin cuenta: la reserva va a su nombre y su teléfono (y su correo, si lo da),
+	 * y se paga en taquilla. Las mismas reglas de aforo que cualquier otra, salvo el límite por persona,
+	 * que sin cuenta no hay a quién sumar.
+	 */
+	@Override
+	@Transactional
+	public Reserva reservarSinCuenta(Integer idEvento, String nombre, String telefono, String correo, Integer cantidad,
+			String observaciones) {
+		String limpioNombre = ErroresCampos.limpio(nombre);
+		String limpioTelefono = ErroresCampos.limpio(telefono);
+		String limpioCorreo = ErroresCampos.limpio(correo);
+		new ErroresCampos()
+				.obligatorio("nombre", limpioNombre, 120, "Indica su nombre")
+				.si(limpioTelefono == null, "telefono", "Indica un teléfono de contacto")
+				.si(limpioTelefono != null && !TELEFONO.matcher(limpioTelefono).matches(), "telefono",
+						"Escribe solo números, espacios y, si hace falta, el prefijo con +")
+				.si(limpioCorreo != null && !limpioCorreo.matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+"), "correo",
+						"Ese correo no parece válido")
+				.maximo("correo", limpioCorreo, 120)
+				.lanzarSiHay();
+		Reserva reserva = nueva(idEvento, null, cantidad, observaciones);
+		reserva.setClienteNombre(limpioNombre);
+		reserva.setClienteCorreo(limpioCorreo);
+		reserva.setTelefono(limpioTelefono);
+		reserva.setEstadoPago(EstadoPago.EN_TAQUILLA);
 		return reservaRepository.save(reserva);
 	}
 
@@ -161,7 +195,7 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setMaterialDescripcion(registro.isMaterialExterno() ? material : null);
 		reserva.setConformidadEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
 		// Las comunicaciones solo se suman: no marcar la casilla no da de baja a nadie.
-		if (registro.isAceptaComunicaciones()) {
+		if (registro.isAceptaComunicaciones() && reserva.getUsuario() != null) {
 			reserva.getUsuario().setAceptaComunicaciones(true);
 		}
 		return reserva;
@@ -173,7 +207,7 @@ public class ReservaServiceImpl implements ReservaService {
 	 */
 	private Reserva nueva(Integer idEvento, String username, Integer cantidad, String observaciones) {
 		Evento evento = eventoService.bloquear(idEvento);
-		Usuario usuario = usuarioService.findById(username);
+		Usuario usuario = username == null ? null : usuarioService.findById(username);
 		validarReserva(evento, username, cantidad);
 		if (observaciones != null && observaciones.strip().length() > 200) {
 			throw new ConflictoNegocioException("Las observaciones no pueden superar 200 caracteres");
@@ -206,6 +240,7 @@ public class ReservaServiceImpl implements ReservaService {
 		Integer idEvento = datos.idEvento() == null ? reserva.getEvento().getIdEvento() : datos.idEvento();
 		boolean mueve = !idEvento.equals(reserva.getEvento().getIdEvento()) || cantidad != reserva.getCantidad();
 		BigDecimal antes = reserva.getPrecioVenta();
+		boolean mismaSesion = idEvento.equals(reserva.getEvento().getIdEvento());
 		if (mueve) {
 			if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
 				throw new ConflictoNegocioException(
@@ -249,7 +284,8 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		aplicarDatos(reserva, datos);
 		// Lo último, cuando todo lo demás ya vale: una devolución no se deshace.
-		pagos.devolver(reserva, antes.subtract(reserva.getPrecioVenta()));
+		pagos.devolver(reserva, antes.subtract(reserva.getPrecioVenta()),
+				mismaSesion ? "Menos plazas" : "Cambio de sesión");
 		return reservaRepository.save(reserva);
 	}
 
@@ -295,6 +331,10 @@ public class ReservaServiceImpl implements ReservaService {
 		if (reserva.getEvento().getEstado() == EstadoEvento.CANCELADO) {
 			throw new ConflictoNegocioException("Su sesión está cancelada");
 		}
+		// En taquilla se cobra al entrar; con tarjeta, primero tiene que llegar el pago.
+		if (reserva.getEstadoPago() == EstadoPago.PENDIENTE) {
+			throw new ConflictoNegocioException("Está pendiente de pago con tarjeta: no puede entrar hasta que se pague");
+		}
 		return reserva;
 	}
 
@@ -313,6 +353,17 @@ public class ReservaServiceImpl implements ReservaService {
 		reserva.setRevisionAceptada(aceptada);
 		reserva.setRevisionNota(limpia);
 		reserva.setRevisadaEn(LocalDateTime.now(EventoServiceImpl.ZONA).withNano(0));
+		return reservaRepository.save(reserva);
+	}
+
+	@Override
+	@Transactional
+	public Reserva reabrirRevision(Integer idReserva) {
+		Reserva reserva = findById(idReserva);
+		if (reserva.cancelada() || !reserva.pideAdaptaciones()) {
+			throw new ConflictoNegocioException("Esta reserva no tiene adaptaciones ni material que revisar");
+		}
+		reserva.reabrirRevision();
 		return reservaRepository.save(reserva);
 	}
 
@@ -343,13 +394,19 @@ public class ReservaServiceImpl implements ReservaService {
 		if (ocupadas + reserva.getCantidad() > evento.getAforoMaximo()) {
 			throw new ConflictoNegocioException("Ya no quedan plazas suficientes en su sesión");
 		}
-		int delCliente = reservaRepository.findByUsuarioUsernameAndEventoIdEventoAndCanceladaEnIsNull(
-				reserva.getUsuario().getUsername(), evento.getIdEvento()).stream().mapToInt(Reserva::getCantidad).sum();
+		int delCliente = reserva.getUsuario() == null ? 0
+				: reservaRepository.findByUsuarioUsernameAndEventoIdEventoAndCanceladaEnIsNull(
+						reserva.getUsuario().getUsername(), evento.getIdEvento()).stream().mapToInt(Reserva::getCantidad).sum();
 		if (delCliente + reserva.getCantidad() > 10) {
 			throw new ConflictoNegocioException("Como máximo 10 plazas por persona en la misma sesión");
 		}
 		reserva.reactivar();
 		return reservaRepository.save(reserva);
+	}
+
+	@Override
+	public Reserva entregarDevolucion(Integer idReserva, Integer idDevolucion) {
+		return pagos.entregarDevolucion(idReserva, idDevolucion);
 	}
 
 	/** Cobrada en taquilla: lo que el admin marca cuando quien reservó por teléfono paga al llegar. */
@@ -386,8 +443,8 @@ public class ReservaServiceImpl implements ReservaService {
 			throw new ConflictoNegocioException(libres == 1 ? "En esa sesión solo queda 1 plaza libre"
 					: "En esa sesión solo quedan %d plazas libres".formatted(libres));
 		}
-		String username = reserva.getUsuario().getUsername();
-		int delCliente = otras.stream().filter(otra -> otra.getUsuario().getUsername().equals(username))
+		String username = reserva.getUsuario() == null ? null : reserva.getUsuario().getUsername();
+		int delCliente = username == null ? 0 : otras.stream().filter(otra -> otra.esDe(username))
 				.mapToInt(Reserva::getCantidad).sum();
 		if (delCliente + cantidad > 10) {
 			throw new ConflictoNegocioException("Como máximo 10 plazas por persona en la misma sesión");
@@ -405,7 +462,7 @@ public class ReservaServiceImpl implements ReservaService {
 	@Transactional
 	public Reserva editarReservaPropia(Integer idReserva, String username, ReservaEditarDto datos) {
 		Reserva reserva = findById(idReserva);
-		if (!reserva.getUsuario().getUsername().equals(username)) {
+		if (!reserva.esDe(username)) {
 			throw new OperacionNoPermitidaException("Solo puedes modificar tus propias reservas");
 		}
 		comprobarViva(reserva, "La sesión ya no está activa: la reserva se queda en tu historial");
@@ -473,7 +530,7 @@ public class ReservaServiceImpl implements ReservaService {
 	@Transactional
 	public int cancelarReserva(Integer idReserva, String username) {
 		Reserva reserva = findById(idReserva);
-		if (!reserva.getUsuario().getUsername().equals(username)) {
+		if (!reserva.esDe(username)) {
 			throw new OperacionNoPermitidaException("Solo puedes cancelar tus propias reservas");
 		}
 		comprobarViva(reserva, "La sesión ya no está activa: la reserva se queda en tu historial");
@@ -482,7 +539,7 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		// Hasta el día anterior, el cliente recupera todo lo pagado.
 		pagos.cerrarPendiente(reserva);
-		pagos.devolver(reserva, pendienteDeDevolver(reserva));
+		pagos.devolver(reserva, pendienteDeDevolver(reserva), "Cancelación del cliente");
 		cancelar(reserva, CanceladaPor.CLIENTE, null);
 		return 1;
 	}
@@ -500,7 +557,7 @@ public class ReservaServiceImpl implements ReservaService {
 		new ErroresCampos().obligatorio("motivo", limpio, 200, "Indica el motivo de la cancelación").lanzarSiHay();
 		pagos.cerrarPendiente(reserva);
 		if (devolver) {
-			pagos.devolver(reserva, pendienteDeDevolver(reserva));
+			pagos.devolver(reserva, pendienteDeDevolver(reserva), "Cancelación de AlienMilk");
 		}
 		return cancelar(reserva, CanceladaPor.ALIENMILK, limpio);
 	}
@@ -550,10 +607,12 @@ public class ReservaServiceImpl implements ReservaService {
 			throw new ConflictoNegocioException("No quedan plazas suficientes en esta sesión");
 		}
 
-		int entradasUsuario = reservaRepository.findByUsuarioUsernameAndEventoIdEventoAndCanceladaEnIsNull(username, evento.getIdEvento())
-				.stream()
-				.mapToInt(Reserva::getCantidad)
-				.sum();
+		// Sin cuenta (por teléfono) no hay a quién sumarle reservas: cuenta solo el máximo por reserva.
+		int entradasUsuario = username == null ? 0
+				: reservaRepository.findByUsuarioUsernameAndEventoIdEventoAndCanceladaEnIsNull(username, evento.getIdEvento())
+						.stream()
+						.mapToInt(Reserva::getCantidad)
+						.sum();
 
 		if (entradasUsuario + cantidad > 10) {
 			throw new ConflictoNegocioException("Como máximo 10 plazas por persona en la misma sesión");

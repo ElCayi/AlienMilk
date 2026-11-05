@@ -1,10 +1,12 @@
 <header class="section-head">
   <div>
-    <h2>Solicitudes</h2>
-    <p>
-      Lo que llega desde los formularios públicos: operadores asociados, propuestas de Collaborators.
-      Cada solicitud trae los campos de su formulario, con sus etiquetas.
-    </p>
+    <!-- La explicación de la sección, en su «?»: la sección empieza directamente con su trabajo. -->
+    <div class="section-title">
+      <h2>Solicitudes</h2>
+      <app-section-help heading="Solicitudes">
+        <p>Lo que llega desde los formularios públicos: operadores asociados, propuestas de Collaborators. Cada solicitud trae los campos de su formulario, con sus etiquetas.</p>
+      </app-section-help>
+    </div>
   </div>
   <div class="section-head-actions">
     <button type="button" class="btn" [disabled]="loading()" (click)="load()">Actualizar</button>

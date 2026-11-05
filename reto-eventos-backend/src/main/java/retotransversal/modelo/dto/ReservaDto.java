@@ -25,7 +25,9 @@ public class ReservaDto {
 	private Integer idEvento;
 	private String nombreEvento;
 	private String username;
-	/** Nombre y apellidos de la cuenta, para el panel de administración. */
+	/** El correo de la cuenta, o el que se dio al reservar sin cuenta (puede faltar). */
+	private String clienteCorreo;
+	/** Nombre y apellidos de la cuenta, o el nombre que se dio al reservar sin cuenta. */
 	private String nombreCliente;
 	private Integer cantidad;
 	private BigDecimal precioVenta;
@@ -62,7 +64,10 @@ public class ReservaDto {
 	private String pagoUrl;
 	private LocalDateTime pagoCaducaEn;
 	private LocalDateTime pagadaEn;
+	/** Lo devuelto o por devolver (la suma de sus devoluciones, hechas o pendientes). */
 	private BigDecimal importeDevuelto;
+	/** Cada devolución, con su medio y su estado (ver Devolucion). */
+	private List<DevolucionDto> devoluciones;
 	/** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
 	private int entradasSinRegistrar;
 
@@ -71,7 +76,8 @@ public class ReservaDto {
 				.idReserva(reserva.getIdReserva())
 				.idEvento(reserva.getEvento().getIdEvento())
 				.nombreEvento(reserva.getEvento().getNombre())
-				.username(reserva.getUsuario().getUsername())
+				.username(reserva.getUsuario() == null ? null : reserva.getUsuario().getUsername())
+				.clienteCorreo(reserva.getUsuario() == null ? reserva.getClienteCorreo() : reserva.getUsuario().getEmail())
 				.nombreCliente(nombreCompleto(reserva))
 				.cantidad(reserva.getCantidad())
 				.precioVenta(reserva.getPrecioVenta())
@@ -101,11 +107,15 @@ public class ReservaDto {
 				.pagoCaducaEn(reserva.getPagoCaducaEn())
 				.pagadaEn(reserva.getPagadaEn())
 				.importeDevuelto(reserva.getImporteDevuelto())
+				.devoluciones(reserva.getDevoluciones().stream().map(DevolucionDto::de).toList())
 				.entradasSinRegistrar(reserva.getEntradasSinRegistrar())
 				.build();
 	}
 
 	private static String nombreCompleto(Reserva reserva) {
+		if (reserva.getUsuario() == null) {
+			return reserva.getClienteNombre();
+		}
 		String nombre = reserva.getUsuario().getNombre();
 		String apellidos = reserva.getUsuario().getApellidos();
 		return apellidos == null || apellidos.isBlank() ? nombre : nombre + " " + apellidos;

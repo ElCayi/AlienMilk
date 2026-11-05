@@ -65,8 +65,11 @@ export function sessionSchedule(session: { horaInicio?: string | null; duracion?
   return `${start} – ${pad(Math.floor(end / 60))}:${pad(end % 60)}`;
 }
 
-/** Minutos antes del inicio en que cierran las reservas: cuando cierra el control de ingreso. */
-export const BOOKING_CLOSES_MINUTES = 10;
+/**
+ * Minutos antes del inicio en que cierran las reservas de la web: los 30 que tiene Stripe para pagar más
+ * los 10 del cierre del control de ingreso. Por teléfono o en taquilla, hasta el cierre (10 minutos).
+ */
+export const BOOKING_CLOSES_MINUTES = 40;
 
 /**
  * Si una sesión aún admite reservas: hasta {@link BOOKING_CLOSES_MINUTES} minutos antes de empezar,

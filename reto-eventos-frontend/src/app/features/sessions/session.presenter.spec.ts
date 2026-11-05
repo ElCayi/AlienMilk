@@ -49,10 +49,11 @@ describe('session presenter', () => {
     expect(sessionSchedule({ horaInicio: null, duracion: 90 })).toBe('');
   });
 
-  it('closes bookings ten minutes before the start and cancellations the day before', () => {
+  it('closes web bookings forty minutes before the start and cancellations the day before', () => {
+    // 30 minutos para pagar en Stripe y 10 de cierre de la puerta: a las 18:35, ya no.
     const session = { fechaInicio: '2026-11-20', horaInicio: '19:15' };
-    expect(bookingsOpen(session, new Date(2026, 10, 20, 19, 4))).toBe(true);
-    expect(bookingsOpen(session, new Date(2026, 10, 20, 19, 5))).toBe(false);
+    expect(bookingsOpen(session, new Date(2026, 10, 20, 18, 34))).toBe(true);
+    expect(bookingsOpen(session, new Date(2026, 10, 20, 18, 35))).toBe(false);
     expect(cancellable('2026-11-20', new Date(2026, 10, 19, 23, 59))).toBe(true);
     expect(cancellable('2026-11-20', new Date(2026, 10, 20, 0, 1))).toBe(false);
   });

@@ -16,6 +16,7 @@ import {
   matches,
   profileLabel,
 } from '../../../shared/panel/panel-format';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 type Filter = 'TODOS' | 'CLIENTES' | 'ADMINS' | 'DESACTIVADOS';
 
@@ -28,7 +29,7 @@ type Filter = 'TODOS' | 'CLIENTES' | 'ADMINS' | 'DESACTIVADOS';
 @Component({
   selector: 'app-admin-users-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective],
+  imports: [SectionHelpComponent, FormsModule, RouterLink, PanelDialogComponent, KeepHeightDirective],
   templateUrl: './admin-users-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

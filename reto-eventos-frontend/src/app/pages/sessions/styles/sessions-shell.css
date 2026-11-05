@@ -239,3 +239,19 @@ h1 {
   color: var(--light);
   font-weight: 700;
 }
+
+/* El aviso de la vista previa (dentro del diálogo de editar sesión del panel), al principio de la página. */
+.preview-banner {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  color: var(--light);
+  background: var(--slate-deep);
+  font:
+    600 0.9rem / 1.4 'Nunito',
+    sans-serif;
+  text-align: center;
+}
+
+.preview-banner b {
+  color: var(--coral);
+}

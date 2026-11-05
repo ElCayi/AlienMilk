@@ -14,6 +14,7 @@ import {
   Tone,
 } from '../../../shared/panel/panel-format';
 import { AccountStore } from '../account-store';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /** Pendiente de pago pide algo de ti; preparándose o de camino, en marcha; lo demás, cerrado. */
 const STATE_TONES: Record<EstadoPedido, Tone> = {
@@ -32,7 +33,7 @@ const STATE_TONES: Record<EstadoPedido, Tone> = {
 @Component({
   selector: 'app-account-orders-panel',
   standalone: true,
-  imports: [RouterLink],
+  imports: [SectionHelpComponent, RouterLink],
   templateUrl: './account-orders-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

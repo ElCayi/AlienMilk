@@ -2,10 +2,12 @@ import {
   afterNextRender,
   Component,
   ElementRef,
+  HostListener,
   inject,
   Injector,
   input,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 
@@ -20,12 +22,32 @@ let nextId = 0;
   selector: 'app-panel-dialog',
   standalone: true,
   template: `
-    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [attr.aria-labelledby]="headingId" (close)="closed.emit()">
-      <div class="panel-dialog-head">
+    <dialog #dialog class="panel-dialog" [class.is-wide]="wide()" [class.is-tall]="tall()" [class.is-huge]="huge()" [class.is-drawer]="drawer()" [attr.tabindex]="drawer() ? -1 : null" [style.width]="width()" [class.is-max]="huge() && maximized()" [attr.aria-labelledby]="headingId" (close)="onClose()" (cancel)="onCancel($event)" [attr.closedby]="beforeClose() ? 'none' : null">
+      <div class="panel-dialog-head" (dblclick)="onHeadDblClick($event)">
         <h2 [id]="headingId">{{ heading() }}</h2>
-        <button type="button" class="panel-dialog-close" aria-label="Cerrar" (click)="close()">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
-        </button>
+        <div class="panel-dialog-tools">
+          <!-- Botones propios de quien lo usa (anterior / siguiente, en el panel lateral). -->
+          <ng-content select="[dialog-tools]" />
+          @if (huge()) {
+            <button
+              type="button"
+              class="panel-dialog-close"
+              [attr.aria-label]="maximized() ? 'Volver al tamaño normal' : 'Maximizar'"
+              [attr.title]="maximized() ? 'Volver al tamaño normal' : 'Maximizar'"
+              [attr.aria-pressed]="maximized()"
+              (click)="toggleMaximized()"
+            >
+              @if (maximized()) {
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+              }
+            </button>
+          }
+          <button type="button" class="panel-dialog-close" aria-label="Cerrar" (click)="requestClose()">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
       </div>
       <div class="panel-dialog-body">
         <ng-content />
@@ -40,9 +62,42 @@ export class PanelDialogComponent {
   readonly wide = input(false);
   /** Alto fijo, para diálogos con pestañas: cambiar de pestaña no lo encoge ni lo mueve. */
   readonly tall = input(false);
+  /** Casi toda la pantalla, para lo que antes era una página aparte (la hoja de control). */
+  readonly huge = input(false);
+  /**
+   * Panel lateral: entra desde la derecha a todo el alto y deja ver, oscurecida, la lista de la que sale.
+   * Es para consultar (una ficha), no un formulario: un clic fuera lo cierra.
+   */
+  readonly drawer = input(false);
+  /** Un ancho a medida (los filtros), cuando ninguno de los anteriores encaja. */
+  readonly width = input<string | null>(null);
+  /**
+   * Antes de cerrar con la ✕ o con Esc: si devuelve false, el diálogo se queda abierto (hay cambios sin
+   * guardar y no se quieren perder). Cerrar desde el código (tras guardar) no pregunta.
+   */
+  readonly beforeClose = input<(() => boolean | Promise<boolean>) | null>(null);
   readonly closed = output<void>();
 
   readonly headingId = `panel-dialog-${++nextId}`;
+
+  /** El grande, a toda la ventana (con su botón o doble clic en la cabecera); al cerrar vuelve a su tamaño. */
+  readonly maximized = signal(false);
+
+  toggleMaximized(): void {
+    this.maximized.update((value) => !value);
+  }
+
+  /** Doble clic en la cabecera, como en las ventanas del escritorio; en sus botones, no. */
+  onHeadDblClick(event: MouseEvent): void {
+    if (this.huge() && !(event.target as HTMLElement).closest('button')) {
+      this.toggleMaximized();
+    }
+  }
+
+  onClose(): void {
+    this.maximized.set(false);
+    this.closed.emit();
+  }
 
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
   private readonly injector = inject(Injector);
@@ -52,6 +107,11 @@ export class PanelDialogComponent {
     const dialog = this.dialog().nativeElement;
     if (!dialog.open) {
       dialog.showModal();
+    }
+    // El panel lateral es para leer: el foco, en el panel (sin el anillo en la ✕ como si estuviera resaltada).
+    if (this.drawer()) {
+      dialog.focus();
+      return;
     }
     afterNextRender(
       () =>
@@ -64,7 +124,56 @@ export class PanelDialogComponent {
     );
   }
 
+  /** El panel lateral se cierra con un clic en el fondo (el clic cae en el propio <dialog>, fuera del panel). */
+  @HostListener('click', ['$event'])
+  onBackdropClick(event: MouseEvent): void {
+    if (this.drawer() && event.target === this.dialog().nativeElement) {
+      const box = this.dialog().nativeElement.getBoundingClientRect();
+      const inside =
+        event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top && event.clientY <= box.bottom;
+      if (!inside) {
+        this.close();
+      }
+    }
+  }
+
+  /** Si está abierto (para no abrir dos veces el panel lateral al pasar de una ficha a otra). */
+  get isOpen(): boolean {
+    return this.dialog().nativeElement.open;
+  }
+
   close(): void {
     this.dialog().nativeElement.close();
+  }
+
+  /** La ✕: cierra, salvo que beforeClose diga que no. */
+  async requestClose(): Promise<void> {
+    const guard = this.beforeClose();
+    if (!guard || (await guard())) {
+      this.close();
+    }
+  }
+
+  /**
+   * Esc, con guardia: el navegador cerraría sin preguntar. Con closedby="none" ya no cierra solo (Chrome no
+   * siempre deja parar el evento cancel), y aquí se hace como con la ✕. Donde closedby no exista, se para
+   * el cancel.
+   */
+  @HostListener('keydown.escape', ['$event'])
+  onEscape(event: Event): void {
+    // Un diálogo abierto dentro de este (los filtros, en la edición en lote) atiende su propio Esc.
+    if ((event.target as Element | null)?.closest('dialog') !== this.dialog().nativeElement) {
+      return;
+    }
+    if (this.beforeClose()) {
+      event.preventDefault();
+      void this.requestClose();
+    }
+  }
+
+  onCancel(event: Event): void {
+    if (this.beforeClose()) {
+      event.preventDefault();
+    }
   }
 }

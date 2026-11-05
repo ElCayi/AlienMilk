@@ -60,11 +60,9 @@ export class AdminService {
     return this.http.patch<EventoAdmin>(`${this.adminUrl}/eventos/${idEvento}/reactivar`, {});
   }
 
-  /** Con reservas, el servidor solo la borra si se confirma aparte (`conReservas`): se van con ella. */
-  borrarEvento(idEvento: number, conReservas = false): Observable<void> {
-    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`, {
-      params: conReservas ? { conReservas: true } : {},
-    });
+  /** Solo una sesión que nunca ha tenido reservas: con historia, se cancela y se archiva. */
+  borrarEvento(idEvento: number): Observable<void> {
+    return this.http.delete<void>(`${this.adminUrl}/eventos/${idEvento}`);
   }
 
   /** Sube la foto propia de la sesión (JPG, PNG o WebP, hasta 5 MB); sustituye la anterior. */
@@ -205,9 +203,27 @@ export class AdminService {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`, { aceptada, nota });
   }
 
+  /** La vuelve a dejar por revisar (el «Deshacer» de la ✕). */
+  reabrirRevision(idReserva: number): Observable<Reserva> {
+    return this.http.delete<Reserva>(`${this.adminUrl}/reservas/${idReserva}/revision`);
+  }
+
   /** Deshace una cancelación, si quedan plazas y no se movió dinero al cancelarla. */
   reactivarReserva(idReserva: number): Observable<Reserva> {
     return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/reactivar`, {});
+  }
+
+  /** Por teléfono, a alguien sin cuenta: a su nombre y su teléfono, para pagar en taquilla. */
+  crearReservaSinCuenta(
+    idEvento: number,
+    datos: { nombre: string; telefono: string; correo: string; cantidad: number; observaciones: string },
+  ): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/sin-cuenta/evento/${idEvento}`, datos);
+  }
+
+  /** Una devolución en taquilla, ya entregada. */
+  entregarDevolucion(idReserva: number, idDevolucion: number): Observable<Reserva> {
+    return this.http.post<Reserva>(`${this.adminUrl}/reservas/${idReserva}/devoluciones/${idDevolucion}/entregada`, {});
   }
 
   /** Una reserva para pagar en taquilla, ya cobrada. */

@@ -1,6 +1,7 @@
 import { Component, inject, OnDestroy } from '@angular/core';
 
 import { DemoRestoreService } from '../demo-restore.service';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /**
  * Demo: esta web es una demostración, así que se puede devolver a su estado de fábrica. El servidor
@@ -9,6 +10,7 @@ import { DemoRestoreService } from '../demo-restore.service';
 @Component({
   selector: 'app-admin-demo-panel',
   standalone: true,
+  imports: [SectionHelpComponent],
   templateUrl: './admin-demo-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-demo-panel.component.css'],
 })

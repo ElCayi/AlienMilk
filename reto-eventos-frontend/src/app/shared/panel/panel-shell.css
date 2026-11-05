@@ -4,9 +4,10 @@
   --paper: #f8f6f2;
   --paper-ink: #28333a;
   --paper-muted: #3d474e;
-  --paper-faint: #5f696f;
-  --paper-line: #dcdedb;
-  --paper-rule: #c9cdca;
+  --paper-faint: #535d63;
+  --paper-line: #cbd2d8;
+  --paper-edge: #aeb8c0;
+  --paper-rule: #828e99;
   --coral: #ff7f7f;
   --condensed: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   display: block;
@@ -164,6 +165,11 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* El rótulo de la sección, dentro de su hoja, justo encima del título. */
+.section-kicker {
+  margin-bottom: 0.75rem;
 }
 
 /* La sección abierta, en una hoja blanca sobre el papel. */

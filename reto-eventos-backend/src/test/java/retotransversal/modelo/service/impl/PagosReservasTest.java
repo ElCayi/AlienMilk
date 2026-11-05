@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import retotransversal.exception.ConflictoNegocioException;
 import retotransversal.modelo.dto.ReservaEditarDto;
 import retotransversal.modelo.entities.CanceladaPor;
+import retotransversal.modelo.entities.Devolucion;
 import retotransversal.modelo.entities.EstadoEvento;
 import retotransversal.modelo.entities.EstadoPago;
 import retotransversal.modelo.entities.Evento;
@@ -187,5 +188,108 @@ class PagosReservasTest {
 		assertThat(pagada.cancelada()).isTrue();
 		assertThat(pagada.getCanceladaPor()).isEqualTo(CanceladaPor.SISTEMA);
 		assertThat(enTaquilla.cancelada()).isFalse();
+	}
+
+	@Test
+	void nobodyComesInWhileTheCardPaymentIsPending() {
+		Reserva reserva = reserva(EstadoPago.PENDIENTE, 1);
+		reserva.getAsistentes().add(retotransversal.modelo.entities.Asistente.builder().orden(1).nombre("Ana")
+				.credencial(retotransversal.modelo.entities.Credencial.DNI_NIE).reserva(reserva).build());
+
+		assertThatThrownBy(() -> servicio.marcarEntrada(7, 1, true))
+				.isInstanceOf(ConflictoNegocioException.class)
+				.hasMessage("Está pendiente de pago con tarjeta: no puede entrar hasta que se pague");
+	}
+
+	@Test
+	void everyRefundIsRecordedAndADoorRefundStaysPendingUntilHandedOver() {
+		Reserva enTaquilla = reserva(EstadoPago.COBRADA_TAQUILLA, 1);
+		servicio.cancelarReservaAdmin(7, "No puede venir", true);
+
+		assertThat(enTaquilla.getDevoluciones()).singleElement().satisfies(devolucion -> {
+			assertThat(devolucion.getMedio()).isEqualTo(Devolucion.Medio.TAQUILLA);
+			assertThat(devolucion.getEstado()).isEqualTo(Devolucion.Estado.PENDIENTE);
+			assertThat(devolucion.getImporte()).isEqualByComparingTo("35.00");
+		});
+		enTaquilla.getDevoluciones().getFirst().setIdDevolucion(1);
+		servicio.entregarDevolucion(7, 1);
+		assertThat(enTaquilla.getDevoluciones().getFirst().getEstado()).isEqualTo(Devolucion.Estado.HECHA);
+		assertThat(enTaquilla.getDevoluciones().getFirst().getHechaEn()).isNotNull();
+	}
+
+	@Test
+	void aCardRefundKeepsStripesReference() {
+		Reserva pagada = reserva(EstadoPago.PAGADA, 2);
+		when(pasarela.reembolsar(eq("pi_7"), any(), anyString())).thenReturn("re_123");
+
+		servicio.cancelarReserva(7, "ana");
+
+		assertThat(pagada.getDevoluciones()).singleElement().satisfies(devolucion -> {
+			assertThat(devolucion.getMedio()).isEqualTo(Devolucion.Medio.TARJETA);
+			assertThat(devolucion.getEstado()).isEqualTo(Devolucion.Estado.HECHA);
+			assertThat(devolucion.getReferencia()).isEqualTo("re_123");
+			assertThat(devolucion.getMotivo()).isEqualTo("Cancelación del cliente");
+		});
+	}
+
+	// --- Operaciones que se cruzan con Stripe ---
+
+	@Test
+	void aPaymentThatLandsWhileCancellingIsRefundedNotLost() {
+		Reserva reserva = reserva(EstadoPago.PENDIENTE, 2);
+		// Cerrar la página de pago falla porque se acaba de pagar: se pregunta y resulta pagada.
+		org.mockito.Mockito.doThrow(new retotransversal.modelo.pagos.PagoNoDisponibleException("ya no está abierta", null))
+				.when(pasarela).caducar("cs_7");
+		when(pasarela.consultar("cs_7")).thenReturn(new EstadoSesionPago(EstadoSesionPago.Estado.PAGADA, "pi_7"));
+
+		servicio.cancelarReserva(7, "ana");
+
+		verify(pasarela).reembolsar("pi_7", new BigDecimal("70.00"), "reembolso-AM-R-0007-70.00");
+		assertThat(reserva.getEstadoPago()).isEqualTo(EstadoPago.PAGADA);
+		assertThat(reserva.cancelada()).isTrue();
+	}
+
+	@Test
+	void retryingAfterTheDatabaseFailedNeverRefundsTwice() {
+		Reserva reserva = reserva(EstadoPago.PAGADA, 2);
+		// Stripe devuelve, pero la base falla al guardar: la transacción se deshace y la reserva vuelve a estar
+		// como antes. Al repetir, la clave es la misma, así que Stripe no vuelve a devolver.
+		when(reservas.save(any())).thenThrow(new RuntimeException("la base no contesta"))
+				.thenAnswer(llamada -> llamada.getArgument(0));
+		assertThatThrownBy(() -> servicio.cancelarReserva(7, "ana")).hasMessage("la base no contesta");
+		reserva.setImporteDevuelto(BigDecimal.ZERO);
+		reserva.getDevoluciones().clear();
+		reserva.reactivar();
+
+		servicio.cancelarReserva(7, "ana");
+
+		verify(pasarela, org.mockito.Mockito.times(2))
+				.reembolsar("pi_7", new BigDecimal("70.00"), "reembolso-AM-R-0007-70.00");
+		assertThat(reserva.getDevoluciones()).hasSize(1);
+	}
+
+	@Test
+	void aLateNoticeForACancelledBookingChangesNothing() {
+		Reserva reserva = reserva(EstadoPago.PENDIENTE, 1);
+		reserva.cancelar(CanceladaPor.SISTEMA, "No se completó el pago a tiempo", java.time.LocalDateTime.now());
+
+		pagos.recibirAviso("cs_7");
+
+		verify(pasarela, never()).consultar(anyString());
+		assertThat(reserva.getEstadoPago()).isEqualTo(EstadoPago.PENDIENTE);
+	}
+
+	@Test
+	void cancellingASessionClosesThePaymentsInProgress() {
+		Reserva pendiente = reserva(EstadoPago.PENDIENTE, 1);
+		when(reservas.findByEventoIdEventoAndCanceladaEnIsNull(3)).thenReturn(List.of(pendiente));
+		when(eventos.cancelarEvento(3)).thenReturn(sesion);
+
+		pagos.cancelarSesion(3);
+
+		verify(pasarela).caducar("cs_7");
+		assertThat(pendiente.cancelada()).isTrue();
+		assertThat(pendiente.getMotivoCancelacion()).isEqualTo("La sesión se canceló antes del pago");
+		verify(pasarela, never()).reembolsar(anyString(), any(), anyString());
 	}
 }

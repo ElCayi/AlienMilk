@@ -7,6 +7,7 @@ import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import { errorMessage, formatDayTime, matches } from '../../../shared/panel/panel-format';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 type Filter = 'NUEVA' | 'ATENDIDA' | 'TODAS';
 
@@ -17,7 +18,7 @@ type Filter = 'NUEVA' | 'ATENDIDA' | 'TODAS';
 @Component({
   selector: 'app-admin-requests-panel',
   standalone: true,
-  imports: [FormsModule, KeepHeightDirective],
+  imports: [SectionHelpComponent, FormsModule, KeepHeightDirective],
   templateUrl: './admin-requests-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-requests-panel.component.css'],
 })

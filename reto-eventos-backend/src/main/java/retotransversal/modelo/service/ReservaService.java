@@ -22,6 +22,10 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	 */
 	Reserva reservarConRegistro(Integer idEvento, String username, ReservaCrearDto registro);
 
+	/** Por teléfono, a alguien sin cuenta: a su nombre y su teléfono, para pagar en taquilla. */
+	Reserva reservarSinCuenta(Integer idEvento, String nombre, String telefono, String correo, Integer cantidad,
+			String observaciones);
+
 	/** Lo mismo para las reservas demo del panel: se dan por pagadas, sin pasar por la pasarela. */
 	Reserva reservarDemo(Integer idEvento, String username, ReservaCrearDto registro);
 
@@ -34,8 +38,14 @@ public interface ReservaService extends CrudGenerico<Reserva, Integer> {
 	/** La revisión de las adaptaciones y el material: aceptadas o no, con una nota para el cliente. */
 	Reserva revisar(Integer idReserva, boolean aceptada, String nota);
 
+	/** Vuelve a dejar «por revisar» una reserva ya revisada (el «Deshacer» de la ✕ del panel). */
+	Reserva reabrirRevision(Integer idReserva);
+
 	/** Deshace una cancelación si quedan plazas y no se movió dinero al cancelarla. */
 	Reserva reactivar(Integer idReserva);
+
+	/** Una devolución en taquilla, ya entregada. */
+	Reserva entregarDevolucion(Integer idReserva, Integer idDevolucion);
 
 	/** Una reserva para pagar en taquilla, ya cobrada. */
 	Reserva marcarCobrada(Integer idReserva);

@@ -19,6 +19,83 @@
   width: min(48rem, calc(100vw - 2rem));
 }
 
+/* El grande, para lo que antes era una página entera: casi toda la ventana. */
+.panel-dialog.is-huge {
+  width: min(100rem, calc(100vw - 3rem));
+  height: min(60rem, calc(100dvh - 2rem));
+}
+
+/* El grande: la cabecera fija y solo el cuerpo se desplaza, para que lo de dentro pueda repartir su altura
+   (la edición en lote, en dos columnas) sin un desplazamiento dentro de otro. */
+.panel-dialog.is-huge[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    width 200ms ease,
+    height 200ms ease,
+    border-radius 200ms ease;
+}
+
+/* Maximizado: toda la ventana, sin esquinas; el mismo botón (o doble clic en la cabecera) lo devuelve. */
+.panel-dialog.is-huge.is-max {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  border-radius: 0;
+}
+
+.panel-dialog.is-huge .panel-dialog-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* El panel lateral: a la derecha, a todo el alto; la cabecera fija y solo el cuerpo se desplaza. El fondo,
+   menos oscuro que el de los diálogos, para que la lista se siga viendo. */
+.panel-dialog.is-drawer {
+  width: min(64rem, calc(100vw - 3rem));
+  max-width: none;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  border-radius: 1.25rem 0 0 1.25rem;
+}
+
+.panel-dialog.is-drawer[open] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: panel-drawer-in 220ms ease-out;
+}
+
+.panel-dialog.is-drawer .panel-dialog-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.panel-dialog.is-drawer::backdrop {
+  background: rgba(5, 10, 16, 0.4);
+  backdrop-filter: none;
+}
+
+@keyframes panel-drawer-in {
+  from {
+    opacity: 0.4;
+    transform: translateX(3rem);
+  }
+}
+
+@media (max-width: 760px) {
+  .panel-dialog.is-drawer {
+    width: 100vw;
+    border-radius: 0;
+  }
+}
+
 .panel-dialog.is-tall {
   height: min(46rem, calc(100dvh - 2rem));
 }
@@ -43,7 +120,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem) 1rem;
-  border-bottom: 1px solid #dcdedb;
+  border-bottom: 1px solid #cbd2d8;
 }
 
 .panel-dialog-head h2 {
@@ -52,6 +129,12 @@
     400 clamp(1.7rem, 2.2vw, 2.1rem) / 1.1 'Barlow Condensed',
     'Arial Narrow',
     sans-serif;
+}
+
+.panel-dialog-tools {
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
 }
 
 .panel-dialog-close {
@@ -102,7 +185,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .panel-dialog.is-drawer[open],
   .panel-dialog[open] {
     animation: none;
+    transition: none;
   }
 }

@@ -1,3 +1,53 @@
+/* Dentro de su diálogo grande: en pantallas anchas llena el cuerpo del diálogo, con la entradilla arriba,
+   las dos columnas en medio (cada una con su desplazamiento) y lo pendiente abajo. */
+:host {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  :host {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100%;
+  }
+
+  .bulk-columns {
+    display: grid;
+    grid-template-columns: minmax(24rem, 0.85fr) minmax(0, 1.15fr);
+    gap: 1.75rem;
+    min-height: 0;
+  }
+
+  /* Ampliada, una columna sola a todo el ancho; la otra espera escondida, tal como estaba. */
+  .bulk-columns[data-wide] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bulk-columns[data-wide='sesiones'] > [data-column='contenido'],
+  .bulk-columns[data-wide='contenido'] > [data-column='sesiones'] {
+    display: none;
+  }
+
+  .bulk-columns > .bulk-step {
+    min-height: 0;
+    margin-top: 0;
+    padding-right: 0.5rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  /* La cabecera de la lista se queda arriba de su columna, no de una caja propia. */
+  .bulk-table thead th {
+    top: 0;
+  }
+
+  .bulk-foot .bulk-bar {
+    position: static;
+    margin-top: 1rem;
+  }
+}
+
 /* Edición en lote: dos pasos (elegir sesiones, cambiar su contenido) y una barra fija con lo pendiente. */
 .bulk-step {
   margin-top: 1.75rem;
@@ -9,6 +59,38 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
+}
+
+/* Ampliar: a la derecha de la cabecera de cada columna; en una sola columna (móvil) no hace falta. */
+.bulk-widen {
+  margin-left: auto;
+}
+
+.bulk-count + .bulk-widen {
+  margin-left: 0;
+}
+
+/* Con las dos columnas, solo el icono, cuadrado: no hay sitio para el rótulo. */
+.bulk-widen.is-icon {
+  width: 2.1rem;
+  padding: 0;
+  justify-content: center;
+}
+
+.bulk-widen svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 899px) {
+  .bulk-widen {
+    display: none;
+  }
 }
 
 .bulk-step-head h3 {
@@ -34,7 +116,7 @@
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
-  margin: 0;
+  margin: 0 0 0 auto;
   color: var(--paper-faint);
   font-size: 0.92rem;
 }
@@ -43,26 +125,11 @@
   color: var(--paper-ink);
 }
 
-.bulk-type select {
-  min-height: 2.6rem;
-  padding: 0 2rem 0 0.8rem;
-  border: 1px solid var(--paper-rule);
-  border-radius: 0.5rem;
-  color: var(--paper-ink);
-  background: var(--field);
-  font:
-    700 0.9rem 'Nunito',
-    sans-serif;
-}
-
-/* La lista, en su caja con desplazamiento propio: con muchas sesiones, el contenido sigue cerca. */
+/* La lista crece con su columna: el único desplazamiento es el de la columna (o el de la página, en móvil). */
 .bulk-list {
-  max-height: 22rem;
   margin-top: 1rem;
-  overflow-y: auto;
   border: 1px solid var(--paper-line);
   border-radius: 0.6rem;
-  overscroll-behavior: contain;
 }
 
 .bulk-table thead th {
@@ -100,7 +167,7 @@
 .bulk-placeholder {
   margin: 1rem 0 0;
   padding: 1.5rem;
-  border: 1px dashed var(--paper-rule);
+  border: 1px dashed var(--paper-edge);
   border-radius: 0.6rem;
   color: var(--paper-faint);
   text-align: center;
@@ -236,11 +303,37 @@
   line-height: 1.45;
 }
 
+/* Debajo del texto, en qué sesiones está (o falta), en pequeño. */
+.bulk-where {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--paper-faint);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.bulk-where strong {
+  color: var(--paper-muted);
+}
+
+.bulk-where .text-link {
+  margin-left: 0.25rem;
+  font-size: inherit;
+}
+
 .bulk-row-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.4rem;
+  gap: 0.3rem;
+}
+
+/* Las acciones de cada fila, más pequeñas que las del resto del panel: el texto es lo que se lee. */
+.bulk-row-actions .btn-small {
+  min-height: 1.75rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 0.4rem;
+  font-size: 0.78rem;
 }
 
 /* Los campos de una fila (los pone DossierRowEditorComponent), en rejilla según su tipo. */
@@ -277,7 +370,7 @@
   line-height: 1.5;
 }
 
-/* Lo pendiente: pegado abajo mientras haya cambios sin guardar. */
+/* Lo pendiente: siempre abajo; en oscuro cuando hay algo que guardar. */
 .bulk-bar {
   position: sticky;
   bottom: 1rem;
@@ -299,18 +392,25 @@
   margin: 0;
 }
 
+/* Sin cambios: la misma barra, apagada, en la franja del papel. */
+.bulk-bar.is-idle {
+  color: var(--paper-muted);
+  background: var(--paper-soft);
+  box-shadow: none;
+}
+
 .bulk-bar-actions {
   display: flex;
   gap: 0.5rem;
 }
 
-.bulk-bar .btn:not(.btn-primary) {
+.bulk-bar:not(.is-idle) .btn:not(.btn-primary) {
   border-color: rgba(247, 248, 249, 0.4);
   color: #f7f8f9;
   background: transparent;
 }
 
-.bulk-bar .btn-primary {
+.bulk-bar:not(.is-idle) .btn-primary {
   border-color: #f7f8f9;
   color: #0d151e;
   background: #f7f8f9;
@@ -325,10 +425,6 @@
 @media (max-width: 760px) {
   .bulk-tabs {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .bulk-list {
-    max-height: 26rem;
   }
 
   .bulk-row,

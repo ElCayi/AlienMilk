@@ -48,19 +48,19 @@ describe('Búsqueda operativa de reservas', () => {
 
   it('encuentra por localizador, teléfono, correo y participante', () => {
     for (const query of ['0007', '600123456', 'Lucia']) {
-      panel.query.set(query);
+      panel.filterValues.set({ ...panel.filterDefaults, q: query });
       expect(panel.visible().map((r) => r.idReserva)).toEqual([7]);
     }
-    panel.query.set('ana@example.test');
+    panel.filterValues.set({ ...panel.filterDefaults, q: 'ana@example.test' });
     expect(panel.visible()).toHaveLength(2);
   });
 
   it('mantiene ocupación e historial completos al buscar una sola reserva', () => {
-    panel.query.set('0007');
+    panel.filterValues.set({ ...panel.filterDefaults, q: '0007' });
     expect(panel.sessionGroups()[0]).toMatchObject({ plazas: 5, aforo: 40, coincidencias: 1 });
     expect(panel.clients()[0].reservas).toHaveLength(2);
     expect(panel.clients()[0].coincidencias).toBe(1);
-    panel.query.set('inexistente');
+    panel.filterValues.set({ ...panel.filterDefaults, q: 'inexistente' });
     expect(panel.sessionGroups()).toEqual([]);
     expect(panel.clients()).toEqual([]);
   });

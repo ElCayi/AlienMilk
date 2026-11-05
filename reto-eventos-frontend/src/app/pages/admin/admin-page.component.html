@@ -1,40 +1,16 @@
 <app-panel-frame area="Administración" navLabel="Secciones del panel de control" [items]="navItems()">
-  <header class="page-head">
-    <div>
-      <p class="page-kicker"><span class="eyebrow-icon" aria-hidden="true"></span>Panel de control · {{ current().label }}</p>
-      <app-panel-greeting />
-      <p class="page-intro">Todo lo necesario para gestionar AlienMilk Sessions, en un solo lugar.</p>
-    </div>
-
-    <ul class="panel-figures" aria-label="Resumen">
-      <li>
-        <a routerLink="sesiones">
-          <strong>{{ figure(summary()?.sesionesActivas) }}</strong>
-          <span>Sesiones activas</span>
-        </a>
-      </li>
-      <li>
-        <a routerLink="reservas">
-          <strong>{{ figure(summary()?.plazasReservadas) }}</strong>
-          <span>Plazas reservadas</span>
-        </a>
-      </li>
-      <li [class.is-pending]="(summary()?.pedidosPorPreparar ?? 0) > 0">
-        <a routerLink="pedidos">
-          <strong>{{ figure(summary()?.pedidosPorPreparar) }}</strong>
-          <span>Pedidos por preparar</span>
-        </a>
-      </li>
-      <li [class.is-pending]="(summary()?.solicitudesNuevas ?? 0) > 0">
-        <a routerLink="solicitudes">
-          <strong>{{ figure(summary()?.solicitudesNuevas) }}</strong>
-          <span>Solicitudes sin atender</span>
-        </a>
-      </li>
-    </ul>
-  </header>
-
-  <section class="page-content" [attr.aria-label]="current().label">
+  <!-- La visión general lleva el saludo y el resumen; las demás secciones empiezan ya con lo suyo, en su
+       hoja, con el rótulo encima del título: nada que bajar cada vez que se cambia de sección. -->
+  <section
+    [class.page-content]="current().path !== 'resumen'"
+    [class.is-titled]="current().path !== 'resumen'"
+    [attr.aria-label]="current().label"
+  >
+    @if (current().path !== 'resumen') {
+      <p class="page-kicker section-kicker">
+        <span class="eyebrow-icon" aria-hidden="true"></span>Panel de control · {{ current().label }}
+      </p>
+    }
     <router-outlet />
   </section>
 

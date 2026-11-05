@@ -22,6 +22,7 @@ import { ReservationService } from '../../core/services/reservation.service';
 import { SessionDossierService } from '../../core/services/session-dossier.service';
 import {
   humanizeSessionType,
+  buildSessionDossier,
   longSessionDate,
   sessionDuration,
   sessionPrice,
@@ -30,6 +31,12 @@ import {
   shortSessionDate,
 } from '../../features/sessions/session-dossier';
 import { archiveCode, bookingsOpen, sampleCode, sessionImage, sessionSchedule } from '../../features/sessions/session.presenter';
+import {
+  PREVIEW_KEY,
+  PREVIEW_PARAM,
+  readPreview,
+  SessionPreview,
+} from '../../features/sessions/session-preview';
 import {
   CategoryOption,
   CategorySelectComponent,
@@ -152,7 +159,14 @@ export class SessionsPageComponent implements OnInit {
     return this.router.serializeUrl(tree);
   });
 
-  readonly sessionImage = sessionImage;
+  /** La foto de una sesión; en vista previa, la nueva que aún no se ha subido. */
+  sessionImage(session: EventoListado): string {
+    const preview = this.previewData();
+    if (preview?.imageUrl && session.idEvento === this.previewId()) {
+      return preview.imageUrl;
+    }
+    return sessionImage(session);
+  }
   readonly archiveCode = archiveCode;
   readonly schedule = sessionSchedule;
   readonly bookingsOpen = bookingsOpen;
@@ -208,8 +222,72 @@ export class SessionsPageComponent implements OnInit {
     });
   }
 
+  /**
+   * Vista previa (?vista-previa=1, dentro del diálogo de editar sesión del panel): la sesión no se pide a
+   * la API, se monta con lo que hay en el formulario (ver session-preview), y se rehace con cada cambio.
+   * Reservar no hace nada, y un aviso arriba dice que no está publicado.
+   */
+  readonly previewMode = signal(false);
+  private readonly previewData = signal<SessionPreview | null>(null);
+  /** La sesión de la vista previa: la que se edita, o -1 si aún no existe. */
+  private readonly previewId = computed(() => this.previewData()?.detail.idEvento || -1);
+
+  private applyPreview(): void {
+    const preview = readPreview();
+    if (!preview) {
+      return;
+    }
+    const detail = { ...preview.detail, idEvento: preview.detail.idEvento || -1 };
+    this.previewData.set({ ...preview, detail });
+    this.opened.set({ detail, dossier: buildSessionDossier(detail, preview.layer) });
+    this.selectedId.set(detail.idEvento);
+    this.mergePreview();
+    if (!this.tabs().some((tab) => tab.id === this.activeTab())) {
+      this.activeTab.set('expediente');
+    }
+  }
+
+  /** En el índice, la sesión de la vista previa en lugar de la guardada (o añadida, si es nueva). */
+  private mergePreview(): void {
+    const detail = this.previewData()?.detail;
+    if (!detail) {
+      return;
+    }
+    this.sessions.update((list) =>
+      [...list.filter((session) => session.idEvento !== detail.idEvento), detail].sort((a, b) =>
+        a.fechaInicio.localeCompare(b.fechaInicio),
+      ),
+    );
+  }
+
   ngOnInit(): void {
     this.watchSectionScroll();
+    if (this.route.snapshot.queryParamMap.get(PREVIEW_PARAM)) {
+      this.previewMode.set(true);
+      this.applyPreview();
+      const onStorage = (event: StorageEvent) => {
+        if (event.key === PREVIEW_KEY) {
+          this.applyPreview();
+        }
+      };
+      // Cambiar entre «Ordenador» y «Móvil» cambia el ancho del iframe: la vista vuelve a la ficha.
+      let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+      const onResize = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => this.revealFile(), 250);
+      };
+      window.addEventListener('storage', onStorage);
+      window.addEventListener('resize', onResize);
+      this.destroyRef.onDestroy(() => {
+        clearTimeout(resizeTimer);
+        window.removeEventListener('storage', onStorage);
+        window.removeEventListener('resize', onResize);
+      });
+      this.loadSessions();
+      // Lo que se mira es el expediente: la vista baja hasta él al abrirse.
+      setTimeout(() => this.revealFile(), 400);
+      return;
+    }
     this.requestedSession
       .pipe(
         switchMap((idEvento) =>
@@ -265,6 +343,10 @@ export class SessionsPageComponent implements OnInit {
         const ordered = [...sessions].sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio));
         this.sessions.set(ordered);
         this.loadingSessions.set(false);
+        if (this.previewMode()) {
+          this.mergePreview();
+          return;
+        }
         if (!this.selectedId() && ordered.length) {
           this.updateUrl({ sesion: ordered[0].idEvento }, true);
         }

@@ -32,6 +32,8 @@ export interface EventoAdmin extends Omit<EventoDetalle, 'estado'> {
   archivada: boolean;
   plazasReservadas: number;
   reservas: number;
+  /** Si nunca ha tenido reservas (ni canceladas): solo entonces se puede borrar; si no, se cancela y se archiva. */
+  borrable: boolean;
 }
 
 /** El documento que un participante presentará en el control de ingreso (nunca se guarda su número). */
@@ -72,6 +74,19 @@ export interface ReservaEditar {
   materialDescripcion?: string;
 }
 
+/** Una devolución: a la tarjeta (hecha al momento) o en taquilla (pendiente hasta que se entrega). */
+export interface Devolucion {
+  idDevolucion: number;
+  importe: number;
+  medio: 'TARJETA' | 'TAQUILLA';
+  estado: 'PENDIENTE' | 'HECHA';
+  motivo: string;
+  /** La devolución en Stripe (re_…), si la hubo. */
+  referencia: string | null;
+  creadaEn: string;
+  hechaEn: string | null;
+}
+
 /** Pendiente: en la web, esperando a Stripe. Pagada: con tarjeta. En taquilla: del panel, se cobra al llegar. */
 export type EstadoPago = 'PENDIENTE' | 'PAGADA' | 'EN_TAQUILLA' | 'COBRADA_TAQUILLA';
 
@@ -79,7 +94,10 @@ export interface Reserva {
   idReserva: number;
   idEvento: number;
   nombreEvento: string;
-  username: string;
+  /** La cuenta; null si se reservó por teléfono sin cuenta o la cuenta se borró. */
+  username: string | null;
+  /** El correo de la cuenta, o el que se dio al reservar sin cuenta. */
+  clienteCorreo: string | null;
   /** Nombre y apellidos de la cuenta. */
   nombreCliente: string;
   cantidad: number;
@@ -118,6 +136,8 @@ export interface Reserva {
   pagadaEn: string | null;
   /** Lo devuelto: la diferencia si bajó el importe y, al cancelar, lo que quedaba. */
   importeDevuelto: number;
+  /** Cada devolución con su medio y su estado. */
+  devoluciones: Devolucion[];
   /** En las reservas sin registrar, cuántas plazas han entrado ya (las registradas lo dicen por participante). */
   entradasSinRegistrar: number;
 }

@@ -15,6 +15,7 @@ import {
 } from '../../../shared/panel/panel-format';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 type Filter = 'PREPARAR' | 'CAMINO' | 'PAGO' | 'CERRADOS' | 'TODOS';
 
@@ -42,7 +43,7 @@ const STATE_TONES: Record<EstadoPedido, Tone> = {
 @Component({
   selector: 'app-admin-orders-panel',
   standalone: true,
-  imports: [FormsModule, KeepHeightDirective],
+  imports: [SectionHelpComponent, FormsModule, KeepHeightDirective],
   templateUrl: './admin-orders-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })

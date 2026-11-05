@@ -17,12 +17,6 @@ public interface EventoService extends CrudGenerico<Evento, Integer> {
 
 	Evento cancelarEvento(Integer idEvento);
 
-	/**
-	 * Borra la sesión y, con ella, sus reservas: desaparecen también del panel de sus clientes. El
-	 * borrado normal ({@code deleteOne}) se niega si hay reservas; este es el que se confirma aparte.
-	 */
-	int borrarConReservas(Integer idEvento);
-
 	/** Archiva una sesión que ya no está activa, o la saca del archivo. */
 	Evento archivar(Integer idEvento, boolean archivada);
 
@@ -46,6 +40,13 @@ public interface EventoService extends CrudGenerico<Evento, Integer> {
 	 * minutos antes de empezar. Lo dice la página de Documentación y las condiciones de acceso.
 	 */
 	boolean admiteReservas(Evento evento);
+
+	/**
+	 * Si todavía admite reservas desde la web, que se pagan con tarjeta: hasta 40 minutos antes, los 30
+	 * que Stripe da como mínimo para pagar más los 10 del cierre del control de ingreso. Así nadie paga con
+	 * la puerta ya cerrada. Por teléfono o en taquilla, hasta el cierre (ver admiteReservas).
+	 */
+	boolean admiteReservasOnline(Evento evento);
 
 	/** Si una reserva suya aún se puede cancelar: hasta el día anterior, como dicen sus preguntas frecuentes. */
 	boolean admiteCancelaciones(Evento evento);

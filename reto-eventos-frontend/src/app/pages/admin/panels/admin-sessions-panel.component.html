@@ -1,14 +1,15 @@
 <header class="section-head">
   <div>
-    <h2>Sesiones</h2>
-    <p>
-      Todas las sesiones. Pulsa una fila para ver su ocupación,
-      modificarla o cancelarla. Las celebradas pasan solas a Terminadas cada noche y, desde ahí, se
-      pueden archivar.
-    </p>
+    <!-- La explicación de la sección, en su «?»: la sección empieza directamente con su trabajo. -->
+    <div class="section-title">
+      <h2>Sesiones</h2>
+      <app-section-help heading="Sesiones">
+        <p>Todas las sesiones. Pulsa una fila para ver su ocupación, modificarla o cancelarla. Las celebradas pasan solas a Terminadas cada noche y, desde ahí, se pueden archivar.</p>
+      </app-section-help>
+    </div>
   </div>
   <div class="section-head-actions">
-    <a class="btn" routerLink="lote">Edición en lote</a>
+    <button type="button" class="btn" (click)="openBulk()">Edición en lote</button>
     <button type="button" class="btn btn-primary" (click)="openNew()">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
       Nueva sesión
@@ -17,27 +18,16 @@
 </header>
 
 <div class="toolbar">
-  <label class="search">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-    <span class="visually-hidden">Buscar sesiones</span>
-    <input
-      type="search"
-      placeholder="Nº, nombre, referencia, tipo o lugar"
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)"
-    />
-  </label>
-  <div class="segmented" role="group" aria-label="Filtrar por estado">
-    @for (option of filters(); track option.value) {
-      <button
-        type="button"
-        [attr.aria-pressed]="filter() === option.value"
-        (click)="filter.set(option.value)"
-      >
-        {{ option.label }} <span class="segmented-count">{{ option.count }}</span>
-      </button>
-    }
-  </div>
+  <!-- Una sola barra, como en Reservas: se escribe para buscar y «Filtros» abre lo demás. -->
+  <app-filter-bar
+    [fields]="filterFields()"
+    [presets]="filterPresets()"
+    [values]="filterValues()"
+    [defaults]="filterDefaults"
+    placeholder="Buscar por nº, nombre, referencia, tipo o lugar"
+    [storageKey]="filterStorage"
+    (valuesChange)="applyFilters($event)"
+  />
   <!-- En móvil la tabla es de fichas, sin cabecera que pulsar: el orden se elige aquí. -->
   <label class="sort-select">
     <span>Ordenar por</span>
@@ -61,7 +51,7 @@
     <button type="button" class="btn" (click)="load()">Reintentar</button>
   </div>
 } @else {
-  <div class="table-wrap" [appKeepHeight]="filter() + query()">
+  <div class="table-wrap" [appKeepHeight]="filterKey()">
     <table class="data-table is-expandable">
       <caption>Sesiones del programa. Pulsa una para ver su ficha y sus acciones.</caption>
       <thead>
@@ -210,7 +200,7 @@
                     Modificar
                   </button>
                   @if (session.reservas) {
-                    <a class="btn btn-small" [routerLink]="[session.idEvento, 'control']">Hoja de control</a>
+                    <button type="button" class="btn btn-small" (click)="openControl(session.idEvento)">Hoja de control</button>
                   }
                   @if (session.archivada) {
                     <button
@@ -250,14 +240,17 @@
                       Archivar
                     </button>
                   }
-                  <button
-                    type="button"
-                    class="btn btn-small btn-danger"
-                    [disabled]="busy() === session.idEvento"
-                    (click)="remove(session)"
-                  >
-                    Borrar
-                  </button>
+                  <!-- Solo lo que nunca tuvo reservas se borra; con historia, se cancela y se archiva. -->
+                  @if (session.borrable) {
+                    <button
+                      type="button"
+                      class="btn btn-small btn-danger"
+                      [disabled]="busy() === session.idEvento"
+                      (click)="remove(session)"
+                    >
+                      Borrar
+                    </button>
+                  }
                 </div>
               </td>
             </tr>
@@ -269,7 +262,7 @@
                 {{
                   !sessions().length
                     ? 'Todavía no hay sesiones.'
-                    : filter() === 'ARCHIVADAS' && !query()
+                    : filterValues()['estado'] === 'archivadas' && !query()
                       ? 'No hay sesiones archivadas. Las canceladas o terminadas se pueden archivar para sacarlas de la lista.'
                       : 'Ninguna sesión coincide con la búsqueda.'
                 }}
@@ -285,19 +278,51 @@
 }
 
 <app-panel-dialog
+  #editDialog
   [heading]="reactivating() ? 'Reactivar sesión' : editing() ? 'Modificar sesión' : 'Nueva sesión'"
   [wide]="true"
   [tall]="true"
+  [huge]="page() === 'vista'"
 >
   <form novalidate (ngSubmit)="save()">
-    <!-- Dos páginas: los datos de la sesión y su expediente (lo que enseña su ficha pública). -->
+    <!-- Tres páginas: los datos de la sesión, su expediente (lo que enseña su ficha pública) y cómo se
+         verá todo en la web antes de guardar. -->
     <div class="segmented edit-pages" role="group" aria-label="Páginas de la sesión">
-      <button type="button" [attr.aria-pressed]="page() === 'datos'" (click)="page.set('datos')">
+      <button type="button" [attr.aria-pressed]="page() === 'datos'" (click)="showPage('datos')">
         Datos
       </button>
-      <button type="button" [attr.aria-pressed]="page() === 'expediente'" (click)="page.set('expediente')">
+      <button type="button" [attr.aria-pressed]="page() === 'expediente'" (click)="showPage('expediente')">
         Expediente
       </button>
+      <button type="button" [attr.aria-pressed]="page() === 'vista'" (click)="showPage('vista')">
+        Vista previa
+      </button>
+    </div>
+
+    <!-- La página pública de verdad, con lo que hay en el formulario sin guardar. -->
+    <div class="edit-page preview-page" [hidden]="page() !== 'vista'">
+      <div class="preview-bar">
+        <p class="field-help">Así se verá en la web al guardar. Nada se publica hasta entonces.</p>
+        <div class="segmented" role="group" aria-label="Pantalla">
+          <button type="button" [attr.aria-pressed]="previewDevice() === 'ordenador'" (click)="setPreviewDevice('ordenador')">
+            Ordenador
+          </button>
+          <button type="button" [attr.aria-pressed]="previewDevice() === 'movil'" (click)="setPreviewDevice('movil')">
+            Móvil
+          </button>
+        </div>
+      </div>
+      <div class="preview-box" #previewBox [class.is-mobile]="previewDevice() === 'movil'">
+        @if (previewOpened()) {
+          <iframe
+            title="Vista previa de la sesión"
+            [src]="previewSrc"
+            [style.width.px]="previewDevice() === 'movil' ? 390 : previewDesktopWidth"
+            [style.height]="previewDevice() === 'movil' ? '100%' : 'calc(100% / ' + previewScale() + ')'"
+            [style.transform]="previewDevice() === 'movil' ? 'none' : 'scale(' + previewScale() + ')'"
+          ></iframe>
+        }
+      </div>
     </div>
 
     <div class="edit-page" [hidden]="page() !== 'expediente'">
@@ -465,3 +490,22 @@
   </form>
 </app-panel-dialog>
 
+<!-- La hoja de control, encima de la página: sin salir del panel ni perder lo que se estaba mirando. -->
+<app-panel-dialog #controlDialog heading="Hoja de control de ingreso" [huge]="true" (closed)="controlId.set(null)">
+  @if (controlId(); as id) {
+    <app-admin-control-sheet [idEvento]="id" [embedded]="true" />
+  }
+</app-panel-dialog>
+
+<!-- La edición en lote de los expedientes, encima de Sesiones. Con cambios sin guardar, cerrar pregunta. -->
+<app-panel-dialog
+  #bulkDialog
+  heading="Edición en lote"
+  [huge]="true"
+  [beforeClose]="confirmBulkClose"
+  (closed)="bulkOpen.set(false)"
+>
+  @if (bulkOpen()) {
+    <app-admin-dossier-bulk-panel />
+  }
+</app-panel-dialog>

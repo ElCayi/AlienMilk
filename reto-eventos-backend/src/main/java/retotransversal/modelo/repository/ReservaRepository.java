@@ -41,6 +41,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 			+ "from Reserva r where r.canceladaEn is null group by r.evento.idEvento")
 	List<OcupacionEvento> ocupacionPorEvento();
 
+	/** Las sesiones que han tenido alguna reserva, también cancelada: esas ya no se borran. */
+	@Query("select distinct r.evento.idEvento from Reserva r")
+	List<Integer> eventosConReservas();
+
 	/** Plazas reservadas en las sesiones que están en un estado, para el resumen del panel. */
 	@Query("select coalesce(sum(r.cantidad), 0) from Reserva r where r.evento.estado = :estado and r.canceladaEn is null")
 	long plazasReservadasEn(EstadoEvento estado);

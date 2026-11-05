@@ -1,6 +1,19 @@
-import { afterNextRender, Component, computed, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  Injector,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
@@ -19,18 +32,30 @@ import {
   sessionState,
 } from '../../../shared/panel/panel-format';
 import { TableSort } from '../../../shared/panel/table-sort';
+import { FilterBarComponent, FilterField, FilterPreset, FilterValues } from '../../../shared/panel/filter-bar.component';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { revealExpanded } from '../../../shared/panel/reveal-row';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
+import { AdminControlSheetComponent } from './admin-control-sheet.component';
+import { AdminDossierBulkPanelComponent } from './admin-dossier-bulk-panel.component';
 import { AdminDossierFormComponent } from './admin-dossier-form.component';
+import {
+  SESSION_FILTER_DEFAULTS,
+  SESSION_FILTER_STORAGE,
+  sessionFilterFields,
+  sessionFilterPresets,
+  sessionPasses,
+} from './session-filters';
+import { PREVIEW_PARAM, SessionPreview, writePreview } from '../../../features/sessions/session-preview';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /** Fotos que admite el servidor (ver ImagenSesionService). */
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
-/** «Todas» son las que no están archivadas; las archivadas tienen su propio filtro. */
-type Filter = 'TODAS' | EstadoEvento | 'ARCHIVADAS';
+const FILTER_DEFAULTS = SESSION_FILTER_DEFAULTS;
+const passes = sessionPasses;
 
 /** Columnas por las que se ordena la tabla. */
 type SortKey = 'numero' | 'nombre' | 'fecha' | 'aforo' | 'estado';
@@ -46,24 +71,30 @@ const COMPARE: Record<SortKey, (a: EventoAdmin, b: EventoAdmin) => number> = {
   estado: (a, b) => STATE_ORDER[a.estado] - STATE_ORDER[b.estado],
 };
 
-/** Las dos páginas de Modificar sesión. */
-type EditPage = 'datos' | 'expediente';
+/** Las páginas de Modificar sesión: los datos, el expediente y cómo se verá todo en la web. */
+type EditPage = 'datos' | 'expediente' | 'vista';
+
+/** El ancho de ordenador con el que se pinta la vista previa (luego se reduce para que quepa). */
+const PREVIEW_DESKTOP_WIDTH = 1440;
 
 /**
  * Sesiones: el programa, con su ocupación. Una sesión nace activa; se cancela (y se puede
- * reactivar) con sus acciones, no desde el formulario. Con reservas, borrarla pide confirmarlo aparte
- * (y propone cancelarla, que deja las reservas en el panel de sus clientes).
+ * reactivar) con sus acciones, no desde el formulario. Solo se borra la que nunca tuvo reservas: la que
+ * tiene historia se cancela y se archiva, y sus reservas siguen en el panel de sus clientes.
  */
 @Component({
   selector: 'app-admin-sessions-panel',
   standalone: true,
-  imports: [
+  imports: [SectionHelpComponent, 
     FormsModule,
     RouterLink,
     PanelDialogComponent,
     AdminDossierFormComponent,
     KeepHeightDirective,
     DemoFootComponent,
+    FilterBarComponent,
+    AdminControlSheetComponent,
+    AdminDossierBulkPanelComponent,
   ],
   templateUrl: './admin-sessions-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
@@ -73,6 +104,9 @@ export class AdminSessionsPanelComponent implements OnInit {
   private readonly confirm = inject(PanelConfirmService);
   private readonly summary = inject(AdminSummaryService);
   private readonly injector = inject(Injector);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly sessions = signal<EventoAdmin[]>([]);
   readonly types = signal<TipoEvento[]>([]);
@@ -84,24 +118,37 @@ export class AdminSessionsPanelComponent implements OnInit {
   /** La sesión desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
   readonly expanded = signal<number | null>(null);
 
-  readonly query = signal('');
-  readonly filter = signal<Filter>('TODAS');
+  /**
+   * Los filtros, en la dirección (?estado=activas&ocupacion=bajo-minimo…): la barra los cambia navegando y
+   * aquí se leen. Así un filtro se guarda como marcador o se manda a otra persona.
+   */
+  readonly filterValues = signal<FilterValues>({ ...FILTER_DEFAULTS });
+  readonly filterDefaults = FILTER_DEFAULTS;
+  readonly filterStorage = SESSION_FILTER_STORAGE;
+  readonly query = computed(() => this.filterValues()['q'] ?? '');
+  /** Para que KeepHeight sepa que la lista ha cambiado por un filtro. */
+  readonly filterKey = computed(() => JSON.stringify(this.filterValues()));
 
-  readonly filters = computed(() => {
-    const list = this.sessions().filter((session) => !session.archivada);
-    const count = (estado: EstadoEvento) => list.filter((session) => session.estado === estado).length;
-    return [
-      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
-      { value: 'ACTIVO' as Filter, label: 'Activas', count: count('ACTIVO') },
-      { value: 'CANCELADO' as Filter, label: 'Canceladas', count: count('CANCELADO') },
-      { value: 'TERMINADO' as Filter, label: 'Terminadas', count: count('TERMINADO') },
-      {
-        value: 'ARCHIVADAS' as Filter,
-        label: 'Archivadas',
-        count: this.sessions().length - list.length,
-      },
-    ];
-  });
+  readonly filterFields = computed<FilterField[]>(() => sessionFilterFields(this.types()));
+
+  /** Lo de todos los días, con cuántas hay ahora mismo. */
+  readonly filterPresets = computed<FilterPreset[]>(() => sessionFilterPresets(this.sessions()));
+
+  /** Aplicar filtros es navegar sin mover la vista; la dirección se lee de vuelta en ngOnInit. */
+  applyFilters(values: FilterValues): void {
+    const queryParams: Record<string, string | null> = {};
+    for (const key of Object.keys(FILTER_DEFAULTS)) {
+      const value = values[key] ?? '';
+      queryParams[key] = value === FILTER_DEFAULTS[key] ? null : value;
+    }
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+      scroll: 'manual',
+    });
+  }
 
   /** El orden de la tabla: por fecha, de la más próxima a la más lejana, hasta que se pulse otra columna. */
   readonly sort = new TableSort<SortKey>('fecha');
@@ -121,16 +168,14 @@ export class AdminSessionsPanelComponent implements OnInit {
   ];
 
   readonly visible = computed(() => {
-    const filter = this.filter();
+    const values = this.filterValues();
     const query = this.query();
     const { key, dir } = this.sort.state();
     const compare = COMPARE[key];
     return this.sessions()
       .filter(
       (session) =>
-        (filter === 'ARCHIVADAS'
-          ? session.archivada
-          : !session.archivada && (filter === 'TODAS' || session.estado === filter)) &&
+        passes(session, values) &&
         matches(
           query,
           session.nombre,
@@ -143,8 +188,30 @@ export class AdminSessionsPanelComponent implements OnInit {
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idEvento - b.idEvento);
   });
 
+  /** La edición en lote de los expedientes, en su diálogo. */
+  readonly bulkOpen = signal(false);
+  readonly bulkDialog = viewChild.required<PanelDialogComponent>('bulkDialog');
+  private readonly bulk = viewChild(AdminDossierBulkPanelComponent);
+
+  openBulk(): void {
+    this.bulkOpen.set(true);
+    this.bulkDialog().open();
+  }
+
+  /** Cerrar con cambios sin guardar pregunta antes (ver AdminDossierBulkPanelComponent#canLeave). */
+  readonly confirmBulkClose = (): Promise<boolean> => this.bulk()?.canLeave() ?? Promise.resolve(true);
+
+  /** La hoja de control de una sesión, en su diálogo. */
+  readonly controlId = signal<number | null>(null);
+  readonly controlDialog = viewChild.required<PanelDialogComponent>('controlDialog');
+
+  openControl(idEvento: number): void {
+    this.controlId.set(idEvento);
+    this.controlDialog().open();
+  }
+
   // Formulario de alta y edición, en el diálogo.
-  readonly dialog = viewChild.required(PanelDialogComponent);
+  readonly dialog = viewChild.required<PanelDialogComponent>('editDialog');
   readonly editing = signal<EventoAdmin | null>(null);
   /** Reactivar una sesión cuya fecha ya pasó: primero se le da otra fecha, después se reactiva. */
   readonly reactivating = signal(false);
@@ -161,6 +228,67 @@ export class AdminSessionsPanelComponent implements OnInit {
 
   readonly dossierForm = viewChild.required(AdminDossierFormComponent);
   readonly page = signal<EditPage>('datos');
+
+  // La vista previa: la página pública de verdad, en un iframe, con lo que hay en el formulario.
+  private readonly sanitizer = inject(DomSanitizer);
+  readonly previewSrc = this.sanitizer.bypassSecurityTrustResourceUrl(`/sesiones?${PREVIEW_PARAM}=1`);
+  /** El iframe se crea la primera vez que se abre la pestaña, no antes. */
+  readonly previewOpened = signal(false);
+  readonly previewDevice = signal<'ordenador' | 'movil'>('ordenador');
+  readonly previewScale = signal(0.5);
+  private readonly previewBox = viewChild<ElementRef<HTMLElement>>('previewBox');
+
+  /** Pasa a una página del diálogo; la vista previa se pone al día con lo que hay en el formulario. */
+  showPage(page: EditPage): void {
+    this.page.set(page);
+    if (page === 'vista') {
+      writePreview(this.buildPreview());
+      this.previewOpened.set(true);
+      afterNextRender(() => this.fitPreview(), { injector: this.injector });
+    }
+  }
+
+  setPreviewDevice(device: 'ordenador' | 'movil'): void {
+    this.previewDevice.set(device);
+    afterNextRender(() => this.fitPreview(), { injector: this.injector });
+  }
+
+  /** La página de ordenador, reducida hasta el ancho del diálogo. */
+  private fitPreview(): void {
+    const box = this.previewBox()?.nativeElement;
+    if (box) {
+      this.previewScale.set(Math.min(1, box.clientWidth / PREVIEW_DESKTOP_WIDTH));
+    }
+  }
+
+  /** La sesión tal como está en el formulario, sin guardar: la que pinta la vista previa. */
+  private buildPreview(): SessionPreview {
+    const editing = this.editing();
+    const form = this.form;
+    const type = this.types().find((item) => item.idTipo === form.idTipo);
+    return {
+      detail: {
+        idEvento: editing?.idEvento ?? 0,
+        nombre: form.nombre || 'Sesión sin nombre',
+        descripcion: form.descripcion,
+        fechaInicio: form.fechaInicio || this.today,
+        horaInicio: form.horaInicio || '19:00',
+        duracion: form.duracion ?? 0,
+        direccion: form.direccion,
+        aforoMaximo: form.aforoMaximo ?? 0,
+        minimoAsistencia: form.minimoAsistencia ?? 0,
+        precio: form.precio ?? 0,
+        idTipo: form.idTipo ?? 0,
+        tipoEvento: type?.nombre ?? editing?.tipoEvento ?? '',
+        estado: editing?.estado ?? 'ACTIVO',
+        imagen: this.removePhoto() ? null : (editing?.imagen ?? null),
+      },
+      layer: this.dossierForm().preview(),
+      imageUrl: this.photoFile() ? this.photoPreview() : null,
+    };
+  }
+
+  readonly previewDesktopWidth = PREVIEW_DESKTOP_WIDTH;
   /** De qué sesiones se puede copiar el expediente: todas menos la que se modifica. */
   readonly dossierSources = computed(() =>
     this.sessions()
@@ -215,6 +343,13 @@ export class AdminSessionsPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const values: FilterValues = { ...FILTER_DEFAULTS };
+      for (const key of Object.keys(FILTER_DEFAULTS)) {
+        values[key] = params.get(key) ?? FILTER_DEFAULTS[key];
+      }
+      this.filterValues.set(values);
+    });
     this.load();
     this.admin.getTipos().subscribe({ next: (types) => this.types.set(types) });
   }
@@ -405,42 +540,21 @@ export class AdminSessionsPanelComponent implements OnInit {
   }
 
   /**
-   * Sin reservas, se confirma y se borra. Con reservas, el aviso propone cancelarla (sus clientes la
-   * siguen viendo, cancelada) o borrarla con ellas (desaparecen también de su panel).
+   * Borrar es para lo que nunca tuvo reservas (una errata, una duplicada). Con historia no se ofrece: se
+   * cancela y, cuando ya no estorbe, se archiva (el servidor lo exige igual).
    */
   async remove(session: EventoAdmin): Promise<void> {
-    const withReservations = session.reservas > 0;
-    const cancellable = session.estado === 'ACTIVO';
-    const choice = await this.confirm.choose(
-      withReservations
-        ? {
-            title: '¿Borrar una sesión con reservas?',
-            message:
-              `«${session.nombre}» tiene ${plural(session.reservas, 'reserva', 'reservas')}. Si la borras, ` +
-              (session.reservas === 1 ? 'se borra con ella y desaparece' : 'se borran con ella y desaparecen') +
-              ' también del panel de sus clientes. ' +
-              (cancellable ? 'Si la cancelas, la siguen viendo, cancelada. ' : '') +
-              'Borrarla no se puede deshacer.',
-            confirm: 'Borrar',
-            alternative: cancellable ? 'Cancelar sesión' : undefined,
-            danger: true,
-          }
-        : {
-            title: '¿Borrar la sesión?',
-            message: `«${session.nombre}» desaparecerá del programa y del panel. No se puede deshacer.`,
-            confirm: 'Borrar sesión',
-            danger: true,
-          },
-    );
-    if (choice === 'alternative') {
-      this.changeState(session, this.admin.cancelarEvento(session.idEvento), 'cancelada');
-      return;
-    }
-    if (choice !== 'confirm') {
+    const confirmed = await this.confirm.ask({
+      title: '¿Borrar la sesión?',
+      message: `«${session.nombre}» desaparecerá del programa y del panel. No ha tenido reservas, así que no se pierde historia; no se puede deshacer.`,
+      confirm: 'Borrar sesión',
+      danger: true,
+    });
+    if (!confirmed) {
       return;
     }
     this.busy.set(session.idEvento);
-    this.admin.borrarEvento(session.idEvento, withReservations).subscribe({
+    this.admin.borrarEvento(session.idEvento).subscribe({
       next: () => {
         this.busy.set(null);
         this.sessions.update((list) => list.filter((item) => item.idEvento !== session.idEvento));

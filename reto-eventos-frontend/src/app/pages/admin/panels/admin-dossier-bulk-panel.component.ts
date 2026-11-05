@@ -1,10 +1,12 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 
 import { AdminService } from '../../../core/services/admin.service';
-import { EstadoEvento, EventoAdmin } from '../../../models/api.models';
+import { archiveCode } from '../../../features/sessions/session.presenter';
+import { EventoAdmin } from '../../../models/api.models';
 import { SessionDossierLayer } from '../../../models/session-dossier.models';
+import { FilterBarComponent, FilterField, FilterPreset, FilterValues } from '../../../shared/panel/filter-bar.component';
 import { PanelConfirmService } from '../../../shared/panel/panel-confirm';
 import {
   errorMessage,
@@ -24,8 +26,14 @@ import {
   ROW_PARTS,
 } from './dossier-fields';
 import { DossierRowEditorComponent } from './dossier-row-editor.component';
+import {
+  SESSION_FILTER_DEFAULTS,
+  SESSION_FILTER_STORAGE,
+  sessionFilterFields,
+  sessionFilterPresets,
+  sessionPasses,
+} from './session-filters';
 
-type Filter = 'TODAS' | EstadoEvento | 'ARCHIVADAS';
 type Dossier = Record<string, unknown>;
 
 /** Una fila de un apartado con lista, tal como está en la selección: en qué sesiones aparece. */
@@ -42,14 +50,14 @@ interface TextVersion {
 }
 
 /**
- * Edición en lote de los expedientes: se eligen sesiones (con los mismos filtros que la lista) y se
+ * Edición en lote de los expedientes: se eligen sesiones (con la misma barra de filtros que la lista) y se
  * cambia su contenido de una vez. Cada apartado dice cómo está en la selección («igual en las 5»,
  * «en 2 de 5»). Los cambios se acumulan aquí y se guardan juntos, todos o ninguno.
  */
 @Component({
   selector: 'app-admin-dossier-bulk-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, DossierRowEditorComponent],
+  imports: [FormsModule, NgTemplateOutlet, DossierRowEditorComponent, FilterBarComponent],
   templateUrl: './admin-dossier-bulk-panel.component.html',
   styleUrls: ['../../../shared/panel/panel.css', './admin-dossier-bulk-panel.component.css'],
 })
@@ -65,11 +73,18 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   /** Errores del último guardado, ya con el nombre de su sesión. */
   readonly saveErrors = signal<string[]>([]);
 
-  // Filtros y selección.
-  readonly query = signal('');
-  readonly filter = signal<Filter>('TODAS');
-  readonly type = signal('');
+  // Filtros (los de Sesiones, aquí sin pasar por la dirección) y selección.
+  readonly filterValues = signal<FilterValues>({ ...SESSION_FILTER_DEFAULTS });
+  readonly filterDefaults = SESSION_FILTER_DEFAULTS;
+  readonly filterStorage = SESSION_FILTER_STORAGE;
   readonly selected = signal<ReadonlySet<number>>(new Set());
+
+  /** En pantallas anchas, una de las dos columnas puede ocupar todo el ancho un rato; null, las dos. */
+  readonly widened = signal<'sesiones' | 'contenido' | null>(null);
+
+  toggleWide(column: 'sesiones' | 'contenido'): void {
+    this.widened.update((current) => (current === column ? null : column));
+  }
 
   // Contenido: lo guardado y la copia de trabajo, que cambia con cada acción hasta guardar.
   private original: Record<number, Dossier> = {};
@@ -91,31 +106,35 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   readonly typeLabel = humanizeCode;
   readonly plural = plural;
 
-  readonly types = computed(() => [...new Set(this.sessions().map((session) => session.tipoEvento))].sort());
-
-  readonly filters = computed(() => {
-    const list = this.sessions().filter((session) => !session.archivada);
-    const count = (estado: EstadoEvento) => list.filter((session) => session.estado === estado).length;
-    return [
-      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
-      { value: 'ACTIVO' as Filter, label: 'Activas', count: count('ACTIVO') },
-      { value: 'CANCELADO' as Filter, label: 'Canceladas', count: count('CANCELADO') },
-      { value: 'TERMINADO' as Filter, label: 'Terminadas', count: count('TERMINADO') },
-      { value: 'ARCHIVADAS' as Filter, label: 'Archivadas', count: this.sessions().length - list.length },
-    ];
+  /** Los tipos de las sesiones que hay, para el filtro de tipo. */
+  private readonly types = computed(() => {
+    const types = new Map<number, string>();
+    for (const session of this.sessions()) {
+      types.set(session.idTipo, session.tipoEvento);
+    }
+    return [...types.entries()]
+      .map(([idTipo, nombre]) => ({ idTipo, nombre }))
+      .sort((x, y) => x.nombre.localeCompare(y.nombre, 'es'));
   });
 
+  readonly filterFields = computed<FilterField[]>(() => sessionFilterFields(this.types()));
+
+  readonly filterPresets = computed<FilterPreset[]>(() => sessionFilterPresets(this.sessions()));
+
   readonly visible = computed(() => {
-    const filter = this.filter();
-    const query = this.query();
-    const type = this.type();
+    const values = this.filterValues();
+    const query = values['q'] ?? '';
     return this.sessions().filter(
       (session) =>
-        (filter === 'ARCHIVADAS'
-          ? session.archivada
-          : !session.archivada && (filter === 'TODAS' || session.estado === filter)) &&
-        (!type || session.tipoEvento === type) &&
-        matches(query, session.nombre, this.number(session), humanizeCode(session.tipoEvento), session.direccion),
+        sessionPasses(session, values) &&
+        matches(
+          query,
+          session.nombre,
+          this.number(session),
+          archiveCode(session),
+          humanizeCode(session.tipoEvento),
+          session.direccion,
+        ),
     );
   });
 
@@ -251,6 +270,39 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   }
 
   /** Los nombres de las sesiones, para el título de una cobertura parcial. */
+  /** Las líneas de «dónde» que se ven enteras (las demás, con las tres primeras y «y N más»). */
+  readonly openWhere = signal<ReadonlySet<string>>(new Set());
+
+  /**
+   * Dónde está una versión o una fila, con número y nombre; si está en más de la mitad, dónde falta, que es
+   * lo que interesa. En todas: nada que decir.
+   */
+  where(ids: number[]): { label: string; sessions: string[] } | null {
+    const chosen = this.selection();
+    if (ids.length >= chosen.length) {
+      return null;
+    }
+    const inside = ids.length <= chosen.length / 2;
+    return {
+      label: inside ? 'En' : 'Falta en',
+      sessions: chosen
+        .filter((session) => ids.includes(session.idEvento) === inside)
+        .map((session) => `${this.number(session)} ${session.nombre}`),
+    };
+  }
+
+  toggleWhere(key: string): void {
+    this.openWhere.update((set) => {
+      const next = new Set(set);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }
+
   names(ids: number[]): string {
     return this.sessions()
       .filter((session) => ids.includes(session.idEvento))
@@ -478,14 +530,15 @@ export class AdminDossierBulkPanelComponent implements OnInit {
   }
 
   /** Para salir de la página con cambios sin guardar (ver admin.routes.ts). */
+  /** Antes de cerrar su diálogo (ver Sesiones): con cambios sin guardar, pregunta. */
   async canLeave(): Promise<boolean> {
     if (!this.changedIds().length) {
       return true;
     }
     return this.confirm.ask({
-      title: '¿Salir sin guardar?',
-      message: `Hay cambios sin guardar en ${plural(this.changedIds().length, 'sesión', 'sesiones')}. Si sales, se pierden.`,
-      confirm: 'Salir sin guardar',
+      title: '¿Cerrar sin guardar?',
+      message: `Hay cambios sin guardar en ${plural(this.changedIds().length, 'sesión', 'sesiones')}. Si cierras, se pierden.`,
+      confirm: 'Cerrar sin guardar',
       danger: true,
     });
   }

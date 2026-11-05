@@ -74,6 +74,17 @@ export function paymentBadge(reserva: Reserva): { label: string; tone: Tone } | 
   }
 }
 
+/** Lo ya devuelto y lo que queda por entregar en taquilla, según el registro de devoluciones. */
+export function refunds(reserva: Reserva): { hecho: number; pendiente: number } {
+  return (reserva.devoluciones ?? []).reduce(
+    (sum, devolucion) =>
+      devolucion.estado === 'HECHA'
+        ? { ...sum, hecho: sum.hecho + Number(devolucion.importe) }
+        : { ...sum, pendiente: sum.pendiente + Number(devolucion.importe) },
+    { hecho: 0, pendiente: 0 },
+  );
+}
+
 /** El cobro en una línea, para la ficha: cómo se pagó y lo devuelto, si algo. */
 export function paymentLine(reserva: Reserva): string {
   const base = {
@@ -82,8 +93,15 @@ export function paymentLine(reserva: Reserva): string {
     EN_TAQUILLA: reserva.canceladaEn ? 'Sin cobrar' : 'Se paga en taquilla al llegar',
     COBRADA_TAQUILLA: 'Cobrada en taquilla',
   }[reserva.estadoPago];
-  const devuelto = Number(reserva.importeDevuelto);
-  return devuelto > 0 ? `${base} · devueltos ${formatMoney(devuelto)}` : base;
+  const { hecho, pendiente } = refunds(reserva);
+  const partes = [base];
+  if (hecho > 0) {
+    partes.push(`devueltos ${formatMoney(hecho)}`);
+  }
+  if (pendiente > 0) {
+    partes.push(`${formatMoney(pendiente)} por devolver en taquilla`);
+  }
+  return partes.join(' · ');
 }
 
 const PROFILE_LABELS: Record<string, string> = {

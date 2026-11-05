@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,20 @@ public class AdminReservaRestController {
 						dto.getObservaciones())));
 	}
 
+	/** Por teléfono, sin cuenta: {"nombre", "telefono", "correo" (opcional), "cantidad", "observaciones"}. */
+	@PostMapping("/sin-cuenta/evento/{idEvento}")
+	public ResponseEntity<ReservaDto> crearSinCuenta(@PathVariable Integer idEvento, @RequestBody Map<String, Object> datos) {
+		Object cantidad = datos.get("cantidad");
+		return ResponseEntity.status(HttpStatus.CREATED).body(ReservaDto.fromEntity(reservaService.reservarSinCuenta(
+				idEvento, texto(datos, "nombre"), texto(datos, "telefono"), texto(datos, "correo"),
+				cantidad instanceof Number numero ? numero.intValue() : null, texto(datos, "observaciones"))));
+	}
+
+	private static String texto(Map<String, Object> datos, String campo) {
+		Object valor = datos.get(campo);
+		return valor == null ? null : valor.toString();
+	}
+
 	@PutMapping("/{idReserva}/datos")
 	public ResponseEntity<ReservaDto> editar(@PathVariable Integer idReserva, @RequestBody ReservaEditarDto datos) {
 		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.editarReservaAdmin(idReserva, datos)));
@@ -85,10 +100,23 @@ public class AdminReservaRestController {
 				Boolean.TRUE.equals(datos.get("aceptada")), nota == null ? null : nota.toString())));
 	}
 
+	/** La vuelve a dejar por revisar: deshace la ✕ con la que se dio por revisada. */
+	@DeleteMapping("/{idReserva}/revision")
+	public ResponseEntity<ReservaDto> reabrirRevision(@PathVariable Integer idReserva) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.reabrirRevision(idReserva)));
+	}
+
 	/** Deshace una cancelación, si quedan plazas y no se movió dinero (ver ReservaService#reactivar). */
 	@PostMapping("/{idReserva}/reactivar")
 	public ResponseEntity<ReservaDto> reactivar(@PathVariable Integer idReserva) {
 		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.reactivar(idReserva)));
+	}
+
+	/** Una devolución en taquilla, ya entregada. */
+	@PostMapping("/{idReserva}/devoluciones/{idDevolucion}/entregada")
+	public ResponseEntity<ReservaDto> devolucionEntregada(@PathVariable Integer idReserva,
+			@PathVariable Integer idDevolucion) {
+		return ResponseEntity.ok(ReservaDto.fromEntity(reservaService.entregarDevolucion(idReserva, idDevolucion)));
 	}
 
 	/** Pagada al llegar: la reserva hecha por teléfono, cobrada en taquilla. */

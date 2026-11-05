@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   Injector,
@@ -11,9 +12,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
 import { AdminService } from '../../../core/services/admin.service';
 import { credentialLabel } from '../../../features/attendance/attendance';
@@ -23,6 +25,7 @@ import { PanelDialogComponent } from '../../../shared/panel/panel-dialog.compone
 import { ReservationEditorComponent } from '../../../shared/panel/reservation-editor.component';
 import {
   errorMessage,
+  fieldErrors,
   formatDay,
   formatDayTime,
   reservationWhen,
@@ -31,25 +34,88 @@ import {
   plural,
   profileLabel,
   reservationState,
+  sessionState,
   cancellationLine,
   paymentBadge,
   paymentLine,
   reviewLabel,
 } from '../../../shared/panel/panel-format';
-import { revealAtTop, revealExpanded } from '../../../shared/panel/reveal-row';
 import { TableSort } from '../../../shared/panel/table-sort';
+import {
+  dateFields,
+  FilterBarComponent,
+  isoDay,
+  FilterField,
+  FilterPreset,
+  FilterValues,
+  matchesDate,
+} from '../../../shared/panel/filter-bar.component';
 import { KeepHeightDirective } from '../../../shared/keep-height/keep-height.directive';
 import { AdminSummaryService } from '../admin-summary.service';
 import { DemoFootComponent } from '../demo-foot.component';
+import { AdminControlSheetComponent } from './admin-control-sheet.component';
+import { SectionHelpComponent } from '../../../shared/panel/section-help.component';
 
 /** Una reserva admite de 1 a 10 plazas, y nadie pasa de 10 en la misma sesión (lo comprueba el servidor). */
 const MAX_PLAZAS = 10;
 
+/** Los filtros y lo que valen sin filtrar: lo vivo de todas las sesiones, de cualquier fecha, pago y cliente. */
+const FILTER_DEFAULTS: FilterValues = {
+  q: '',
+  sesion: '',
+  estado: 'vivas',
+  fecha: '',
+  desde: '',
+  hasta: '',
+  pago: '',
+  revision: '',
+  cliente: '',
+};
+
 /**
- * Lo vivo, por el estado de su sesión (confirmadas, de sesión cancelada o celebradas) o lo que requiere
- * revisión; y, aparte, las canceladas y las de sesiones archivadas, que no se borran pero no estorban.
+ * Si una reserva pasa los filtros que no son de texto ni de sesión (esos los mira `searched`): su estado,
+ * su fecha, su pago, su revisión y si tiene cuenta. Pura: la usan la tabla y las cuentas de los filtros listos.
  */
-type Filter = 'TODAS' | EstadoEvento | 'REVISION' | 'CANCELADAS' | 'ARCHIVADAS';
+function passes(reserva: Reserva, values: FilterValues, today = new Date()): boolean {
+  const vivas = live(reserva);
+  const estado = {
+    vivas,
+    confirmadas: vivas && reserva.estadoEvento === 'ACTIVO',
+    'sesion-cancelada': vivas && reserva.estadoEvento === 'CANCELADO',
+    celebradas: vivas && reserva.estadoEvento === 'TERMINADO',
+    canceladas: !!reserva.canceladaEn && !reserva.sesionArchivada,
+    archivadas: reserva.sesionArchivada,
+    todas: true,
+  }[values['estado'] || 'vivas'];
+  if (!estado) {
+    return false;
+  }
+  if (!matchesDate(reserva.fechaInicioEvento, values, today)) {
+    return false;
+  }
+  const pago = {
+    '': true,
+    pendiente: reserva.estadoPago === 'PENDIENTE',
+    tarjeta: reserva.estadoPago === 'PAGADA',
+    taquilla: reserva.estadoPago === 'EN_TAQUILLA',
+    cobrada: reserva.estadoPago === 'COBRADA_TAQUILLA',
+    devolver: (reserva.devoluciones ?? []).some((devolucion) => devolucion.estado === 'PENDIENTE'),
+  }[values['pago'] ?? ''];
+  if (!pago) {
+    return false;
+  }
+  const revision = {
+    '': true,
+    alguna: reserva.revision !== null,
+    pendiente: reserva.revision === 'PENDIENTE' && !reserva.canceladaEn,
+    aceptada: reserva.revision === 'ACEPTADA',
+    'no-aceptada': reserva.revision === 'NO_ACEPTADA',
+  }[values['revision'] ?? ''];
+  if (!revision) {
+    return false;
+  }
+  return { '': true, 'con-cuenta': !!reserva.username, 'sin-cuenta': !reserva.username }[values['cliente'] ?? ''] ?? true;
+}
 
 /** Ni cancelada ni de una sesión archivada: lo que se mira a diario. */
 const live = (reserva: Reserva) => !reserva.canceladaEn && !reserva.sesionArchivada;
@@ -87,9 +153,18 @@ const VIEWS: { value: View; label: string }[] = [
   { value: 'sesiones', label: 'Sesión' },
 ];
 
+/**
+ * A quién se agrupa una reserva: su cuenta o, sin cuenta (por teléfono, o de una cuenta borrada), su
+ * teléfono; si tampoco lo hay, va sola.
+ */
+const clientKey = (reserva: Reserva): string =>
+  reserva.username ?? `sin-cuenta-${reserva.telefono?.replace(/\D/g, '') || reserva.idReserva}`;
+
 /** Un cliente, con todas sus reservas y lo que suman. */
 interface ClientGroup {
-  username: string;
+  /** Su cuenta, o la clave de una persona sin cuenta (ver clientKey). */
+  key: string;
+  username: string | null;
   nombre: string;
   email: string | null;
   telefono: string | null;
@@ -101,7 +176,23 @@ interface ClientGroup {
   /** Su próxima reserva confirmada, o null si no tiene ninguna por delante. */
   proxima: Reserva | null;
   revision: number;
+  /** Para su ficha: las iniciales, sus próximas (hasta tres) y lo que hay que hacer con él. */
+  iniciales: string;
+  proximas: Reserva[];
+  totalProximas: number;
+  porCobrar: number;
+  pagosPendientes: number;
+  porDevolver: number;
 }
+
+/** «Amara Okafor» → «AO»; «Marta» → «M». */
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join('');
 
 /** Una sesión, con todas sus reservas y su registro de asistencia. */
 interface SessionGroup {
@@ -114,6 +205,29 @@ interface SessionGroup {
   plazas: number;
   registrados: number;
   revision: number;
+  /** Para su ficha: lo de la sesión que la fila no dice, lo pendiente y sus últimas reservas. */
+  lugar: string;
+  minimo: number | null;
+  dentro: number;
+  porCobrar: number;
+  pagosPendientes: number;
+  porDevolver: number;
+  recientes: Reserva[];
+}
+
+/** Lo pendiente de un grupo de reservas, para las fichas de cliente y de sesión. */
+function pendingOf(reservas: Reserva[]): { porCobrar: number; pagosPendientes: number; porDevolver: number } {
+  const vivas = reservas.filter(holds);
+  return {
+    porCobrar: vivas
+      .filter((r) => r.estadoPago === 'EN_TAQUILLA' && r.estadoEvento === 'ACTIVO')
+      .reduce((sum, r) => sum + Number(r.precioVenta), 0),
+    pagosPendientes: vivas.filter((r) => r.estadoPago === 'PENDIENTE').length,
+    porDevolver: reservas
+      .flatMap((r) => r.devoluciones ?? [])
+      .filter((devolucion) => devolucion.estado === 'PENDIENTE')
+      .reduce((sum, devolucion) => sum + Number(devolucion.importe), 0),
+  };
 }
 
 type ClientSortKey = 'cliente' | 'reservas' | 'plazas' | 'importe' | 'proxima';
@@ -150,7 +264,16 @@ const SESSION_COMPARE: Record<SessionSortKey, (a: SessionGroup, b: SessionGroup)
 @Component({
   selector: 'app-admin-reservations-panel',
   standalone: true,
-  imports: [FormsModule, RouterLink, PanelDialogComponent, ReservationEditorComponent, KeepHeightDirective, DemoFootComponent],
+  imports: [SectionHelpComponent, NgTemplateOutlet, 
+    FormsModule,
+    RouterLink,
+    PanelDialogComponent,
+    ReservationEditorComponent,
+    KeepHeightDirective,
+    DemoFootComponent,
+    FilterBarComponent,
+    AdminControlSheetComponent,
+  ],
   templateUrl: './admin-reservations-panel.component.html',
   styleUrl: '../../../shared/panel/panel.css',
 })
@@ -171,13 +294,19 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly notice = signal<{ text: string; error: boolean } | null>(null);
   readonly busy = signal<number | null>(null);
 
-  readonly query = signal('');
+  /**
+   * Los filtros, tal como están en la dirección (?estado=canceladas&pago=taquilla…): la barra los cambia
+   * navegando y aquí se leen. Así un filtro se guarda como marcador o se manda a otra persona.
+   */
+  readonly filterValues = signal<FilterValues>({ ...FILTER_DEFAULTS });
+  readonly filterDefaults = FILTER_DEFAULTS;
+  readonly query = computed(() => this.filterValues()['q'] ?? '');
   /** 0: todas las sesiones. */
-  readonly sessionFilter = signal(0);
+  readonly sessionFilter = computed(() => Number(this.filterValues()['sesion']) || 0);
+  /** Para que KeepHeight sepa que la lista ha cambiado por un filtro. */
+  readonly filterKey = computed(() => JSON.stringify(this.filterValues()));
 
-  readonly filter = signal<Filter>('TODAS');
-
-  /** Las de la sesión elegida (o todas) que coinciden con la búsqueda, antes de filtrar por estado. */
+  /** Las de la sesión elegida (o todas) que coinciden con la búsqueda, antes de los demás filtros. */
   private readonly searched = computed(() => {
     const idEvento = this.sessionFilter();
     const query = this.query();
@@ -194,34 +323,108 @@ export class AdminReservationsPanelComponent implements OnInit {
           reserva.observaciones,
           reserva.telefono,
           reserva.telefono?.replace(/\D/g, ''),
-          users.get(reserva.username)?.email,
+          reserva.username ? users.get(reserva.username)?.email : reserva.clienteCorreo,
           ...reserva.asistentes.map((persona) => persona.nombre),
         ),
     );
   });
 
-  readonly filters = computed(() => {
-    const all = this.searched();
-    const list = all.filter(live);
-    const count = (estado: EstadoEvento) => list.filter((reserva) => reserva.estadoEvento === estado).length;
-    return [
-      { value: 'TODAS' as Filter, label: 'Todas', count: list.length },
-      { value: 'ACTIVO' as Filter, label: 'Confirmadas', count: count('ACTIVO') },
-      { value: 'CANCELADO' as Filter, label: 'Sesión cancelada', count: count('CANCELADO') },
-      { value: 'TERMINADO' as Filter, label: 'Celebradas', count: count('TERMINADO') },
-      {
-        value: 'REVISION' as Filter,
-        label: 'Requieren revisión',
-        count: list.filter((reserva) => reserva.requiereRevision).length,
-      },
-      {
-        value: 'CANCELADAS' as Filter,
-        label: 'Canceladas',
-        count: all.filter((reserva) => reserva.canceladaEn && !reserva.sesionArchivada).length,
-      },
-      { value: 'ARCHIVADAS' as Filter, label: 'Archivadas', count: all.filter((reserva) => reserva.sesionArchivada).length },
+  /** Los campos del panel de filtros. */
+  readonly filterFields = computed<FilterField[]>(() => [
+    { key: 'q', label: 'Buscar', type: 'text', placeholder: 'Localizador, nombre, correo, teléfono o participante' },
+    {
+      key: 'sesion',
+      label: 'Sesión',
+      type: 'select',
+      options: [
+        { value: '', label: 'Todas las sesiones' },
+        ...this.sessions().map((session) => ({
+          value: String(session.idEvento),
+          label: `${session.nombre} · ${formatDay(session.fechaInicio)}`,
+        })),
+      ],
+    },
+    ...dateFields('Fecha de la sesión'),
+    {
+      key: 'estado',
+      label: 'Estado',
+      type: 'select',
+      options: [
+        { value: 'vivas', label: 'Vivas (sin canceladas ni archivadas)' },
+        { value: 'confirmadas', label: 'Confirmadas' },
+        { value: 'sesion-cancelada', label: 'De sesiones canceladas' },
+        { value: 'celebradas', label: 'Celebradas' },
+        { value: 'canceladas', label: 'Canceladas' },
+        { value: 'archivadas', label: 'Archivadas' },
+        { value: 'todas', label: 'Todas, también canceladas y archivadas' },
+      ],
+    },
+    {
+      key: 'pago',
+      label: 'Pago',
+      type: 'select',
+      options: [
+        { value: '', label: 'Cualquiera' },
+        { value: 'pendiente', label: 'Pendiente de pago con tarjeta' },
+        { value: 'tarjeta', label: 'Pagada con tarjeta' },
+        { value: 'taquilla', label: 'Por cobrar en taquilla' },
+        { value: 'cobrada', label: 'Cobrada en taquilla' },
+        { value: 'devolver', label: 'Con devolución por entregar' },
+      ],
+    },
+    {
+      key: 'revision',
+      label: 'Adaptaciones y material',
+      type: 'select',
+      options: [
+        { value: '', label: 'Cualquiera' },
+        { value: 'alguna', label: 'Con adaptaciones o material' },
+        { value: 'pendiente', label: 'Por revisar' },
+        { value: 'aceptada', label: 'Aceptadas' },
+        { value: 'no-aceptada', label: 'No aceptadas' },
+      ],
+    },
+    {
+      key: 'cliente',
+      label: 'Cliente',
+      type: 'select',
+      options: [
+        { value: '', label: 'Con o sin cuenta' },
+        { value: 'con-cuenta', label: 'Con cuenta' },
+        { value: 'sin-cuenta', label: 'Sin cuenta (por teléfono)' },
+      ],
+    },
+  ]);
+
+  /** Lo de todos los días, con cuántas hay ahora mismo (de todas las sesiones, sin la búsqueda). */
+  readonly filterPresets = computed<FilterPreset[]>(() => {
+    const presets: FilterPreset[] = [
+      { label: 'Hoy', values: { fecha: 'hoy' } },
+      { label: 'Próximos 7 días', values: { fecha: 'semana' } },
+      { label: 'Por cobrar en taquilla', values: { pago: 'taquilla' } },
+      { label: 'Pagos con tarjeta pendientes', values: { pago: 'pendiente' } },
+      { label: 'Por revisar', values: { revision: 'pendiente' } },
+      { label: 'Devoluciones por entregar', values: { pago: 'devolver', estado: 'todas' } },
+      { label: 'Canceladas', values: { estado: 'canceladas' } },
+      { label: 'Archivadas', values: { estado: 'archivadas' } },
     ];
+    const all = this.reservations();
+    return presets.map((preset) => ({
+      ...preset,
+      count: all.filter((reserva) => passes(reserva, { ...FILTER_DEFAULTS, ...preset.values })).length,
+    }));
   });
+
+  /** Aplicar filtros es navegar: la dirección cambia, la vista no se mueve, y se lee de vuelta en ngOnInit. */
+  applyFilters(values: FilterValues, extra: Record<string, string | null> = {}): void {
+    this.stay.set(null);
+    const queryParams: Record<string, string | null> = { cuenta: null, ...extra };
+    for (const key of Object.keys(FILTER_DEFAULTS)) {
+      const value = values[key] ?? '';
+      queryParams[key] = value === FILTER_DEFAULTS[key] ? null : value;
+    }
+    this.go(queryParams);
+  }
 
   /** El orden de la tabla: por la fecha de la sesión, de la más próxima a la más lejana. */
   readonly sort = new TableSort<SortKey>('fecha');
@@ -239,7 +442,7 @@ export class AdminReservationsPanelComponent implements OnInit {
   ];
 
   readonly visible = computed(() => {
-    const filter = this.filter();
+    const values = this.filterValues();
     const { key, dir } = this.sort.state();
     const compare = COMPARE[key];
     const stay = this.stay();
@@ -248,18 +451,7 @@ export class AdminReservationsPanelComponent implements OnInit {
         if (reserva.idReserva === stay) {
           return true;
         }
-        switch (filter) {
-          case 'ARCHIVADAS':
-            return reserva.sesionArchivada;
-          case 'CANCELADAS':
-            return !!reserva.canceladaEn && !reserva.sesionArchivada;
-          case 'TODAS':
-            return live(reserva);
-          case 'REVISION':
-            return live(reserva) && reserva.requiereRevision;
-          default:
-            return live(reserva) && reserva.estadoEvento === filter;
-        }
+        return passes(reserva, values);
       })
       .sort((a, b) => dir * compare(a, b) || COMPARE.fecha(a, b) || a.idReserva - b.idReserva);
   });
@@ -301,19 +493,21 @@ export class AdminReservationsPanelComponent implements OnInit {
     const groups = new Map<string, Reserva[]>();
     const matching = new Set(this.visible().map((reserva) => reserva.idReserva));
     for (const reserva of this.reservations()) {
-      groups.set(reserva.username, [...(groups.get(reserva.username) ?? []), reserva]);
+      groups.set(clientKey(reserva), [...(groups.get(clientKey(reserva)) ?? []), reserva]);
     }
     const { key, dir } = this.clientSort.state();
     return [...groups.entries()]
-      .map(([username, reservas]) => {
-        const user = users.get(username);
+      .map(([clave, reservas]) => {
+        const username = reservas[0].username;
+        const user = username ? users.get(username) : undefined;
         const ordered = [...reservas].sort(COMPARE.fecha);
         const vivas = reservas.filter(holds);
         const telefono = [...reservas].sort((a, b) => b.idReserva - a.idReserva).find((r) => r.telefono)?.telefono;
         return {
+          key: clave,
           username,
           nombre: reservas[0].nombreCliente,
-          email: user?.email ?? null,
+          email: user?.email ?? reservas.find((r) => r.clienteCorreo)?.clienteCorreo ?? null,
           telefono: telefono ?? null,
           programa: user ? !!user.aceptaComunicaciones : null,
           reservas: ordered,
@@ -322,6 +516,9 @@ export class AdminReservationsPanelComponent implements OnInit {
           importe: vivas.reduce((sum, r) => sum + Number(r.precioVenta), 0),
           proxima: ordered.find((r) => r.estadoEvento === 'ACTIVO' && holds(r)) ?? null,
           revision: vivas.filter((r) => r.requiereRevision).length,
+          iniciales: initials(reservas[0].nombreCliente),
+          ...this.upcoming(ordered),
+          ...pendingOf(reservas),
         };
       })
       .filter((group) => group.coincidencias > 0)
@@ -350,11 +547,64 @@ export class AdminReservationsPanelComponent implements OnInit {
           plazas: vivas.reduce((sum, r) => sum + r.cantidad, 0),
           registrados: vivas.reduce((sum, r) => sum + r.asistentes.length, 0),
           revision: vivas.filter((r) => r.requiereRevision).length,
+          lugar: sessions.get(idEvento)?.direccion ?? '',
+          minimo: sessions.get(idEvento)?.minimoAsistencia ?? null,
+          dentro: vivas.reduce(
+            (sum, r) =>
+              sum + (r.asistentes.length ? r.asistentes.filter((a) => a.entradaEn).length : r.entradasSinRegistrar),
+            0,
+          ),
+          ...pendingOf(reservas),
+          recientes: [...vivas].sort((a, b) => b.idReserva - a.idReserva).slice(0, 4),
         };
       })
       .filter((group) => group.coincidencias > 0)
       .sort((a, b) => dir * SESSION_COMPARE[key](a, b) || SESSION_COMPARE.fecha(a, b));
   });
+
+  /** Lo que tiene por delante: vivas, de sesiones activas, de hoy en adelante; las tres primeras para la ficha. */
+  private upcoming(ordered: Reserva[]): { proximas: Reserva[]; totalProximas: number } {
+    const today = isoDay(new Date());
+    const list = ordered.filter((r) => holds(r) && r.estadoEvento === 'ACTIVO' && r.fechaInicioEvento >= today);
+    return { proximas: list.slice(0, 3), totalProximas: list.length };
+  }
+
+  /** «Nueva reserva» desde la ficha de una sesión: el diálogo, con la sesión ya elegida. */
+  openNewForSession(idEvento: number): void {
+    this.form = emptyForm(idEvento);
+    this.formError.set(null);
+    this.formErrors.set({});
+    this.dialog().open();
+  }
+
+  readonly sessionStateOf = sessionState;
+
+  /** «Nueva reserva» desde la ficha de un cliente: el diálogo, con él ya puesto (con cuenta o sin ella). */
+  openNewFor(client: ClientGroup): void {
+    this.form = emptyForm(this.sessionFilter() || null);
+    if (client.username) {
+      this.form.username = client.username;
+    } else {
+      this.form.sinCuenta = true;
+      this.form.nombre = client.nombre;
+      this.form.telefono = client.telefono ?? '';
+      this.form.correo = client.email ?? '';
+    }
+    this.formError.set(null);
+    this.formErrors.set({});
+    this.dialog().open();
+  }
+
+  /** Todas sus reservas, una por una: la vista por reserva, buscándolo, con canceladas y archivadas. */
+  showClientReservations(client: ClientGroup): void {
+    this.expanded.set(null);
+    this.view.set('reservas');
+    this.applyFilters(
+      { ...FILTER_DEFAULTS, q: client.username ?? client.telefono ?? client.nombre, estado: 'todas' },
+      { ver: null },
+    );
+    afterNextRender(() => this.showTable(), { injector: this.injector });
+  }
 
   /** Cambiar de vista no es cambiar de página: va en la dirección (?ver=) y la vista no se mueve. */
   setView(view: View): void {
@@ -375,7 +625,7 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** Las demás reservas de su cliente, entre todas (no solo las que pasan los filtros). */
   otherReservations(reserva: Reserva): number {
-    return this.reservations().filter((r) => r.username === reserva.username && r.idReserva !== reserva.idReserva)
+    return this.reservations().filter((r) => clientKey(r) === clientKey(reserva) && r.idReserva !== reserva.idReserva)
       .length;
   }
 
@@ -385,13 +635,13 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.expandedClient.set(username);
     this.view.set('clientes');
     this.go({ ver: 'clientes', sesion: null });
-    this.reveal(`client-detail-${username}`);
+    this.reveal();
   }
 
   /** La reserva desplegada: su ficha y sus acciones, debajo de su fila. Una cada vez. */
   readonly expanded = signal<number | null>(null);
   /** Lo que acaba de pasarle a una reserva, dicho en su ficha y no arriba del todo, fuera de la vista. */
-  readonly rowNotice = signal<{ id: number; text: string } | null>(null);
+  readonly rowNotice = signal<{ id: number; text: string; undoReview?: boolean } | null>(null);
   /** Una reserva recién cancelada sigue en su sitio hasta que se cambie de filtro, para no saltar. */
   readonly stay = signal<number | null>(null);
 
@@ -402,7 +652,7 @@ export class AdminReservationsPanelComponent implements OnInit {
     this.rowNotice.set(null);
     this.view.set('reservas');
     this.go({ ver: null, sesion: null });
-    this.reveal(`reservation-detail-${reserva.idReserva}`);
+    this.reveal();
   }
 
   readonly editor = viewChild.required(ReservationEditorComponent);
@@ -429,72 +679,191 @@ export class AdminReservationsPanelComponent implements OnInit {
   /** De una sesión a sus reservas, una por una: la vista por reserva filtrada por esa sesión. */
   openSessionReservations(idEvento: number): void {
     this.stay.set(null);
-    this.filter.set('TODAS');
-    this.query.set('');
     this.expanded.set(null);
     this.view.set('reservas');
-    this.sessionFilter.set(idEvento);
-    this.go({ ver: null, sesion: idEvento });
+    this.filterValues.set({ ...FILTER_DEFAULTS, sesion: String(idEvento) });
+    this.applyFilters(this.filterValues(), { ver: null });
   }
 
   toggleClient(username: string): void {
-    const value = this.expandedClient() === username ? null : username;
-    this.expandedClient.set(value);
-    if (value) {
-      this.reveal(`client-detail-${value}`, 'nearest');
-    }
+    this.expandedClient.set(username);
+    this.rowNotice.set(null);
+    this.reveal();
   }
 
   toggleSession(idEvento: number): void {
-    const value = this.expandedSession() === idEvento ? null : idEvento;
-    this.expandedSession.set(value);
-    if (value !== null) {
-      this.reveal(`session-group-${value}`, 'nearest');
-    }
-  }
-
-  /** Cambiar de filtro suelta la reserva recién cancelada: ya está en «Canceladas». */
-  setFilter(filter: Filter): void {
-    this.stay.set(null);
-    this.filter.set(filter);
+    this.expandedSession.set(idEvento);
+    this.rowNotice.set(null);
+    this.reveal();
   }
 
   /** Sin filtros que escondan nada (el de sesión lo quita la navegación que viene después). */
   private clearFilters(): void {
     this.stay.set(null);
-    this.filter.set('TODAS');
-    this.query.set('');
-    this.sessionFilter.set(0);
+    this.filterValues.set({ ...FILTER_DEFAULTS });
   }
 
   /**
-   * Tras pintarse, lleva la vista hasta una ficha: al desplegarla, lo justo para verla entera sin perder su
-   * fila; al llegar desde otra vista, con su fila arriba (ver reveal-row).
+   * Enseña una ficha: en el panel lateral (si ya está abierto, solo cambia lo de dentro) y, detrás, la
+   * vista lleva su fila hasta donde se vea, sin saltos. El id ya no hace falta: la fila es la marcada.
    */
-  private reveal(id: string, mode: 'nearest' | 'top' = 'top'): void {
+  private reveal(): void {
     afterNextRender(
-      () => {
-        const detail = document.getElementById(id);
-        if (mode === 'top') {
-          revealAtTop(detail);
-        } else {
-          revealExpanded(detail);
-        }
-      },
+      () => document.querySelector<HTMLElement>('tr.row-summary.is-open')?.scrollIntoView({ block: 'nearest' }),
       { injector: this.injector },
     );
+  }
+
+  // El panel lateral: la ficha de lo marcado en la vista que toque, con anterior y siguiente.
+  readonly drawerRef = viewChild.required<PanelDialogComponent>('drawer');
+
+  readonly drawerReservation = computed(() => this.reservations().find((reserva) => reserva.idReserva === this.expanded()));
+  readonly drawerClient = computed(() => this.clients().find((client) => client.key === this.expandedClient()));
+  readonly drawerSession = computed(() => this.sessionGroups().find((group) => group.idEvento === this.expandedSession()));
+
+  /** Las de la lista, en su orden: por donde se mueven anterior y siguiente. */
+  readonly drawerList = computed<(string | number)[]>(() => {
+    switch (this.view()) {
+      case 'clientes':
+        return this.clients().map((client) => client.key);
+      case 'sesiones':
+        return this.sessionGroups().map((group) => group.idEvento);
+      default:
+        return this.visible().map((reserva) => reserva.idReserva);
+    }
+  });
+
+  private readonly drawerCurrent = computed<string | number | null>(() => {
+    switch (this.view()) {
+      case 'clientes':
+        return this.expandedClient();
+      case 'sesiones':
+        return this.expandedSession();
+      default:
+        return this.expanded();
+    }
+  });
+
+  readonly drawerIndex = computed(() => {
+    const current = this.drawerCurrent();
+    return current === null ? -1 : this.drawerList().indexOf(current);
+  });
+
+  readonly drawerHeading = computed(() => {
+    switch (this.view()) {
+      case 'clientes':
+        return 'Cliente';
+      case 'sesiones':
+        return 'Sesión';
+      default: {
+        const reserva = this.drawerReservation();
+        return reserva ? `Reserva ${this.number(reserva)}` : 'Reserva';
+      }
+    }
+  });
+
+  /** A la anterior o la siguiente de la lista, sin cerrar el panel. */
+  step(direction: -1 | 1): void {
+    const next = this.drawerList()[this.drawerIndex() + direction];
+    if (next === undefined) {
+      return;
+    }
+    this.rowNotice.set(null);
+    if (this.view() === 'clientes') {
+      this.expandedClient.set(next as string);
+    } else if (this.view() === 'sesiones') {
+      this.expandedSession.set(next as number);
+    } else {
+      this.expanded.set(next as number);
+    }
+    this.reveal();
+  }
+
+  /** Al cerrar el panel (✕, Esc o clic fuera), ya no hay nada marcado. */
+  onDrawerClosed(): void {
+    this.expanded.set(null);
+    this.expandedClient.set(null);
+    this.expandedSession.set(null);
+    this.rowNotice.set(null);
+  }
+
+  /** Lo marcado tiene ficha que enseñar (con los datos ya cargados). */
+  private readonly drawerHasItem = computed(() => {
+    const view = this.view();
+    return view === 'clientes' ? !!this.drawerClient() : view === 'sesiones' ? !!this.drawerSession() : !!this.drawerReservation();
+  });
+
+  /**
+   * El panel sigue a lo marcado: se abre si hay ficha que enseñar (también al volver a la página con
+   * ?ficha=, cuando llegan los datos) y se cierra solo si lo marcado desaparece (otro filtro, otra vista).
+   */
+  private readonly syncDrawer = effect(() => {
+    if (this.loading()) {
+      return;
+    }
+    const drawer = this.drawerRef();
+    if (this.drawerHasItem()) {
+      if (!drawer.isOpen) {
+        drawer.open();
+      }
+    } else if (drawer.isOpen) {
+      drawer.close();
+    }
+  });
+
+  /**
+   * La ficha abierta, también en la dirección (?ficha=r-18, c-luis, s-3), sin entradas nuevas en el
+   * historial: si se va a otra página, «atrás» vuelve con el panel abierto donde estaba.
+   */
+  private readonly drawerInUrl = effect(() => {
+    if (this.loading()) {
+      return;
+    }
+    const current = this.drawerCurrent();
+    const prefix = this.view() === 'clientes' ? 'c' : this.view() === 'sesiones' ? 's' : 'r';
+    const ficha = current === null || !this.drawerHasItem() ? null : `${prefix}-${current}`;
+    if (ficha !== this.route.snapshot.queryParamMap.get('ficha')) {
+      this.go({ ficha });
+    }
+  });
+
+  /** Lee ?ficha= al llegar a la página: lo marca, y el panel se abre cuando lleguen los datos. */
+  private readFicha(ficha: string | null): void {
+    const match = ficha?.match(/^([rcs])-(.+)$/);
+    if (!match) {
+      return;
+    }
+    const [, kind, value] = match;
+    if (kind === 'c') {
+      this.expandedClient.set(value);
+    } else if (kind === 's' && Number(value)) {
+      this.expandedSession.set(Number(value));
+    } else if (kind === 'r' && Number(value)) {
+      this.expanded.set(Number(value));
+    }
   }
 
   /** Solo se reserva en sesiones activas. */
   readonly openSessions = computed(() => this.sessions().filter((session) => session.estado === 'ACTIVO'));
 
+  /** La hoja de control de una sesión, en su diálogo. */
+  readonly controlId = signal<number | null>(null);
+  readonly controlDialog = viewChild.required<PanelDialogComponent>('controlDialog');
+
+  openControl(idEvento: number): void {
+    this.controlId.set(idEvento);
+    this.controlDialog().open();
+  }
+
   // Alta manual, en el diálogo.
   readonly dialog = viewChild.required<PanelDialogComponent>('createDialog');
   readonly saving = signal(false);
   readonly formError = signal<string | null>(null);
+  readonly formErrors = signal<Record<string, string>>({});
   form = emptyForm();
 
   readonly state = reservationState;
+  readonly clientKey = clientKey;
   readonly cancellation = (reserva: Reserva) => cancellationLine(reserva);
   readonly payment = paymentBadge;
   readonly paymentText = paymentLine;
@@ -503,6 +872,32 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly when = reservationWhen;
   readonly dayTime = formatDayTime;
   readonly credential = credentialLabel;
+  readonly initialsOf = initials;
+
+  /** «05 dic»: en las listas cortas de las fichas, el año solo si no es este (ver otherYear). */
+  shortDay(isoDate: string): string {
+    return formatDay(isoDate).replace(/ \d{4}$/, '');
+  }
+
+  /** El día y el mes de la hoja de calendario de una ficha de sesión: «05» y «dic». */
+  dayNumber(isoDate: string): string {
+    return isoDate.slice(8, 10);
+  }
+
+  monthShort(isoDate: string): string {
+    return this.shortDay(isoDate).split(' ')[1] ?? '';
+  }
+
+  otherYear(isoDate: string): string {
+    const year = isoDate.slice(0, 4);
+    return year === String(new Date().getFullYear()) ? '' : ` · ${year}`;
+  }
+
+  /** La hora de empezar (19:15), para las listas cortas de las fichas. */
+  startTime(reserva: Reserva): string {
+    return reserva.horaInicioEvento?.slice(0, 5) ?? '';
+  }
+
   readonly schedule = (reserva: Reserva) =>
     sessionSchedule({ horaInicio: reserva.horaInicioEvento, duracion: reserva.duracionEvento });
 
@@ -517,12 +912,9 @@ export class AdminReservationsPanelComponent implements OnInit {
 
   /** Despliega la ficha de la reserva, o la recoge; al desplegar, la vista baja lo justo para verla entera. */
   toggle(reserva: Reserva): void {
-    const id = this.expanded() === reserva.idReserva ? null : reserva.idReserva;
-    this.expanded.set(id);
+    this.expanded.set(reserva.idReserva);
     this.rowNotice.set(null);
-    if (id !== null) {
-      this.reveal(`reservation-detail-${id}`, 'nearest');
-    }
+    this.reveal();
   }
 
   /** Tras añadir reservas demo desde el pie: la lista y las cifras de la cabecera. */
@@ -536,12 +928,22 @@ export class AdminReservationsPanelComponent implements OnInit {
   readonly maxPlazas = MAX_PLAZAS;
 
   ngOnInit(): void {
-    // Desde Usuarios llega la cuenta a buscar; el filtro de sesión sigue a la dirección.
-    this.query.set(this.route.snapshot.queryParamMap.get('cuenta') ?? '');
+    // Los filtros siguen a la dirección. Desde Usuarios llega ?cuenta=, que es buscar esa cuenta.
+    let first = true;
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      this.sessionFilter.set(Number(params.get('sesion')) || 0);
+      const values: FilterValues = { ...FILTER_DEFAULTS };
+      for (const key of Object.keys(FILTER_DEFAULTS)) {
+        values[key] = params.get(key) ?? FILTER_DEFAULTS[key];
+      }
+      values['q'] = params.get('q') ?? params.get('cuenta') ?? '';
+      this.filterValues.set(values);
       const view = params.get('ver');
       this.view.set(view === 'clientes' || view === 'sesiones' ? view : 'reservas');
+      // La ficha, solo al llegar (o al volver atrás, que crea la página de nuevo): luego la escribe el panel.
+      if (first) {
+        first = false;
+        this.readFicha(params.get('ficha'));
+      }
     });
     this.load();
   }
@@ -577,13 +979,7 @@ export class AdminReservationsPanelComponent implements OnInit {
    * de página: la vista se queda donde está (scroll: 'manual', como en /sesiones).
    */
   filterBySession(idEvento: number): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { sesion: idEvento || null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-      scroll: 'manual',
-    });
+    this.applyFilters({ ...this.filterValues(), sesion: idEvento ? String(idEvento) : '' });
   }
 
   /**
@@ -640,15 +1036,18 @@ export class AdminReservationsPanelComponent implements OnInit {
     if (this.saving()) {
       return;
     }
-    const { username, idEvento, cantidad, observaciones } = this.form;
-    if (!username || !idEvento) {
-      this.formError.set('Elige la cuenta y la sesión.');
+    const { username, idEvento, cantidad, observaciones, sinCuenta, nombre, telefono, correo } = this.form;
+    if ((!sinCuenta && !username) || !idEvento) {
+      this.formError.set(sinCuenta ? 'Elige la sesión.' : 'Elige la cuenta y la sesión.');
       return;
     }
     this.saving.set(true);
     this.formError.set(null);
-    this.admin
-      .crearReservaParaUsuario(username, idEvento, { cantidad: cantidad ?? 0, observaciones })
+    this.formErrors.set({});
+    const request = sinCuenta
+      ? this.admin.crearReservaSinCuenta(idEvento, { nombre, telefono, correo, cantidad: cantidad ?? 0, observaciones })
+      : this.admin.crearReservaParaUsuario(username, idEvento, { cantidad: cantidad ?? 0, observaciones });
+    request
       .subscribe({
         next: (reserva) => {
           this.saving.set(false);
@@ -662,6 +1061,7 @@ export class AdminReservationsPanelComponent implements OnInit {
         },
         error: (error) => {
           this.saving.set(false);
+          this.formErrors.set(fieldErrors(error));
           this.formError.set(errorMessage(error, 'No se ha podido crear la reserva.'));
         },
       });
@@ -686,43 +1086,34 @@ export class AdminReservationsPanelComponent implements OnInit {
     });
   }
 
-  // La revisión de adaptaciones y material, en su diálogo.
-  readonly reviewDialogRef = viewChild.required<PanelDialogComponent>('reviewDialog');
-  readonly reviewTarget = signal<Reserva | null>(null);
-  readonly reviewError = signal<string | null>(null);
-  reviewAccept = true;
-  reviewNote = '';
-
-  openReview(reserva: Reserva, accept: boolean): void {
-    this.reviewTarget.set(reserva);
-    this.reviewAccept = accept;
-    this.reviewNote = reserva.revisionNota ?? '';
-    this.reviewError.set(null);
-    this.reviewDialogRef().open();
+  /**
+   * Por revisar: lo que pidió el cliente se gestiona a mano y, hecho, se da por revisado con la ✕ (sin
+   * decisión formal: el cliente deja de ver «En revisión»). El aviso deja deshacerlo.
+   */
+  markReviewed(reserva: Reserva): void {
+    this.setReview(reserva, this.admin.revisarReserva(reserva.idReserva, true, ''), 'Revisada: ya no sale en «Por revisar».', true);
   }
 
-  saveReview(): void {
-    const reserva = this.reviewTarget();
-    if (!reserva || this.busy() !== null) {
-      return;
-    }
-    if (!this.reviewAccept && !this.reviewNote.trim()) {
-      this.reviewError.set('Explica al cliente por qué no se aceptan.');
+  undoReview(reserva: Reserva): void {
+    this.setReview(reserva, this.admin.reabrirRevision(reserva.idReserva), 'Vuelve a estar por revisar.', false);
+  }
+
+  private setReview(reserva: Reserva, request: Observable<Reserva>, text: string, undo: boolean): void {
+    if (this.busy() !== null) {
       return;
     }
     this.busy.set(reserva.idReserva);
-    this.admin.revisarReserva(reserva.idReserva, this.reviewAccept, this.reviewNote).subscribe({
+    request.subscribe({
       next: (updated) => {
         this.busy.set(null);
-        this.reviewDialogRef().close();
         this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
-        // Sigue en su sitio aunque ya no «requiera revisión»: se suelta al cambiar de filtro.
+        // Sigue en su sitio aunque ya no esté por revisar: se suelta al cambiar de filtro.
         this.stay.set(updated.idReserva);
-        this.rowNotice.set({ id: updated.idReserva, text: `Adaptaciones ${this.review(updated).toLowerCase()}.` });
+        this.rowNotice.set({ id: updated.idReserva, text, undoReview: undo });
       },
       error: (error) => {
         this.busy.set(null);
-        this.reviewError.set(errorMessage(error, 'No se ha podido guardar la decisión.'));
+        this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido guardar.') });
       },
     });
   }
@@ -760,6 +1151,25 @@ export class AdminReservationsPanelComponent implements OnInit {
       error: (error) => {
         this.busy.set(null);
         this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido reactivar.') });
+      },
+    });
+  }
+
+  /** El dinero de una devolución en taquilla ya se ha entregado. */
+  handOver(reserva: Reserva, idDevolucion: number): void {
+    if (this.busy() !== null) {
+      return;
+    }
+    this.busy.set(reserva.idReserva);
+    this.admin.entregarDevolucion(reserva.idReserva, idDevolucion).subscribe({
+      next: (updated) => {
+        this.busy.set(null);
+        this.reservations.update((list) => list.map((item) => (item.idReserva === updated.idReserva ? updated : item)));
+        this.rowNotice.set({ id: updated.idReserva, text: 'Devolución entregada.' });
+      },
+      error: (error) => {
+        this.busy.set(null);
+        this.rowNotice.set({ id: reserva.idReserva, text: errorMessage(error, 'No se ha podido marcar.') });
       },
     });
   }
@@ -819,11 +1229,15 @@ export class AdminReservationsPanelComponent implements OnInit {
           ),
         );
         const devuelto = Number(updated.importeDevuelto) - Number(reserva.importeDevuelto);
+        const enTaquilla = updated.estadoPago === 'COBRADA_TAQUILLA';
         this.rowNotice.set({
           id: updated.idReserva,
-          text: devuelto > 0
-            ? `Reserva cancelada y ${formatMoney(devuelto)} devueltos. Ahora está en «Canceladas».`
-            : 'Reserva cancelada. Ahora está en «Canceladas».',
+          text:
+            devuelto <= 0
+              ? 'Reserva cancelada. Ahora está en «Canceladas».'
+              : enTaquilla
+                ? `Reserva cancelada: ${formatMoney(devuelto)} por devolver en taquilla. Márcalo al entregarlo.`
+                : `Reserva cancelada y ${formatMoney(devuelto)} devueltos a su tarjeta. Ahora está en «Canceladas».`,
         });
         this.summary.refresh();
       },
@@ -838,6 +1252,11 @@ export class AdminReservationsPanelComponent implements OnInit {
 function emptyForm(idEvento: number | null = null) {
   return {
     username: '',
+    /** Por teléfono, a alguien sin cuenta: entonces cuentan nombre, teléfono y correo. */
+    sinCuenta: false,
+    nombre: '',
+    telefono: '',
+    correo: '',
     idEvento,
     cantidad: 1 as number | null,
     observaciones: '',
